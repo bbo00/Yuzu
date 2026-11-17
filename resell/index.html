@@ -1,0 +1,2058 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>리셀북 · 재고와 손익</title>
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#0e0f12" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="리셀북" />
+<meta name="format-detection" content="telephone=no" />
+<link rel="manifest" href="./manifest.json" />
+<link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png" />
+<style>
+:root{
+  --bg:#0e0f12; --card:#181a1f; --card2:#1f2229; --line:#2a2e37;
+  --fg:#f2f3f5; --muted:#9aa1ad; --muted2:#7a8290;
+  --accent:#ffb03a; --accent2:#ff8a3d; --ok:#3ecf8e; --bad:#ff6b7a; --info:#6aa8ff;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:radial-gradient(120% 70% at 50% -10%, #1a1c22 0%, var(--bg) 60%) no-repeat, var(--bg);
+  color:var(--fg);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",sans-serif;
+  min-height:100vh;
+  -webkit-text-size-adjust:100%;
+  overscroll-behavior-y:contain;
+}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea,button{font-family:inherit}
+.hidden{display:none !important}
+
+/* ---------- header ---------- */
+.app-head{
+  position:sticky;top:0;z-index:30;
+  background:rgba(14,15,18,.88);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+  padding:calc(10px + env(safe-area-inset-top,0px)) 14px 0;
+}
+.head-row{display:flex;align-items:center;gap:10px;padding-bottom:10px}
+.brand{display:flex;align-items:center;gap:9px;min-width:0;flex:1}
+.logo{
+  width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:18px;
+  background:linear-gradient(160deg,#ffc76e,#ff8a3d);box-shadow:0 3px 10px rgba(255,140,60,.25)
+}
+.brand h1{font-size:17px;margin:0;letter-spacing:-.4px;font-weight:750;line-height:1.15}
+.brand p{margin:1px 0 0;font-size:11px;color:var(--muted2);letter-spacing:-.1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:56vw}
+.head-actions{display:flex;gap:6px;flex:0 0 auto}
+.icobtn{
+  width:36px;height:36px;border-radius:11px;border:1px solid var(--line);background:#1a1d23;
+  color:#d7dbe2;font-size:16px;display:grid;place-items:center;position:relative
+}
+.icobtn:active{background:#22262e}
+.dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:#4b525e;border:1px solid #0e0f12}
+.dot.on{background:var(--ok)} .dot.err{background:var(--bad)}
+.dot.wait{background:var(--accent)}
+
+/* ---------- layout ---------- */
+.wrap{padding:12px 14px calc(84px + var(--safe-b))}
+.view{animation:fade .18s ease}
+@keyframes fade{from{opacity:.55}to{opacity:1}}
+
+/* ---------- month bar ---------- */
+.monthbar{display:flex;gap:6px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.monthbar::-webkit-scrollbar{display:none}
+.mchip{
+  flex:0 0 auto;padding:6px 11px;border-radius:999px;background:#1b1e24;border:1px solid var(--line);
+  color:#b9bfc9;font-size:12.5px;letter-spacing:-.2px;white-space:nowrap
+}
+.mchip.on{background:rgba(255,176,58,.13);border-color:rgba(255,176,58,.5);color:#ffc978;font-weight:650}
+
+/* ---------- dashboard ---------- */
+.dash{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.kpi{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:16px;padding:11px 12px;min-width:0}
+.kpi .k{font-size:11.5px;color:var(--muted);letter-spacing:-.2px;display:flex;align-items:center;gap:4px}
+.kpi .v{font-size:18px;font-weight:750;letter-spacing:-.7px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi .v small{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0;margin-left:2px}
+.kpi .s{font-size:11px;color:var(--muted2);margin-top:2px;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v.ok{color:var(--ok)} .v.bad{color:var(--bad)} .v.accent{color:#ffc978}
+
+/* ---------- search / filters ---------- */
+.searchrow{position:relative;margin-bottom:9px}
+.searchrow input{
+  width:100%;font-size:16px;background:#191c22;border:1px solid var(--line);border-radius:13px;
+  padding:11px 12px 11px 36px;color:var(--fg);appearance:none
+}
+.searchrow input::placeholder{color:#6d7480}
+.searchrow .mag{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;opacity:.6}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:0 0 auto;padding:7px 12px;border-radius:999px;background:#1b1e24;border:1px solid var(--line);
+  color:#bfc5cf;font-size:12.5px;letter-spacing:-.2px;white-space:nowrap
+}
+.chip.on{background:#2b3038;border-color:#3c434e;color:#fff;font-weight:650}
+.chip .n{color:var(--muted2);font-size:11px;margin-left:3px}
+.chip.on .n{color:#c9ced7}
+.filterrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:11px}
+.filterrow select{
+  width:100%;font-size:16px;background:#191c22;border:1px solid var(--line);border-radius:12px;
+  padding:10px 11px;color:#dfe3ea;appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,#7d8593 50%),linear-gradient(135deg,#7d8593 50%,transparent 50%);
+  background-position:calc(100% - 16px) calc(50% + 1px),calc(100% - 11px) calc(50% + 1px);
+  background-size:5px 5px,5px 5px;background-repeat:no-repeat
+}
+
+/* ---------- item cards ---------- */
+.plist{display:flex;flex-direction:column;gap:8px}
+.pcard{
+  display:flex;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:11px;
+  position:relative
+}
+.pcard.sold{opacity:.62}
+.thumb{
+  width:70px;height:70px;flex:0 0 70px;border-radius:12px;background:#22262e;object-fit:cover;
+  display:grid;place-items:center;font-size:24px;color:#5b636f;overflow:hidden
+}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.pmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.ptop{display:flex;align-items:flex-start;gap:6px}
+.pname{font-size:14.5px;font-weight:650;letter-spacing:-.3px;line-height:1.28;flex:1;min-width:0;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all}
+.badge{
+  flex:0 0 auto;font-size:10.5px;padding:2px 7px;border-radius:999px;border:1px solid;letter-spacing:-.2px;margin-top:1px
+}
+.badge.판매중{color:#5fe0ab;border-color:rgba(62,207,142,.4);background:rgba(62,207,142,.1)}
+.badge.예약중{color:#ffc978;border-color:rgba(255,176,58,.42);background:rgba(255,176,58,.1)}
+.badge.완판{color:#8f97a3;border-color:#3a404a;background:#23272e}
+.pmeta{font-size:11.5px;color:var(--muted);letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pmoney{font-size:12px;color:#cfd4dc;letter-spacing:-.2px;display:flex;gap:8px;flex-wrap:wrap}
+.pmoney b{font-weight:650;color:#fff}
+.pact{display:flex;align-items:center;gap:5px;margin-top:1px;flex-wrap:wrap}
+.stepper{display:flex;align-items:center;gap:2px;background:#20242b;border:1px solid var(--line);border-radius:11px;padding:2px}
+.stepper button{width:28px;height:26px;border:0;background:transparent;color:#dfe3ea;font-size:16px;line-height:1;border-radius:8px}
+.stepper button:active{background:#2c313a}
+.stepper .q{min-width:26px;text-align:center;font-size:12.5px;font-weight:650;color:#fff}
+.mini{
+  border:1px solid var(--line);background:#232730;color:#dfe3ea;border-radius:10px;padding:6px 9px;
+  font-size:12px;letter-spacing:-.2px;white-space:nowrap
+}
+.mini:active{background:#2b303a}
+.mini.sell{background:rgba(255,176,58,.14);border-color:rgba(255,176,58,.45);color:#ffca80;font-weight:650}
+.mini:disabled{opacity:.4}
+.pmenu{position:absolute;right:9px;top:9px;width:26px;height:26px;border-radius:8px;border:0;background:transparent;color:#8b929e;font-size:15px;display:grid;place-items:center}
+.pcard .ptop{padding-right:22px}
+
+/* ---------- empty ---------- */
+.empty{text-align:center;padding:40px 16px 34px;color:var(--muted)}
+.empty .big{font-size:42px;line-height:1;margin-bottom:10px}
+.empty h3{font-size:15px;margin:0 0 6px;color:#e7eaef;letter-spacing:-.3px}
+.empty p{font-size:12.5px;line-height:1.6;margin:0 auto 16px;max-width:270px;word-break:keep-all}
+.empty .btn-primary{display:inline-flex;align-items:center;gap:6px;padding:12px 20px;border-radius:13px;border:0;
+  background:linear-gradient(180deg,#ffc46a,#ffa62e);color:#20160a;font-size:14.5px;font-weight:700;
+  box-shadow:0 6px 16px rgba(255,160,50,.22)}
+.hintbox{margin:14px 0 0;padding:11px 12px;border:1px dashed #333944;border-radius:12px;background:#16181d;
+  font-size:11.5px;color:#8d94a0;line-height:1.6;text-align:left;word-break:keep-all}
+
+/* ---------- transactions ---------- */
+.grouphead{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:16px 2px 7px}
+.grouphead:first-child{margin-top:2px}
+.grouphead h4{margin:0;font-size:12.5px;color:#cfd4dc;letter-spacing:-.2px;font-weight:650}
+.grouphead span{font-size:11.5px;color:var(--muted2);letter-spacing:-.2px}
+.tx{display:flex;gap:10px;padding:10px 11px;border:1px solid var(--line);border-radius:14px;background:var(--card);margin-bottom:7px}
+.tx .tag{width:32px;height:32px;flex:0 0 32px;border-radius:10px;display:grid;place-items:center;font-size:14px}
+.tx .tag.sale{background:rgba(255,176,58,.13);color:#ffc978}
+.tx .tag.in{background:rgba(106,168,255,.13);color:#9cc4ff}
+.tx .tbody{flex:1;min-width:0}
+.tx .t1{font-size:13px;font-weight:600;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx .t2{font-size:11.5px;color:var(--muted);letter-spacing:-.2px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx .tright{text-align:right;flex:0 0 auto;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.tx .amt{font-size:13px;font-weight:650;letter-spacing:-.3px}
+.tx .amt.in{color:#9cc4ff}
+.tx .pf{font-size:11px;letter-spacing:-.2px}
+.pf.ok{color:var(--ok)} .pf.bad{color:var(--bad)}
+.tx .del{border:0;background:transparent;color:#5f6672;font-size:13px;padding:0 0 0 2px}
+
+/* ---------- P&L ---------- */
+.plhero{background:linear-gradient(160deg,#26211a,#181a1f 60%);border:1px solid #3a3225;border-radius:18px;padding:15px;margin-bottom:10px}
+.plhero .lab{font-size:11.5px;color:#b9a684;letter-spacing:-.2px}
+.plhero .big{font-size:26px;font-weight:780;letter-spacing:-1px;margin-top:2px}
+.plhero .sub{font-size:11.5px;color:var(--muted);margin-top:4px;letter-spacing:-.2px}
+.plgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.plgrid .cell{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.plgrid .cell .k{font-size:11px;color:var(--muted);letter-spacing:-.2px}
+.plgrid .cell .v{font-size:15px;font-weight:700;letter-spacing:-.5px;margin-top:2px}
+.plgrid .cell .v small{font-size:10.5px;font-weight:600;color:var(--muted);margin-left:3px}
+.sec-title{font-size:12.5px;color:#cfd4dc;font-weight:650;margin:16px 2px 8px;letter-spacing:-.2px}
+.bars{display:flex;align-items:flex-end;gap:8px;height:132px;padding:0 2px;margin-bottom:6px}
+.barcol{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;min-width:0;height:100%}
+.barcol .pair{display:flex;align-items:flex-end;gap:3px;height:100%;width:100%;justify-content:center}
+.bar{width:9px;border-radius:4px 4px 2px 2px;min-height:2px}
+.bar.rev{background:linear-gradient(180deg,#ffc46a,#ff9a2e)}
+.bar.prf{background:linear-gradient(180deg,#57e0a8,#2fbd86)}
+.barcol .lbl{font-size:9.5px;color:#7a8290;letter-spacing:-.3px;white-space:nowrap}
+.legend{display:flex;gap:12px;font-size:10.5px;color:var(--muted);margin:2px 2px 4px}
+.legend i{width:7px;height:7px;border-radius:2px;display:inline-block;margin-right:4px}
+.catrow{display:flex;align-items:center;gap:8px;padding:9px 11px;border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:6px}
+.catrow .cn{flex:1;font-size:12.5px;letter-spacing:-.2px}
+.catrow .cv{font-size:12.5px;font-weight:650;letter-spacing:-.2px}
+
+/* ---------- tabbar & fab ---------- */
+.tabbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;gap:2px;
+  background:rgba(15,16,20,.94);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  border-top:1px solid var(--line);
+  padding:6px 6px calc(6px + var(--safe-b))
+}
+.tab{flex:1;background:transparent;border:0;padding:7px 2px;text-align:center;color:#868d99;font-size:10.5px;letter-spacing:-.2px;border-radius:12px}
+.tab .ti{display:block;font-size:19px;margin-bottom:2px;line-height:1.1;filter:grayscale(.4);opacity:.8}
+.tab.on{color:#ffc978}
+.tab.on .ti{filter:none;opacity:1}
+.fab{
+  position:fixed;right:16px;bottom:calc(74px + var(--safe-b));z-index:41;
+  width:54px;height:54px;border-radius:18px;border:0;font-size:26px;line-height:1;
+  background:linear-gradient(170deg,#ffc76e,#ff8f34);color:#241706;
+  box-shadow:0 8px 22px rgba(255,140,50,.34),0 1px 0 rgba(255,255,255,.3) inset;
+  display:grid;place-items:center
+}
+.fab:active{transform:scale(.95)}
+
+/* ---------- sheet (modal) ---------- */
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:60;animation:fade .18s ease}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:61;max-height:93vh;display:flex;flex-direction:column;
+  background:#15171c;border-radius:22px 22px 0 0;border-top:1px solid #333944;
+  box-shadow:0 -14px 40px rgba(0,0,0,.5);animation:up .22s cubic-bezier(.22,.9,.3,1)
+}
+@keyframes up{from{transform:translateY(28px);opacity:.6}to{transform:none;opacity:1}}
+.sheet-head{display:flex;align-items:center;gap:10px;padding:13px 16px 11px;border-bottom:1px solid var(--line)}
+.sheet-head h2{margin:0;font-size:15.5px;letter-spacing:-.3px;font-weight:700;flex:1;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sheet-head .sub{font-size:11px;color:var(--muted2);font-weight:500;letter-spacing:-.2px}
+.xbtn{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:#1e222a;color:#c3c8d1;font-size:14px;display:grid;place-items:center;flex:0 0 auto}
+.sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px calc(18px + var(--safe-b));display:grid;gap:12px}
+.sheet-foot{display:flex;gap:8px;padding:10px 16px calc(12px + var(--safe-b));border-top:1px solid var(--line);background:#15171c}
+.btn{flex:1;padding:13px;border-radius:13px;font-size:15px;font-weight:650;border:1px solid var(--line);background:#232730;color:#e7eaef;letter-spacing:-.3px}
+.btn.ghost{background:#1b1e24;color:#aeb4be}
+.btn.primary{background:linear-gradient(180deg,#ffc46a,#ffa62e);border:0;color:#20160a}
+.btn.danger{background:rgba(255,107,122,.12);border-color:rgba(255,107,122,.35);color:#ff9aa5}
+.btn:disabled{opacity:.45}
+.btn.small{flex:0 0 auto;padding:9px 12px;font-size:12.5px;border-radius:11px}
+
+.field label{font-size:11.5px;color:var(--muted);display:block;margin-bottom:5px;letter-spacing:-.2px}
+.field label .req{color:#ff9aa5;margin-left:2px}
+.field input,.field select,.field textarea{
+  width:100%;font-size:16px !important;background:#1d2027;border:1px solid #30353e;color:#eef0f4;
+  border-radius:12px;padding:11px 12px;appearance:none;-webkit-appearance:none;line-height:1.25
+}
+.field textarea{min-height:64px;resize:vertical;font-family:inherit}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:#5a4a2e;background:#21242b}
+.field select{
+  background-image:linear-gradient(45deg,transparent 50%,#7d8593 50%),linear-gradient(135deg,#7d8593 50%,transparent 50%);
+  background-position:calc(100% - 17px) calc(50% + 1px),calc(100% - 12px) calc(50% + 1px);
+  background-size:5px 5px,5px 5px;background-repeat:no-repeat
+}
+.field input[type=date]{min-height:44px}
+.field input[type=date]::-webkit-date-and-time-value{text-align:left}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg{display:flex;background:#1d2027;border:1px solid #30353e;border-radius:12px;padding:3px;gap:3px}
+.seg button{flex:1;background:transparent;border:0;color:#9aa1ad;font-size:12.5px;padding:7px 0;border-radius:9px;letter-spacing:-.2px}
+.seg button.on{background:#2f343e;color:#fff;font-weight:650}
+.calc{display:grid;gap:5px;border:1px dashed #384050;border-radius:12px;padding:10px 11px;background:#181b21;font-size:12.5px;letter-spacing:-.2px}
+.calc .line{display:flex;justify-content:space-between;gap:8px;color:#a9b0bb}
+.calc .line b{color:#eef0f4;font-weight:650}
+.calc .line.total{border-top:1px solid #2c323c;padding-top:6px;margin-top:1px;color:#dfe3ea}
+.calc .line.total b{font-size:15px;letter-spacing:-.4px}
+.photopick{display:flex;align-items:center;gap:12px}
+.photopick .pv{width:72px;height:72px;flex:0 0 72px;border-radius:13px;background:#1d2027;border:1px dashed #3a414c;
+  display:grid;place-items:center;font-size:22px;color:#6d7480;overflow:hidden}
+.photopick .pv img{width:100%;height:100%;object-fit:cover}
+.photopick .ptxt{flex:1;min-width:0}
+.photopick .ptxt p{margin:0 0 7px;font-size:11px;color:var(--muted2);line-height:1.5}
+.photopick .ptxt .row{display:flex;gap:6px;flex-wrap:wrap}
+.syncbox{border:1px solid var(--line);border-radius:14px;background:#181b21;padding:12px}
+.syncbox .st{display:flex;align-items:center;gap:7px;font-size:12.5px;color:#dfe3ea;letter-spacing:-.2px}
+.syncbox .st .d{width:8px;height:8px;border-radius:50%;background:#5b636f}
+.syncbox .st .d.on{background:var(--ok)} .syncbox .st .d.err{background:var(--bad)} .syncbox .st .d.wait{background:var(--accent)}
+.syncbox .desc{font-size:11.5px;color:var(--muted2);line-height:1.55;margin:7px 0 0;word-break:keep-all}
+.codebox{display:flex;gap:6px;margin-top:9px}
+.codebox input{flex:1;font-size:13px !important;background:#111419;border:1px solid #2c323c;border-radius:10px;padding:8px 10px;color:#bfc5cf;font-family:ui-monospace,Menlo,monospace;min-width:0}
+.syncacts{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.syncacts .btn{flex:0 0 auto;padding:9px 12px;font-size:12.5px;border-radius:11px}
+.note{font-size:11px;color:#7a8290;line-height:1.6;letter-spacing:-.2px;word-break:keep-all}
+.ownername{font-size:12.5px;color:#cfd4dc;letter-spacing:-.2px;margin:2px 0 0}
+
+/* ---------- toast ---------- */
+#toast-root{position:fixed;left:12px;right:12px;bottom:calc(86px + var(--safe-b));z-index:80;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast{
+  pointer-events:auto;display:flex;align-items:center;gap:10px;
+  background:rgba(32,36,44,.97);border:1px solid #3b424e;border-radius:13px;padding:11px 12px;
+  font-size:12.5px;color:#eef0f4;letter-spacing:-.2px;box-shadow:0 10px 26px rgba(0,0,0,.45);
+  animation:tin .2s ease
+}
+@keyframes tin{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+.toast .msg{flex:1;line-height:1.45;word-break:keep-all}
+.toast button{border:0;background:rgba(255,176,58,.16);color:#ffca80;font-size:12px;font-weight:650;padding:6px 9px;border-radius:9px;flex:0 0 auto}
+
+@media (min-width:520px){
+  .wrap{max-width:520px;margin:0 auto}
+  .app-head{max-width:520px;margin:0 auto}
+  .tabbar{max-width:520px;margin:0 auto;border-radius:16px 16px 0 0}
+  .fab{right:calc(50% - 246px)}
+  .sheet{max-width:520px;margin:0 auto;left:0;right:0}
+  .backdrop{backdrop-filter:blur(2px)}
+  #toast-root{max-width:496px;margin:0 auto}
+}
+
+</style>
+</head>
+<body>
+<header class="app-head">
+  <div class="head-row">
+    <div class="brand">
+      <span class="logo">📒</span>
+      <div>
+        <h1>리셀북</h1>
+        <p id="head-sub">재고와 손익을 한 곳에</p>
+      </div>
+    </div>
+    <div class="head-actions">
+      <button class="icobtn" id="btn-sync" aria-label="동기화"><span id="syncico">🔄</span><span class="dot" id="syncdot"></span></button>
+      <button class="icobtn" id="btn-menu" aria-label="메뉴">☰</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <section id="view-inv" class="view">
+    <div class="monthbar" id="monthbar"></div>
+    <div class="dash" id="dash"></div>
+    <div class="searchrow">
+      <span class="mag">🔍</span>
+      <input id="q" type="search" placeholder="상품명 · 구매처 검색" autocomplete="off" enterkeyhint="search" />
+    </div>
+    <div class="chips" id="statuschips"></div>
+    <div class="filterrow">
+      <select id="catsel" aria-label="카테고리">
+        <option value="all">카테고리 전체</option>
+        <option>의류</option><option>신발</option><option>잡화</option>
+        <option>가전·IT</option><option>생활용품</option><option>기타</option>
+      </select>
+      <select id="sortsel" aria-label="정렬">
+        <option value="recent">최근 등록순</option>
+        <option value="qty">재고 많은순</option>
+        <option value="value">재고 금액순</option>
+        <option value="name">이름순</option>
+      </select>
+    </div>
+    <div class="plist" id="invgrid"></div>
+  </section>
+
+  <section id="view-tx" class="view hidden">
+    <div class="chips" id="txchips"></div>
+    <div id="txlist"></div>
+  </section>
+
+  <section id="view-pl" class="view hidden">
+    <div class="monthbar" id="plmonthbar"></div>
+    <div id="plbody"></div>
+  </section>
+</div>
+
+<nav class="tabbar" id="tabbar">
+  <button class="tab on" data-view="inv"><span class="ti">📦</span>재고 목록</button>
+  <button class="tab" data-view="tx"><span class="ti">📜</span>거래 내역</button>
+  <button class="tab" data-view="pl"><span class="ti">📊</span>월별 손익</button>
+</nav>
+
+<button class="fab" id="fab" aria-label="상품 등록">＋</button>
+
+<div id="sheet-root"></div>
+<div id="toast-root"></div>
+<input type="file" id="import-file" accept="application/json,.json" hidden />
+
+<script>
+(function () {
+  'use strict';
+
+  /* ============================================================
+     utils
+     ============================================================ */
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function won(n) {
+    var v = Math.round(Number(n) || 0);
+    var sign = v < 0 ? '-' : '';
+    return sign + '₩' + Math.abs(v).toLocaleString('ko-KR');
+  }
+  function wonShort(n) {
+    var v = Math.round(Number(n) || 0);
+    var a = Math.abs(v);
+    if (a >= 100000000) return (v < 0 ? '-' : '') + (a / 100000000).toFixed(a >= 1000000000 ? 0 : 1).replace(/\.0$/, '') + '억원';
+    if (a >= 10000000) return (v < 0 ? '-' : '') + Math.round(a / 10000).toLocaleString('ko-KR') + '만원';
+    return won(v);
+  }
+  function num(v) { var n = Number(String(v == null ? '' : v).replace(/[^0-9.\-]/g, '')); return isFinite(n) ? n : 0; }
+  function pad2(n) { return String(n).padStart(2, '0'); }
+  function ymd(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+  function today() { return ymd(new Date()); }
+  function ymOf(s) { return String(s || '').slice(0, 7); }
+  function monthLabel(ym) {
+    if (!ym) return '';
+    var p = String(ym).split('-');
+    var y = Number(p[0]), m = Number(p[1]);
+    var cy = new Date().getFullYear();
+    if (y === cy) return m + '월';
+    return String(y).slice(2) + '년 ' + m + '월';
+  }
+  function dateLabel(s) {
+    if (!s) return '';
+    var p = String(s).split('-');
+    if (p.length < 3) return s;
+    return Number(p[1]) + '.' + pad2(Number(p[2]));
+  }
+  function dateLabelYear(s) {
+    if (!s) return '';
+    var p = String(s).split('-');
+    if (p.length < 3) return s;
+    return String(p[0]).slice(2) + '.' + pad2(Number(p[1])) + '.' + pad2(Number(p[2]));
+  }
+  function uid(p) { return (p || 'x') + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
+  function round(n) { return Math.round(Number(n) || 0); }
+
+  var CATS = ['의류', '신발', '잡화', '가전·IT', '생활용품', '기타'];
+  var CATICON = { '의류': '👕', '신발': '👟', '잡화': '👜', '가전·IT': '💻', '생활용품': '🧴', '기타': '📦' };
+  var SOURCES = ['당근', '번개장터', '크림', '네이버특가', '쿠팡', '직접입력'];
+
+  /* ============================================================
+     storage
+     ============================================================ */
+  var IDB_NAME = 'resellbook', IDB_STORE = 'kv', IDB_KEY = 'state';
+  var LS_KEY = 'resellbook_state_v1';
+  var idbPromise = null;
+  var state = null;
+  var saveTimer = null;
+
+  function openIdb() {
+    if (idbPromise) return idbPromise;
+    idbPromise = new Promise(function (res, rej) {
+      if (typeof indexedDB === 'undefined') { rej(new Error('no idb')); return; }
+      var req = indexedDB.open(IDB_NAME, 1);
+      req.onupgradeneeded = function () {
+        var db = req.result;
+        if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
+      };
+      req.onsuccess = function () { res(req.result); };
+      req.onerror = function () { rej(req.error || new Error('idb error')); };
+      req.onblocked = function () { rej(new Error('idb blocked')); };
+    });
+    return idbPromise;
+  }
+
+  function dbGet() {
+    return openIdb().then(function (db) {
+      return new Promise(function (res, rej) {
+        var tx = db.transaction(IDB_STORE, 'readonly');
+        var r = tx.objectStore(IDB_STORE).get(IDB_KEY);
+        r.onsuccess = function () { res(r.result || null); };
+        r.onerror = function () { rej(r.error); };
+      });
+    }).catch(function () {
+      try { var raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
+    });
+  }
+
+  function dbSet(v) {
+    return openIdb().then(function (db) {
+      return new Promise(function (res, rej) {
+        var tx = db.transaction(IDB_STORE, 'readwrite');
+        tx.objectStore(IDB_STORE).put(v, IDB_KEY);
+        tx.oncomplete = function () { res(true); };
+        tx.onerror = function () { rej(tx.error); };
+        tx.onabort = function () { rej(tx.error); };
+      });
+    }).catch(function () {
+      try { localStorage.setItem(LS_KEY, JSON.stringify(v)); return true; } catch (e) { return false; }
+    });
+  }
+
+  /* ============================================================
+     data model
+     ============================================================ */
+  function blank() {
+    return { v: 1, items: [], txns: [], deletedIds: [], deletedTxnIds: [], updatedAt: 0 };
+  }
+
+  function normalize(s) {
+    var out = blank();
+    if (!s || typeof s !== 'object') return out;
+    out.updatedAt = Number(s.updatedAt) || 0;
+    var seen = {};
+    (Array.isArray(s.items) ? s.items : []).forEach(function (r) {
+      if (!r || !r.id) return;
+      var id = String(r.id);
+      if (seen[id]) return;
+      seen[id] = 1;
+      var q = Math.max(0, Math.round(Number(r.qty) || 0));
+      out.items.push({
+        id: id,
+        name: String(r.name || '이름 없는 상품').slice(0, 80),
+        cat: CATS.indexOf(r.cat) >= 0 ? r.cat : '기타',
+        source: String(r.source || '').slice(0, 30),
+        buyDate: /^\d{4}-\d{2}-\d{2}$/.test(String(r.buyDate || '')) ? r.buyDate : '',
+        memo: String(r.memo || '').slice(0, 500),
+        avgCost: Math.max(0, Number(r.avgCost != null ? r.avgCost : r.price) || 0),
+        qty: q,
+        status: r.status === '예약중' ? '예약중' : '판매중',
+        photo: typeof r.photo === 'string' ? r.photo : '',
+        totalInQty: Math.max(q, Math.round(Number(r.totalInQty) || q)),
+        createdAt: Number(r.createdAt) || Date.now(),
+        updatedAt: Number(r.updatedAt) || 0
+      });
+    });
+    var seenT = {};
+    (Array.isArray(s.txns) ? s.txns : []).forEach(function (r) {
+      if (!r || !r.id) return;
+      var id = String(r.id);
+      if (seenT[id]) return;
+      seenT[id] = 1;
+      var type = r.type === 'in' ? 'in' : 'sale';
+      var qty = type === 'in' ? Math.max(0, round(r.qty)) : Math.max(1, round(r.qty) || 1);
+      out.txns.push({
+        id: id,
+        type: type,
+        pid: String(r.pid || ''),
+        name: String(r.name || '상품').slice(0, 80),
+        date: /^\d{4}-\d{2}-\d{2}$/.test(String(r.date || '')) ? r.date : today(),
+        qty: qty,
+        unitPrice: Math.max(0, Number(r.unitPrice) || 0),
+        total: Math.max(0, Number(r.total) || 0),
+        fee: Math.max(0, Number(r.fee) || 0),
+        ship: Math.max(0, Number(r.ship) || 0),
+        costUnit: Math.max(0, Number(r.costUnit) || 0),
+        costTotal: Math.max(0, Number(r.costTotal) || 0),
+        profit: Number(r.profit) || 0,
+        venue: String(r.venue || r.source || '').slice(0, 30),
+        memo: String(r.memo || '').slice(0, 300),
+        createdAt: Number(r.createdAt) || Date.now(),
+        updatedAt: Number(r.updatedAt) || 0
+      });
+    });
+    out.deletedIds = Array.isArray(s.deletedIds) ? s.deletedIds.map(String) : [];
+    out.deletedTxnIds = Array.isArray(s.deletedTxnIds) ? s.deletedTxnIds.map(String) : [];
+    return out;
+  }
+
+  function effStatus(it) {
+    if ((Number(it.qty) || 0) <= 0) return '완판';
+    return it.status === '예약중' ? '예약중' : '판매중';
+  }
+
+  function itemById(id) {
+    for (var i = 0; i < state.items.length; i++) if (state.items[i].id === id) return state.items[i];
+    return null;
+  }
+
+  function save(opts) {
+    state.updatedAt = Date.now();
+    dbSet(state);
+    if (!opts || opts.sync !== false) scheduleSync();
+  }
+
+  /* ============================================================
+     aggregates
+     ============================================================ */
+  function invStats() {
+    var value = 0, qty = 0, kinds = 0, onSale = 0, reserved = 0, soldOut = 0;
+    state.items.forEach(function (it) {
+      var q = Number(it.qty) || 0;
+      if (q > 0) {
+        kinds++; qty += q; value += q * (Number(it.avgCost) || 0);
+        var st = effStatus(it);
+        if (st === '예약중') reserved++; else onSale++;
+      } else { soldOut++; }
+    });
+    return { value: value, qty: qty, kinds: kinds, onSale: onSale, reserved: reserved, soldOut: soldOut };
+  }
+
+  function saleStats(month) {
+    var revenue = 0, cost = 0, fee = 0, ship = 0, profit = 0, count = 0, qty = 0;
+    state.txns.forEach(function (t) {
+      if (t.type !== 'sale') return;
+      if (month && month !== 'all' && ymOf(t.date) !== month) return;
+      revenue += t.total; cost += t.costTotal; fee += t.fee; ship += t.ship;
+      profit += t.profit; count++; qty += t.qty;
+    });
+    var margin = revenue ? (profit / revenue) * 100 : 0;
+    return { revenue: revenue, cost: cost, fee: fee, ship: ship, profit: profit, count: count, qty: qty, margin: margin };
+  }
+
+  function monthList() {
+    var set = {};
+    state.txns.forEach(function (t) { if (t.date) set[ymOf(t.date)] = 1; });
+    return Object.keys(set).sort().reverse();
+  }
+
+  function profitClass(n) { return n > 0 ? 'ok' : (n < 0 ? 'bad' : ''); }
+
+  /* ============================================================
+     view state
+     ============================================================ */
+  var view = {
+    tab: 'inv',
+    q: '',
+    status: 'all',
+    cat: 'all',
+    sort: 'recent',
+    month: 'all',
+    txType: 'all',
+    plMonth: ''
+  };
+
+  /* ============================================================
+     render: header + dashboard
+     ============================================================ */
+  function renderHead() {
+    var s = invStats();
+    var sub = $('#head-sub');
+    if (!state.items.length) { sub.textContent = '재고와 손익을 한 곳에'; return; }
+    sub.textContent = '재고 ' + s.kinds + '종 · 잔여 ' + s.qty + '개 · ' + wonShort(s.value);
+  }
+
+  function renderMonthbar() {
+    var months = monthList();
+    var bar = $('#monthbar');
+    var html = '<button class="mchip' + (view.month === 'all' ? ' on' : '') + '" data-act="month" data-month="all">전체</button>';
+    months.forEach(function (m) {
+      html += '<button class="mchip' + (view.month === m ? ' on' : '') + '" data-act="month" data-month="' + m + '">' + esc(monthLabel(m)) + '</button>';
+    });
+    bar.innerHTML = html;
+  }
+
+  function renderDash() {
+    var inv = invStats();
+    var st = saleStats(view.month);
+    var label = view.month === 'all' ? '누적' : monthLabel(view.month);
+    var marginTxt = st.revenue ? '마진 ' + st.margin.toFixed(1) + '%' : '판매 기록 없음';
+    var html = '';
+    html += '<div class="kpi">' +
+      '<div class="k">📦 재고 가치 <span style="color:#6d7480">·원가</span></div>' +
+      '<div class="v">' + wonShort(inv.value) + '</div>' +
+      '<div class="s">' + inv.kinds + '종 · 잔여 ' + inv.qty + '개</div>' +
+      '</div>';
+    html += '<div class="kpi">' +
+      '<div class="k">💰 매출 <span style="color:#6d7480">·' + esc(label) + '</span></div>' +
+      '<div class="v">' + wonShort(st.revenue) + '</div>' +
+      '<div class="s">' + st.count + '건 · ' + st.qty + '개 판매</div>' +
+      '</div>';
+    html += '<div class="kpi">' +
+      '<div class="k">📈 순수익 <span style="color:#6d7480">·' + esc(label) + '</span></div>' +
+      '<div class="v ' + profitClass(st.profit) + '">' + (st.revenue ? (st.profit < 0 ? '-' : '') + wonShort(Math.abs(st.profit)) : won(0)) + '</div>' +
+      '<div class="s">' + esc(marginTxt) + '</div>' +
+      '</div>';
+    html += '<div class="kpi">' +
+      '<div class="k">🏷️ 판매 중</div>' +
+      '<div class="v">' + inv.onSale + '<small>종</small></div>' +
+      '<div class="s">' + (inv.reserved ? '예약중 ' + inv.reserved + '종 · ' : '') + '완판 ' + inv.soldOut + '종</div>' +
+      '</div>';
+    $('#dash').innerHTML = html;
+  }
+
+  /* ============================================================
+     render: inventory
+     ============================================================ */
+  function filteredItems() {
+    var q = view.q.trim().toLowerCase();
+    var list = state.items.filter(function (it) {
+      if (q) {
+        var hay = (it.name + ' ' + it.source + ' ' + it.cat + ' ' + it.memo).toLowerCase();
+        if (hay.indexOf(q) < 0) return false;
+      }
+      var st = effStatus(it);
+      if (view.status !== 'all' && st !== view.status) return false;
+      if (view.cat !== 'all' && it.cat !== view.cat) return false;
+      return true;
+    });
+    list.sort(function (a, b) {
+      if (view.sort === 'qty') return (b.qty - a.qty) || (b.updatedAt - a.updatedAt);
+      if (view.sort === 'value') return (b.qty * b.avgCost - a.qty * a.avgCost) || (b.updatedAt - a.updatedAt);
+      if (view.sort === 'name') return String(a.name).localeCompare(String(b.name), 'ko');
+      return (b.createdAt - a.createdAt);
+    });
+    return list;
+  }
+
+  function renderStatusChips() {
+    var counts = { all: state.items.length, '판매중': 0, '예약중': 0, '완판': 0 };
+    state.items.forEach(function (it) { counts[effStatus(it)]++; });
+    var defs = [['all', '전체'], ['판매중', '판매중'], ['예약중', '예약중'], ['완판', '완판']];
+    $('#statuschips').innerHTML = defs.map(function (d) {
+      return '<button class="chip' + (view.status === d[0] ? ' on' : '') + '" data-act="status" data-status="' + d[0] + '">' +
+        d[1] + '<span class="n">' + (counts[d[0]] || 0) + '</span></button>';
+    }).join('');
+  }
+
+  function thumbHtml(it, cls) {
+    var size = cls || '';
+    if (it.photo) return '<div class="thumb ' + size + '"><img src="' + it.photo + '" alt="" loading="lazy" /></div>';
+    return '<div class="thumb ' + size + '">' + (CATICON[it.cat] || '📦') + '</div>';
+  }
+
+  function itemCard(it) {
+    var st = effStatus(it);
+    var q = Number(it.qty) || 0;
+    var meta = [];
+    meta.push(it.cat);
+    if (it.source) meta.push(it.source);
+    if (it.buyDate) meta.push(dateLabelYear(it.buyDate));
+    var money = '잔여 <b>' + q + '개</b> · 원가 <b>' + won(it.avgCost) + '</b>';
+    if (q > 0) money += ' · 재고 ' + won(q * it.avgCost);
+    var html = '<div class="pcard' + (q <= 0 ? ' sold' : '') + '" data-id="' + esc(it.id) + '">' +
+      '<button class="pmenu" data-act="menu" data-id="' + esc(it.id) + '" aria-label="상품 메뉴">⋯</button>' +
+      thumbHtml(it) +
+      '<div class="pmain">' +
+      '<div class="ptop"><div class="pname" data-act="detail" data-id="' + esc(it.id) + '">' + esc(it.name) + '</div>' +
+      '<span class="badge ' + st + '">' + st + '</span></div>' +
+      '<div class="pmeta">' + esc(meta.join(' · ')) + '</div>' +
+      '<div class="pmoney">' + money + '</div>' +
+      '<div class="pact">' +
+      '<div class="stepper"><button data-act="minus" data-id="' + esc(it.id) + '" aria-label="수량 줄이기">−</button>' +
+      '<span class="q">' + q + '</span>' +
+      '<button data-act="plus" data-id="' + esc(it.id) + '" aria-label="수량 늘리기">+</button></div>' +
+      '<button class="mini sell" data-act="sell" data-id="' + esc(it.id) + '"' + (q <= 0 ? ' disabled' : '') + '>판매</button>' +
+      '<button class="mini" data-act="restock" data-id="' + esc(it.id) + '">입고</button>' +
+      '</div></div></div>';
+    return html;
+  }
+
+  function emptyInventory() {
+    return '<div class="empty">' +
+      '<div class="big">📒</div>' +
+      '<h3>아직 등록한 상품이 없어요</h3>' +
+      '<p>당근·번개장터에서 산 물건을 원가로 적어두면<br />재고와 순수익이 자동으로 계산돼요.</p>' +
+      '<button class="btn-primary" data-act="add">＋ 첫 상품 등록</button>' +
+      '<div class="hintbox">상품명 · 구매가 · 수량만 넣으면 시작돼요. 사진은 나중에 붙여도 됩니다.</div>' +
+      '</div>';
+  }
+
+  function renderInv() {
+    var grid = $('#invgrid');
+    if (!state.items.length) { grid.innerHTML = emptyInventory(); return; }
+    var list = filteredItems();
+    if (!list.length) {
+      grid.innerHTML = '<div class="empty"><div class="big">🔍</div><h3>조건에 맞는 상품이 없어요</h3>' +
+        '<p>검색어나 필터를 바꿔보세요.</p>' +
+        '<button class="btn-primary" data-act="reset-filter">필터 초기화</button></div>';
+      return;
+    }
+    grid.innerHTML = list.map(itemCard).join('');
+  }
+
+  /* ============================================================
+     render: transactions
+     ============================================================ */
+  function renderTx() {
+    $('#txchips').innerHTML = [['all', '전체'], ['sale', '판매'], ['in', '입고']].map(function (d) {
+      return '<button class="chip' + (view.txType === d[0] ? ' on' : '') + '" data-act="txtype" data-txtype="' + d[0] + '">' + d[1] + '</button>';
+    }).join('');
+
+    var list = state.txns.filter(function (t) { return view.txType === 'all' || t.type === view.txType; });
+    var box = $('#txlist');
+    if (!list.length) {
+      box.innerHTML = '<div class="empty"><div class="big">📜</div><h3>거래 기록이 없어요</h3>' +
+        '<p>재고 목록에서 <b>판매</b>나 <b>입고</b>를 누르면<br />여기에 날짜순으로 쌓입니다.</p>' +
+        (state.items.length ? '' : '<button class="btn-primary" data-act="add">＋ 상품 등록</button>') +
+        '</div>';
+      return;
+    }
+    list.sort(function (a, b) {
+      if (a.date !== b.date) return a.date < b.date ? 1 : -1;
+      return (b.createdAt || 0) - (a.createdAt || 0);
+    });
+
+    var groups = {}, order = [];
+    list.forEach(function (t) {
+      var k = ymOf(t.date);
+      if (!groups[k]) { groups[k] = []; order.push(k); }
+      groups[k].push(t);
+    });
+
+    var html = '';
+    order.forEach(function (k) {
+      var rows = groups[k];
+      var rev = 0, prf = 0, cnt = 0;
+      rows.forEach(function (t) { if (t.type === 'sale') { rev += t.total; prf += t.profit; cnt++; } });
+      html += '<div class="grouphead"><h4>' + esc(monthLabel(k)) + ' · ' + k.slice(0, 4) + '</h4>' +
+        '<span>' + (cnt ? '매출 ' + wonShort(rev) + ' · 순익 ' + wonShort(prf) : '입고 ' + rows.length + '건') + '</span></div>';
+      rows.forEach(function (t) { html += txRow(t); });
+    });
+    box.innerHTML = html;
+  }
+
+  function txRow(t) {
+    if (t.type === 'sale') {
+      var margin = t.total ? Math.round((t.profit / t.total) * 1000) / 10 : 0;
+      var meta = dateLabel(t.date) + ' · ' + (t.venue || '판매') + ' · ' + t.qty + '개 × ' + won(t.unitPrice);
+      if (t.fee || t.ship) meta += ' · 비용 ' + won(t.fee + t.ship);
+      return '<div class="tx">' +
+        '<div class="tag sale">💰</div>' +
+        '<div class="tbody"><div class="t1">' + esc(t.name) + '</div><div class="t2">' + esc(meta) + '</div></div>' +
+        '<div class="tright"><div class="amt">' + won(t.total) + '</div>' +
+        '<div class="pf ' + profitClass(t.profit) + '">순익 ' + (t.profit < 0 ? '-' : '') + won(Math.abs(t.profit)) + ' · ' + margin + '%</div></div>' +
+        '<button class="del" data-act="txdel" data-id="' + esc(t.id) + '" aria-label="삭제">✕</button>' +
+        '</div>';
+    }
+    var meta2 = dateLabel(t.date) + ' · 입고 ' + t.qty + '개 × ' + won(t.unitPrice);
+    if (t.venue) meta2 += ' · ' + t.venue;
+    return '<div class="tx">' +
+      '<div class="tag in">📥</div>' +
+      '<div class="tbody"><div class="t1">' + esc(t.name) + '</div><div class="t2">' + esc(meta2) + '</div></div>' +
+      '<div class="tright"><div class="amt in">-' + won(t.unitPrice * t.qty) + '</div>' +
+      '<div class="pf" style="color:#8b929e">재고 +' + t.qty + '</div></div>' +
+      '<button class="del" data-act="txdel" data-id="' + esc(t.id) + '" aria-label="삭제">✕</button>' +
+      '</div>';
+  }
+
+  /* ============================================================
+     render: monthly P&L
+     ============================================================ */
+  function renderPL() {
+    var months = monthList();
+    var cur = view.plMonth;
+    if (!cur || (cur !== 'all' && months.indexOf(cur) < 0)) {
+      var nowM = ymOf(today());
+      cur = months.indexOf(nowM) >= 0 ? nowM : (months[0] || nowM);
+    }
+    view.plMonth = cur;
+
+    var bar = $('#plmonthbar');
+    var htmlBar = months.length ? months.map(function (m) {
+      return '<button class="mchip' + (cur === m ? ' on' : '') + '" data-act="plmonth" data-month="' + m + '">' + esc(monthLabel(m)) + '</button>';
+    }).join('') : '<button class="mchip on" data-act="plmonth" data-month="' + cur + '">' + esc(monthLabel(cur)) + '</button>';
+    bar.innerHTML = htmlBar;
+
+    var st = saleStats(cur);
+    var box = $('#plbody');
+    var hero = '<div class="plhero">' +
+      '<div class="lab">' + esc(monthLabel(cur)) + ' 순수익</div>' +
+      '<div class="big ' + profitClass(st.profit) + '">' + (st.profit < 0 ? '-' : '') + won(Math.abs(st.profit)) + '</div>' +
+      '<div class="sub">매출 ' + won(st.revenue) + ' · 판매 ' + st.count + '건 ' + st.qty + '개</div>' +
+      '</div>';
+    var grid = '<div class="plgrid">' +
+      cell('매출', won(st.revenue), '') +
+      cell('원가', won(st.cost), '') +
+      cell('수수료·배송', won(st.fee + st.ship), '') +
+      cell('마진율', st.revenue ? st.margin.toFixed(1) + '%' : '—', '') +
+      '</div>';
+
+    /* 6개월 막대그래프 */
+    var now = new Date();
+    var seq = [];
+    for (var i = 5; i >= 0; i--) {
+      var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      seq.push(d.getFullYear() + '-' + pad2(d.getMonth() + 1));
+    }
+    var maxRev = 0;
+    var bars = seq.map(function (m) {
+      var s = saleStats(m);
+      if (s.revenue > maxRev) maxRev = s.revenue;
+      return { m: m, s: s };
+    });
+    var barsHtml = '<div class="sec-title">최근 6개월</div>' +
+      '<div class="bars">' + bars.map(function (b) {
+        var h = maxRev > 0 ? clamp((b.s.revenue / maxRev) * 100, 0, 100) : 0;
+        var hp = maxRev > 0 ? clamp((b.s.profit / maxRev) * 100, 0, 100) : 0;
+        return '<div class="barcol">' +
+          '<div class="pair">' +
+          '<div class="bar rev" style="height:' + h + '%"></div>' +
+          '<div class="bar prf" style="height:' + hp + '%"></div>' +
+          '</div>' +
+          '<div class="lbl">' + esc(monthLabel(b.m)) + '</div>' +
+          '</div>';
+      }).join('') + '</div>' +
+      '<div class="legend"><span><i style="background:#ffb03a"></i>매출</span><span><i style="background:#3ecf8e"></i>순수익</span></div>';
+
+    /* 카테고리별 */
+    var byCat = {};
+    state.txns.forEach(function (t) {
+      if (t.type !== 'sale' || ymOf(t.date) !== cur) return;
+      var it = itemById(t.pid);
+      var cat = it ? it.cat : '기타';
+      if (!byCat[cat]) byCat[cat] = { profit: 0, revenue: 0, count: 0 };
+      byCat[cat].profit += t.profit; byCat[cat].revenue += t.total; byCat[cat].count++;
+    });
+    var catKeys = Object.keys(byCat).sort(function (a, b) { return byCat[b].profit - byCat[a].profit; });
+    var catHtml = catKeys.length ? '<div class="sec-title">카테고리별 순수익</div>' + catKeys.map(function (c) {
+      return '<div class="catrow"><span class="cn">' + (CATICON[c] || '📦') + ' ' + esc(c) + ' <span style="color:#7a8290">· ' + byCat[c].count + '건</span></span>' +
+        '<span class="cv ' + profitClass(byCat[c].profit) + '" style="color:' + (byCat[c].profit < 0 ? '#ff6b7a' : '#eef0f4') + '">' + won(byCat[c].profit) + '</span></div>';
+    }).join('') : '';
+
+    var emptyNote = st.count ? '' : '<div class="note" style="margin:-2px 2px 4px">이 달은 판매 기록이 없어요. 재고 탭에서 <b>[판매]</b>를 누르면 자동으로 집계됩니다.</div>';
+
+    box.innerHTML = emptyNote + hero + grid + barsHtml + catHtml;
+  }
+
+  function cell(k, v, sub) {
+    return '<div class="cell"><div class="k">' + esc(k) + '</div><div class="v">' + esc(v) +
+      (sub ? '<small>' + esc(sub) + '</small>' : '') + '</div></div>';
+  }
+
+  /* ============================================================
+     render all
+     ============================================================ */
+  function renderAll() {
+    renderHead();
+    if (view.tab === 'inv') { renderMonthbar(); renderDash(); renderStatusChips(); renderInv(); }
+    if (view.tab === 'tx') renderTx();
+    if (view.tab === 'pl') renderPL();
+    renderSyncDot();
+    updateFab();
+  }
+
+  function updateFab() {
+    var fab = $('#fab');
+    if (view.tab === 'inv') { fab.classList.remove('hidden'); }
+    else if (view.tab === 'tx') { fab.classList.add('hidden'); }
+    else { fab.classList.add('hidden'); }
+  }
+
+  function setTab(tab) {
+    view.tab = tab;
+    $$('#tabbar .tab').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-view') === tab); });
+    $('#view-inv').classList.toggle('hidden', tab !== 'inv');
+    $('#view-tx').classList.toggle('hidden', tab !== 'tx');
+    $('#view-pl').classList.toggle('hidden', tab !== 'pl');
+    window.scrollTo(0, 0);
+    renderAll();
+  }
+
+  /* ============================================================
+     toast / confirm / sheets
+     ============================================================ */
+  function toast(msg, opts) {
+    var root = $('#toast-root');
+    var el = document.createElement('div');
+    el.className = 'toast';
+    el.innerHTML = '<span class="msg">' + msg + '</span>' + (opts && opts.action ? '<button data-t="act">' + esc(opts.action) + '</button>' : '');
+    root.appendChild(el);
+    var ttl = (opts && opts.ms) || 4200;
+    var kill = function () { if (el.parentNode) el.parentNode.removeChild(el); };
+    var timer = setTimeout(kill, ttl);
+    if (opts && opts.action && opts.onAction) {
+      el.querySelector('[data-t="act"]').onclick = function () {
+        clearTimeout(timer); kill();
+        opts.onAction();
+      };
+    }
+    return el;
+  }
+
+  var activeSheet = null;
+
+  function closeSheet() {
+    if (!activeSheet) return;
+    var cb = activeSheet.onClose;
+    if (activeSheet.back) activeSheet.back.remove();
+    if (activeSheet.sheet) activeSheet.sheet.remove();
+    activeSheet = null;
+    document.body.style.overflow = '';
+    if (cb) { try { cb(); } catch (e) { } }
+  }
+
+  function openSheet(opt) {
+    closeSheet();
+    var back = document.createElement('div');
+    back.className = 'backdrop';
+    back.addEventListener('click', closeSheet);
+    var sheet = document.createElement('div');
+    sheet.className = 'sheet';
+    sheet.innerHTML = '<div class="sheet-head"><h2>' + (opt.title || '') +
+      (opt.sub ? ' <span class="sub">' + esc(opt.sub) + '</span>' : '') +
+      '</h2><button class="xbtn" data-x="1" aria-label="닫기">✕</button></div>' +
+      '<div class="sheet-body">' + (opt.body || '') + '</div>' +
+      (opt.foot ? '<div class="sheet-foot">' + opt.foot + '</div>' : '');
+    document.body.appendChild(back);
+    document.body.appendChild(sheet);
+    document.body.style.overflow = 'hidden';
+    activeSheet = { back: back, sheet: sheet, onClose: opt.onClose || null };
+    sheet.querySelector('[data-x]').addEventListener('click', closeSheet);
+    if (opt.onMount) opt.onMount(sheet);
+    return sheet;
+  }
+
+  function confirmSheet(opt) {
+    return new Promise(function (resolve) {
+      var done = false;
+      var sheet = openSheet({
+        title: opt.title || '확인',
+        body: '<div class="note" style="font-size:12.5px;color:#b9bfc9;line-height:1.65">' + opt.text + '</div>',
+        foot: '<button class="btn ghost" data-c="0">취소</button>' +
+          '<button class="btn ' + (opt.danger ? 'danger' : 'primary') + '" data-c="1">' + esc(opt.ok || '확인') + '</button>',
+        onClose: function () { if (!done) { done = true; resolve(false); } }
+      });
+      function fin(v) { if (done) return; done = true; closeSheet(); resolve(v); }
+      sheet.querySelector('[data-c="0"]').onclick = function () { fin(false); };
+      sheet.querySelector('[data-c="1"]').onclick = function () { fin(true); };
+    });
+  }
+
+  /* ============================================================
+     photo compress
+     ============================================================ */
+  function compressImage(file, cb) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var img = new Image();
+      img.onload = function () {
+        var max = 720;
+        var w = img.width, h = img.height;
+        if (Math.max(w, h) > max) {
+          var r = max / Math.max(w, h);
+          w = Math.round(w * r); h = Math.round(h * r);
+        }
+        var c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        var ctx = c.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        var out = c.toDataURL('image/jpeg', 0.72);
+        cb(out);
+      };
+      img.onerror = function () { cb(null); };
+      img.src = reader.result;
+    };
+    reader.onerror = function () { cb(null); };
+    reader.readAsDataURL(file);
+  }
+
+  /* ============================================================
+     item form
+     ============================================================ */
+  function openItemForm(itemId) {
+    var it = itemId ? itemById(itemId) : null;
+    var draft = it ? Object.assign({}, it) : {
+      id: '', name: '', cat: '의류', source: '당근', buyDate: today(), avgCost: 0, qty: 1,
+      status: '판매중', memo: '', photo: ''
+    };
+    var sourceIsCustom = draft.source && SOURCES.indexOf(draft.source) < 0;
+    var body = '';
+    body += '<div class="field"><label>사진 <span style="color:#6d7480">(선택)</span></label>' +
+      '<div class="photopick"><div class="pv" id="pv">' + (draft.photo ? '<img src="' + draft.photo + '" alt="" />' : '📷') + '</div>' +
+      '<div class="ptxt"><p>상품 사진을 넣으면 목록에서 바로 구분돼요.<br />자동으로 가볍게 줄여서 저장합니다.</p>' +
+      '<div class="row"><button class="btn small" type="button" data-pick="1">사진 선택</button>' +
+      '<button class="btn small ghost' + (draft.photo ? '' : ' hidden') + '" type="button" data-photo-del="1">빼기</button></div></div></div>' +
+      '<input type="file" accept="image/*" id="photo-input" hidden /></div>';
+
+    body += '<div class="field"><label>상품명<span class="req">*</span></label>' +
+      '<input id="f-name" type="text" maxlength="80" placeholder="예: 나이키 에어맥스 90 블랙 270" value="' + esc(draft.name) + '" /></div>';
+
+    body += '<div class="row2">' +
+      '<div class="field"><label>카테고리</label><select id="f-cat">' +
+      CATS.map(function (c) { return '<option value="' + c + '"' + (draft.cat === c ? ' selected' : '') + '>' + c + '</option>'; }).join('') +
+      '</select></div>' +
+      '<div class="field"><label>수량</label><input id="f-qty" type="number" inputmode="numeric" min="0" step="1" value="' + (Number(draft.qty) || 0) + '" /></div>' +
+      '</div>';
+
+    body += '<div class="row2">' +
+      '<div class="field"><label>' + (it ? '평균 원가' : '구매가 (원가)') + '<span class="req">*</span></label>' +
+      '<input id="f-price" type="number" inputmode="numeric" min="0" step="100" placeholder="0" value="' + (Number(draft.avgCost) ? Math.round(Number(draft.avgCost)) : '') + '" /></div>' +
+      '<div class="field"><label>구매일</label><input id="f-date" type="date" value="' + esc(draft.buyDate || today()) + '" /></div>' +
+      '</div>';
+
+    body += '<div class="row2">' +
+      '<div class="field"><label>구매처</label><select id="f-source">' +
+      SOURCES.map(function (s) { return '<option value="' + s + '"' + ((sourceIsCustom ? '직접입력' : draft.source) === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') +
+      '</select></div>' +
+      '<div class="field"><label>상태</label><select id="f-status">' +
+      '<option value="판매중"' + (draft.status !== '예약중' ? ' selected' : '') + '>판매중</option>' +
+      '<option value="예약중"' + (draft.status === '예약중' ? ' selected' : '') + '>예약중</option>' +
+      '</select></div>' +
+      '</div>';
+
+    body += '<div class="field' + (sourceIsCustom ? '' : ' hidden') + '" id="custom-src-wrap"><label>구매처 직접입력</label>' +
+      '<input id="f-source-etc" type="text" maxlength="30" placeholder="예: 동네 벼룩시장" value="' + esc(sourceIsCustom ? draft.source : '') + '" /></div>';
+
+    body += '<div class="field"><label>메모</label><textarea id="f-memo" maxlength="500" placeholder="사이즈·상태·구매 이유 등">' + esc(draft.memo) + '</textarea></div>';
+    if (it) {
+      body += '<div class="note">처음 등록한 수량 ' + (it.totalInQty || it.qty) + '개 · 누적 판매 ' + soldQtyOf(it.id) + '개</div>';
+    }
+
+    var foot = '<button class="btn ghost" data-x2="1">취소</button><button class="btn primary" id="save-item">' + (it ? '저장' : '등록') + '</button>';
+
+    var sheet = openSheet({
+      title: it ? '상품 수정' : '상품 등록',
+      body: body,
+      foot: foot,
+      onMount: function (root) {
+        var photo = draft.photo || '';
+        var pv = root.querySelector('#pv');
+        var delBtn = root.querySelector('[data-photo-del]');
+        var input = root.querySelector('#photo-input');
+        root.querySelector('[data-pick]').onclick = function () { input.click(); };
+        input.onchange = function () {
+          var f = input.files && input.files[0];
+          if (!f) return;
+          if (!/^image\//.test(f.type)) { toast('이미지 파일만 넣을 수 있어요'); return; }
+          compressImage(f, function (data) {
+            if (!data) { toast('사진을 읽지 못했어요'); return; }
+            photo = data;
+            pv.innerHTML = '<img src="' + data + '" alt="" />';
+            if (delBtn) delBtn.classList.remove('hidden');
+          });
+        };
+        if (delBtn) delBtn.onclick = function () {
+          photo = '';
+          pv.innerHTML = '📷';
+          delBtn.classList.add('hidden');
+          input.value = '';
+        };
+        var srcSel = root.querySelector('#f-source');
+        var etcWrap = root.querySelector('#custom-src-wrap');
+        srcSel.onchange = function () {
+          etcWrap.classList.toggle('hidden', srcSel.value !== '직접입력');
+          if (srcSel.value === '직접입력') root.querySelector('#f-source-etc').focus();
+        };
+        root.querySelector('[data-x2]').onclick = closeSheet;
+        root.querySelector('#save-item').onclick = function () {
+          var name = root.querySelector('#f-name').value.trim();
+          if (!name) { toast('상품명을 넣어주세요'); root.querySelector('#f-name').focus(); return; }
+          var price = Math.max(0, num(root.querySelector('#f-price').value));
+          var qty = Math.max(0, Math.round(num(root.querySelector('#f-qty').value)));
+          var src = srcSel.value === '직접입력' ? (root.querySelector('#f-source-etc').value.trim() || '직접입력') : srcSel.value;
+          var p = {
+            name: name, cat: root.querySelector('#f-cat').value,
+            qty: qty, avgCost: price,
+            buyDate: root.querySelector('#f-date').value || today(),
+            source: src, status: root.querySelector('#f-status').value,
+            memo: root.querySelector('#f-memo').value.trim(), photo: photo,
+            updatedAt: Date.now()
+          };
+          if (it) {
+            Object.assign(it, p);
+            toast('수정했어요 · ' + esc(name));
+          } else {
+            p.id = uid('i');
+            p.createdAt = Date.now();
+            p.totalInQty = qty;
+            state.items.push(p);
+            toast('등록 완료 · ' + esc(name));
+          }
+          save();
+          closeSheet();
+          renderAll();
+        };
+      }
+    });
+    setTimeout(function () {
+      var n = sheet.querySelector('#f-name');
+      if (n && !it) n.focus();
+    }, 260);
+  }
+
+  function soldQtyOf(pid) {
+    var n = 0;
+    state.txns.forEach(function (t) { if (t.type === 'sale' && t.pid === pid) n += t.qty; });
+    return n;
+  }
+
+  /* ============================================================
+     detail sheet
+     ============================================================ */
+  function openDetail(id) {
+    var it = itemById(id);
+    if (!it) return;
+    var st = effStatus(it);
+    var sold = soldQtyOf(id);
+    var sales = state.txns.filter(function (t) { return t.pid === id && t.type === 'sale'; });
+    var revenue = 0, profit = 0;
+    sales.forEach(function (t) { revenue += t.total; profit += t.profit; });
+    var body = '';
+    body += '<div class="photopick" style="align-items:flex-start">' +
+      '<div class="pv" style="width:96px;height:96px;flex:0 0 96px;border-style:solid">' + (it.photo ? '<img src="' + it.photo + '" alt="" />' : (CATICON[it.cat] || '📦')) + '</div>' +
+      '<div class="ptxt"><div style="font-size:15px;font-weight:700;letter-spacing:-.3px;line-height:1.3;word-break:break-all">' + esc(it.name) + '</div>' +
+      '<div class="pmeta" style="margin-top:5px">' + esc(it.cat) + (it.source ? ' · ' + esc(it.source) : '') + (it.buyDate ? ' · ' + esc(dateLabelYear(it.buyDate)) : '') + '</div>' +
+      '<div style="margin-top:7px"><span class="badge ' + st + '">' + st + '</span></div></div></div>';
+
+    body += '<div class="plgrid" style="margin:2px 0 0">' +
+      cell('잔여 수량', it.qty + '개', '') +
+      cell('평균 원가', won(it.avgCost), '') +
+      cell('재고 가치', won(it.qty * it.avgCost), '') +
+      cell('누적 판매', sold + '개', '') +
+      '</div>';
+    var netRow = '<div class="calc"><div class="line"><span>누적 매출</span><b>' + won(revenue) + '</b></div>' +
+      '<div class="line total"><span>누적 순수익</span><b class="' + profitClass(profit) + '" style="color:' + (profit < 0 ? '#ff6b7a' : (profit > 0 ? '#3ecf8e' : '#eef0f4')) + '">' + won(profit) + '</b></div></div>';
+    body += netRow;
+    if (it.memo) body += '<div class="note" style="white-space:pre-wrap;color:#b9bfc9">' + esc(it.memo) + '</div>';
+    if (sales.length) {
+      body += '<div class="sec-title" style="margin:4px 0 0">이 상품 거래</div>' + sales.slice().sort(function (a, b) { return a.date < b.date ? 1 : -1; }).slice(0, 6).map(txRow).join('');
+    }
+
+    var foot = '<button class="btn ghost" data-d="edit" style="flex:0 0 auto;padding:13px 14px">수정</button>' +
+      '<button class="btn" data-d="restock" style="flex:1">추가 입고</button>' +
+      '<button class="btn primary" data-d="sell" style="flex:1">판매하기</button>';
+    var sheet = openSheet({ title: esc(it.name), sub: st, body: body, foot: foot });
+    sheet.querySelector('[data-d="edit"]').onclick = function () { closeSheet(); openItemForm(it.id); };
+    sheet.querySelector('[data-d="restock"]').onclick = function () { closeSheet(); openRestock(it.id); };
+    sheet.querySelector('[data-d="sell"]').onclick = function () {
+      if ((Number(it.qty) || 0) <= 0) { toast('재고가 없어요. [추가 입고]로 먼저 채워주세요'); return; }
+      closeSheet(); openSell(it.id);
+    };
+  }
+
+  function openItemMenu(id) {
+    var it = itemById(id);
+    if (!it) return;
+    var body = '<div class="syncacts" style="flex-direction:column;align-items:stretch;gap:7px">' +
+      '<button class="btn" data-m="edit" style="text-align:left">✏️ 상품 수정</button>' +
+      '<button class="btn" data-m="detail" style="text-align:left">📄 상세 보기</button>' +
+      '<button class="btn danger" data-m="del" style="text-align:left">🗑 상품 삭제</button>' +
+      '</div><div class="note">삭제해도 판매·입고 기록은 거래 내역에 남아요.</div>';
+    var sheet = openSheet({ title: esc(it.name), body: body });
+    sheet.querySelector('[data-m="edit"]').onclick = function () { closeSheet(); openItemForm(id); };
+    sheet.querySelector('[data-m="detail"]').onclick = function () { closeSheet(); openDetail(id); };
+    sheet.querySelector('[data-m="del"]').onclick = function () { closeSheet(); deleteItem(id); };
+  }
+
+  /* ============================================================
+     sell
+     ============================================================ */
+  function openSell(id) {
+    var it = itemById(id);
+    if (!it) return;
+    var avail = Number(it.qty) || 0;
+    if (avail <= 0) { toast('재고가 없어요. [추가 입고]로 먼저 채워주세요'); return; }
+    var state2 = { mode: 'total', qty: 1 };
+
+    var body = '';
+    body += '<div class="calc" id="sell-item-line">' +
+      '<div class="line"><span>' + esc(it.name) + '</span><b>잔여 ' + avail + '개</b></div>' +
+      '<div class="line"><span>평균 원가</span><b>' + won(it.avgCost) + '</b></div>' +
+      '</div>';
+
+    body += '<div class="row2">' +
+      '<div class="field"><label>판매일</label><input id="s-date" type="date" value="' + today() + '" /></div>' +
+      '<div class="field"><label>판매 수량</label><input id="s-qty" type="number" inputmode="numeric" min="1" max="' + avail + '" step="1" value="1" /></div>' +
+      '</div>';
+
+    body += '<div class="field"><label>판매가</label>' +
+      '<div class="seg" id="s-mode"><button class="on" data-mode="total">총액으로 입력</button><button data-mode="unit">개당 단가로</button></div>' +
+      '<input id="s-price" type="number" inputmode="numeric" min="0" step="100" placeholder="0" style="margin-top:8px" />' +
+      '</div>';
+
+    body += '<div class="row2">' +
+      '<div class="field"><label>판매처</label><select id="s-venue">' +
+      SOURCES.map(function (s) { return '<option value="' + s + '">' + s + '</option>'; }).join('') +
+      '</select></div>' +
+      '<div class="field"><label>수수료 (원)</label><input id="s-fee" type="number" inputmode="numeric" min="0" step="100" placeholder="0" /></div>' +
+      '</div>';
+
+    body += '<div class="row2">' +
+      '<div class="field"><label>배송비 (원)</label><input id="s-ship" type="number" inputmode="numeric" min="0" step="100" placeholder="0" /></div>' +
+      '<div class="field"><label>메모</label><input id="s-memo" type="text" maxlength="300" placeholder="선택" /></div>' +
+      '</div>';
+
+    body += '<div class="calc" id="s-calc"></div>';
+    body += '<div class="note" id="s-warn" hidden style="color:#ffc978"></div>';
+
+    var sheet = openSheet({
+      title: '판매하기', sub: esc(it.name),
+      body: body,
+      foot: '<button class="btn ghost" data-x3="1">취소</button><button class="btn primary" id="s-go">판매 등록</button>',
+      onMount: function (root) {
+        var qtyEl = root.querySelector('#s-qty');
+        var priceEl = root.querySelector('#s-price');
+        var feeEl = root.querySelector('#s-fee');
+        var shipEl = root.querySelector('#s-ship');
+        var calcEl = root.querySelector('#s-calc');
+        var warnEl = root.querySelector('#s-warn');
+        var modeEl = root.querySelector('#s-mode');
+
+        function calc() {
+          var qty = Math.max(1, Math.round(num(qtyEl.value)));
+          if (qty > avail) qty = avail;
+          var input = Math.max(0, num(priceEl.value));
+          var revenue = state2.mode === 'total' ? input : input * qty;
+          var unit = qty ? revenue / qty : 0;
+          var costUnit = round(it.avgCost);
+          var cost = costUnit * qty;
+          var fee = Math.max(0, num(feeEl.value));
+          var ship = Math.max(0, num(shipEl.value));
+          var profit = revenue - cost - fee - ship;
+          var margin = revenue ? (profit / revenue) * 100 : 0;
+          calcEl.innerHTML =
+            '<div class="line"><span>매출 (' + qty + '개 × ' + won(unit) + ')</span><b>' + won(revenue) + '</b></div>' +
+            '<div class="line"><span>원가 (' + qty + '개 × ' + won(costUnit) + ')</span><b>-' + won(cost) + '</b></div>' +
+            '<div class="line"><span>수수료·배송</span><b>-' + won(fee + ship) + '</b></div>' +
+            '<div class="line total"><span>순이익 · 마진 ' + (revenue ? margin.toFixed(1) : '0.0') + '%</span>' +
+            '<b style="color:' + (profit > 0 ? '#3ecf8e' : (profit < 0 ? '#ff6b7a' : '#eef0f4')) + '">' + won(profit) + '</b></div>';
+          if (qty > avail) { warnEl.hidden = false; warnEl.textContent = '잔여 ' + avail + '개까지만 판매할 수 있어요.'; }
+          else if (!input) { warnEl.hidden = false; warnEl.textContent = '판매가를 넣으면 순이익이 바로 계산돼요.'; }
+          else warnEl.hidden = true;
+          return { qty: qty, revenue: revenue, unit: unit, cost: cost, costUnit: costUnit, fee: fee, ship: ship, profit: round(profit) };
+        }
+        function bind() {
+          [qtyEl, priceEl, feeEl, shipEl].forEach(function (el) {
+            el.addEventListener('input', function () {
+              if (el === qtyEl) {
+                var v = Math.round(num(qtyEl.value));
+                if (v > avail) { qtyEl.value = avail; toast('잔여 수량은 ' + avail + '개예요'); }
+              }
+              calc();
+            });
+          });
+          modeEl.addEventListener('click', function (e) {
+            var b = e.target.closest('button');
+            if (!b) return;
+            var m = b.getAttribute('data-mode');
+            if (m === state2.mode) return;
+            var r = calc();
+            state2.mode = m;
+            $$('#s-mode button').forEach(function (x) { x.classList.toggle('on', x === b); });
+            priceEl.value = m === 'unit' ? round(r.unit) : round(r.revenue);
+            calc();
+          });
+        }
+        bind();
+        calc();
+        root.querySelector('[data-x3]').onclick = closeSheet;
+        root.querySelector('#s-go').onclick = function () {
+          var r = calc();
+          if (r.qty < 1) { toast('판매 수량을 1개 이상 넣어주세요'); return; }
+          if (r.qty > avail) { toast('잔여 수량보다 많이 팔 수 없어요'); return; }
+          if (r.revenue <= 0) { toast('판매가를 넣어주세요'); priceEl.focus(); return; }
+          var date = root.querySelector('#s-date').value || today();
+          var venue = root.querySelector('#s-venue').value;
+          var memo = root.querySelector('#s-memo').value.trim();
+          var t = {
+            id: uid('t'), type: 'sale', pid: it.id, name: it.name, date: date,
+            qty: r.qty, unitPrice: round(r.unit), total: round(r.revenue),
+            fee: r.fee, ship: r.ship, costUnit: r.costUnit, costTotal: r.cost,
+            profit: r.profit, venue: venue, memo: memo, createdAt: Date.now(), updatedAt: Date.now()
+          };
+          it.qty = Math.max(0, avail - r.qty);
+          it.updatedAt = Date.now();
+          state.txns.push(t);
+          save();
+          closeSheet();
+          renderAll();
+          toast('판매 기록 완료 · 순이익 <b>' + won(r.profit) + '</b>' + (it.qty === 0 ? ' · 완판' : ' · 잔여 ' + it.qty + '개'));
+        };
+      }
+    });
+    setTimeout(function () { var p = sheet.querySelector('#s-price'); if (p) p.focus(); }, 280);
+  }
+
+  /* ============================================================
+     restock
+     ============================================================ */
+  function openRestock(id) {
+    var it = itemById(id);
+    if (!it) return;
+    var curQty = Number(it.qty) || 0, curCost = Number(it.avgCost) || 0;
+    var body = '';
+    body += '<div class="calc"><div class="line"><span>' + esc(it.name) + '</span><b>잔여 ' + curQty + '개</b></div>' +
+      '<div class="line"><span>현재 평균 원가</span><b>' + won(curCost) + '</b></div></div>';
+    body += '<div class="row2">' +
+      '<div class="field"><label>입고일</label><input id="r-date" type="date" value="' + today() + '" /></div>' +
+      '<div class="field"><label>수량</label><input id="r-qty" type="number" inputmode="numeric" min="1" step="1" value="1" /></div>' +
+      '</div>';
+    body += '<div class="row2">' +
+      '<div class="field"><label>개당 단가</label><input id="r-price" type="number" inputmode="numeric" min="0" step="100" placeholder="0" /></div>' +
+      '<div class="field"><label>구매처</label><select id="r-src">' +
+      SOURCES.map(function (s) { return '<option value="' + s + '"' + ((it.source || '당근') === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') +
+      '</select></div></div>';
+    body += '<div class="calc" id="r-calc"></div>';
+    var sheet = openSheet({
+      title: '추가 입고', sub: esc(it.name),
+      body: body,
+      foot: '<button class="btn ghost" data-x4="1">취소</button><button class="btn primary" id="r-go">입고 등록</button>',
+      onMount: function (root) {
+        var qtyEl = root.querySelector('#r-qty');
+        var priceEl = root.querySelector('#r-price');
+        var calcEl = root.querySelector('#r-calc');
+        function calc() {
+          var q = Math.max(1, Math.round(num(qtyEl.value)));
+          var p = Math.max(0, num(priceEl.value));
+          var totalQ = curQty + q;
+          var avg = totalQ > 0 ? (curCost * curQty + p * q) / totalQ : p;
+          calcEl.innerHTML = '<div class="line"><span>입고 금액</span><b>' + won(p * q) + '</b></div>' +
+            '<div class="line"><span>입고 후 재고</span><b>' + totalQ + '개</b></div>' +
+            '<div class="line total"><span>새 평균 원가</span><b>' + won(avg) + '</b></div>';
+          return { q: q, p: p, avg: avg };
+        }
+        qtyEl.addEventListener('input', calc);
+        priceEl.addEventListener('input', calc);
+        calc();
+        root.querySelector('[data-x4]').onclick = closeSheet;
+        root.querySelector('#r-go').onclick = function () {
+          var r = calc();
+          if (r.q < 1) { toast('수량을 1개 이상 넣어주세요'); return; }
+          if (r.p <= 0) { toast('개당 단가를 넣어주세요'); priceEl.focus(); return; }
+          var t = {
+            id: uid('t'), type: 'in', pid: it.id, name: it.name,
+            date: root.querySelector('#r-date').value || today(),
+            qty: r.q, unitPrice: round(r.p), total: round(r.p * r.q),
+            fee: 0, ship: 0, costUnit: round(r.avg), costTotal: round(r.p * r.q), profit: 0,
+            venue: root.querySelector('#r-src').value, memo: '',
+            createdAt: Date.now(), updatedAt: Date.now()
+          };
+          it.qty = curQty + r.q;
+          it.avgCost = r.avg;
+          it.totalInQty = (Number(it.totalInQty) || curQty) + r.q;
+          if (it.status === '예약중' && it.qty > 0) { /* keep */ } else { it.status = '판매중'; }
+          it.updatedAt = Date.now();
+          state.txns.push(t);
+          save(); closeSheet(); renderAll();
+          toast('입고 완료 · ' + r.q + '개 · 새 평균 원가 ' + won(r.avg));
+        };
+      }
+    });
+    setTimeout(function () { var p = sheet.querySelector('#r-price'); if (p) p.focus(); }, 280);
+  }
+
+  /* ============================================================
+     delete item / txn
+     ============================================================ */
+  function deleteItem(id) {
+    var it = itemById(id);
+    if (!it) return;
+    var snapshot = JSON.stringify({ items: state.items, txns: state.txns, deletedIds: state.deletedIds });
+    state.items = state.items.filter(function (x) { return x.id !== id; });
+    state.deletedIds.push(id);
+    save(); renderAll();
+    toast('삭제했어요 · ' + esc(it.name), {
+      action: '되돌리기', ms: 7000, onAction: function () {
+        try {
+          var s = JSON.parse(snapshot);
+          state.items = normalize({ items: s.items }).items;
+          state.txns = normalize({ txns: s.txns }).txns;
+          state.deletedIds = s.deletedIds;
+          save(); renderAll();
+          toast('되돌렸어요');
+        } catch (e) { toast('되돌리지 못했어요'); }
+      }
+    });
+  }
+
+  function deleteTxn(id) {
+    var t = null;
+    state.txns.forEach(function (x) { if (x.id === id) t = x; });
+    if (!t) return;
+    var it = itemById(t.pid);
+    confirmSheet({
+      title: t.type === 'sale' ? '판매 기록 삭제' : '입고 기록 삭제',
+      text: esc(t.name) + ' · ' + t.qty + '개 · ' + won(t.total || t.unitPrice * t.qty) +
+        '<br /><br />' + (t.type === 'sale'
+          ? '삭제하면 재고가 <b>' + t.qty + '개 늘어나고</b> 매출·순수익 집계에서 빠집니다.'
+          : '삭제하면 재고가 <b>' + t.qty + '개 줄어듭니다</b> (0개 아래로는 내려가지 않아요).'),
+      ok: '삭제', danger: true
+    }).then(function (ok) {
+      if (!ok) return;
+      var snapshot = JSON.stringify(state);
+      state.txns = state.txns.filter(function (x) { return x.id !== id; });
+      state.deletedTxnIds.push(id);
+      if (it) {
+        if (t.type === 'sale') {
+          var addBack = t.qty;
+          var newQ = (Number(it.qty) || 0) + addBack;
+          var cUnit = Number(t.costUnit) || 0;
+          it.avgCost = newQ > 0 ? ((Number(it.avgCost) || 0) * (Number(it.qty) || 0) + cUnit * addBack) / newQ : cUnit;
+          it.qty = newQ;
+          if (it.status === '예약중') { /* keep */ } else it.status = '판매중';
+        } else {
+          var q2 = Math.max(0, (Number(it.qty) || 0) - t.qty);
+          if (q2 > 0 && Number(it.avgCost)) {
+            var back = (Number(it.avgCost) * (Number(it.qty) || 0) - t.unitPrice * t.qty) / q2;
+            if (isFinite(back) && back >= 0) it.avgCost = back;
+          }
+          it.qty = q2;
+        }
+        it.updatedAt = Date.now();
+      }
+      save(); renderAll();
+      toast('기록을 삭제했어요', {
+        action: '되돌리기', ms: 7000, onAction: function () {
+          try {
+            state = normalize(JSON.parse(snapshot));
+            save(); renderAll(); toast('되돌렸어요');
+          } catch (e) { toast('되돌리지 못했어요'); }
+        }
+      });
+    });
+  }
+
+  /* ============================================================
+     quick qty
+     ============================================================ */
+  function quickQty(id, delta) {
+    var it = itemById(id);
+    if (!it) return;
+    var q = (Number(it.qty) || 0) + delta;
+    if (q < 0) { toast('0개 아래로는 줄일 수 없어요'); return; }
+    it.qty = q;
+    it.updatedAt = Date.now();
+    save(); renderAll();
+    toast(esc(it.name.slice(0, 18)) + ' · 재고 ' + q + '개 <span style="color:#8b929e">(원가 그대로)</span>', {
+      action: '되돌리기', ms: 5000, onAction: function () {
+        it.qty = Math.max(0, q - delta); it.updatedAt = Date.now(); save(); renderAll();
+      }
+    });
+  }
+
+  /* ============================================================
+     sync (MantleDB · 무료·가입 없음)
+     ============================================================ */
+  var SYNC_BASE = 'https://mantledb.sh/v2/';
+  var SYNC_CFG_KEY = 'resellbook_sync_v1';
+  var PART_MAX = 58000;
+  var PARTS_PER_NS = 88;
+  var TOUCH_MS = 14 * 24 * 60 * 60 * 1000;
+
+  var syncCfg = null;
+  var syncBusy = false;
+  var syncTimer = null;
+
+  function syncLoad() {
+    try { syncCfg = JSON.parse(localStorage.getItem(SYNC_CFG_KEY) || 'null'); } catch (e) { syncCfg = null; }
+    if (!syncCfg) syncCfg = { ns: '', rev: 0, lastSync: 0, deviceId: '', lastCount: null, lastError: '', lastPushTs: 0, dirty: false };
+    if (!syncCfg.deviceId) syncCfg.deviceId = 'dev-' + Math.random().toString(36).slice(2, 8);
+    return syncCfg;
+  }
+  function syncSave() {
+    try { localStorage.setItem(SYNC_CFG_KEY, JSON.stringify(syncCfg)); } catch (e) { }
+  }
+  function syncOn() { return !!(syncCfg && syncCfg.ns); }
+
+  function syncNewNs() {
+    var abc = 'abcdefghijkmnpqrstuvwxyz23456789', s = '';
+    for (var i = 0; i < 10; i++) s += abc[Math.floor(Math.random() * abc.length)];
+    return 'resellbook-' + s;
+  }
+  function nsForPart(i) {
+    var b = Math.floor(i / PARTS_PER_NS);
+    return b === 0 ? syncCfg.ns : syncCfg.ns + '-p' + b;
+  }
+
+  function escLen(ch) {
+    var cc = ch.charCodeAt(0);
+    if (ch === '"' || ch === '\\') return 2;
+    if (cc < 0x20) return 6;
+    if (cc < 0x80) return 1;
+    if (cc < 0x800) return 2;
+    if (cc >= 0xD800 && cc <= 0xDBFF) return 4;
+    if (cc >= 0xDC00 && cc <= 0xDFFF) return 0;
+    return 3;
+  }
+  function chunk(doc, max) {
+    var parts = [], cur = '', len = 0;
+    for (var i = 0; i < doc.length; i++) {
+      var ch = doc[i], b = escLen(ch);
+      if (len + b > max) { parts.push(cur); cur = ch; len = b; }
+      else { cur += ch; len += b; }
+    }
+    if (cur) parts.push(cur);
+    return parts;
+  }
+
+  function syncFetch(url, opt) {
+    var ctrl = new AbortController();
+    var tm = setTimeout(function () { ctrl.abort(); }, 20000);
+    return fetch(url, Object.assign({ signal: ctrl.signal, cache: 'no-store' }, opt || {})).then(function (r) {
+      clearTimeout(tm); return r;
+    }, function (e) { clearTimeout(tm); throw e; });
+  }
+  function syncPost(path, obj) {
+    return syncFetch(SYNC_BASE + path, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(obj)
+    }).then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return true;
+    });
+  }
+  function syncGet(path) {
+    return syncFetch(SYNC_BASE + path, { method: 'GET' }).then(function (res) {
+      if (res.status === 404) return null;
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.text().then(function (t) {
+        if (!t) return null;
+        try { return JSON.parse(t); } catch (e) { return null; }
+      });
+    });
+  }
+
+  function syncDataSnapshot() {
+    return {
+      items: state.items, txns: state.txns,
+      deletedIds: state.deletedIds, deletedTxnIds: state.deletedTxnIds,
+      updatedAt: state.updatedAt
+    };
+  }
+
+  function syncPush() {
+    if (!syncOn()) return Promise.reject(new Error('동기화 코드가 없습니다'));
+    var inv = invStats();
+    var doc = JSON.stringify({ v: 1, app: 'resellbook', ts: Date.now(), device: syncCfg.deviceId, data: syncDataSnapshot() });
+    var parts = chunk(doc, PART_MAX);
+    if (parts.length > PARTS_PER_NS * 4) return Promise.reject(new Error('데이터가 너무 큽니다 (' + parts.length + '조각)'));
+    var chain = Promise.resolve();
+    parts.forEach(function (p, i) {
+      chain = chain.then(function () { return syncPost(nsForPart(i) + '/v1/p' + i, { c: p }); });
+    });
+    return chain.then(function () {
+      var rev = Math.max(Number(syncCfg.rev) || 0, 0) + 1;
+      var manifest = {
+        t: 1, app: 'resellbook', rev: rev, ts: Date.now(), device: syncCfg.deviceId,
+        parts: parts.map(function (p, i) { return { ns: nsForPart(i), k: 'v1/p' + i }; }),
+        counts: { items: state.items.length, txns: state.txns.length, qty: inv.qty, value: inv.value },
+        bytes: doc.length
+      };
+      return syncPost(syncCfg.ns + '/v1/manifest', manifest).then(function () {
+        syncCfg.rev = rev;
+        syncCfg.lastSync = Date.now();
+        syncCfg.lastPushTs = manifest.ts;
+        syncCfg.lastCount = manifest.counts;
+        syncCfg.lastError = '';
+        syncCfg.dirty = false;
+        syncSave();
+        renderSyncDot();
+        return manifest;
+      });
+    });
+  }
+
+  function syncPull() {
+    if (!syncOn()) return Promise.resolve(null);
+    return syncGet(syncCfg.ns + '/v1/manifest').then(function (m) {
+      if (!m || !m.parts || !m.parts.length) return null;
+      var chain = Promise.resolve(''), buf = '';
+      m.parts.forEach(function (p) {
+        chain = chain.then(function () {
+          return syncGet(p.ns + '/' + p.k).then(function (part) {
+            if (!part || typeof part.c !== 'string') throw new Error('원격 조각이 만료되었습니다');
+            buf += part.c;
+          });
+        });
+      });
+      return chain.then(function () {
+        var doc = null;
+        try { doc = JSON.parse(buf); } catch (e) { doc = null; }
+        if (!doc || !doc.data) throw new Error('원격 데이터 형식이 올바르지 않습니다');
+        return { manifest: m, doc: doc };
+      });
+    });
+  }
+
+  function mergeData(local, remote) {
+    var stats = { added: 0, updated: 0, deleted: 0 };
+    var delIds = {};
+    (local.deletedIds || []).concat(remote.deletedIds || []).forEach(function (x) { delIds[String(x)] = 1; });
+    var delTx = {};
+    (local.deletedTxnIds || []).concat(remote.deletedTxnIds || []).forEach(function (x) { delTx[String(x)] = 1; });
+
+    var items = {}, order = [];
+    (local.items || []).forEach(function (x) { if (!items[x.id]) order.push(x.id); items[x.id] = x; });
+    (remote.items || []).forEach(function (r) {
+      var cur = items[r.id];
+      if (!cur) { items[r.id] = r; order.push(r.id); stats.added++; return; }
+      if (Number(r.updatedAt || 0) > Number(cur.updatedAt || 0)) { items[r.id] = r; stats.updated++; }
+    });
+    var txns = {}, torder = [];
+    (local.txns || []).forEach(function (x) { if (!txns[x.id]) torder.push(x.id); txns[x.id] = x; });
+    (remote.txns || []).forEach(function (r) {
+      var cur = txns[r.id];
+      if (!cur) { txns[r.id] = r; torder.push(r.id); stats.added++; return; }
+      if (Number(r.updatedAt || 0) > Number(cur.updatedAt || 0)) { txns[r.id] = r; stats.updated++; }
+    });
+    var merged = {
+      v: 1,
+      items: order.map(function (k) { return items[k]; }).filter(function (x) { return !delIds[String(x.id)]; }),
+      txns: torder.map(function (k) { return txns[k]; }).filter(function (x) { return !delTx[String(x.id)]; }),
+      deletedIds: Object.keys(delIds),
+      deletedTxnIds: Object.keys(delTx),
+      updatedAt: Math.max(Number(local.updatedAt) || 0, Number(remote.updatedAt) || 0)
+    };
+    stats.changed = JSON.stringify(merged) !== JSON.stringify(local);
+    return { data: merged, stats: stats };
+  }
+
+  function syncNow(opt) {
+    var silent = opt && opt.silent;
+    if (!syncOn()) { if (!silent) { openSyncSheet(); } return Promise.resolve(null); }
+    if (syncBusy) return Promise.resolve(null);
+    syncBusy = true;
+    renderSyncDot();
+    return syncPull().then(function (res) {
+      var needPush = false;
+      if (!res) {
+        // 원격이 비었거나 만료 → 기기 데이터를 올린다
+        needPush = true;
+        syncCfg.rev = 0;
+      } else {
+        var m = res.manifest;
+        if (m.rev === syncCfg.rev && Number(m.ts) <= Number(syncCfg.lastPushTs || 0) && !syncCfg.dirty) {
+          syncCfg.lastSync = Date.now();
+          syncCfg.lastCount = m.counts || syncCfg.lastCount;
+          syncCfg.lastError = '';
+          syncSave();
+          return null;
+        }
+        var merged = mergeData(syncDataSnapshot(), res.doc.data);
+        if (merged.stats.changed) {
+          state = normalize(merged.data);
+          dbSet(state);
+          renderAll();
+        }
+        syncCfg.lastCount = m.counts || syncCfg.lastCount;
+        needPush = true;
+        if (merged.stats.changed && !silent) {
+          // 사용자에게 알릴 변화량은 아래 토스트에서
+        }
+        syncCfg.remoteStats = merged.stats;
+      }
+      if (!needPush) return null;
+      return syncPush().then(function () {
+        var st = syncCfg.remoteStats || null;
+        if (!silent) {
+          var c = syncCfg.lastCount || {};
+          var msg = '동기화 완료 · 재고 ' + (c.items || 0) + '종 · 거래 ' + (c.txns || 0) + '건';
+          if (st && (st.added || st.updated)) msg += ' <span style="color:#8b929e">(받은 항목 ' + (st.added + st.updated) + ')</span>';
+          toast(msg);
+        }
+      });
+    }).catch(function (e) {
+      syncCfg.lastError = String((e && e.message) || e);
+      syncSave(); renderSyncDot();
+      throw e;
+    }).then(function (v) {
+      syncBusy = false; renderSyncDot(); return v;
+    }, function (e) {
+      syncBusy = false; renderSyncDot();
+      if (!silent) toast('동기화 실패 · ' + esc(syncCfg.lastError));
+      return null;
+    });
+  }
+
+  function scheduleSync() {
+    if (!syncCfg || !syncCfg.ns) return;
+    syncCfg.dirty = true;
+    syncSave();
+    renderSyncDot();
+    if (syncTimer) clearTimeout(syncTimer);
+    syncTimer = setTimeout(function () {
+      syncTimer = null;
+      syncNow({ silent: true }).catch(function () { });
+    }, 4000);
+  }
+
+  function syncTouchIfStale() {
+    if (!syncOn()) return;
+    var last = Number(syncCfg.lastPushTs) || 0;
+    if (last && (Date.now() - last) >= TOUCH_MS) {
+      syncNow({ silent: true }).catch(function () { });
+    }
+  }
+
+  function renderSyncDot() {
+    var dot = $('#syncdot');
+    if (!dot) return;
+    dot.className = 'dot' + (!syncOn() ? '' : (syncBusy ? ' wait' : (syncCfg.lastError ? ' err' : ' on')));
+  }
+
+  /* ============================================================
+     sync sheet
+     ============================================================ */
+  function openSyncSheet() {
+    var body = '';
+    var stTxt = !syncOn() ? '연결 안 됨' : (syncBusy ? '동기화 중…' : (syncCfg.lastError ? '오류: ' + syncCfg.lastError : '연결됨 · 자동 동기화'));
+    var dotCls = !syncOn() ? '' : (syncBusy ? ' wait' : (syncCfg.lastError ? ' err' : ' on'));
+    body += '<div class="syncbox"><div class="st"><span class="d' + dotCls + '"></span><b>' + esc(stTxt) + '</b></div>';
+    if (syncOn()) {
+      var last = syncCfg.lastSync ? new Date(syncCfg.lastSync) : null;
+      body += '<p class="desc">마지막 동기화 ' + (last ? (pad2(last.getMonth() + 1) + '.' + pad2(last.getDate()) + ' ' + pad2(last.getHours()) + ':' + pad2(last.getMinutes())) : '없음') +
+        ' · 재고 ' + state.items.length + '종 · 거래 ' + state.txns.length + '건</p>';
+      body += '<div class="codebox"><input readonly value="' + esc(syncCfg.ns) + '" id="ns-code" /><button class="btn small" data-s="copycode">복사</button></div>';
+      body += '<div class="syncacts"><button class="btn" data-s="now">지금 동기화</button>' +
+        '<button class="btn" data-s="link">기기 연결 링크 복사</button>' +
+        '<button class="btn" data-s="new">새 코드 만들기</button></div>';
+    } else {
+      body += '<p class="desc">코드를 만들면 다른 기기에서도 같은 재고·거래 기록을 볼 수 있어요. 가입이나 로그인은 없습니다.</p>';
+      body += '<div class="syncacts"><button class="btn primary" data-s="new" style="flex:1">새 동기화 코드 만들기</button></div>';
+      body += '<div class="codebox"><input placeholder="받은 코드 붙여넣기 (resellbook-…)" id="ns-input" /><button class="btn small" data-s="join">연결</button></div>';
+    }
+    body += '</div>';
+    body += '<div class="note">· 인터넷에 있는 무료 저장소에 암호화 없이 보관됩니다. 코드를 아는 사람은 내용을 볼 수 있어요.<br />' +
+      '· 사진을 많이 넣으면 동기화가 느려질 수 있어요.<br />' +
+      '· 14일 넘게 접속이 없으면 자동으로 다시 올려 보관 기간을 늘립니다.</div>';
+    body += '<div class="syncbox" style="margin-top:2px"><div class="st"><b>백업 파일</b></div>' +
+      '<p class="desc">JSON 파일로 내려받아 두면 클라우드와 상관없이 되살릴 수 있어요.</p>' +
+      '<div class="syncacts"><button class="btn" data-s="export">📥 내보내기</button><button class="btn" data-s="import">📤 불러오기</button></div></div>';
+
+    var sheet = openSheet({
+      title: '동기화 · 백업',
+      body: body,
+      onMount: function (root) {
+        root.addEventListener('click', function (e) {
+          var b = e.target.closest('[data-s]');
+          if (!b) return;
+          var a = b.getAttribute('data-s');
+          if (a === 'copycode') {
+            copyText(syncCfg.ns).then(function (ok) { toast(ok ? '코드를 복사했어요' : '복사하지 못했어요'); });
+          } else if (a === 'link') {
+            var link = location.origin + location.pathname + '?k=' + syncCfg.ns;
+            copyText(link).then(function (ok) { toast(ok ? '연결 링크를 복사했어요 · 다른 기기에서 열면 바로 연결됩니다' : '복사하지 못했어요'); });
+          } else if (a === 'now') {
+            syncNow({}).then(function () { closeSheet(); });
+          } else if (a === 'new') {
+            confirmSheet({
+              title: '새 동기화 코드',
+              text: '지금 기기의 데이터를 새 코드에 올립니다.<br />기존 코드로 연결된 다른 기기는 <b>새 코드를 입력해야</b> 같은 내용을 봅니다.',
+              ok: '만들기'
+            }).then(function (ok) {
+              if (!ok) return;
+              syncCfg.ns = syncNewNs();
+              syncCfg.rev = 0;
+              syncCfg.lastPushTs = 0;
+              syncCfg.lastError = '';
+              syncCfg.dirty = true;
+              syncSave();
+              closeSheet();
+              syncNow({}).then(function () { openSyncSheet(); });
+            });
+          } else if (a === 'join') {
+            var v = (root.querySelector('#ns-input').value || '').trim();
+            if (!/^resellbook-[a-z0-9]{6,}$/.test(v)) { toast('코드 형식이 맞지 않아요 (resellbook-…)'); return; }
+            syncCfg.ns = v; syncCfg.rev = 0; syncCfg.lastPushTs = 0; syncCfg.lastError = '';
+            syncSave(); closeSheet();
+            syncNow({}).then(function () { openSyncSheet(); });
+          } else if (a === 'export') {
+            exportJson();
+          } else if (a === 'import') {
+            $('#import-file').click();
+          }
+        });
+      }
+    });
+    return sheet;
+  }
+
+  function copyText(txt) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(txt).then(function () { return true; }, function () { return fallbackCopy(txt); });
+    }
+    return Promise.resolve(fallbackCopy(txt));
+  }
+  function fallbackCopy(txt) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      var ok = document.execCommand('copy');
+      ta.remove();
+      return ok;
+    } catch (e) { return false; }
+  }
+
+  /* ============================================================
+     backup
+     ============================================================ */
+  function exportJson() {
+    var payload = {
+      app: 'resellbook', version: 1, exportedAt: new Date().toISOString(),
+      data: syncDataSnapshot()
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'resellbook-backup-' + today() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    toast('백업 파일을 내려받았어요 · 재고 ' + state.items.length + '종');
+  }
+
+  function importJson(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var obj = null;
+      try { obj = JSON.parse(String(reader.result)); } catch (e) { obj = null; }
+      if (!obj) { toast('JSON 파일을 읽지 못했어요'); return; }
+      var data = obj.data && typeof obj.data === 'object' ? obj.data : obj;
+      if (!data || (!Array.isArray(data.items) && !Array.isArray(data.txns))) {
+        toast('리셀북 백업 파일이 아니에요'); return;
+      }
+      var incoming = normalize(data);
+      var merged = mergeData(syncDataSnapshot(), incoming);
+      confirmSheet({
+        title: '백업 불러오기',
+        text: '이 파일: 재고 <b>' + incoming.items.length + '종</b> · 거래 <b>' + incoming.txns.length + '건</b><br /><br />' +
+          '지금 기기 기록에 <b>합쳐서</b> 저장합니다 (같은 상품은 최근 수정본이 남아요).<br />기존 기록은 지워지지 않아요.',
+        ok: '합치기'
+      }).then(function (ok) {
+        if (!ok) return;
+        state = normalize(merged.data);
+        save(); renderAll();
+        toast('불러왔어요 · 새 항목 ' + (merged.stats.added || 0) + '건');
+      });
+    };
+    reader.onerror = function () { toast('파일을 읽지 못했어요'); };
+    reader.readAsText(file);
+  }
+
+  /* ============================================================
+     menu
+     ============================================================ */
+  function openMenu() {
+    var inv = invStats();
+    var sizeTxt = '—';
+    try { sizeTxt = (JSON.stringify(state).length / 1024).toFixed(0) + 'KB'; } catch (e) { }
+    var body = '<div class="syncbox"><div class="ownername">📒 리셀북 <span style="color:#7a8290">v1.0</span></div>' +
+      '<p class="desc">재고 ' + state.items.length + '종 · 거래 ' + state.txns.length + '건 · 저장 ' + sizeTxt + '</p>' +
+      '<div class="syncacts">' +
+      '<button class="btn" data-mm="sync">🔄 동기화</button>' +
+      '<button class="btn" data-mm="export">📥 백업 내보내기</button>' +
+      '<button class="btn" data-mm="import">📤 불러오기</button>' +
+      '</div></div>' +
+      '<div class="note">· 기록은 이 기기 브라우저에 저장되고, 동기화를 켜면 다른 기기와도 맞춰져요.<br />' +
+      '· 이 페이지는 검색엔진에 노출되지 않아요.<br />' +
+      '· 사진은 넣을 때 자동으로 줄여서 저장합니다.</div>';
+    var sheet = openSheet({ title: '리셀북', body: body });
+    sheet.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-mm]');
+      if (!b) return;
+      var a = b.getAttribute('data-mm');
+      if (a === 'sync') { closeSheet(); openSyncSheet(); }
+      if (a === 'export') exportJson();
+      if (a === 'import') $('#import-file').click();
+    });
+  }
+
+  /* ============================================================
+     events
+     ============================================================ */
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-act]');
+    if (!t) return;
+    var act = t.getAttribute('data-act');
+    var id = t.getAttribute('data-id');
+    if (act === 'add') openItemForm();
+    else if (act === 'status') { view.status = t.getAttribute('data-status'); renderStatusChips(); renderInv(); }
+    else if (act === 'month') { view.month = t.getAttribute('data-month'); renderMonthbar(); renderDash(); }
+    else if (act === 'txtype') { view.txType = t.getAttribute('data-txtype'); renderTx(); }
+    else if (act === 'plmonth') { view.plMonth = t.getAttribute('data-month'); renderPL(); }
+    else if (act === 'detail') openDetail(id);
+    else if (act === 'menu') openItemMenu(id);
+    else if (act === 'sell') openSell(id);
+    else if (act === 'restock') openRestock(id);
+    else if (act === 'plus') quickQty(id, 1);
+    else if (act === 'minus') quickQty(id, -1);
+    else if (act === 'txdel') deleteTxn(id);
+    else if (act === 'reset-filter') {
+      view.q = ''; view.status = 'all'; view.cat = 'all'; view.sort = 'recent';
+      $('#q').value = ''; $('#catsel').value = 'all'; $('#sortsel').value = 'recent';
+      renderStatusChips(); renderInv();
+    }
+  });
+
+  $('#tabbar').addEventListener('click', function (e) {
+    var b = e.target.closest('.tab');
+    if (b) setTab(b.getAttribute('data-view'));
+  });
+  $('#fab').addEventListener('click', function () { openItemForm(); });
+  $('#btn-menu').addEventListener('click', openMenu);
+  $('#btn-sync').addEventListener('click', function () {
+    if (!syncOn()) openSyncSheet();
+    else syncNow({}).then(function () { }).catch(function () { });
+  });
+
+  var qTimer = null;
+  $('#q').addEventListener('input', function (e) {
+    view.q = e.target.value;
+    if (qTimer) clearTimeout(qTimer);
+    qTimer = setTimeout(function () { renderInv(); }, 90);
+  });
+  $('#catsel').addEventListener('change', function (e) { view.cat = e.target.value; renderInv(); });
+  $('#sortsel').addEventListener('change', function (e) { view.sort = e.target.value; renderInv(); });
+  $('#import-file').addEventListener('change', function (e) {
+    var f = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (f) importJson(f);
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeSheet();
+  });
+
+  /* ============================================================
+     url key + boot
+     ============================================================ */
+  function applyUrlKey() {
+    var p = new URLSearchParams(location.search);
+    var k = (p.get('k') || '').trim();
+    if (!k) {
+      var h = String(location.hash || '').replace(/^#k=/, '');
+      if (h && /^resellbook-/.test(h)) k = h.trim();
+    }
+    if (!k) return;
+    if (!/^resellbook-[a-z0-9]{6,}$/.test(k)) return;
+    if (syncCfg.ns === k) return;
+    syncCfg.ns = k;
+    syncCfg.rev = 0;
+    syncCfg.lastPushTs = 0;
+    syncCfg.lastError = '';
+    syncSave();
+    try {
+      var u = new URL(location.href);
+      u.searchParams.delete('k');
+      history.replaceState(null, '', u.pathname + (u.search || '') + u.hash);
+    } catch (e) { }
+  }
+
+  window.__errs = [];
+  window.addEventListener('error', function (e) { window.__errs.push(String((e && e.message) || e)); });
+  window.addEventListener('unhandledrejection', function (e) {
+    window.__errs.push('rejection: ' + String((e && e.reason && e.reason.message) || e.reason));
+  });
+
+  function boot() {
+    syncLoad();
+    dbGet().then(function (saved) {
+      state = normalize(saved);
+      applyUrlKey();
+      renderAll();
+      if (syncOn()) {
+        syncNow({ silent: true }).catch(function () { });
+        syncTouchIfStale();
+      }
+    }).catch(function () {
+      state = blank();
+      renderAll();
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+  /* expose a tiny hook for self-checks */
+  window.__resellbook = {
+    get state() { return state; },
+    version: '1.0'
+  };
+})();
+
+</script>
+</body>
+</html>
