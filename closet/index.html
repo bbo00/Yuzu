@@ -3702,10 +3702,11 @@
     /* ===== v8.16: 데이터가 없을 때 안내 + 지역 라벨을 데이터에서 렌더 ===== */
     function updateLocationLabels() {
       const loc = (appData && appData.user && appData.user.location) ? String(appData.user.location).trim() : '';
-      const label = '📍 ' + (loc || '내 옷장');
       ['wm-loc', 'weather-loc'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.innerText = label;
+        if (!el) return;
+        if (loc) { el.innerText = '📍 ' + loc; el.style.display = ''; }
+        else { el.innerText = ''; el.style.display = 'none'; }
       });
     }
     function renderEmptyState() {
@@ -4813,7 +4814,7 @@
 
     function syncCodeLink() {
       if (!syncConnected()) return '';
-      return 'https://6a4f5n1.sharehtml.org/#sync=' + syncCfg.ns;
+      return location.origin + location.pathname + '#sync=' + syncCfg.ns;
     }
 
     function renderSyncStatus() {
