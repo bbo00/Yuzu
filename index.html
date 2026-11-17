@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>유자 홈 · 유자클로젯 &amp; 체험단 수첩</title>
+<meta name="theme-color" content="#111214" />
+<style>
+  :root{
+    --bg:#0f1013; --card:#181a1f; --card2:#1f2229; --line:#2a2e37;
+    --fg:#f2f3f5; --muted:#9aa1ad; --accent:#7c5cff; --accent2:#3ecf8e;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:radial-gradient(120% 90% at 50% -20%, #1b1d24 0%, var(--bg) 55%) no-repeat, var(--bg);
+    color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",sans-serif;
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    padding:28px 18px calc(28px + env(safe-area-inset-bottom));
+  }
+  .wrap{width:100%;max-width:460px}
+  header{margin-bottom:22px}
+  h1{font-size:21px;letter-spacing:-.4px;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:13.5px;line-height:1.55;margin:0}
+  .card{
+    display:flex;align-items:center;gap:14px;
+    background:linear-gradient(180deg,var(--card2),var(--card));
+    border:1px solid var(--line); border-radius:18px;
+    padding:18px; margin-bottom:12px; text-decoration:none; color:inherit;
+    transition:transform .12s ease, border-color .12s ease;
+  }
+  .card:active{transform:scale(.985);border-color:#4a415c}
+  .ico{
+    flex:0 0 46px;height:46px;border-radius:14px;display:grid;place-items:center;
+    font-size:22px;background:#262a33;border:1px solid var(--line)
+  }
+  .txt{flex:1;min-width:0}
+  .name{font-size:16px;font-weight:650;letter-spacing:-.3px;margin:0 0 3px}
+  .meta{color:var(--muted);font-size:12.5px;margin:0;line-height:1.4}
+  .arrow{color:#6b7280;font-size:18px}
+  footer{margin-top:20px;color:#6b7280;font-size:11.5px;line-height:1.6;text-align:center}
+  code{background:#22252d;padding:1px 5px;border-radius:5px;font-size:11px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>유자 홈</h1>
+      <p class="sub">자주 쓰는 두 개를 한 곳에 뒀어요.<br />sharehtml이 안 될 때도 이 주소로 바로 열립니다.</p>
+    </header>
+
+    <a class="card" href="./closet/">
+      <div class="ico">👗</div>
+      <div class="txt">
+        <p class="name">유자클로젯</p>
+        <p class="meta">옷장 240벌 · 코디 · 착용 기록 (v8.14)</p>
+      </div>
+      <div class="arrow">›</div>
+    </a>
+
+    <a class="card" href="./review/">
+      <div class="ico">📝</div>
+      <div class="txt">
+        <p class="name">체험단 수첩</p>
+        <p class="meta">체험단 초안 · 두밍로그 글쓰기 노트 (v1.5)</p>
+      </div>
+      <div class="arrow">›</div>
+    </a>
+
+    <footer>
+      개인용 페이지 · <code>bbo00.github.io</code>
+    </footer>
+  </div>
+</body>
+</html>
