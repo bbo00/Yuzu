@@ -303,6 +303,52 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .toast .msg{flex:1;line-height:1.45;word-break:keep-all}
 .toast button{border:0;background:rgba(255,176,58,.16);color:#ffca80;font-size:12px;font-weight:650;padding:6px 9px;border-radius:9px;flex:0 0 auto}
 
+/* ---------- size variants · tags ---------- */
+.szchips{display:flex;flex-wrap:wrap;gap:4px;margin-top:1px}
+.szchip{font-size:10.5px;line-height:1;padding:3px 6px;border-radius:7px;background:#232730;border:1px solid #333944;color:#cdd3dc;letter-spacing:-.1px;white-space:nowrap}
+.szchip b{color:#ffc978;margin-left:3px;font-weight:700}
+.ptags{display:flex;flex-wrap:wrap;gap:4px;margin-top:1px}
+.tagwarn{font-size:10.5px;padding:2px 6px;border-radius:999px;color:#ffc978;border:1px solid rgba(255,176,58,.42);background:rgba(255,176,58,.1);letter-spacing:-.2px;white-space:nowrap}
+.tagrec{font-size:10.5px;padding:2px 6px;border-radius:999px;color:#9cc4ff;border:1px solid rgba(106,168,255,.32);background:rgba(106,168,255,.1);letter-spacing:-.2px;white-space:nowrap}
+.taglow{font-size:10.5px;padding:2px 6px;border-radius:999px;color:#ff9aa5;border:1px solid rgba(255,107,122,.36);background:rgba(255,107,122,.12);letter-spacing:-.2px;white-space:nowrap;font-weight:650}
+.kpilink{margin-top:5px;border:1px solid rgba(255,107,122,.3);background:rgba(255,107,122,.1);color:#ff9aa5;font-size:10.5px;padding:3px 7px;border-radius:8px;letter-spacing:-.2px;align-self:flex-start}
+.dnote{font-size:11px;color:#ffc978;line-height:1.5;letter-spacing:-.2px;background:rgba(255,176,58,.07);border:1px dashed rgba(255,176,58,.28);border-radius:11px;padding:8px 10px;word-break:keep-all}
+
+/* ---------- 6개월 차트 (대시보드) ---------- */
+.chartcard{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:16px;padding:11px 12px 9px}
+.chartcard .ch-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px}
+.chartcard .ch-head b{font-size:12.5px;letter-spacing:-.2px}
+.chartcard .ch-head span{font-size:11px;color:var(--muted2)}
+.cbars{display:flex;align-items:flex-end;gap:5px;height:116px}
+.cbarcol{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:3px}
+.cbarcol .bnum{font-size:9px;color:#9aa1ad;letter-spacing:-.3px;white-space:nowrap}
+.cbarcol .cpair{display:flex;align-items:flex-end;gap:2px;flex:1;width:100%;justify-content:center}
+.cbarcol .bar{width:8px}
+.cbarcol .mlbl{font-size:9.5px;color:#7a8290;white-space:nowrap;letter-spacing:-.3px}
+.cbarcol .pnum{font-size:9px;color:#57e0a8;letter-spacing:-.3px;white-space:nowrap;min-height:10px}
+.chartcard .legend{margin-top:5px}
+
+/* ---------- form: 사이즈 행 ---------- */
+.vrows{display:flex;flex-direction:column;gap:6px}
+.vrow{display:grid;grid-template-columns:1fr 58px 1fr 26px;gap:6px;align-items:center}
+.vrow input{width:100%;font-size:16px !important;background:#1d2027;border:1px solid #30353e;color:#eef0f4;border-radius:10px;padding:9px;appearance:none;-webkit-appearance:none;text-align:left;min-width:0}
+.vrow .vdel{border:1px solid var(--line);background:#1f232b;color:#8b929e;border-radius:8px;height:36px;font-size:11px;padding:0}
+.vadd{display:flex;align-items:center;gap:8px;margin-top:7px;flex-wrap:wrap}
+.vhint{font-size:11px;color:#7a8290;letter-spacing:-.2px;line-height:1.5;flex:1;min-width:0;word-break:keep-all}
+.vhint b{color:#dfe3ea}
+.vsec label{margin-bottom:7px}
+.vlist{display:flex;flex-direction:column;gap:5px}
+.vrow2{display:grid;grid-template-columns:1fr auto auto auto;gap:8px;align-items:center;background:#181b21;border:1px solid var(--line);border-radius:11px;padding:8px 10px;font-size:12.5px;letter-spacing:-.2px}
+.vrow2 .vs{font-weight:650;color:#eef0f4}
+.vrow2 .vq{color:#a9b0bb;font-size:11.5px}
+.vrow2 .vc{color:#dfe3ea}
+.vrow2 .vc.np{color:#ffc978;font-size:11px}
+.vrow2 .vv{color:#7a8290;font-size:10.5px;text-align:right;white-space:nowrap}
+.rechint{margin-top:7px;font-size:11.5px;color:#b9bfc9;letter-spacing:-.2px;line-height:1.5;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.rechint b{color:#9cc4ff}
+.recbtn{border:1px solid rgba(106,168,255,.35);background:rgba(106,168,255,.12);color:#9cc4ff;font-size:11px;padding:3px 8px;border-radius:8px}
+.seg.venues button{font-size:12px}
+
 @media (min-width:520px){
   .wrap{max-width:520px;margin:0 auto}
   .app-head{max-width:520px;margin:0 auto}
@@ -458,6 +504,9 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   var CATS = ['의류', '신발', '잡화', '가전·IT', '생활용품', '기타'];
   var CATICON = { '의류': '👕', '신발': '👟', '잡화': '👜', '가전·IT': '💻', '생활용품': '🧴', '기타': '📦' };
   var SOURCES = ['당근', '번개장터', '크림', '네이버특가', '쿠팡', '직접입력'];
+  /* 판매처는 크림을 기본(첫 번째 추천)으로 둔다 — 사용자가 판매를 주로 크림에서 한다 */
+  var SALE_VENUES = ['크림', '당근', '번개장터', '직접입력'];
+  var SIZE_ORDER = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'FREE', '프리'];
 
   /* ============================================================
      storage
@@ -515,7 +564,14 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
      data model
      ============================================================ */
   function blank() {
-    return { v: 1, items: [], txns: [], deletedIds: [], deletedTxnIds: [], updatedAt: 0 };
+    return { v: 2, items: [], txns: [], deletedIds: [], deletedTxnIds: [], settings: { targetMargin: 20 }, updatedAt: 0 };
+  }
+
+  function normMargin(v) {
+    var m = Number(v);
+    if (!isFinite(m)) return 20;
+    m = Math.round(m);
+    return clamp(m, 5, 80);
   }
 
   function normalize(s) {
@@ -529,7 +585,20 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       if (seen[id]) return;
       seen[id] = 1;
       var q = Math.max(0, Math.round(Number(r.qty) || 0));
-      out.items.push({
+      var vars = [];
+      (Array.isArray(r.variants) ? r.variants : []).forEach(function (v) {
+        if (!v || typeof v !== 'object') return;
+        var sz = String(v.size == null ? '' : v.size).trim().slice(0, 12);
+        if (!sz) return;
+        var vq = Math.max(0, Math.round(Number(v.qty) || 0));
+        var vc = null;
+        if (v.cost !== null && v.cost !== undefined && String(v.cost).trim() !== '') {
+          var cn = Number(v.cost);
+          vc = isFinite(cn) && cn > 0 ? Math.round(cn) : null;
+        }
+        vars.push({ size: sz, qty: vq, cost: vc });
+      });
+      var row = {
         id: id,
         name: String(r.name || '이름 없는 상품').slice(0, 80),
         cat: CATS.indexOf(r.cat) >= 0 ? r.cat : '기타',
@@ -543,7 +612,9 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         totalInQty: Math.max(q, Math.round(Number(r.totalInQty) || q)),
         createdAt: Number(r.createdAt) || Date.now(),
         updatedAt: Number(r.updatedAt) || 0
-      });
+      };
+      if (vars.length) { row.variants = vars; syncVarTotals(row); }
+      out.items.push(row);
     });
     var seenT = {};
     (Array.isArray(s.txns) ? s.txns : []).forEach(function (r) {
@@ -569,18 +640,108 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         profit: Number(r.profit) || 0,
         venue: String(r.venue || r.source || '').slice(0, 30),
         memo: String(r.memo || '').slice(0, 300),
+        size: String(r.size || '').slice(0, 12),
+        costUnknown: !!r.costUnknown,
         createdAt: Number(r.createdAt) || Date.now(),
         updatedAt: Number(r.updatedAt) || 0
       });
     });
     out.deletedIds = Array.isArray(s.deletedIds) ? s.deletedIds.map(String) : [];
     out.deletedTxnIds = Array.isArray(s.deletedTxnIds) ? s.deletedTxnIds.map(String) : [];
+    out.settings = { targetMargin: normMargin(s.settings && s.settings.targetMargin) };
     return out;
   }
 
   function effStatus(it) {
-    if ((Number(it.qty) || 0) <= 0) return '완판';
+    if (itemQty(it) <= 0) return '완판';
     return it.status === '예약중' ? '예약중' : '판매중';
+  }
+
+  /* ============================================================
+     사이즈(옵션)별 수량·단가
+     ============================================================ */
+  function hasVar(it) { return !!(it && Array.isArray(it.variants) && it.variants.length); }
+
+  function varQty(it) {
+    if (!hasVar(it)) return Math.max(0, Number(it.qty) || 0);
+    var n = 0;
+    it.variants.forEach(function (v) { n += Math.max(0, Number(v.qty) || 0); });
+    return n;
+  }
+  function itemQty(it) { return varQty(it); }
+
+  function costReady(v) { return v && v.cost != null && Number(v.cost) > 0; }
+
+  /* 원가가 입력된 수량만 — 미입력분은 원가 합계·평균에서 빠진다 */
+  function costKnownQty(it) {
+    if (!hasVar(it)) return (Number(it.avgCost) || 0) > 0 ? Math.max(0, Number(it.qty) || 0) : 0;
+    var n = 0;
+    it.variants.forEach(function (v) { if (costReady(v)) n += Math.max(0, Number(v.qty) || 0); });
+    return n;
+  }
+  function unknownQty(it) {
+    if (!hasVar(it)) return (Number(it.avgCost) || 0) > 0 ? 0 : Math.max(0, Number(it.qty) || 0);
+    var n = 0;
+    it.variants.forEach(function (v) { if (!costReady(v)) n += Math.max(0, Number(v.qty) || 0); });
+    return n;
+  }
+  function itemValue(it) {
+    if (!hasVar(it)) return Math.max(0, Number(it.qty) || 0) * (Number(it.avgCost) || 0);
+    var v = 0;
+    it.variants.forEach(function (x) { if (costReady(x)) v += Math.max(0, Number(x.qty) || 0) * Number(x.cost); });
+    return v;
+  }
+  /* 가중 평균 단가 — 원가 미입력 사이즈는 제외. 없으면 null (지어내지 않는다) */
+  function itemAvg(it) {
+    if (!hasVar(it)) return (Number(it.avgCost) || 0) > 0 ? Math.round(Number(it.avgCost)) : null;
+    var q = costKnownQty(it);
+    if (!q) return null;
+    return Math.round(itemValue(it) / q);
+  }
+  function costSpread(it) {
+    if (!hasVar(it)) return false;
+    var set = {};
+    it.variants.forEach(function (v) { if ((Number(v.qty) || 0) > 0 && costReady(v)) set[Math.round(v.cost)] = 1; });
+    return Object.keys(set).length > 1;
+  }
+  function heldSizes(it) {
+    if (!hasVar(it)) return [];
+    return it.variants.filter(function (v) { return (Number(v.qty) || 0) > 0; });
+  }
+  function syncVarTotals(it) {
+    if (!hasVar(it)) return;
+    it.qty = varQty(it);
+    var avg = itemAvg(it);
+    it.avgCost = avg == null ? 0 : avg;
+  }
+  function sizeRank(s) {
+    var u = String(s || '').toUpperCase().trim();
+    var i = SIZE_ORDER.indexOf(u);
+    if (i >= 0) return [0, i, 0];
+    var m = u.match(/^(\d+(?:\.\d+)?)\s*([A-Z]*)$/);
+    if (m) return [1, Number(m[1]), m[2]];
+    return [2, 0, 0];
+  }
+  function bySizeOrder(a, b) {
+    var ra = sizeRank(a.size), rb = sizeRank(b.size);
+    if (ra[0] !== rb[0]) return ra[0] - rb[0];
+    if (ra[1] !== rb[1]) return ra[1] - rb[1];
+    if (String(ra[2]) !== String(rb[2])) return String(ra[2]) < String(rb[2]) ? -1 : 1;
+    return String(a.size).localeCompare(String(b.size), 'ko');
+  }
+  function sizeChips(it) {
+    return heldSizes(it).slice().sort(bySizeOrder).map(function (v) {
+      return '<span class="szchip">' + esc(v.size) + '<b>' + (Number(v.qty) || 0) + '</b></span>';
+    }).join('');
+  }
+
+  /* 목표 마진율 기준 추천 판매가 (100원 단위 올림) */
+  function targetMargin() { return normMargin(state && state.settings && state.settings.targetMargin); }
+  function recommendPrice(cost) {
+    if (cost == null || !(Number(cost) > 0)) return null;
+    var m = targetMargin();
+    var raw = Number(cost) / (1 - m / 100);
+    return Math.ceil(raw / 100) * 100;
   }
 
   function itemById(id) {
@@ -599,15 +760,22 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
      ============================================================ */
   function invStats() {
     var value = 0, qty = 0, kinds = 0, onSale = 0, reserved = 0, soldOut = 0;
+    var unknownQ = 0, unknownItems = 0, lowStock = 0, sizeCount = 0;
     state.items.forEach(function (it) {
-      var q = Number(it.qty) || 0;
+      var q = itemQty(it);
       if (q > 0) {
-        kinds++; qty += q; value += q * (Number(it.avgCost) || 0);
+        kinds++; qty += q; value += itemValue(it);
+        if (unknownQty(it) > 0) { unknownQ += unknownQty(it); unknownItems++; }
+        if (q <= 2) lowStock++;
+        if (hasVar(it)) sizeCount += heldSizes(it).length;
         var st = effStatus(it);
         if (st === '예약중') reserved++; else onSale++;
       } else { soldOut++; }
     });
-    return { value: value, qty: qty, kinds: kinds, onSale: onSale, reserved: reserved, soldOut: soldOut };
+    return {
+      value: value, qty: qty, kinds: kinds, onSale: onSale, reserved: reserved, soldOut: soldOut,
+      unknownQ: unknownQ, unknownItems: unknownItems, lowStock: lowStock, sizeCount: sizeCount
+    };
   }
 
   function saleStats(month) {
@@ -651,7 +819,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     var s = invStats();
     var sub = $('#head-sub');
     if (!state.items.length) { sub.textContent = '재고와 손익을 한 곳에'; return; }
-    sub.textContent = '재고 ' + s.kinds + '종 · 잔여 ' + s.qty + '개 · ' + wonShort(s.value);
+    sub.textContent = '재고 ' + s.kinds + '종 · 잔여 ' + s.qty + '개 · ' + wonShort(s.value) + (s.lowStock ? ' · 임박 ' + s.lowStock : '');
   }
 
   function renderMonthbar() {
@@ -673,7 +841,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     html += '<div class="kpi">' +
       '<div class="k">📦 재고 가치 <span style="color:#6d7480">·원가</span></div>' +
       '<div class="v">' + wonShort(inv.value) + '</div>' +
-      '<div class="s">' + inv.kinds + '종 · 잔여 ' + inv.qty + '개</div>' +
+      '<div class="s">' + inv.kinds + '종 · 잔여 ' + inv.qty + '개' + (inv.sizeCount ? ' · ' + inv.sizeCount + '사이즈' : '') + '</div>' +
       '</div>';
     html += '<div class="kpi">' +
       '<div class="k">💰 매출 <span style="color:#6d7480">·' + esc(label) + '</span></div>' +
@@ -689,8 +857,41 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       '<div class="k">🏷️ 판매 중</div>' +
       '<div class="v">' + inv.onSale + '<small>종</small></div>' +
       '<div class="s">' + (inv.reserved ? '예약중 ' + inv.reserved + '종 · ' : '') + '완판 ' + inv.soldOut + '종</div>' +
+      '<button class="kpilink" data-act="status" data-status="품절임박">🔥 품절 임박 ' + inv.lowStock + '건</button>' +
       '</div>';
+    if (inv.unknownQ > 0) {
+      html += '<div class="dnote" style="grid-column:1/-1">가격 미입력 ' + inv.unknownQ + '개( ' + inv.unknownItems + '종)는 재고 원가·평균에서 빠져 있어요. 단가를 넣으면 바로 반영됩니다.</div>';
+    }
+    html += '<div style="grid-column:1/-1">' + monthChartHtml() + '</div>';
     $('#dash').innerHTML = html;
+  }
+
+  function monthChartHtml() {
+    var now = new Date();
+    var rows = [];
+    for (var i = 5; i >= 0; i--) {
+      var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      var m = d.getFullYear() + '-' + pad2(d.getMonth() + 1);
+      rows.push({ m: m, s: saleStats(m) });
+    }
+    var max = 0;
+    rows.forEach(function (r) { max = Math.max(max, r.s.revenue, r.s.profit); });
+    var cols = rows.map(function (r) {
+      var hr = max > 0 ? clamp((r.s.revenue / max) * 100, 0, 100) : 0;
+      var hp = max > 0 ? clamp((r.s.profit / max) * 100, 0, 100) : 0;
+      var tip = monthLabel(r.m) + ' · 매출 ' + won(r.s.revenue) + ' · 순수익 ' + won(r.s.profit) + ' · ' + r.s.count + '건';
+      return '<div class="cbarcol" title="' + esc(tip) + '" data-m="' + r.m + '">' +
+        '<div class="bnum">' + (r.s.revenue ? wonShort(r.s.revenue) : '') + '</div>' +
+        '<div class="cpair"><div class="bar rev" style="height:' + hr + '%"></div><div class="bar prf" style="height:' + hp + '%"></div></div>' +
+        '<div class="mlbl">' + esc(monthLabel(r.m)) + '</div>' +
+        '<div class="pnum">' + (r.s.profit ? wonShort(r.s.profit) : '') + '</div>' +
+        '</div>';
+    }).join('');
+    return '<div class="chartcard">' +
+      '<div class="ch-head"><b>최근 6개월 추이</b><span>매출 · 순수익</span></div>' +
+      '<div class="cbars">' + cols + '</div>' +
+      '<div class="legend"><span><i style="background:#ffb03a"></i>매출</span><span><i style="background:#3ecf8e"></i>순수익</span><span style="margin-left:auto;color:#6d7480">막대에 마우스를 올리면 정확한 금액</span></div>' +
+      '</div>';
   }
 
   /* ============================================================
@@ -700,17 +901,21 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     var q = view.q.trim().toLowerCase();
     var list = state.items.filter(function (it) {
       if (q) {
-        var hay = (it.name + ' ' + it.source + ' ' + it.cat + ' ' + it.memo).toLowerCase();
+        var hay = (it.name + ' ' + it.source + ' ' + it.cat + ' ' + it.memo + ' ' +
+          (hasVar(it) ? it.variants.map(function (v) { return v.size; }).join(' ') : '')).toLowerCase();
         if (hay.indexOf(q) < 0) return false;
       }
       var st = effStatus(it);
-      if (view.status !== 'all' && st !== view.status) return false;
+      if (view.status === '품절임박') {
+        var qq = itemQty(it);
+        if (!(qq >= 1 && qq <= 2) || st === '완판') return false;
+      } else if (view.status !== 'all' && st !== view.status) return false;
       if (view.cat !== 'all' && it.cat !== view.cat) return false;
       return true;
     });
     list.sort(function (a, b) {
-      if (view.sort === 'qty') return (b.qty - a.qty) || (b.updatedAt - a.updatedAt);
-      if (view.sort === 'value') return (b.qty * b.avgCost - a.qty * a.avgCost) || (b.updatedAt - a.updatedAt);
+      if (view.sort === 'qty') return (itemQty(b) - itemQty(a)) || (b.updatedAt - a.updatedAt);
+      if (view.sort === 'value') return (itemValue(b) - itemValue(a)) || (b.updatedAt - a.updatedAt);
       if (view.sort === 'name') return String(a.name).localeCompare(String(b.name), 'ko');
       return (b.createdAt - a.createdAt);
     });
@@ -718,9 +923,13 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   }
 
   function renderStatusChips() {
-    var counts = { all: state.items.length, '판매중': 0, '예약중': 0, '완판': 0 };
-    state.items.forEach(function (it) { counts[effStatus(it)]++; });
-    var defs = [['all', '전체'], ['판매중', '판매중'], ['예약중', '예약중'], ['완판', '완판']];
+    var counts = { all: state.items.length, '판매중': 0, '예약중': 0, '완판': 0, '품절임박': 0 };
+    state.items.forEach(function (it) {
+      var st = effStatus(it);
+      counts[st]++;
+      if (st !== '완판' && itemQty(it) >= 1 && itemQty(it) <= 2) counts['품절임박']++;
+    });
+    var defs = [['all', '전체'], ['판매중', '판매중'], ['예약중', '예약중'], ['품절임박', '품절 임박'], ['완판', '완판']];
     $('#statuschips').innerHTML = defs.map(function (d) {
       return '<button class="chip' + (view.status === d[0] ? ' on' : '') + '" data-act="status" data-status="' + d[0] + '">' +
         d[1] + '<span class="n">' + (counts[d[0]] || 0) + '</span></button>';
@@ -735,13 +944,27 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 
   function itemCard(it) {
     var st = effStatus(it);
-    var q = Number(it.qty) || 0;
+    var q = itemQty(it);
+    var avg = itemAvg(it);
+    var unk = unknownQty(it);
+    var rec = recommendPrice(avg);
     var meta = [];
     meta.push(it.cat);
     if (it.source) meta.push(it.source);
     if (it.buyDate) meta.push(dateLabelYear(it.buyDate));
-    var money = '잔여 <b>' + q + '개</b> · 원가 <b>' + won(it.avgCost) + '</b>';
-    if (q > 0) money += ' · 재고 ' + won(q * it.avgCost);
+    var money = '잔여 <b>' + q + '개</b>';
+    if (avg != null) money += ' · ' + (costSpread(it) ? '평균 ' : '원가 ') + '<b>' + won(avg) + '</b>';
+    var val = itemValue(it);
+    if (q > 0 && val > 0) money += ' · 재고 ' + won(val);
+    var tags = '';
+    if (unk > 0 && q > 0) tags += '<span class="tagwarn">가격 미입력' + (unk < q ? ' ' + unk + '개' : '') + '</span>';
+    if (rec != null && q > 0) tags += '<span class="tagrec">목표' + targetMargin() + '% ' + wonShort(rec) + '</span>';
+    if (q > 0 && q <= 2) tags += '<span class="taglow">품절 임박</span>';
+    var act = hasVar(it)
+      ? '<button class="mini" data-act="detail" data-id="' + esc(it.id) + '">사이즈</button>'
+      : '<div class="stepper"><button data-act="minus" data-id="' + esc(it.id) + '" aria-label="수량 줄이기">−</button>' +
+        '<span class="q">' + q + '</span>' +
+        '<button data-act="plus" data-id="' + esc(it.id) + '" aria-label="수량 늘리기">+</button></div>';
     var html = '<div class="pcard' + (q <= 0 ? ' sold' : '') + '" data-id="' + esc(it.id) + '">' +
       '<button class="pmenu" data-act="menu" data-id="' + esc(it.id) + '" aria-label="상품 메뉴">⋯</button>' +
       thumbHtml(it) +
@@ -749,11 +972,10 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       '<div class="ptop"><div class="pname" data-act="detail" data-id="' + esc(it.id) + '">' + esc(it.name) + '</div>' +
       '<span class="badge ' + st + '">' + st + '</span></div>' +
       '<div class="pmeta">' + esc(meta.join(' · ')) + '</div>' +
-      '<div class="pmoney">' + money + '</div>' +
-      '<div class="pact">' +
-      '<div class="stepper"><button data-act="minus" data-id="' + esc(it.id) + '" aria-label="수량 줄이기">−</button>' +
-      '<span class="q">' + q + '</span>' +
-      '<button data-act="plus" data-id="' + esc(it.id) + '" aria-label="수량 늘리기">+</button></div>' +
+      (hasVar(it) && q > 0 ? '<div class="szchips">' + sizeChips(it) + '</div>' : '') +
+      '<div class="pmoney"><span>' + money + '</span></div>' +
+      (tags ? '<div class="ptags">' + tags + '</div>' : '') +
+      '<div class="pact">' + act +
       '<button class="mini sell" data-act="sell" data-id="' + esc(it.id) + '"' + (q <= 0 ? ' disabled' : '') + '>판매</button>' +
       '<button class="mini" data-act="restock" data-id="' + esc(it.id) + '">입고</button>' +
       '</div></div></div>';
@@ -827,8 +1049,9 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   function txRow(t) {
     if (t.type === 'sale') {
       var margin = t.total ? Math.round((t.profit / t.total) * 1000) / 10 : 0;
-      var meta = dateLabel(t.date) + ' · ' + (t.venue || '판매') + ' · ' + t.qty + '개 × ' + won(t.unitPrice);
+      var meta = dateLabel(t.date) + ' · ' + (t.venue || '판매') + (t.size ? ' · ' + t.size : '') + ' · ' + t.qty + '개 × ' + won(t.unitPrice);
       if (t.fee || t.ship) meta += ' · 비용 ' + won(t.fee + t.ship);
+      if (t.costUnknown) meta += ' · 원가 미입력';
       return '<div class="tx">' +
         '<div class="tag sale">💰</div>' +
         '<div class="tbody"><div class="t1">' + esc(t.name) + '</div><div class="t2">' + esc(meta) + '</div></div>' +
@@ -837,7 +1060,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         '<button class="del" data-act="txdel" data-id="' + esc(t.id) + '" aria-label="삭제">✕</button>' +
         '</div>';
     }
-    var meta2 = dateLabel(t.date) + ' · 입고 ' + t.qty + '개 × ' + won(t.unitPrice);
+    var meta2 = dateLabel(t.date) + ' · 입고 ' + t.qty + '개' + (t.size ? ' ' + t.size : '') + ' × ' + won(t.unitPrice);
     if (t.venue) meta2 += ' · ' + t.venue;
     return '<div class="tx">' +
       '<div class="tag in">📥</div>' +
@@ -867,6 +1090,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     bar.innerHTML = htmlBar;
 
     var st = saleStats(cur);
+    var unkCnt = 0;
+    state.txns.forEach(function (t) { if (t.type === 'sale' && ymOf(t.date) === cur && t.costUnknown) unkCnt++; });
     var box = $('#plbody');
     var hero = '<div class="plhero">' +
       '<div class="lab">' + esc(monthLabel(cur)) + ' 순수익</div>' +
@@ -923,6 +1148,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     }).join('') : '';
 
     var emptyNote = st.count ? '' : '<div class="note" style="margin:-2px 2px 4px">이 달은 판매 기록이 없어요. 재고 탭에서 <b>[판매]</b>를 누르면 자동으로 집계됩니다.</div>';
+    if (unkCnt) emptyNote += '<div class="note" style="margin:-2px 2px 4px;color:#ffc978">원가 미입력 판매 ' + unkCnt + '건은 원가 0으로 계산되어 순수익이 실제보다 크게 보여요.</div>';
 
     box.innerHTML = emptyNote + hero + grid + barsHtml + catHtml;
   }
@@ -1086,14 +1312,19 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       '<div class="field"><label>카테고리</label><select id="f-cat">' +
       CATS.map(function (c) { return '<option value="' + c + '"' + (draft.cat === c ? ' selected' : '') + '>' + c + '</option>'; }).join('') +
       '</select></div>' +
-      '<div class="field"><label>수량</label><input id="f-qty" type="number" inputmode="numeric" min="0" step="1" value="' + (Number(draft.qty) || 0) + '" /></div>' +
+      '<div class="field" id="f-qty-wrap"><label>수량</label><input id="f-qty" type="number" inputmode="numeric" min="0" step="1" value="' + (Number(draft.qty) || 0) + '" /></div>' +
       '</div>';
 
     body += '<div class="row2">' +
-      '<div class="field"><label>' + (it ? '평균 원가' : '구매가 (원가)') + '<span class="req">*</span></label>' +
+      '<div class="field" id="f-price-wrap"><label>' + (it ? '평균 원가' : '구매가 (원가)') + '<span class="req">*</span></label>' +
       '<input id="f-price" type="number" inputmode="numeric" min="0" step="100" placeholder="0" value="' + (Number(draft.avgCost) ? Math.round(Number(draft.avgCost)) : '') + '" /></div>' +
       '<div class="field"><label>구매일</label><input id="f-date" type="date" placeholder="YYYY-MM-DD" value="' + esc(draft.buyDate || today()) + '" /></div>' +
       '</div>';
+
+    body += '<div class="field vsec"><label>사이즈·단가 <span style="color:#6d7480">(같은 상품의 사이즈가 여러 개면 각각 입력)</span></label>' +
+      '<div class="vrows" id="f-vars"></div>' +
+      '<div class="vadd"><button class="btn small" type="button" id="f-varadd">＋ 사이즈/단가 추가</button>' +
+      '<span class="vhint" id="f-varsum"></span></div></div>';
 
     body += '<div class="row2">' +
       '<div class="field"><label>구매처</label><select id="f-source">' +
@@ -1120,6 +1351,68 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       body: body,
       foot: foot,
       onMount: function (root) {
+        /* ---- 사이즈·단가 편집기 ---- */
+        var varBox = root.querySelector('#f-vars');
+        var varSum = root.querySelector('#f-varsum');
+        var qtyWrap = root.querySelector('#f-qty-wrap');
+        var priceWrap = root.querySelector('#f-price-wrap');
+
+        function readVars() {
+          return $$('.vrow', varBox).map(function (r) {
+            var size = r.querySelector('.v-size').value.trim();
+            var q = Math.max(0, Math.round(num(r.querySelector('.v-qty').value)));
+            var raw = r.querySelector('.v-cost').value.trim();
+            var c = null;
+            if (raw !== '') { var n = Math.max(0, num(raw)); c = n > 0 ? Math.round(n) : null; }
+            return { size: size, qty: q, cost: c };
+          }).filter(function (x) { return !!x.size || x.qty > 0 || x.cost != null; });
+        }
+
+        function refreshVar() {
+          var vars = readVars();
+          var rows = $$('.vrow', varBox);
+          var hasRows = rows.length > 0;
+          qtyWrap.classList.toggle('hidden', hasRows);
+          priceWrap.classList.toggle('hidden', hasRows);
+          var tot = 0, sum = 0, kq = 0;
+          vars.forEach(function (v) { tot += v.qty; if (v.cost != null) { sum += v.qty * v.cost; kq += v.qty; } });
+          var miss = tot - kq;
+          var rec = kq ? recommendPrice(Math.round(sum / kq)) : null;
+          if (!hasRows) {
+            varSum.innerHTML = '사이즈를 나누지 않으면 위 <b>수량·원가</b>로 계산해요';
+          } else {
+            varSum.innerHTML = '총 <b>' + tot + '개</b>' +
+              (kq ? ' · 평균 <b>' + won(Math.round(sum / kq)) + '</b>' : '') +
+              (rec ? ' · 추천 <b>' + won(rec) + '</b>' : '') +
+              (miss > 0 ? ' · <span style="color:#ffc978">가격 미입력 ' + miss + '개</span>' : '');
+          }
+        }
+
+        function addVarRow(v) {
+          v = v || { size: '', qty: 1, cost: null };
+          var row = document.createElement('div');
+          row.className = 'vrow';
+          row.innerHTML = '<input class="v-size" type="text" maxlength="12" placeholder="사이즈" value="' + esc(v.size || '') + '" />' +
+            '<input class="v-qty" type="number" inputmode="numeric" min="0" step="1" placeholder="수량" value="' + (v.qty == null ? 1 : v.qty) + '" />' +
+            '<input class="v-cost" type="number" inputmode="numeric" min="0" step="100" placeholder="단가" value="' + (v.cost == null ? '' : Math.round(v.cost)) + '" />' +
+            '<button class="vdel" type="button" aria-label="이 사이즈 삭제">✕</button>';
+          row.querySelector('.vdel').onclick = function () { row.remove(); refreshVar(); };
+          $$('input', row).forEach(function (i) { i.addEventListener('input', refreshVar); });
+          varBox.appendChild(row);
+          refreshVar();
+          return row;
+        }
+
+        root.querySelector('#f-varadd').onclick = function () {
+          var row = addVarRow();
+          var s = row.querySelector('.v-size');
+          if (s) s.focus();
+        };
+        if (hasVar(it)) {
+          it.variants.slice().sort(bySizeOrder).forEach(function (v) { addVarRow({ size: v.size, qty: v.qty, cost: v.cost }); });
+        }
+        refreshVar();
+
         var photo = draft.photo || '';
         var pv = root.querySelector('#pv');
         var delBtn = root.querySelector('[data-photo-del]');
@@ -1152,6 +1445,10 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         root.querySelector('#save-item').onclick = function () {
           var name = root.querySelector('#f-name').value.trim();
           if (!name) { toast('상품명을 넣어주세요'); root.querySelector('#f-name').focus(); return; }
+          var varRows = readVars();
+          var altRows = $$('.vrow', varBox);
+          if (altRows.length && !varRows.length) { toast('사이즈 이름을 넣어주세요'); return; }
+          if (varRows.some(function (v) { return !v.size; })) { toast('사이즈 이름을 넣어주세요'); return; }
           var price = Math.max(0, num(root.querySelector('#f-price').value));
           var qty = Math.max(0, Math.round(num(root.querySelector('#f-qty').value)));
           var src = srcSel.value === '직접입력' ? (root.querySelector('#f-source-etc').value.trim() || '직접입력') : srcSel.value;
@@ -1163,13 +1460,20 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
             memo: root.querySelector('#f-memo').value.trim(), photo: photo,
             updatedAt: Date.now()
           };
+          if (varRows.length) {
+            p.variants = varRows;
+            p.qty = 0; p.avgCost = 0;
+            syncVarTotals(p);
+          }
           if (it) {
+            if (!varRows.length) delete it.variants;
             Object.assign(it, p);
+            syncVarTotals(it);
             toast('수정했어요 · ' + esc(name));
           } else {
             p.id = uid('i');
             p.createdAt = Date.now();
-            p.totalInQty = qty;
+            p.totalInQty = p.qty;
             state.items.push(p);
             toast('등록 완료 · ' + esc(name));
           }
@@ -1209,12 +1513,25 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       '<div class="pmeta" style="margin-top:5px">' + esc(it.cat) + (it.source ? ' · ' + esc(it.source) : '') + (it.buyDate ? ' · ' + esc(dateLabelYear(it.buyDate)) : '') + '</div>' +
       '<div style="margin-top:7px"><span class="badge ' + st + '">' + st + '</span></div></div></div>';
 
+    var dq = itemQty(it);
+    var davg = itemAvg(it);
     body += '<div class="plgrid" style="margin:2px 0 0">' +
-      cell('잔여 수량', it.qty + '개', '') +
-      cell('평균 원가', won(it.avgCost), '') +
-      cell('재고 가치', won(it.qty * it.avgCost), '') +
+      cell('잔여 수량', dq + '개', '') +
+      cell('평균 원가', davg == null ? '가격 미입력' : won(davg), '') +
+      cell('재고 가치', won(itemValue(it)), '') +
       cell('누적 판매', sold + '개', '') +
       '</div>';
+    if (hasVar(it)) {
+      body += '<div class="sec-title" style="margin:2px 0 0">사이즈별 재고</div><div class="vlist">' +
+        it.variants.slice().sort(bySizeOrder).map(function (v) {
+          var rec = recommendPrice(v.cost);
+          return '<div class="vrow2" data-size="' + esc(v.size) + '">' +
+            '<span class="vs">' + esc(v.size) + '</span>' +
+            '<span class="vq">' + (Number(v.qty) || 0) + '개</span>' +
+            '<span class="vc' + (v.cost == null ? ' np' : '') + '">' + (v.cost == null ? '가격 미입력' : won(v.cost)) + '</span>' +
+            '<span class="vv">' + (rec == null ? '' : '추천 ' + wonShort(rec)) + '</span></div>';
+        }).join('') + '</div>';
+    }
     var netRow = '<div class="calc"><div class="line"><span>누적 매출</span><b>' + won(revenue) + '</b></div>' +
       '<div class="line total"><span>누적 순수익</span><b class="' + profitClass(profit) + '" style="color:' + (profit < 0 ? '#ff6b7a' : (profit > 0 ? '#3ecf8e' : '#eef0f4')) + '">' + won(profit) + '</b></div></div>';
     body += netRow;
@@ -1255,15 +1572,27 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   function openSell(id) {
     var it = itemById(id);
     if (!it) return;
-    var avail = Number(it.qty) || 0;
+    var isVar = hasVar(it);
+    var vlist = isVar ? heldSizes(it).slice().sort(bySizeOrder) : [];
+    var avail = isVar ? vlist.reduce(function (a, v) { return a + (Number(v.qty) || 0); }, 0) : (Number(it.qty) || 0);
     if (avail <= 0) { toast('재고가 없어요. [추가 입고]로 먼저 채워주세요'); return; }
-    var state2 = { mode: 'total', qty: 1 };
+    var sel = 0;
+    var state2 = { mode: 'total', qty: 1, venue: '크림', venueEtc: '' };
 
     var body = '';
     body += '<div class="calc" id="sell-item-line">' +
       '<div class="line"><span>' + esc(it.name) + '</span><b>잔여 ' + avail + '개</b></div>' +
-      '<div class="line"><span>평균 원가</span><b>' + won(it.avgCost) + '</b></div>' +
+      (isVar
+        ? '<div class="line"><span>사이즈</span><b>' + vlist.map(function (v) { return esc(v.size) + ' ' + (Number(v.qty) || 0); }).join(' · ') + '</b></div>'
+        : '<div class="line"><span>평균 원가</span><b>' + (itemAvg(it) == null ? '가격 미입력' : won(itemAvg(it))) + '</b></div>') +
       '</div>';
+
+    if (isVar) {
+      body += '<div class="field"><label>판매할 사이즈</label><select id="s-size">' +
+        vlist.map(function (v, i) {
+          return '<option value="' + i + '">' + esc(v.size) + ' · ' + (Number(v.qty) || 0) + '개 · ' + (v.cost == null ? '가격 미입력' : won(v.cost)) + '</option>';
+        }).join('') + '</select></div>';
+    }
 
     body += '<div class="row2">' +
       '<div class="field"><label>판매일</label><input id="s-date" type="date" placeholder="YYYY-MM-DD" value="' + today() + '" /></div>' +
@@ -1273,19 +1602,22 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     body += '<div class="field"><label>판매가</label>' +
       '<div class="seg" id="s-mode"><button class="on" data-mode="total">총액으로 입력</button><button data-mode="unit">개당 단가로</button></div>' +
       '<input id="s-price" type="number" inputmode="numeric" min="0" step="100" placeholder="0" style="margin-top:8px" />' +
+      '<div class="rechint" id="s-rec"></div>' +
+      '</div>';
+
+    body += '<div class="field"><label>판매처 <span style="color:#6d7480">(기본: 크림)</span></label>' +
+      '<div class="seg venues" id="s-venues">' +
+      SALE_VENUES.map(function (v, i) { return '<button type="button" class="' + (i === 0 ? 'on' : '') + '" data-venue="' + esc(v) + '">' + esc(v) + '</button>'; }).join('') +
+      '</div>' +
+      '<input id="s-venue-etc" class="hidden" type="text" maxlength="30" placeholder="판매처 직접입력" style="margin-top:8px" />' +
       '</div>';
 
     body += '<div class="row2">' +
-      '<div class="field"><label>판매처</label><select id="s-venue">' +
-      SOURCES.map(function (s) { return '<option value="' + s + '">' + s + '</option>'; }).join('') +
-      '</select></div>' +
       '<div class="field"><label>수수료 (원)</label><input id="s-fee" type="number" inputmode="numeric" min="0" step="100" placeholder="0" /></div>' +
+      '<div class="field"><label>배송비 (원)</label><input id="s-ship" type="number" inputmode="numeric" min="0" step="100" placeholder="0" /></div>' +
       '</div>';
 
-    body += '<div class="row2">' +
-      '<div class="field"><label>배송비 (원)</label><input id="s-ship" type="number" inputmode="numeric" min="0" step="100" placeholder="0" /></div>' +
-      '<div class="field"><label>메모</label><input id="s-memo" type="text" maxlength="300" placeholder="선택" /></div>' +
-      '</div>';
+    body += '<div class="field"><label>메모</label><input id="s-memo" type="text" maxlength="300" placeholder="선택" /></div>';
 
     body += '<div class="calc" id="s-calc"></div>';
     body += '<div class="note" id="s-warn" hidden style="color:#ffc978"></div>';
@@ -1303,35 +1635,59 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         var warnEl = root.querySelector('#s-warn');
         var modeEl = root.querySelector('#s-mode');
 
+        var sizeEl = root.querySelector('#s-size');
+        var recEl = root.querySelector('#s-rec');
+        var venueBox = root.querySelector('#s-venues');
+        var venueEtc = root.querySelector('#s-venue-etc');
+
+        function curVar() { return isVar ? vlist[sel] : null; }
+        function capQty() { var v = curVar(); return isVar ? (Number(v.qty) || 0) : avail; }
+        function unitCost() {
+          if (isVar) { var v = curVar(); return v.cost != null ? Math.round(v.cost) : null; }
+          var a = itemAvg(it);
+          return a == null ? null : a;
+        }
+
         function calc() {
+          var cap = capQty();
           var qty = Math.max(1, Math.round(num(qtyEl.value)));
-          if (qty > avail) qty = avail;
+          if (qty > cap) qty = cap;
           var input = Math.max(0, num(priceEl.value));
           var revenue = state2.mode === 'total' ? input : input * qty;
           var unit = qty ? revenue / qty : 0;
-          var costUnit = round(it.avgCost);
-          var cost = costUnit * qty;
+          var cU = unitCost();
+          var unknown = cU == null;
+          var cost = unknown ? 0 : cU * qty;
           var fee = Math.max(0, num(feeEl.value));
           var ship = Math.max(0, num(shipEl.value));
           var profit = revenue - cost - fee - ship;
           var margin = revenue ? (profit / revenue) * 100 : 0;
           calcEl.innerHTML =
             '<div class="line"><span>매출 (' + qty + '개 × ' + won(unit) + ')</span><b>' + won(revenue) + '</b></div>' +
-            '<div class="line"><span>원가 (' + qty + '개 × ' + won(costUnit) + ')</span><b>-' + won(cost) + '</b></div>' +
+            '<div class="line"><span>원가' + (isVar ? ' (' + esc(curVar().size) + ')' : '') + ' ' + qty + '개 × ' + (unknown ? '—' : won(cU)) + '</span><b>' + (unknown ? '가격 미입력' : '-' + won(cost)) + '</b></div>' +
             '<div class="line"><span>수수료·배송</span><b>-' + won(fee + ship) + '</b></div>' +
             '<div class="line total"><span>순이익 · 마진 ' + (revenue ? margin.toFixed(1) : '0.0') + '%</span>' +
             '<b style="color:' + (profit > 0 ? '#3ecf8e' : (profit < 0 ? '#ff6b7a' : '#eef0f4')) + '">' + won(profit) + '</b></div>';
-          if (qty > avail) { warnEl.hidden = false; warnEl.textContent = '잔여 ' + avail + '개까지만 판매할 수 있어요.'; }
+          var rec = recommendPrice(cU);
+          recEl.innerHTML = rec == null
+            ? '<span style="color:#7a8290">원가가 입력되지 않아 추천가를 계산하지 않아요</span>'
+            : '<span>목표 ' + targetMargin() + '% 추천 판매가 <b>' + won(rec) + '</b></span> <button type="button" class="recbtn" data-fill="' + rec + '">넣기</button>';
+          if (qty > cap) { warnEl.hidden = false; warnEl.textContent = '잔여 ' + cap + '개까지만 판매할 수 있어요.'; }
           else if (!input) { warnEl.hidden = false; warnEl.textContent = '판매가를 넣으면 순이익이 바로 계산돼요.'; }
+          else if (unknown) { warnEl.hidden = false; warnEl.textContent = '이 사이즈는 원가가 입력되지 않아 순이익에 원가가 빠져 있어요 (실제보다 크게 보입니다).'; }
           else warnEl.hidden = true;
-          return { qty: qty, revenue: revenue, unit: unit, cost: cost, costUnit: costUnit, fee: fee, ship: ship, profit: round(profit) };
+          return {
+            qty: qty, revenue: revenue, unit: unit, cost: cost, costUnit: unknown ? 0 : cU,
+            fee: fee, ship: ship, profit: round(profit), unknown: unknown
+          };
         }
         function bind() {
           [qtyEl, priceEl, feeEl, shipEl].forEach(function (el) {
             el.addEventListener('input', function () {
               if (el === qtyEl) {
+                var cap = capQty();
                 var v = Math.round(num(qtyEl.value));
-                if (v > avail) { qtyEl.value = avail; toast('잔여 수량은 ' + avail + '개예요'); }
+                if (v > cap) { qtyEl.value = cap; toast('잔여 수량은 ' + cap + '개예요'); }
               }
               calc();
             });
@@ -1347,6 +1703,30 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
             priceEl.value = m === 'unit' ? round(r.unit) : round(r.revenue);
             calc();
           });
+          if (sizeEl) {
+            sizeEl.addEventListener('change', function () {
+              sel = Number(sizeEl.value) || 0;
+              var cap = capQty();
+              qtyEl.max = cap;
+              if (Math.round(num(qtyEl.value)) > cap) qtyEl.value = cap;
+              calc();
+            });
+          }
+          venueBox.addEventListener('click', function (e) {
+            var b = e.target.closest('button[data-venue]');
+            if (!b) return;
+            state2.venue = b.getAttribute('data-venue');
+            $$('button', venueBox).forEach(function (x) { x.classList.toggle('on', x === b); });
+            venueEtc.classList.toggle('hidden', state2.venue !== '직접입력');
+            if (state2.venue === '직접입력') venueEtc.focus();
+          });
+          recEl.addEventListener('click', function (e) {
+            var b = e.target.closest('[data-fill]');
+            if (!b) return;
+            var v = Number(b.getAttribute('data-fill'));
+            priceEl.value = state2.mode === 'total' ? v * Math.max(1, Math.round(num(qtyEl.value))) : v;
+            calc();
+          });
         }
         bind();
         calc();
@@ -1357,21 +1737,28 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
           if (r.qty > avail) { toast('잔여 수량보다 많이 팔 수 없어요'); return; }
           if (r.revenue <= 0) { toast('판매가를 넣어주세요'); priceEl.focus(); return; }
           var date = normDate(root.querySelector('#s-date').value) || today();
-          var venue = root.querySelector('#s-venue').value;
+          var venue = state2.venue === '직접입력' ? (venueEtc.value.trim() || '직접입력') : state2.venue;
           var memo = root.querySelector('#s-memo').value.trim();
           var t = {
             id: uid('t'), type: 'sale', pid: it.id, name: it.name, date: date,
             qty: r.qty, unitPrice: round(r.unit), total: round(r.revenue),
             fee: r.fee, ship: r.ship, costUnit: r.costUnit, costTotal: r.cost,
-            profit: r.profit, venue: venue, memo: memo, createdAt: Date.now(), updatedAt: Date.now()
+            profit: r.profit, venue: venue, memo: memo, size: isVar ? curVar().size : '',
+            costUnknown: !!r.unknown, createdAt: Date.now(), updatedAt: Date.now()
           };
-          it.qty = Math.max(0, avail - r.qty);
+          if (isVar) {
+            var v0 = curVar();
+            v0.qty = Math.max(0, (Number(v0.qty) || 0) - r.qty);
+            syncVarTotals(it);
+          } else {
+            it.qty = Math.max(0, avail - r.qty);
+          }
           it.updatedAt = Date.now();
           state.txns.push(t);
           save();
           closeSheet();
           renderAll();
-          toast('판매 기록 완료 · 순이익 <b>' + won(r.profit) + '</b>' + (it.qty === 0 ? ' · 완판' : ' · 잔여 ' + it.qty + '개'));
+          toast('판매 기록 완료 · 순이익 <b>' + won(r.profit) + '</b>' + (itemQty(it) === 0 ? ' · 완판' : ' · 잔여 ' + itemQty(it) + '개'));
         };
       }
     });
@@ -1384,10 +1771,19 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   function openRestock(id) {
     var it = itemById(id);
     if (!it) return;
-    var curQty = Number(it.qty) || 0, curCost = Number(it.avgCost) || 0;
+    var isVar = hasVar(it);
+    var curQty = itemQty(it), curCost = Number(it.avgCost) || 0;
     var body = '';
     body += '<div class="calc"><div class="line"><span>' + esc(it.name) + '</span><b>잔여 ' + curQty + '개</b></div>' +
-      '<div class="line"><span>현재 평균 원가</span><b>' + won(curCost) + '</b></div></div>';
+      '<div class="line"><span>현재 ' + (isVar ? '가중 평균' : '평균') + ' 원가</span><b>' + (itemAvg(it) == null ? '가격 미입력' : won(itemAvg(it))) + '</b></div></div>';
+    if (isVar) {
+      body += '<div class="field"><label>사이즈</label><select id="r-size">' +
+        it.variants.slice().sort(bySizeOrder).map(function (v) {
+          return '<option value="' + esc(v.size) + '">' + esc(v.size) + ' · ' + (Number(v.qty) || 0) + '개' + (v.cost == null ? ' · 가격 미입력' : ' · ' + won(v.cost)) + '</option>';
+        }).join('') +
+        '<option value="__new">＋ 새 사이즈 추가</option></select>' +
+        '<input id="r-size-new" class="hidden" type="text" maxlength="12" placeholder="새 사이즈 (예: XL)" style="margin-top:8px" /></div>';
+    }
     body += '<div class="row2">' +
       '<div class="field"><label>입고일</label><input id="r-date" type="date" placeholder="YYYY-MM-DD" value="' + today() + '" /></div>' +
       '<div class="field"><label>수량</label><input id="r-qty" type="number" inputmode="numeric" min="1" step="1" value="1" /></div>' +
@@ -1406,40 +1802,86 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         var qtyEl = root.querySelector('#r-qty');
         var priceEl = root.querySelector('#r-price');
         var calcEl = root.querySelector('#r-calc');
+        var sizeEl = root.querySelector('#r-size');
+        var newEl = root.querySelector('#r-size-new');
+
+        function curVar() {
+          if (!isVar) return null;
+          if (sizeEl.value === '__new') return { size: (newEl.value || '').trim(), qty: 0, cost: null, isNew: 1 };
+          var f = null;
+          it.variants.forEach(function (v) { if (v.size === sizeEl.value) f = v; });
+          return f;
+        }
+        function syncPrice() {
+          var v = curVar();
+          priceEl.value = (v && v.cost != null) ? Math.round(v.cost) : '';
+          calc();
+        }
         function calc() {
           var q = Math.max(1, Math.round(num(qtyEl.value)));
-          var p = Math.max(0, num(priceEl.value));
-          var totalQ = curQty + q;
-          var avg = totalQ > 0 ? (curCost * curQty + p * q) / totalQ : p;
-          calcEl.innerHTML = '<div class="line"><span>입고 금액</span><b>' + (p ? won(p * q) : '—') + '</b></div>' +
-            '<div class="line"><span>입고 후 재고</span><b>' + totalQ + '개</b></div>' +
-            '<div class="line total"><span>새 평균 원가</span><b>' + (p ? won(avg) : won(curCost) + ' (그대로)') + '</b></div>';
-          return { q: q, p: p, avg: avg };
+          var raw = String(priceEl.value).trim();
+          var p = raw === '' ? null : Math.max(0, num(raw));
+          var v = curVar();
+          var beforeQ = isVar ? (v ? (Number(v.qty) || 0) : 0) : curQty;
+          var beforeC = isVar ? ((v && v.cost != null) ? Number(v.cost) : 0) : curCost;
+          var afterQ = beforeQ + q;
+          var sizeAvg = p == null ? ((v && v.cost != null) ? Number(v.cost) : null)
+            : (beforeC && beforeQ ? (beforeC * beforeQ + p * q) / afterQ : p);
+          var totQ = curQty + q;
+          var totVal = itemValue(it) + (p == null ? 0 : p * q);
+          var knownQ = costKnownQty(it) + (p == null ? 0 : q);
+          calcEl.innerHTML = '<div class="line"><span>입고 금액</span><b>' + (p == null ? '—' : won(p * q)) + '</b></div>' +
+            '<div class="line"><span>' + (isVar ? esc((v && v.size) || '새 사이즈') + ' 입고 후 수량' : '입고 후 재고') + '</span><b>' + afterQ + '개</b></div>' +
+            '<div class="line"><span>' + (isVar ? '이 사이즈 평균 단가' : '새 평균 원가') + '</span><b>' + (sizeAvg == null ? '가격 미입력' : won(Math.round(sizeAvg))) + '</b></div>' +
+            '<div class="line total"><span>전체 재고 · 가중 평균</span><b>' + totQ + '개 · ' + (knownQ ? won(Math.round(totVal / knownQ)) : '가격 미입력') + '</b></div>';
+          return { q: q, p: p, v: v, afterQ: afterQ, totQ: totQ };
+        }
+        if (sizeEl) {
+          sizeEl.addEventListener('change', function () {
+            var isNew = sizeEl.value === '__new';
+            newEl.classList.toggle('hidden', !isNew);
+            if (isNew) { newEl.focus(); priceEl.value = ''; calc(); }
+            else syncPrice();
+          });
+          if (newEl) newEl.addEventListener('input', calc);
         }
         qtyEl.addEventListener('input', calc);
         priceEl.addEventListener('input', calc);
-        calc();
+        if (isVar) syncPrice(); else calc();
         root.querySelector('[data-x4]').onclick = closeSheet;
         root.querySelector('#r-go').onclick = function () {
           var r = calc();
           if (r.q < 1) { toast('수량을 1개 이상 넣어주세요'); return; }
-          if (r.p <= 0) { toast('개당 단가를 넣어주세요'); priceEl.focus(); return; }
+          var v = r.v;
+          if (isVar) {
+            if (!v || !v.size) { toast('사이즈를 확인해 주세요'); if (newEl) newEl.focus(); return; }
+            if (v.isNew) it.variants.push({ size: v.size, qty: r.q, cost: r.p });
+            else {
+              var bq = Number(v.qty) || 0;
+              var nq = bq + r.q;
+              if (r.p != null) v.cost = (v.cost != null && bq > 0) ? Math.round((v.cost * bq + r.p * r.q) / nq) : r.p;
+              v.qty = nq;
+            }
+            syncVarTotals(it);
+          } else {
+            if (r.p == null) { toast('개당 단가를 넣어주세요'); priceEl.focus(); return; }
+            it.qty = curQty + r.q;
+            it.avgCost = r.totQ > 0 ? (curCost * curQty + r.p * r.q) / r.totQ : r.p;
+          }
+          it.totalInQty = (Number(it.totalInQty) || 0) + r.q;
+          if (!(it.status === '예약중' && itemQty(it) > 0)) it.status = '판매중';
+          it.updatedAt = Date.now();
           var t = {
             id: uid('t'), type: 'in', pid: it.id, name: it.name,
             date: normDate(root.querySelector('#r-date').value) || today(),
-            qty: r.q, unitPrice: round(r.p), total: round(r.p * r.q),
-            fee: 0, ship: 0, costUnit: round(r.avg), costTotal: round(r.p * r.q), profit: 0,
-            venue: root.querySelector('#r-src').value, memo: '',
+            qty: r.q, unitPrice: r.p == null ? 0 : round(r.p), total: r.p == null ? 0 : round(r.p * r.q),
+            fee: 0, ship: 0, costUnit: round(itemAvg(it) || 0), costTotal: r.p == null ? 0 : round(r.p * r.q), profit: 0,
+            venue: root.querySelector('#r-src').value, memo: '', size: isVar ? v.size : '',
             createdAt: Date.now(), updatedAt: Date.now()
           };
-          it.qty = curQty + r.q;
-          it.avgCost = r.avg;
-          it.totalInQty = (Number(it.totalInQty) || curQty) + r.q;
-          if (it.status === '예약중' && it.qty > 0) { /* keep */ } else { it.status = '판매중'; }
-          it.updatedAt = Date.now();
           state.txns.push(t);
           save(); closeSheet(); renderAll();
-          toast('입고 완료 · ' + r.q + '개 · 새 평균 원가 ' + won(r.avg));
+          toast('입고 완료 · ' + r.q + '개' + (isVar ? ' (' + esc(v.size) + ')' : '') + ' · ' + (itemAvg(it) == null ? '단가 미입력' : '평균 원가 ' + won(itemAvg(it))));
         };
       }
     });
@@ -1488,10 +1930,23 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       state.txns = state.txns.filter(function (x) { return x.id !== id; });
       state.deletedTxnIds.push(id);
       if (it) {
-        if (t.type === 'sale') {
+        if (hasVar(it) && t.size) {
+          var tgt = null;
+          it.variants.forEach(function (v) { if (v.size === t.size) tgt = v; });
+          if (!tgt && t.type === 'sale') {
+            tgt = { size: t.size, qty: 0, cost: t.costUnknown ? null : (Number(t.costUnit) || null) };
+            it.variants.push(tgt);
+          }
+          if (tgt) {
+            if (t.type === 'sale') tgt.qty = (Number(tgt.qty) || 0) + t.qty;
+            else tgt.qty = Math.max(0, (Number(tgt.qty) || 0) - t.qty);
+          }
+          syncVarTotals(it);
+          if (itemQty(it) > 0 && it.status !== '예약중') it.status = '판매중';
+        } else if (t.type === 'sale') {
           var addBack = t.qty;
           var newQ = (Number(it.qty) || 0) + addBack;
-          var cUnit = Number(t.costUnit) || 0;
+          var cUnit = t.costUnknown ? 0 : (Number(t.costUnit) || 0);
           it.avgCost = newQ > 0 ? ((Number(it.avgCost) || 0) * (Number(it.qty) || 0) + cUnit * addBack) / newQ : cUnit;
           it.qty = newQ;
           if (it.status === '예약중') { /* keep */ } else it.status = '판매중';
@@ -1523,6 +1978,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   function quickQty(id, delta) {
     var it = itemById(id);
     if (!it) return;
+    if (hasVar(it)) { toast('사이즈별 상품은 [판매]·[입고]에서 해당 사이즈로 조정해요'); return; }
     var q = (Number(it.qty) || 0) + delta;
     if (q < 0) { toast('0개 아래로는 줄일 수 없어요'); return; }
     it.qty = q;
@@ -1620,6 +2076,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     return {
       items: state.items, txns: state.txns,
       deletedIds: state.deletedIds, deletedTxnIds: state.deletedTxnIds,
+      settings: { targetMargin: targetMargin() },
       updatedAt: state.updatedAt
     };
   }
@@ -1701,11 +2158,18 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       if (Number(r.updatedAt || 0) > Number(cur.updatedAt || 0)) { txns[r.id] = r; stats.updated++; }
     });
     var merged = {
-      v: 1,
+      v: 2,
       items: order.map(function (k) { return items[k]; }).filter(function (x) { return !delIds[String(x.id)]; }),
       txns: torder.map(function (k) { return txns[k]; }).filter(function (x) { return !delTx[String(x.id)]; }),
       deletedIds: Object.keys(delIds),
       deletedTxnIds: Object.keys(delTx),
+      settings: {
+        targetMargin: normMargin(
+          (Number(local.updatedAt) || 0) >= (Number(remote.updatedAt) || 0)
+            ? (local.settings && local.settings.targetMargin)
+            : (remote.settings && remote.settings.targetMargin)
+        )
+      },
       updatedAt: Math.max(Number(local.updatedAt) || 0, Number(remote.updatedAt) || 0)
     };
     stats.changed = JSON.stringify(merged) !== JSON.stringify(local);
@@ -1826,7 +2290,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       '· 14일 넘게 접속이 없으면 자동으로 다시 올려 보관 기간을 늘립니다.</div>';
     body += '<div class="syncbox" style="margin-top:2px"><div class="st"><b>백업 파일</b></div>' +
       '<p class="desc">JSON 파일로 내려받아 두면 클라우드와 상관없이 되살릴 수 있어요.</p>' +
-      '<div class="syncacts"><button class="btn" data-s="export">📥 내보내기</button><button class="btn" data-s="import">📤 불러오기</button></div></div>';
+      '<div class="syncacts"><button class="btn" data-s="export">📥 내보내기</button><button class="btn" data-s="import">📤 불러오기</button></div>' +
+      '<div class="syncacts"><button class="btn" data-s="csvinv">📄 재고 CSV</button><button class="btn" data-s="csvtx">📄 거래 CSV</button></div></div>';
 
     var sheet = openSheet({
       title: '동기화 · 백업',
@@ -1881,6 +2346,10 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
             syncNow({}).then(function () { openSyncSheet(); });
           } else if (a === 'export') {
             exportJson();
+          } else if (a === 'csvinv') {
+            exportInventoryCsv();
+          } else if (a === 'csvtx') {
+            exportTxnCsv();
           } else if (a === 'import') {
             $('#import-file').click();
           }
@@ -1954,19 +2423,127 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   }
 
   /* ============================================================
+     목표 마진율 · CSV
+     ============================================================ */
+  function openMarginSheet() {
+    var cur = targetMargin();
+    var body = '<div class="field"><label>목표 마진율</label>' +
+      '<div class="seg" id="m-seg">' +
+      [10, 20, 30, 40].map(function (m) { return '<button type="button" class="' + (m === cur ? 'on' : '') + '" data-m="' + m + '">' + m + '%</button>'; }).join('') +
+      '</div>' +
+      '<input id="m-input" type="number" inputmode="numeric" min="5" max="80" step="1" value="' + cur + '" style="margin-top:8px" /></div>' +
+      '<div class="calc" id="m-calc"></div>' +
+      '<div class="note">상품·사이즈마다 추천 판매가(원가 ÷ (1 − 목표마진), 100원 단위 올림)를 계산해 카드와 판매 화면에 보여 줍니다. 수수료·배송비는 빼지 않은 값이에요.</div>';
+    var sheet = openSheet({
+      title: '목표 마진율', sub: '판매가 추천', body: body,
+      foot: '<button class="btn ghost" data-x5="1">취소</button><button class="btn primary" id="m-save">저장</button>',
+      onMount: function (root) {
+        var input = root.querySelector('#m-input');
+        var calcEl = root.querySelector('#m-calc');
+        function preview() {
+          var m = normMargin(input.value);
+          function recOf(cost) { return Math.ceil((cost / (1 - m / 100)) / 100) * 100; }
+          calcEl.innerHTML = '<div class="line"><span>목표 마진</span><b>' + m + '%</b></div>' +
+            '<div class="line"><span>예: 원가 ₩62,000</span><b>추천 ' + won(recOf(62000)) + '</b></div>' +
+            '<div class="line total"><span>예: 원가 ₩80,000</span><b>추천 ' + won(recOf(80000)) + '</b></div>';
+        }
+        root.querySelector('#m-seg').addEventListener('click', function (e) {
+          var b = e.target.closest('button[data-m]');
+          if (!b) return;
+          input.value = b.getAttribute('data-m');
+          $$('#m-seg button').forEach(function (x) { x.classList.toggle('on', x === b); });
+          preview();
+        });
+        input.addEventListener('input', preview);
+        preview();
+        root.querySelector('[data-x5]').onclick = closeSheet;
+        root.querySelector('#m-save').onclick = function () {
+          var m = normMargin(input.value);
+          if (!state.settings) state.settings = { targetMargin: 20 };
+          state.settings.targetMargin = m;
+          save(); closeSheet(); renderAll();
+          toast('목표 마진 ' + m + '%로 저장했어요');
+        };
+      }
+    });
+    return sheet;
+  }
+
+  function csvEsc(v) {
+    var s = String(v == null ? '' : v);
+    if (/[",\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+  function csvDownload(name, rows) {
+    var text = rows.map(function (r) { return r.map(csvEsc).join(','); }).join('\r\n');
+    /* 한국어 엑셀에서 깨지지 않도록 UTF-8 BOM */
+    var blob = new Blob(['\uFEFF' + text], { type: 'text/csv;charset=utf-8;' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  }
+
+  function exportInventoryCsv() {
+    var rows = [['상품명', '카테고리', '사이즈', '수량', '개당단가', '재고원가', '추천판매가', '구매처', '구매일', '상태', '메모']];
+    state.items.forEach(function (it) {
+      var st = effStatus(it);
+      if (hasVar(it)) {
+        it.variants.slice().sort(bySizeOrder).forEach(function (v) {
+          var rec = recommendPrice(v.cost);
+          rows.push([it.name, it.cat, v.size, Number(v.qty) || 0,
+            v.cost == null ? '' : Math.round(v.cost),
+            v.cost == null ? '' : Math.round((Number(v.qty) || 0) * v.cost),
+            rec == null ? '' : rec, it.source, it.buyDate, st, it.memo]);
+        });
+      } else {
+        var avg = itemAvg(it), rec2 = recommendPrice(avg);
+        rows.push([it.name, it.cat, '', itemQty(it), avg == null ? '' : avg, itemValue(it) || '',
+          rec2 == null ? '' : rec2, it.source, it.buyDate, st, it.memo]);
+      }
+    });
+    csvDownload('resellbook-inventory-' + today() + '.csv', rows);
+    toast('재고 CSV 내려받았어요 · ' + (rows.length - 1) + '줄');
+  }
+
+  function exportTxnCsv() {
+    var rows = [['날짜', '구분', '상품명', '사이즈', '수량', '단가', '총액', '원가', '수수료', '배송비', '순이익', '마진율(%)', '판매처', '메모']];
+    state.txns.slice().sort(function (a, b) {
+      if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+      return (a.createdAt || 0) - (b.createdAt || 0);
+    }).forEach(function (t) {
+      var margin = (t.type === 'sale' && t.total) ? Math.round((t.profit / t.total) * 1000) / 10 : '';
+      rows.push([t.date, t.type === 'sale' ? '판매' : '입고', t.name, t.size || '', t.qty,
+        Math.round(t.unitPrice), Math.round(t.total), t.costUnknown ? '' : Math.round(t.costTotal),
+        Math.round(t.fee), Math.round(t.ship), Math.round(t.profit), margin, t.venue, t.memo]);
+    });
+    csvDownload('resellbook-transactions-' + today() + '.csv', rows);
+    toast('거래 CSV 내려받았어요 · ' + (rows.length - 1) + '건');
+  }
+
+  /* ============================================================
      menu
      ============================================================ */
   function openMenu() {
     var inv = invStats();
     var sizeTxt = '—';
     try { sizeTxt = (JSON.stringify(state).length / 1024).toFixed(0) + 'KB'; } catch (e) { }
-    var body = '<div class="syncbox"><div class="ownername">📒 리셀북 <span style="color:#7a8290">v1.0</span></div>' +
+    var body = '<div class="syncbox"><div class="ownername">📒 리셀북 <span style="color:#7a8290">v1.1</span></div>' +
       '<p class="desc">재고 ' + state.items.length + '종 · 거래 ' + state.txns.length + '건 · 저장 ' + sizeTxt + '</p>' +
       '<div class="syncacts">' +
       '<button class="btn" data-mm="sync">🔄 동기화</button>' +
+      '<button class="btn" data-mm="margin">🎯 목표 마진 ' + targetMargin() + '%</button>' +
       '<button class="btn" data-mm="export">📥 백업 내보내기</button>' +
       '<button class="btn" data-mm="import">📤 불러오기</button>' +
+      '</div>' +
+      '<div class="syncacts">' +
+      '<button class="btn" data-mm="csvinv">📄 재고 CSV</button>' +
+      '<button class="btn" data-mm="csvtx">📄 거래 CSV</button>' +
       '</div></div>' +
+      '<div class="note">· 판매는 보통 크림에서 이뤄져 판매처 기본값을 크림으로 두었어요.<br />' +
+      '· CSV는 엑셀에서 한글이 깨지지 않게 저장됩니다(UTF-8 BOM).</div>' +
       '<div class="note">· 기록은 이 기기 브라우저에 저장되고, 동기화를 켜면 다른 기기와도 맞춰져요.<br />' +
       '· 이 페이지는 검색엔진에 노출되지 않아요.<br />' +
       '· 사진은 넣을 때 자동으로 줄여서 저장합니다.</div>';
@@ -1978,6 +2555,9 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       if (a === 'sync') { closeSheet(); openSyncSheet(); }
       if (a === 'export') exportJson();
       if (a === 'import') $('#import-file').click();
+      if (a === 'margin') { closeSheet(); openMarginSheet(); }
+      if (a === 'csvinv') exportInventoryCsv();
+      if (a === 'csvtx') exportTxnCsv();
     });
   }
 
@@ -2088,7 +2668,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   /* expose a tiny hook for self-checks */
   window.__resellbook = {
     get state() { return state; },
-    version: '1.0'
+    version: '1.1'
   };
 })();
 
