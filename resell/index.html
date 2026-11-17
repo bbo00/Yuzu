@@ -821,7 +821,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     var s = invStats();
     var sub = $('#head-sub');
     if (!state.items.length) { sub.textContent = '재고와 손익을 한 곳에'; return; }
-    sub.textContent = '재고 ' + s.kinds + '종 · 잔여 ' + s.qty + '개 · ' + wonShort(s.value) + (s.lowStock ? ' · 임박 ' + s.lowStock : '');
+    sub.textContent = '재고 ' + s.kinds + '종 · 잔여 ' + s.qty + '개 · ' + wonShort(s.value);
   }
 
   function renderMonthbar() {
