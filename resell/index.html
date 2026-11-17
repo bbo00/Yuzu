@@ -1852,6 +1852,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
               if (!ok) return;
               syncCfg.ns = syncNewNs();
               syncCfg.rev = 0;
+              syncCfg.lastRemoteRev = 0;
               syncCfg.lastPushTs = 0;
               syncCfg.lastError = '';
               syncCfg.dirty = true;
@@ -1869,13 +1870,13 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
               ok: '해제'
             }).then(function (ok2) {
               if (!ok2) return;
-              syncCfg.ns = ''; syncCfg.rev = 0; syncCfg.lastPushTs = 0; syncCfg.lastError = '';
+              syncCfg.ns = ''; syncCfg.rev = 0; syncCfg.lastRemoteRev = 0; syncCfg.lastPushTs = 0; syncCfg.lastError = '';
               syncSave(); renderAll(); closeSheet(); openSyncSheet();
             });
           } else if (a === 'join') {
             var v = (root.querySelector('#ns-input').value || '').trim();
             if (!/^resellbook-[a-z0-9]{6,}$/.test(v)) { toast('코드 형식이 맞지 않아요 (resellbook-…)'); return; }
-            syncCfg.ns = v; syncCfg.rev = 0; syncCfg.lastPushTs = 0; syncCfg.lastError = '';
+            syncCfg.ns = v; syncCfg.rev = 0; syncCfg.lastRemoteRev = 0; syncCfg.lastPushTs = 0; syncCfg.lastError = '';
             syncSave(); closeSheet();
             syncNow({}).then(function () { openSyncSheet(); });
           } else if (a === 'export') {
@@ -2048,6 +2049,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     if (syncCfg.ns === k) return;
     syncCfg.ns = k;
     syncCfg.rev = 0;
+    syncCfg.lastRemoteRev = 0;
     syncCfg.lastPushTs = 0;
     syncCfg.lastError = '';
     syncSave();
