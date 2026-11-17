@@ -1409,9 +1409,9 @@ input,select,textarea,button{font-family:inherit}
           var p = Math.max(0, num(priceEl.value));
           var totalQ = curQty + q;
           var avg = totalQ > 0 ? (curCost * curQty + p * q) / totalQ : p;
-          calcEl.innerHTML = '<div class="line"><span>입고 금액</span><b>' + won(p * q) + '</b></div>' +
+          calcEl.innerHTML = '<div class="line"><span>입고 금액</span><b>' + (p ? won(p * q) : '—') + '</b></div>' +
             '<div class="line"><span>입고 후 재고</span><b>' + totalQ + '개</b></div>' +
-            '<div class="line total"><span>새 평균 원가</span><b>' + won(avg) + '</b></div>';
+            '<div class="line total"><span>새 평균 원가</span><b>' + (p ? won(avg) : won(curCost) + ' (그대로)') + '</b></div>';
           return { q: q, p: p, avg: avg };
         }
         qtyEl.addEventListener('input', calc);
@@ -1633,7 +1633,7 @@ input,select,textarea,button{font-family:inherit}
       chain = chain.then(function () { return syncPost(nsForPart(i) + '/v1/p' + i, { c: p }); });
     });
     return chain.then(function () {
-      var rev = Math.max(Number(syncCfg.rev) || 0, 0) + 1;
+      var rev = Math.max(Number(syncCfg.rev) || 0, Number(syncCfg.lastRemoteRev) || 0) + 1;
       var manifest = {
         t: 1, app: 'resellbook', rev: rev, ts: Date.now(), device: syncCfg.deviceId,
         parts: parts.map(function (p, i) { return { ns: nsForPart(i), k: 'v1/p' + i }; }),
@@ -1642,6 +1642,7 @@ input,select,textarea,button{font-family:inherit}
       };
       return syncPost(syncCfg.ns + '/v1/manifest', manifest).then(function () {
         syncCfg.rev = rev;
+        syncCfg.lastRemoteRev = rev;
         syncCfg.lastSync = Date.now();
         syncCfg.lastPushTs = manifest.ts;
         syncCfg.lastCount = manifest.counts;
@@ -1723,6 +1724,7 @@ input,select,textarea,button{font-family:inherit}
         syncCfg.rev = 0;
       } else {
         var m = res.manifest;
+        syncCfg.lastRemoteRev = Number(m.rev) || 0;
         if (m.rev === syncCfg.rev && Number(m.ts) <= Number(syncCfg.lastPushTs || 0) && !syncCfg.dirty) {
           syncCfg.lastSync = Date.now();
           syncCfg.lastCount = m.counts || syncCfg.lastCount;
@@ -1808,6 +1810,9 @@ input,select,textarea,button{font-family:inherit}
       body += '<div class="syncacts"><button class="btn" data-s="now">지금 동기화</button>' +
         '<button class="btn" data-s="link">기기 연결 링크 복사</button>' +
         '<button class="btn" data-s="new">새 코드 만들기</button></div>';
+      body += '<div class="syncacts"><button class="btn ghost" data-s="switch">다른 코드로 연결</button>' +
+        '<button class="btn ghost" data-s="off">연결 해제</button></div>';
+      body += '<div class="codebox hidden" id="switch-box"><input placeholder="받은 코드 붙여넣기 (resellbook-…)" id="ns-input" /><button class="btn small" data-s="join">연결</button></div>';
     } else {
       body += '<p class="desc">코드를 만들면 다른 기기에서도 같은 재고·거래 기록을 볼 수 있어요. 가입이나 로그인은 없습니다.</p>';
       body += '<div class="syncacts"><button class="btn primary" data-s="new" style="flex:1">새 동기화 코드 만들기</button></div>';
@@ -1851,6 +1856,19 @@ input,select,textarea,button{font-family:inherit}
               syncSave();
               closeSheet();
               syncNow({}).then(function () { openSyncSheet(); });
+            });
+          } else if (a === 'switch') {
+            var box = root.querySelector('#switch-box');
+            if (box) { box.classList.toggle('hidden'); var inp = box.querySelector('#ns-input'); if (inp && !box.classList.contains('hidden')) inp.focus(); }
+          } else if (a === 'off') {
+            confirmSheet({
+              title: '연결 해제',
+              text: '이 기기의 기록은 그대로 남고, 자동 동기화만 멈춥니다. 다시 연결하면 같은 코드로 이어집니다.',
+              ok: '해제'
+            }).then(function (ok2) {
+              if (!ok2) return;
+              syncCfg.ns = ''; syncCfg.rev = 0; syncCfg.lastPushTs = 0; syncCfg.lastError = '';
+              syncSave(); renderAll(); closeSheet(); openSyncSheet();
             });
           } else if (a === 'join') {
             var v = (root.querySelector('#ns-input').value || '').trim();
