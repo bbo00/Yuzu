@@ -32,6 +32,8 @@ body{
 }
 button{font-family:inherit;cursor:pointer}
 input,select,textarea,button{font-family:inherit}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .hidden{display:none !important}
 
 /* ---------- header ---------- */
@@ -2011,10 +2013,7 @@ input,select,textarea,button{font-family:inherit}
   });
   $('#fab').addEventListener('click', function () { openItemForm(); });
   $('#btn-menu').addEventListener('click', openMenu);
-  $('#btn-sync').addEventListener('click', function () {
-    if (!syncOn()) openSyncSheet();
-    else syncNow({}).then(function () { }).catch(function () { });
-  });
+  $('#btn-sync').addEventListener('click', function () { openSyncSheet(); });
 
   var qTimer = null;
   $('#q').addEventListener('input', function (e) {
