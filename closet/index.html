@@ -4627,7 +4627,13 @@
       L.deletedIds = Array.from(delIds);
       L.deletedAclosetIds = Array.from(delAcl);
       L.deletedLookbookIds = Array.from(delLb);
-      if (!L.user && R.user) L.user = R.user;
+      /* v8.16: 이 기기에 옷장이 없던 경우 클라우드의 사용자 설정(지역 메모 등)도 함께 받아온다.
+         이 기기에 이미 값이 있으면 그 값을 그대로 둔다. */
+      if (!L.user) L.user = R.user;
+      else if (R.user) {
+        if (!L.user.location && R.user.location) L.user.location = R.user.location;
+        if (!L.user.name && R.user.name) L.user.name = R.user.name;
+      }
       stats.delNew = lDelOnly;
       try { stats.changed = JSON.stringify(L) !== JSON.stringify(local); } catch (e) { stats.changed = !!(stats.added || stats.updated); }
       return { data: L, stats };
