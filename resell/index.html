@@ -1134,8 +1134,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         var hp = maxRev > 0 ? clamp((b.s.profit / maxRev) * 100, 0, 100) : 0;
         return '<div class="barcol">' +
           '<div class="pair">' +
-          '<div class="bar rev" style="height:' + h + '%"></div>' +
-          '<div class="bar prf" style="height:' + hp + '%"></div>' +
+          (h > 0 ? '<div class="bar rev" style="height:' + h + '%"></div>' : '') +
+          (hp > 0 ? '<div class="bar prf" style="height:' + hp + '%"></div>' : '') +
           '</div>' +
           '<div class="lbl">' + esc(monthLabel(b.m)) + '</div>' +
           '</div>';
