@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>마이 스마트 옷장 (My Closet 8.16)</title>
+  <title>마이 스마트 옷장 (My Closet 8.17)</title>
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
   <meta name="robots" content="noindex, nofollow">
@@ -1181,7 +1181,7 @@
         <div class="sync-section">
           <div class="sync-section-title">2️⃣ 다른 기기에서 이어받기 (코드 입력)</div>
           <input type="text" id="sync-join-input" class="form-input" placeholder="예: yujacloset-ab12cd34ef" style="font-size:0.8rem;">
-          <button type="button" class="btn-submit" style="margin-top:8px; background:#0ea5e9;" onclick="joinSyncCode()">📲 이 코드로 연결</button>
+          <button type="button" class="btn-submit" id="btn-sync-join" style="margin-top:8px; background:#0ea5e9;" onclick="joinSyncCode()">📲 이 코드로 연결</button>
           <div class="sync-note">위의 코드를 그대로 붙여넣으면 이 기기의 옷장이 코드와 합쳐집니다. 기존 옷은 지워지지 않습니다.</div>
         </div>
 
@@ -4402,6 +4402,7 @@
     let syncApplying = false;
     let syncTimer = null;
     let itemSigs = null;
+    let syncProgress = null;   // v8.17: 클라우드 불러오기 진행 상황 {done,total}
 
     function syncLoadCfg() {
       try {
@@ -4549,16 +4550,42 @@
     }
 
     async function syncReadRemoteData(manifest) {
-      let buf = '';
-      for (const p of manifest.parts) {
-        const part = await syncGet(p.ns + '/' + p.k);
-        if (!part || typeof part.c !== 'string') {
-          const e = new Error('원격 조각이 만료되었습니다');
-          e.code = 'SYNC_EXPIRED';
-          throw e;
+      /* v8.17: 75조각 내외를 한 개씩 받으면 40초 넘게 걸려 '빈 옷장'처럼 보였다.
+         6개씩 병렬로 받고 진행률을 표시한다. 순서는 배열 인덱스로 보존. */
+      const list = manifest.parts || [];
+      const out = new Array(list.length);
+      let next = 0, done = 0;
+      syncProgress = { done: 0, total: list.length };
+      renderSyncStatus();
+      const worker = async () => {
+        for (;;) {
+          const i = next++;
+          if (i >= list.length) return;
+          const p = list[i];
+          let part = null, lastErr = null;
+          for (let attempt = 0; attempt < 2; attempt++) {
+            try { part = await syncGet(p.ns + '/' + p.k); lastErr = null; break; }
+            catch (err) { lastErr = err; await new Promise(r => setTimeout(r, 400)); }
+          }
+          if (lastErr) throw lastErr;
+          if (!part || typeof part.c !== 'string') {
+            const e = new Error('원격 조각이 만료되었습니다');
+            e.code = 'SYNC_EXPIRED';
+            throw e;
+          }
+          out[i] = part.c;
+          done++;
+          syncProgress = { done, total: list.length };
+          if (done % 4 === 0 || done === list.length) renderSyncStatus();
         }
-        buf += part.c;
+      };
+      try {
+        const workers = Math.max(1, Math.min(6, list.length));
+        await Promise.all(Array.from({ length: workers }, worker));
+      } finally {
+        syncProgress = null;
       }
+      const buf = out.join('');
       let doc = null;
       try { doc = JSON.parse(buf); } catch (e) { doc = null; }
       if (!doc || !doc.data || !Array.isArray(doc.data.clothes)) {
@@ -4734,6 +4761,7 @@
       } finally {
         syncApplying = false;
         syncBusy = false;
+        renderSyncStatus();   // v8.17: 동기화가 끝나면 버튼/진행 표시를 즉시 원래대로 되돌린다
       }
     }
 
@@ -4831,8 +4859,12 @@
       } else {
         const cnt = syncCfg.lastCount || {};
         const err = syncCfg.lastError ? `<div class="sync-err">⚠️ 마지막 오류: ${escHtml(syncCfg.lastError)}</div>` : '';
+        const prog = syncProgress && syncProgress.total
+          ? `<div class="sync-state sync-on" style="color:#0369a1;">⏳ 클라우드에서 불러오는 중… <b>${syncProgress.done}/${syncProgress.total}</b> (${Math.round(syncProgress.done / syncProgress.total * 100)}%)</div>`
+          : '';
         box.innerHTML = `
           <div class="sync-state sync-on">✅ 연결됨 · 마지막 동기화 ${syncTimeText(syncCfg.lastSync)}</div>
+          ${prog}
           <div class="sync-code-row">
             <input id="sync-code-view" class="form-input" readonly value="${escHtml(syncCfg.ns)}" style="font-size:0.78rem;">
             <button type="button" class="sync-mini-btn" onclick="copySyncCode()">복사</button>
@@ -4854,6 +4886,11 @@
       if (btnNow) btnNow.disabled = !syncConnected() || syncBusy;
       const btnDisc = document.getElementById('btn-sync-disconnect');
       if (btnDisc) btnDisc.style.display = syncConnected() ? 'inline-block' : 'none';
+      const btnJoin = document.getElementById('btn-sync-join');
+      if (btnJoin) {
+        btnJoin.disabled = !!syncBusy;
+        btnJoin.innerText = syncBusy ? (syncProgress ? `⏳ 불러오는 중 ${syncProgress.done}/${syncProgress.total}` : '⏳ 확인 중...') : '📲 이 코드로 연결';
+      }
     }
 
     function openSyncModal() {
