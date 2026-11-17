@@ -1136,12 +1136,11 @@
       if (!raw) return;
       const u = JSON.parse(raw);
       if (u && (u.dashTab === 'list' || u.dashTab === 'summary')) dashTab = u.dashTab;
-      if (u && (u.typeFilter === 'all' || u.typeFilter === 'sponsored' || u.typeFilter === 'paid')) typeFilter = u.typeFilter;
-      // 월 필터는 기억하지 않는다 — 열 때마다 '전체' 월 요약부터 보여 준다
+      // 유형·월 필터는 기억하지 않는다 — 열 때마다 전체 목록/전체 월부터 보여 준다
     } catch (e) {}
   }
   function saveUi() {
-    try { localStorage.setItem(LS_UI, JSON.stringify({ dashTab: dashTab, typeFilter: typeFilter })); } catch (e) {}
+    try { localStorage.setItem(LS_UI, JSON.stringify({ dashTab: dashTab })); } catch (e) {}
   }
 
   function blankState() {
@@ -1771,6 +1770,9 @@
 
     if (!state.campaigns.length) {
       $('campaign-grid').innerHTML = '<div class="empty">아직 담긴 글이 없습니다.<br>아래 버튼으로 첫 글을 추가해 보세요.</div>' +
+        '<button class="add-card" data-act="add"><span class="plus">＋</span>새 글 추가</button>';
+    } else if (!list.length) {
+      $('campaign-grid').innerHTML = '<div class="empty">이 조건에 맞는 글이 없어요.<br>위 필터를 바꿔 보세요.</div>' +
         '<button class="add-card" data-act="add"><span class="plus">＋</span>새 글 추가</button>';
     }
   }
