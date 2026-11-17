@@ -1137,11 +1137,11 @@
       const u = JSON.parse(raw);
       if (u && (u.dashTab === 'list' || u.dashTab === 'summary')) dashTab = u.dashTab;
       if (u && (u.typeFilter === 'all' || u.typeFilter === 'sponsored' || u.typeFilter === 'paid')) typeFilter = u.typeFilter;
-      if (u && typeof u.monthFilter === 'string') monthFilter = u.monthFilter;
+      // 월 필터는 기억하지 않는다 — 열 때마다 '전체' 월 요약부터 보여 준다
     } catch (e) {}
   }
   function saveUi() {
-    try { localStorage.setItem(LS_UI, JSON.stringify({ dashTab: dashTab, typeFilter: typeFilter, monthFilter: monthFilter })); } catch (e) {}
+    try { localStorage.setItem(LS_UI, JSON.stringify({ dashTab: dashTab, typeFilter: typeFilter })); } catch (e) {}
   }
 
   function blankState() {
