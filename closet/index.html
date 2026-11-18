@@ -871,6 +871,16 @@
       .clothes-info { padding: 6px 6px 7px; }
       .clothes-name { font-size: 0.68rem; }
     }
+    /* PC(넓은 화면)에서는 3열을 유지하되 글자·여백을 조금 키운다 */
+    @media (min-width: 481px) {
+      .clothes-grid { gap: 12px; }
+      .clothes-info { padding: 10px 10px 11px; }
+      .clothes-name { font-size: 0.82rem; min-height: 2.5em; }
+      .clothes-brand { font-size: 0.7rem; margin-bottom: 3px; }
+      .clothes-card .card-date { font-size: 0.68rem !important; margin-bottom: 6px !important; }
+      .clothes-tags .badge { font-size: 0.64rem; padding: 2px 6px; }
+      .clothes-card .del-btn.card-actions { width: 24px; height: 24px; font-size: 0.68rem; }
+    }
 
     /* ===== v8.23 : 추위 체감(체감온도 보정) 칩 ===== */
     .coldfeel-row { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin: 10px 0 10px; }
