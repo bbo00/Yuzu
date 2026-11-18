@@ -352,6 +352,24 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .tagrec{font-size:10.5px;padding:2px 6px;border-radius:999px;color:#1F4FA8;border:1px solid #C7D8F7;background:var(--infoSoft);letter-spacing:-.2px;white-space:nowrap}
 .taglow{font-size:10.5px;padding:2px 6px;border-radius:999px;color:#B4272B;border:1px solid #F6C9CB;background:var(--badSoft);letter-spacing:-.2px;white-space:nowrap;font-weight:650}
 .kpilink{margin-top:5px;border:1px solid #F6C9CB;background:var(--badSoft);color:#B4272B;font-size:10.5px;padding:3px 7px;border-radius:8px;letter-spacing:-.2px;align-self:flex-start}
+
+/* ---------- 카드별 예상 손익 (v1.3) ---------- */
+.pfit{font-size:11.5px;color:var(--ok);letter-spacing:-.2px;line-height:1.35;word-break:keep-all}
+.pfit b{font-weight:800;color:var(--ok)}
+.pfit.np{color:var(--muted2)}
+.pfit .fitavg{color:var(--muted2);font-size:10.5px}
+
+/* ---------- 동기화 코드 연결 안내 ---------- */
+.cbar{display:flex;align-items:center;gap:10px;background:var(--accentSoft);border:1px solid #F7C48A;border-radius:14px;padding:11px 12px;margin-bottom:10px}
+.cbar .ct{flex:1;min-width:0}
+.cbar .ct b{display:block;font-size:12.5px;color:#8A4B00;letter-spacing:-.2px}
+.cbar .ct span{display:block;margin-top:3px;font-size:11px;color:#9A6B2F;line-height:1.45;letter-spacing:-.2px;word-break:keep-all}
+.cbar .cbtn{flex:0 0 auto;border:0;border-radius:10px;background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:9px 11px;letter-spacing:-.2px}
+
+/* ---------- 손익 탭 월 분류 ---------- */
+.plsep{display:flex;align-items:center;gap:8px;margin:4px 2px 8px}
+.plsep span{font-size:12.5px;font-weight:700;color:#4B5563;letter-spacing:-.2px}
+.plsep::after{content:'';flex:1;height:1px;background:var(--line)}
 .dnote{font-size:11px;color:#8A5A16;line-height:1.5;letter-spacing:-.2px;background:#FFFBF3;border:1px dashed #F2D6AE;border-radius:11px;padding:8px 10px;word-break:keep-all}
 
 /* ---------- 6개월 차트 (대시보드) ---------- */
@@ -422,8 +440,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 
 <div class="wrap">
   <section id="view-inv" class="view">
-    <div class="monthbar" id="monthbar"></div>
-    <div class="dash" id="dash"></div>
+    <div id="connectbar"></div>
     <div class="searchrow">
       <span class="mag">🔍</span>
       <input id="q" type="search" placeholder="상품명 · 구매처 검색" autocomplete="off" enterkeyhint="search" />
@@ -451,6 +468,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   </section>
 
   <section id="view-pl" class="view hidden">
+    <div class="dash" id="pldash"></div>
+    <div class="plsep"><span>월별 손익 · 월 분류</span></div>
     <div class="monthbar" id="plmonthbar"></div>
     <div id="plbody"></div>
   </section>
@@ -459,7 +478,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 <nav class="tabbar" id="tabbar">
   <button class="tab on" data-view="inv"><span class="ti">📦</span>재고 목록</button>
   <button class="tab" data-view="tx"><span class="ti">📜</span>거래 내역</button>
-  <button class="tab" data-view="pl"><span class="ti">📊</span>월별 손익</button>
+  <button class="tab" data-view="pl"><span class="ti">📊</span>손익 · 정산</button>
 </nav>
 
 <button class="fab" id="fab" aria-label="상품 등록">＋</button>
@@ -777,16 +796,21 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     }).join('');
   }
 
-  /* 목표 마진율 기준 추천 판매가 (100원 단위 올림) */
+  /* 목표 손익률(원가 대비 마크업) 기준 손익·판매가
+     손익 = 반올림(원가 × 손익률%), 판매가 = 원가 + 손익  (예: 원가 100,000 · 20% → 손익 +20,000 · 120,000) */
   function targetMargin() { return normMargin(state && state.settings && state.settings.targetMargin); }
-  function priceAt(cost, m) {
+  function profitAt(cost, m) {
     if (cost == null || !(Number(cost) > 0)) return null;
     var mg = normMargin(m == null ? targetMargin() : m);
-    return Math.ceil((Number(cost) / (1 - mg / 100)) / 100) * 100;
+    return Math.round(Number(cost) * mg / 100);
+  }
+  function priceAt(cost, m) {
+    var pr = profitAt(cost, m);
+    return pr == null ? null : Math.round(Number(cost)) + pr;
   }
   function recommendPrice(cost) { return priceAt(cost, targetMargin()); }
 
-  /* 전체 재고 기준 목표 마진·예상 손익 (원가 입력분만) */
+  /* 전체 재고 기준 목표 손익률·예상 손익 (원가 입력분만) */
   function marginPlan() {
     var m = targetMargin();
     var cost = 0, rev = 0, qty = 0, unknownQ = 0, unknownKinds = 0, kinds = 0;
@@ -893,39 +917,29 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     var s = invStats();
     var sub = $('#head-sub');
     if (!state.items.length) { sub.textContent = '재고와 손익을 한 곳에'; return; }
-    sub.textContent = '재고 ' + s.kinds + '종 · 잔여 ' + s.qty + '개 · ' + wonShort(s.value);
+    sub.textContent = '재고 ' + s.kinds + '종 · 잔여 ' + s.qty + '개';
   }
 
-  function renderMonthbar() {
-    var months = monthList();
-    var bar = $('#monthbar');
-    if (!months.length) { bar.innerHTML = ''; bar.classList.add('hidden'); return; }
-    bar.classList.remove('hidden');
-    var html = '<button class="mchip' + (view.month === 'all' ? ' on' : '') + '" data-act="month" data-month="all">전체</button>';
-    months.forEach(function (m) {
-      html += '<button class="mchip' + (view.month === m ? ' on' : '') + '" data-act="month" data-month="' + m + '">' + esc(monthLabel(m)) + '</button>';
-    });
-    bar.innerHTML = html;
-  }
-
-  function renderDash() {
+  /* ============================================================
+     render: 손익 탭 상단 요약 (재고·누적 손익·목표 손익률)
+     ============================================================ */
+  function renderPLTop() {
     var inv = invStats();
-    var st = saleStats(view.month);
-    var label = view.month === 'all' ? '누적' : monthLabel(view.month);
+    var st = saleStats('all');
     var marginTxt = st.revenue ? '마진 ' + st.margin.toFixed(1) + '%' : '판매 기록 없음';
     var html = '';
     html += '<div class="kpi">' +
-      '<div class="k">📦 재고 가치 <span style="color:var(--muted2)">·원가</span></div>' +
+      '<div class="k">📦 재고 가치 <span style="color:var(--muted2)">·총원가</span></div>' +
       '<div class="v">' + wonShort(inv.value) + '</div>' +
       '<div class="s">' + inv.kinds + '종 · 잔여 ' + inv.qty + '개' + (inv.sizeCount ? ' · ' + inv.sizeCount + '사이즈' : '') + '</div>' +
       '</div>';
     html += '<div class="kpi">' +
-      '<div class="k">💰 매출 <span style="color:var(--muted2)">·' + esc(label) + '</span></div>' +
+      '<div class="k">💰 매출 <span style="color:var(--muted2)">·누적</span></div>' +
       '<div class="v">' + wonShort(st.revenue) + '</div>' +
       '<div class="s">' + st.count + '건 · ' + st.qty + '개 판매</div>' +
       '</div>';
     html += '<div class="kpi">' +
-      '<div class="k">📈 순수익 <span style="color:var(--muted2)">·' + esc(label) + '</span></div>' +
+      '<div class="k">📈 순수익 <span style="color:var(--muted2)">·누적</span></div>' +
       '<div class="v ' + profitClass(st.profit) + '">' + (st.revenue ? (st.profit < 0 ? '-' : '') + wonShort(Math.abs(st.profit)) : won(0)) + '</div>' +
       '<div class="s">' + esc(marginTxt) + '</div>' +
       '</div>';
@@ -937,10 +951,9 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       '</div>';
     html += marginCardHtml();
     if (inv.unknownQ > 0) {
-      html += '<div class="dnote" style="grid-column:1/-1">가격 미입력 ' + inv.unknownQ + '개 · ' + inv.unknownItems + '종은 재고 원가·평균에서 빠져 있어요. 단가를 넣으면 바로 반영됩니다.</div>';
+      html += '<div class="dnote" style="grid-column:1/-1">원가 미입력 ' + inv.unknownQ + '개 · ' + inv.unknownItems + '종은 재고 가치·손익 계산에서 빠져 있어요. 단가를 넣으면 바로 반영됩니다.</div>';
     }
-    html += '<div style="grid-column:1/-1">' + monthChartHtml() + '</div>';
-    $('#dash').innerHTML = html;
+    $('#pldash').innerHTML = html;
   }
 
   function marginCardHtml() {
@@ -948,21 +961,19 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     var presets = [10, 20, 30, 40].map(function (m) {
       return '<button type="button" data-act="margin" data-set="' + m + '"' + (m === p.margin ? ' class="on"' : '') + '>' + m + '%</button>';
     }).join('');
-    var note = p.unknownQ > 0
-      ? '원가 미입력 <b>' + p.unknownQ + '개·' + p.unknownKinds + '종</b>은 계산에서 빠졌어요 · 수수료·배송비 제외'
-      : '보유 ' + p.kinds + '종 전부 반영 · 수수료·배송비 제외';
+    var note = '원가 × ' + p.margin + '% = 손익 · 수수료·배송비 제외';
     return '<div class="mcard">' +
-      '<div class="mc-head"><b>🎯 목표 마진 · 예상 손익</b><span>원가 입력 ' + p.qty + '개 기준</span></div>' +
+      '<div class="mc-head"><b>🎯 목표 손익률 · 예상 손익</b><span>원가 입력 ' + p.qty + '개 기준</span></div>' +
       '<div class="mc-ctl">' +
-        '<button class="mc-btn" data-act="margin" data-add="-5" aria-label="목표 마진 5% 낮추기">−</button>' +
+        '<button class="mc-btn" data-act="margin" data-add="-5" aria-label="목표 손익률 5% 낮추기">−</button>' +
         '<div class="mc-val">' + p.margin + '<small>%</small></div>' +
-        '<button class="mc-btn" data-act="margin" data-add="5" aria-label="목표 마진 5% 높이기">＋</button>' +
+        '<button class="mc-btn" data-act="margin" data-add="5" aria-label="목표 손익률 5% 높이기">＋</button>' +
         '<div class="mc-presets">' + presets + '</div>' +
       '</div>' +
       '<div class="mc-grid">' +
         '<div class="mc-cell"><div class="k">총 원가</div><div class="v">' + won(p.cost) + '</div></div>' +
         '<div class="mc-cell"><div class="k">목표 판매가 합계</div><div class="v">' + won(p.rev) + '</div></div>' +
-        '<div class="mc-cell wide"><div class="k">예상 총 순이익</div><div class="v">' +
+        '<div class="mc-cell wide"><div class="k">예상 총 손익</div><div class="v">' +
           (p.profit > 0 ? '+' : '') + won(p.profit) + '</div></div>' +
       '</div>' +
       '<div class="mc-note">' + note + '</div>' +
@@ -1066,6 +1077,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     var avg = itemAvg(it);
     var unk = unknownQty(it);
     var rec = recommendPrice(avg);
+    var pr = profitAt(avg);
     var meta = [];
     meta.push(it.cat);
     if (it.source) meta.push(it.source);
@@ -1076,7 +1088,6 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     if (q > 0 && val > 0) money += ' · 재고 ' + won(val);
     var tags = '';
     if (unk > 0 && q > 0) tags += '<span class="tagwarn">가격 미입력' + (unk < q ? ' ' + unk + '개' : '') + '</span>';
-    if (rec != null && q > 0) tags += '<span class="tagrec">목표' + targetMargin() + '% ' + wonShort(rec) + '</span>';
     if (q > 0 && q <= 2) tags += '<span class="taglow">품절 임박</span>';
     var multiSize = hasVar(it) && heldSizes(it).length > 1;
     var act = multiSize
@@ -1093,6 +1104,12 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       '<div class="pmeta">' + esc(meta.join(' · ')) + '</div>' +
       (q > 0 && heldSizes(it).length ? '<div class="sizerow"><span class="szlab">보유 사이즈</span>' + sizeChips(it) + '</div>' : '') +
       '<div class="pmoney"><span>' + money + '</span>' + tags + '</div>' +
+      (q > 0 ? '<div class="pfit' + (pr == null ? ' np' : '') + '">' +
+        (pr == null
+          ? '원가를 넣으면 ' + targetMargin() + '% 손익이 보여요'
+          : targetMargin() + '% 손익 <b>+' + won(pr) + '</b> · 판매가 <b>' + won(rec) + '</b>' +
+            (hasVar(it) ? ' <span class="fitavg">평균원가 기준</span>' : '')) +
+        '</div>' : '') +
       '<div class="pact">' + act +
       '<button class="mini sell" data-act="sell" data-id="' + esc(it.id) + '"' + (q <= 0 ? ' disabled' : '') + '>판매</button>' +
       '<button class="mini" data-act="restock" data-id="' + esc(it.id) + '">입고</button>' +
@@ -1107,6 +1124,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       '<p>당근·번개장터에서 산 물건을 원가로 적어두면<br />재고와 순수익이 자동으로 계산돼요.</p>' +
       '<button class="btn-primary" data-act="add">＋ 첫 상품 등록</button>' +
       '<div class="hintbox">상품명 · 구매가 · 수량만 넣으면 시작돼요. 사진은 나중에 붙여도 됩니다.</div>' +
+      (syncOn() ? '' : '<div class="hintbox">이미 쓰던 기기가 있다면 <b>동기화 코드</b>로 연결하면 기록이 그대로 들어와요. 위 <b>코드로 연결</b>을 누르거나 오른쪽 위 <b>🔄</b> 버튼을 쓰세요.</div>') +
       '</div>';
   }
 
@@ -1194,25 +1212,30 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
      ============================================================ */
   function renderPL() {
     var months = monthList();
-    var cur = view.plMonth;
-    if (!cur || (cur !== 'all' && months.indexOf(cur) < 0)) {
-      var nowM = ymOf(today());
-      cur = months.indexOf(nowM) >= 0 ? nowM : (months[0] || nowM);
-    }
+    var cur = view.plMonth || 'all';
+    if (cur !== 'all' && months.indexOf(cur) < 0) cur = 'all';
     view.plMonth = cur;
 
+    /* 상단: 재고·누적 손익 요약 + 목표 손익률 */
+    renderPLTop();
+
+    /* 하단: 월 분류 → 월별 손익 내역·차트 */
     var bar = $('#plmonthbar');
-    var htmlBar = months.length ? months.map(function (m) {
-      return '<button class="mchip' + (cur === m ? ' on' : '') + '" data-act="plmonth" data-month="' + m + '">' + esc(monthLabel(m)) + '</button>';
-    }).join('') : '<button class="mchip on" data-act="plmonth" data-month="' + cur + '">' + esc(monthLabel(cur)) + '</button>';
-    bar.innerHTML = htmlBar;
+    bar.innerHTML = '<button class="mchip' + (cur === 'all' ? ' on' : '') + '" data-act="plmonth" data-month="all">전체</button>' +
+      months.map(function (m) {
+        return '<button class="mchip' + (cur === m ? ' on' : '') + '" data-act="plmonth" data-month="' + m + '">' + esc(monthLabel(m)) + '</button>';
+      }).join('');
 
     var st = saleStats(cur);
     var unkCnt = 0;
-    state.txns.forEach(function (t) { if (t.type === 'sale' && ymOf(t.date) === cur && t.costUnknown) unkCnt++; });
+    state.txns.forEach(function (t) {
+      if (t.type !== 'sale' || !t.costUnknown) return;
+      if (cur !== 'all' && ymOf(t.date) !== cur) return;
+      unkCnt++;
+    });
     var box = $('#plbody');
     var hero = '<div class="plhero">' +
-      '<div class="lab">' + esc(monthLabel(cur)) + ' 순수익</div>' +
+      '<div class="lab">' + (cur === 'all' ? '전체 기간' : esc(monthLabel(cur))) + ' 순수익</div>' +
       '<div class="big ' + profitClass(st.profit) + '">' + (st.profit < 0 ? '-' : '') + won(Math.abs(st.profit)) + '</div>' +
       '<div class="sub">매출 ' + won(st.revenue) + ' · 판매 ' + st.count + '건 ' + st.qty + '개</div>' +
       '</div>';
@@ -1223,53 +1246,30 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       cell('마진율', st.revenue ? st.margin.toFixed(1) + '%' : '—', '') +
       '</div>';
 
-    /* 6개월 막대그래프 */
-    var now = new Date();
-    var seq = [];
-    for (var i = 5; i >= 0; i--) {
-      var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      seq.push(d.getFullYear() + '-' + pad2(d.getMonth() + 1));
-    }
-    var maxRev = 0;
-    var bars = seq.map(function (m) {
-      var s = saleStats(m);
-      if (s.revenue > maxRev) maxRev = s.revenue;
-      return { m: m, s: s };
-    });
-    var barsHtml = '<div class="sec-title">최근 6개월</div>' +
-      (maxRev > 0 ? '<div class="bars">' + bars.map(function (b) {
-        var h = maxRev > 0 ? clamp((b.s.revenue / maxRev) * 100, 0, 100) : 0;
-        var hp = maxRev > 0 ? clamp((b.s.profit / maxRev) * 100, 0, 100) : 0;
-        return '<div class="barcol">' +
-          '<div class="pair">' +
-          (h > 0 ? '<div class="bar rev" style="height:' + h + '%"></div>' : '') +
-          (hp > 0 ? '<div class="bar prf" style="height:' + hp + '%"></div>' : '') +
-          '</div>' +
-          '<div class="lbl">' + esc(monthLabel(b.m)) + '</div>' +
-          '</div>';
-      }).join('') + '</div>' +
-      '<div class="legend"><span><i style="background:var(--accent)"></i>매출</span><span><i style="background:var(--ok)"></i>순수익</span></div>'
-        : '<div class="chempty"><span>아직 판매 기록이 없어요.<br />재고 목록에서 <b>[판매]</b>를 누르면 월별 손익이 그려집니다.</span></div>');
-
     /* 카테고리별 */
     var byCat = {};
     state.txns.forEach(function (t) {
-      if (t.type !== 'sale' || ymOf(t.date) !== cur) return;
+      if (t.type !== 'sale') return;
+      if (cur !== 'all' && ymOf(t.date) !== cur) return;
       var it = itemById(t.pid);
       var cat = it ? it.cat : '기타';
       if (!byCat[cat]) byCat[cat] = { profit: 0, revenue: 0, count: 0 };
       byCat[cat].profit += t.profit; byCat[cat].revenue += t.total; byCat[cat].count++;
     });
     var catKeys = Object.keys(byCat).sort(function (a, b) { return byCat[b].profit - byCat[a].profit; });
-    var catHtml = catKeys.length ? '<div class="sec-title">카테고리별 순수익</div>' + catKeys.map(function (c) {
+    var catHtml = catKeys.length ? '<div class="sec-title">카테고리별 순수익' + (cur === 'all' ? ' · 전체' : '') + '</div>' + catKeys.map(function (c) {
       return '<div class="catrow"><span class="cn">' + (CATICON[c] || '📦') + ' ' + esc(c) + ' <span style="color:var(--muted2)">· ' + byCat[c].count + '건</span></span>' +
         '<span class="cv ' + profitClass(byCat[c].profit) + '" style="color:' + (byCat[c].profit < 0 ? '#E5484D' : '#1B1F24') + '">' + won(byCat[c].profit) + '</span></div>';
     }).join('') : '';
 
-    var emptyNote = st.count ? '' : '<div class="note" style="margin:-2px 2px 4px">이 달은 판매 기록이 없어요. 재고 탭에서 <b>[판매]</b>를 누르면 자동으로 집계됩니다.</div>';
-    if (unkCnt) emptyNote += '<div class="note" style="margin:-2px 2px 4px;color:var(--accent2)">원가 미입력 판매 ' + unkCnt + '건은 원가 0으로 계산되어 순수익이 실제보다 크게 보여요.</div>';
+    var emptyNote = '';
+    var anySales = state.txns.some(function (t) { return t.type === 'sale'; });
+    if (!st.count && anySales && cur !== 'all') {
+      emptyNote = '<div class="note" style="margin:-2px 2px 8px">이 달은 판매 기록이 없어요. 재고 탭에서 <b>[판매]</b>를 누르면 자동으로 집계됩니다.</div>';
+    }
+    if (unkCnt) emptyNote += '<div class="note" style="margin:-2px 2px 8px;color:var(--accent2)">원가 미입력 판매 ' + unkCnt + '건은 원가 0으로 계산되어 순수익이 실제보다 크게 보여요.</div>';
 
-    box.innerHTML = emptyNote + hero + grid + barsHtml + catHtml;
+    box.innerHTML = hero + (st.count ? grid : '') + emptyNote + monthChartHtml() + catHtml;
   }
 
   function cell(k, v, sub) {
@@ -1282,11 +1282,22 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
      ============================================================ */
   function renderAll() {
     renderHead();
-    if (view.tab === 'inv') { renderMonthbar(); renderDash(); renderStatusChips(); renderInv(); }
+    if (view.tab === 'inv') { renderConnect(); renderStatusChips(); renderInv(); }
     if (view.tab === 'tx') renderTx();
     if (view.tab === 'pl') renderPL();
     renderSyncDot();
     updateFab();
+  }
+
+  /* 동기화 코드 없이 열렸을 때(홈 화면 아이콘 등) 안내 — 빈 상태로 보이지 않게 */
+  function renderConnect() {
+    var el = $('#connectbar');
+    if (!el) return;
+    if (syncOn() || state.items.length) { el.innerHTML = ''; return; }
+    el.innerHTML = '<div class="cbar"><div class="ct">' +
+      '<b>동기화 코드 없이 열렸어요</b>' +
+      '<span>이 기기는 아직 연결되지 않아 기록이 비어 있어요. 쓰던 기기의 코드를 넣으면 그대로 불러옵니다.</span>' +
+      '</div><button class="cbtn" data-act="connect">코드로 연결</button></div>';
   }
 
   function updateFab() {
@@ -1648,7 +1659,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
             '<span class="vs">' + esc(v.size) + '</span>' +
             '<span class="vq">' + (Number(v.qty) || 0) + '개</span>' +
             '<span class="vc' + (v.cost == null ? ' np' : '') + '">' + (v.cost == null ? '가격 미입력' : won(v.cost)) + '</span>' +
-            '<span class="vv">' + (rec == null ? '' : '추천 ' + wonShort(rec)) + '</span></div>';
+            '<span class="vv">' + (rec == null ? '' : '손익 +' + wonShort(profitAt(v.cost)) + ' · ' + wonShort(rec)) + '</span></div>';
         }).join('') + '</div>';
     }
     var netRow = '<div class="calc"><div class="line"><span>누적 매출</span><b>' + won(revenue) + '</b></div>' +
@@ -1789,8 +1800,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
             '<b style="color:' + (profit > 0 ? '#3ecf8e' : (profit < 0 ? '#ff6b7a' : '#eef0f4')) + '">' + won(profit) + '</b></div>';
           var rec = recommendPrice(cU);
           recEl.innerHTML = rec == null
-            ? '<span style="color:var(--muted2)">원가가 입력되지 않아 추천가를 계산하지 않아요</span>'
-            : '<span>목표 ' + targetMargin() + '% 추천 판매가 <b>' + won(rec) + '</b></span> <button type="button" class="recbtn" data-fill="' + rec + '">넣기</button>';
+            ? '<span style="color:var(--muted2)">원가가 입력되지 않아 손익·판매가를 계산하지 않아요</span>'
+            : '<span>목표 손익률 ' + targetMargin() + '% → 손익 <b>+' + won(profitAt(cU)) + '</b> · 판매가 <b>' + won(rec) + '</b></span> <button type="button" class="recbtn" data-fill="' + rec + '">넣기</button>';
           if (qty > cap) { warnEl.hidden = false; warnEl.textContent = '잔여 ' + cap + '개까지만 판매할 수 있어요.'; }
           else if (!input) { warnEl.hidden = false; warnEl.textContent = '판매가를 넣으면 순이익이 바로 계산돼요.'; }
           else if (unknown) { warnEl.hidden = false; warnEl.textContent = '이 사이즈는 원가가 입력되지 않아 순이익에 원가가 빠져 있어요 (실제보다 크게 보입니다).'; }
@@ -2146,6 +2157,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   }
   function syncSave() {
     try { localStorage.setItem(SYNC_CFG_KEY, JSON.stringify(syncCfg)); } catch (e) { }
+    applyManifest();
   }
   function syncOn() { return !!(syncCfg && syncCfg.ns); }
 
@@ -2557,29 +2569,29 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   }
 
   /* ============================================================
-     목표 마진율 · CSV
+     목표 손익률 · CSV
      ============================================================ */
   function openMarginSheet() {
     var cur = targetMargin();
-    var body = '<div class="field"><label>목표 마진율</label>' +
+    var body = '<div class="field"><label>목표 손익률 (원가 대비)</label>' +
       '<div class="seg" id="m-seg">' +
       [10, 20, 30, 40].map(function (m) { return '<button type="button" class="' + (m === cur ? 'on' : '') + '" data-m="' + m + '">' + m + '%</button>'; }).join('') +
       '</div>' +
       '<input id="m-input" type="number" inputmode="numeric" min="5" max="80" step="1" value="' + cur + '" style="margin-top:8px" /></div>' +
       '<div class="calc" id="m-calc"></div>' +
-      '<div class="note">상품·사이즈마다 추천 판매가(원가 ÷ (1 − 목표마진), 100원 단위 올림)를 계산해 카드와 판매 화면에 보여 줍니다. 수수료·배송비는 빼지 않은 값이에요.</div>';
+      '<div class="note">원가에 손익률을 곱한 금액이 예상 손익이 되고, 원가 + 손익이 목표 판매가가 됩니다(원가 100,000 · 20% → 손익 +20,000 · 판매가 120,000). 이 값은 손익 탭 상단 요약과 재고 카드마다 표시되고, 판매 화면의 기본 판매가로도 쓰입니다. 수수료·배송비는 빼지 않은 값이에요.</div>';
     var sheet = openSheet({
-      title: '목표 마진율', sub: '판매가 추천', body: body,
+      title: '목표 손익률', sub: '원가 × 손익률 = 손익', body: body,
       foot: '<button class="btn ghost" data-x5="1">취소</button><button class="btn primary" id="m-save">저장</button>',
       onMount: function (root) {
         var input = root.querySelector('#m-input');
         var calcEl = root.querySelector('#m-calc');
         function preview() {
           var m = normMargin(input.value);
-          function recOf(cost) { return Math.ceil((cost / (1 - m / 100)) / 100) * 100; }
-          calcEl.innerHTML = '<div class="line"><span>목표 마진</span><b>' + m + '%</b></div>' +
-            '<div class="line"><span>예: 원가 ₩62,000</span><b>추천 ' + won(recOf(62000)) + '</b></div>' +
-            '<div class="line total"><span>예: 원가 ₩80,000</span><b>추천 ' + won(recOf(80000)) + '</b></div>';
+          function profitOf(cost) { return Math.round(cost * m / 100); }
+          calcEl.innerHTML = '<div class="line"><span>목표 손익률</span><b>' + m + '%</b></div>' +
+            '<div class="line"><span>원가 ₩62,000</span><b>손익 +' + won(profitOf(62000)) + ' · ' + won(62000 + profitOf(62000)) + '</b></div>' +
+            '<div class="line total"><span>원가 ₩80,000</span><b>손익 +' + won(profitOf(80000)) + ' · ' + won(80000 + profitOf(80000)) + '</b></div>';
         }
         root.querySelector('#m-seg').addEventListener('click', function (e) {
           var b = e.target.closest('button[data-m]');
@@ -2596,7 +2608,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
           if (!state.settings) state.settings = { targetMargin: 20 };
           state.settings.targetMargin = m;
           save(); closeSheet(); renderAll();
-          toast('목표 마진 ' + m + '%로 저장했어요');
+          toast('목표 손익률 ' + m + '%로 저장했어요');
         };
       }
     });
@@ -2664,11 +2676,11 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     var inv = invStats();
     var sizeTxt = '—';
     try { sizeTxt = (JSON.stringify(state).length / 1024).toFixed(0) + 'KB'; } catch (e) { }
-    var body = '<div class="syncbox"><div class="ownername">📒 리셀북 <span style="color:var(--muted2)">v1.2</span></div>' +
+    var body = '<div class="syncbox"><div class="ownername">📒 리셀북 <span style="color:var(--muted2)">v1.3</span></div>' +
       '<p class="desc">재고 ' + state.items.length + '종 · 거래 ' + state.txns.length + '건 · 저장 ' + sizeTxt + '</p>' +
       '<div class="syncacts">' +
       '<button class="btn" data-mm="sync">🔄 동기화</button>' +
-      '<button class="btn" data-mm="margin">🎯 목표 마진 ' + targetMargin() + '%</button>' +
+      '<button class="btn" data-mm="margin">🎯 목표 손익률 ' + targetMargin() + '%</button>' +
       '<button class="btn" data-mm="export">📥 백업 내보내기</button>' +
       '<button class="btn" data-mm="import">📤 불러오기</button>' +
       '</div>' +
@@ -2704,8 +2716,12 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     var act = t.getAttribute('data-act');
     var id = t.getAttribute('data-id');
     if (act === 'add') openItemForm();
-    else if (act === 'status') { view.status = t.getAttribute('data-status'); renderStatusChips(); renderInv(); }
-    else if (act === 'month') { view.month = t.getAttribute('data-month'); renderMonthbar(); renderDash(); }
+    else if (act === 'status') {
+      view.status = t.getAttribute('data-status');
+      if (view.tab !== 'inv') setTab('inv');
+      else { renderStatusChips(); renderInv(); }
+    }
+    else if (act === 'connect') openSyncSheet();
     else if (act === 'txtype') { view.txType = t.getAttribute('data-txtype'); renderTx(); }
     else if (act === 'plmonth') { view.plMonth = t.getAttribute('data-month'); renderPL(); }
     else if (act === 'detail') openDetail(id);
@@ -2723,7 +2739,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       if (!state.settings) state.settings = { targetMargin: 20 };
       if (next === state.settings.targetMargin) return;
       state.settings.targetMargin = next;
-      save(); renderDash(); renderInv();
+      save(); renderPL(); renderInv();
     }
     else if (act === 'reset-filter') {
       view.q = ''; view.status = 'all'; view.cat = 'all'; view.sort = 'recent';
@@ -2768,19 +2784,57 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       var h = String(location.hash || '').replace(/^#k=/, '');
       if (h && /^resellbook-/.test(h)) k = h.trim();
     }
+    if (k && !/^resellbook-[a-z0-9]{6,}$/.test(k)) k = '';
+    if (k && syncCfg.ns !== k) {
+      syncCfg.ns = k;
+      syncCfg.rev = 0;
+      syncCfg.lastRemoteRev = 0;
+      syncCfg.lastPushTs = 0;
+      syncCfg.lastError = '';
+      syncSave();
+    }
     if (!k) return;
-    if (!/^resellbook-[a-z0-9]{6,}$/.test(k)) return;
-    if (syncCfg.ns === k) return;
-    syncCfg.ns = k;
-    syncCfg.rev = 0;
-    syncCfg.lastRemoteRev = 0;
-    syncCfg.lastPushTs = 0;
-    syncCfg.lastError = '';
-    syncSave();
+    /* 주소에 ?k=…를 남긴다 — 같은 주소로 다시 열거나 홈 화면에 추가해도 같은 코드로 연결된다 */
     try {
       var u = new URL(location.href);
-      u.searchParams.delete('k');
-      history.replaceState(null, '', u.pathname + (u.search || '') + u.hash);
+      u.searchParams.set('k', k);
+      u.hash = '';
+      var next = u.pathname + (u.search || '');
+      if (location.pathname + location.search !== next || location.hash) {
+        history.replaceState(null, '', next);
+      }
+    } catch (e) { }
+  }
+
+  /* iOS 홈 화면 추가는 manifest의 start_url을 쓰므로, 현재 동기화 코드를 start_url에 넣는다.
+     (코드 없이 설치된 앱은 재고 탭 상단의 '코드로 연결' 안내로 연결) */
+  function isIOS() {
+    var ua = navigator.userAgent || '';
+    return /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }
+  var manifestNs = null;
+  function applyManifest() {
+    if (!isIOS() || typeof Blob === 'undefined') return;
+    var ns = (syncCfg && syncCfg.ns) || '';
+    if (manifestNs === ns) return;
+    manifestNs = ns;
+    try {
+      var el = document.querySelector('link[rel="manifest"]');
+      if (!el) return;
+      var base = new URL('./', location.href).href;
+      var mf = {
+        name: '리셀북 · 재고와 손익', short_name: '리셀북',
+        description: '리셀 재고·판매·손익을 기록하는 개인용 장부', lang: 'ko',
+        start_url: base + (ns ? '?k=' + encodeURIComponent(ns) : ''),
+        scope: base, display: 'standalone', orientation: 'portrait',
+        background_color: '#FFFFFF', theme_color: '#FFFFFF',
+        icons: [
+          { src: base + 'icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: base + 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: base + 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+        ]
+      };
+      el.setAttribute('href', URL.createObjectURL(new Blob([JSON.stringify(mf)], { type: 'application/manifest+json' })));
     } catch (e) { }
   }
 
@@ -2795,6 +2849,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     dbGet().then(function (saved) {
       state = normalize(saved);
       applyUrlKey();
+      applyManifest();
       renderAll();
       if (syncOn()) {
         syncNow({ silent: true }).catch(function () { });
@@ -2812,7 +2867,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   /* expose a tiny hook for self-checks */
   window.__resellbook = {
     get state() { return state; },
-    version: '1.2'
+    version: '1.3'
   };
 })();
 
