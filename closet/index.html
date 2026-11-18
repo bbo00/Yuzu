@@ -2,8 +2,15 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>마이 스마트 옷장 (My Closet 8.17)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>마이 스마트 옷장 (My Closet 8.18)</title>
+  <!-- ===== v8.18 : iOS 사파리 '홈 화면에 추가' 시 주소창 없는 앱 모드(standalone) ===== -->
+  <meta name="theme-color" content="#f8fafc">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="유자클로젯">
+  <link rel="manifest" href="./manifest.json">
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
   <meta name="robots" content="noindex, nofollow">
@@ -447,13 +454,20 @@
     .empty-desc b { color: var(--primary); }
     .empty-card .btn-submit { margin-top: 0; }
     .empty-note { font-size: 0.72rem; color: #94a3b8; line-height: 1.6; margin-top: 12px; }
+    /* ===== v8.18 : 앱 모드(standalone) 안전영역 대응 — 노치·홈 인디케이터에 헤더/하단탭이 가리지 않게 ===== */
+    header { padding-top: calc(14px + env(safe-area-inset-top, 0px)); }
+    @media (max-width: 480px) {
+      header { padding-top: calc(11px + env(safe-area-inset-top, 0px)); }
+    }
+    .nav-bar { padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+    body { padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
   </style>
 </head>
 <body>
 
   <!-- Top Header -->
   <header>
-    <h1>👗 마이 스마트 옷장 <span style='font-size:0.75rem; background:#4f46e5; color:#fff; padding:2px 8px; border-radius:12px; font-weight:700; vertical-align:middle; margin-left:4px;'>v8.17</span></h1>
+    <h1>👗 마이 스마트 옷장 <span style='font-size:0.75rem; background:#4f46e5; color:#fff; padding:2px 8px; border-radius:12px; font-weight:700; vertical-align:middle; margin-left:4px;'>v8.18</span></h1>
     <div class="header-btns">
       <button class="icon-btn" onclick="exportBackup()" title="현재 옷장 상태를 JSON 파일로 다운로드합니다">📥 백업 저장</button>
       <button class="icon-btn" onclick="document.getElementById('backup-file-input').click()" title="모바일/PC 백업 파일을 불러와 동기화합니다">📤 백업 불러오기</button>
