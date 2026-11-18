@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>마이 스마트 옷장 (My Closet 8.22)</title>
+  <title>마이 스마트 옷장 (My Closet 8.23)</title>
   <!-- ===== v8.18 : iOS 사파리 '홈 화면에 추가' 시 주소창 없는 앱 모드(standalone) ===== -->
-  <meta name="theme-color" content="#F7F6F3">
+  <meta name="theme-color" content="#FFFFFF">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -18,12 +18,12 @@
     :root {
       --primary: #111111;
       --primary-hover: #2C2C2C;
-      --primary-light: #EFECE6;
-      --bg: #F7F6F3;
+      --primary-light: #F4F4F6;
+      --bg: #FFFFFF;
       --card-bg: #ffffff;
       --text-main: #111111;
       --text-sub: #6B6B68;
-      --border: #E6E4DF;
+      --border: #E8E8E8;
       --danger: #B0453A;
       --success: #2F5D50;
       --accent: #8A7350;
@@ -56,7 +56,7 @@
       border-color: var(--primary);
     }
     .photo-tab-btn {
-      background: #EFECE6;
+      background: #F4F4F6;
       border: 1px solid var(--border);
       padding: 6px 14px;
       border-radius: 20px;
@@ -77,8 +77,8 @@
     header { background: #fff; border-bottom: 1px solid var(--border); padding: 14px 18px; position: sticky; top: 0; z-index: 50; display: flex; justify-content: space-between; align-items: center; }
     header h1 { font-size: 1.15rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
     header .header-btns { display: flex; gap: 8px; }
-    .icon-btn { background: #EFECE6; border: none; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: var(--text-sub); cursor: pointer; }
-    .icon-btn:hover { background: #E6E4DF; }
+    .icon-btn { background: #F4F4F6; border: none; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: var(--text-sub); cursor: pointer; }
+    .icon-btn:hover { background: #E8E8E8; }
 
     /* Main Container */
     .container { max-width: 600px; margin: 0 auto; padding: 16px; }
@@ -94,7 +94,7 @@
     .tab-content.active { display: block; }
 
     /* Weather Banner */
-    .weather-card { background: linear-gradient(135deg, #EFECE6 0%, #EFECE6 100%); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; border: 1px solid #D8D5CE; }
+    .weather-card { background: linear-gradient(135deg, #F4F4F6 0%, #F4F4F6 100%); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; border: 1px solid #E2E2E6; }
     .weather-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .weather-temp { font-size: 1.35rem; font-weight: 800; color: #111111; display: flex; align-items: center; gap: 6px; }
     .temp-adjust { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.7); border-radius: 20px; padding: 4px 10px; font-size: 0.8rem; font-weight: 600; }
@@ -110,7 +110,7 @@
     .add-btn:hover { background: var(--primary-hover); }
 
     /* Status Mode Segment */
-    .status-segment { display: flex; background: #E6E4DF; border-radius: 12px; padding: 3px; margin-bottom: 12px; }
+    .status-segment { display: flex; background: #E8E8E8; border-radius: 12px; padding: 3px; margin-bottom: 12px; }
     .segment-btn { flex: 1; border: none; background: none; padding: 8px 12px; border-radius: 9px; font-size: 0.82rem; font-weight: 700; color: var(--text-sub); cursor: pointer; transition: all 0.15s ease; text-align: center; }
     .segment-btn.active { background: #fff; color: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
 
@@ -126,7 +126,7 @@
     .clothes-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
     .clothes-card:active { transform: scale(0.98); }
     
-    .clothes-thumb { width: 100%; aspect-ratio: 1; background: radial-gradient(circle, #ffffff 40%, #F7F6F3 100%); display: flex; align-items: center; justify-content: center; color: #9C9A93; font-size: 2.4rem; padding: 10px; overflow: hidden; position: relative; }
+    .clothes-thumb { width: 100%; aspect-ratio: 1; background: radial-gradient(circle, #ffffff 40%, #FAFAFB 100%); display: flex; align-items: center; justify-content: center; color: #94949B; font-size: 2.4rem; padding: 10px; overflow: hidden; position: relative; }
     .clothes-thumb img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.10)); transition: transform 0.2s ease; }
     .clothes-card:hover .clothes-thumb img { transform: scale(1.04); }
     
@@ -134,11 +134,11 @@
     .clothes-name { font-size: 0.88rem; font-weight: 700; margin-bottom: 2px; line-height: 1.25; }
     .clothes-brand { font-size: 0.75rem; color: var(--text-sub); margin-bottom: 6px; }
     .clothes-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
-    .badge { font-size: 0.68rem; font-weight: 600; padding: 2px 6px; border-radius: 6px; background: #EFECE6; color: #2C2C2C; }
-    .badge.cat { background: #EFECE6; color: #2C2C2C; }
-    .badge.wear { background: #EFECE6; color: #2C2C2C; }
-    .badge.style { background: #EFECE6; color: #2C2C2C; }
-    .badge.returned { background: #EFECE6; color: #A5483B; font-weight: 700; }
+    .badge { font-size: 0.68rem; font-weight: 600; padding: 2px 6px; border-radius: 6px; background: #F4F4F6; color: #2C2C2C; }
+    .badge.cat { background: #F4F4F6; color: #2C2C2C; }
+    .badge.wear { background: #F4F4F6; color: #2C2C2C; }
+    .badge.style { background: #F4F4F6; color: #2C2C2C; }
+    .badge.returned { background: #F4F4F6; color: #A5483B; font-weight: 700; }
     .clothes-price { font-size: 0.82rem; font-weight: 700; color: #2C2C2C; }
     .card-actions { position: absolute; top: 6px; right: 6px; z-index: 10; display: flex; gap: 4px; }
     .del-btn { background: rgba(17,17,17,0.5); color: #fff; border: none; width: 24px; height: 24px; border-radius: 50%; font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
@@ -147,27 +147,27 @@
     /* Lookbook Tab - Responsive 4 Slots */
     .lookbook-creator { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 20px; }
     .creator-slots { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 12px 0; width: 100%; box-sizing: border-box; }
-    .slot-box { min-width: 0; width: 100%; border: 2px dashed var(--border); border-radius: var(--radius-sm); aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.75rem; color: var(--text-sub); cursor: pointer; text-align: center; padding: 4px; background: #FAF9F6; overflow: hidden; box-sizing: border-box; }
+    .slot-box { min-width: 0; width: 100%; border: 2px dashed var(--border); border-radius: var(--radius-sm); aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.75rem; color: var(--text-sub); cursor: pointer; text-align: center; padding: 4px; background: #FAFAFB; overflow: hidden; box-sizing: border-box; }
     .slot-box.filled { border: 2px solid var(--primary); background: var(--primary-light); color: var(--primary); font-weight: 700; }
     .slot-box img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); }
     .slot-box span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; font-size: 0.7rem; }
 
     /* Live Outfit Matching Canvas */
-    .outfit-canvas-card { background: radial-gradient(circle, #ffffff 40%, #EFECE6 100%); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin: 12px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; min-height: 280px; }
+    .outfit-canvas-card { background: radial-gradient(circle, #ffffff 40%, #F4F4F6 100%); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin: 12px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; min-height: 280px; }
     .outfit-stage { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; max-width: 260px; }
     .outfit-layer { display: flex; justify-content: center; align-items: center; width: 100%; position: relative; }
     .outfit-layer.top-layer { height: 110px; }
     .outfit-layer.bottom-layer { height: 110px; }
     .outfit-layer.shoes-layer { height: 75px; }
     .outfit-layer img { max-height: 100%; max-width: 48%; object-fit: contain; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.12)); margin: 0 4px; }
-    .outfit-placeholder { color: #C9C5BC; font-size: 0.8rem; font-weight: 600; border: 1px dashed #C9C5BC; border-radius: 8px; padding: 8px 14px; }
+    .outfit-placeholder { color: #C3C3C9; font-size: 0.8rem; font-weight: 600; border: 1px dashed #C3C3C9; border-radius: 8px; padding: 8px 14px; }
 
     .lookbook-grid { display: flex; flex-direction: column; gap: 14px; }
     .lookbook-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; position: relative; }
     .lookbook-title { font-size: 1rem; font-weight: 800; margin-bottom: 4px; }
     .lookbook-desc { font-size: 0.78rem; color: var(--text-sub); margin-bottom: 10px; }
     .lookbook-items-preview { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0; }
-    .lookbook-thumb { width: 68px; height: 68px; border-radius: var(--radius-sm); background: #F7F6F3; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; overflow: hidden; border: 1px solid var(--border); cursor: pointer; padding: 4px; }
+    .lookbook-thumb { width: 68px; height: 68px; border-radius: var(--radius-sm); background: #FAFAFB; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; overflow: hidden; border: 1px solid var(--border); cursor: pointer; padding: 4px; }
     .lookbook-thumb img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); }
 
     /* ===== v8.20 : 통계 탭 — 요약 카드·SVG 도넛·컬러 바·사진 카드 ===== */
@@ -177,8 +177,8 @@
     .st-sum-label { font-size: 0.67rem; font-weight: 700; color: var(--text-sub); margin-top: 2px; }
     .st-sum-value { font-size: 0.98rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text-main); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.25; }
     .st-sum-value small { font-size: 0.62rem; font-weight: 700; color: var(--text-sub); margin-left: 1px; }
-    .st-sum-sub { font-size: 0.58rem; color: #9C9A93; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
-    .st-note { font-size: 0.68rem; color: #9C9A93; margin: 9px 2px 14px; line-height: 1.55; }
+    .st-sum-sub { font-size: 0.58rem; color: #94949B; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+    .st-note { font-size: 0.68rem; color: #94949B; margin: 9px 2px 14px; line-height: 1.55; }
     .st-card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 13px; }
     .st-card-head .section-title { font-size: 0.98rem; }
     .st-head-sub { font-size: 0.71rem; color: var(--text-sub); font-weight: 700; white-space: nowrap; flex: 0 0 auto; }
@@ -196,19 +196,19 @@
     .st-season-bars { display: flex; flex-direction: column; gap: 9px; }
     .st-bar-row { display: grid; grid-template-columns: 50px minmax(0, 1fr) 74px; align-items: center; gap: 8px; }
     .st-bar-name { font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
-    .st-bar-track { height: 9px; background: #EFECE6; border-radius: 99px; overflow: hidden; }
+    .st-bar-track { height: 9px; background: #F4F4F6; border-radius: 99px; overflow: hidden; }
     .st-bar-fill { height: 100%; border-radius: 99px; }
     .st-bar-val { font-size: 0.71rem; color: var(--text-sub); text-align: right; font-weight: 600; white-space: nowrap; }
-    .st-foot-note { font-size: 0.66rem; color: #9C9A93; line-height: 1.55; margin-top: 11px; }
+    .st-foot-note { font-size: 0.66rem; color: #94949B; line-height: 1.55; margin-top: 11px; }
     .st-brand-bars { display: flex; flex-direction: column; gap: 9px; }
     .st-brand-row { display: flex; flex-direction: column; gap: 4px; }
     .st-brand-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
     .st-brand-name { font-size: 0.78rem; font-weight: 700; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .st-brand-val { font-size: 0.71rem; color: var(--text-sub); font-weight: 700; flex: 0 0 auto; }
     .st-item-list { display: flex; flex-direction: column; gap: 8px; }
-    .st-item-row { display: flex; align-items: center; gap: 10px; padding: 7px 9px 7px 7px; border: 1px solid var(--border); border-radius: 12px; background: #FAF9F6; cursor: pointer; }
-    .st-item-row:active { background: #EFECE6; }
-    .st-item-thumb { width: 46px; height: 46px; border-radius: 10px; background: #EFECE6; display: flex; align-items: center; justify-content: center; overflow: hidden; flex: 0 0 auto; font-size: 1.25rem; }
+    .st-item-row { display: flex; align-items: center; gap: 10px; padding: 7px 9px 7px 7px; border: 1px solid var(--border); border-radius: 12px; background: #FAFAFB; cursor: pointer; }
+    .st-item-row:active { background: #F4F4F6; }
+    .st-item-thumb { width: 46px; height: 46px; border-radius: 10px; background: #F4F4F6; display: flex; align-items: center; justify-content: center; overflow: hidden; flex: 0 0 auto; font-size: 1.25rem; }
     .st-item-thumb img { width: 100%; height: 100%; object-fit: contain; padding: 2px; }
     .st-item-body { min-width: 0; flex: 1 1 auto; }
     .st-item-name { font-size: 0.82rem; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -219,9 +219,9 @@
     .st-sub-head { font-size: 0.78rem; font-weight: 800; color: var(--text-sub); margin: 16px 0 8px; }
     .st-cat-thumbs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
     .st-cat-thumb { border: 1px solid var(--border); border-radius: 10px; padding: 4px; background: #fff; text-align: center; cursor: pointer; min-width: 0; }
-    .st-cat-thumb:active { background: #F7F6F3; }
+    .st-cat-thumb:active { background: #FAFAFB; }
     .st-cat-thumb.dim { opacity: 0.42; cursor: default; }
-    .st-ct-img { width: 100%; aspect-ratio: 1; border-radius: 7px; background: #F7F6F3; display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 1.1rem; }
+    .st-ct-img { width: 100%; aspect-ratio: 1; border-radius: 7px; background: #FAFAFB; display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 1.1rem; }
     .st-ct-img img { width: 100%; height: 100%; object-fit: contain; }
     .st-cat-thumb span { display: block; font-size: 0.61rem; font-weight: 700; color: var(--text-sub); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .st-dormant-count { display: flex; align-items: baseline; gap: 8px; margin-bottom: 11px; flex-wrap: wrap; }
@@ -230,9 +230,9 @@
     .st-dormant-count.ok b { color: var(--success); }
     .st-thumb-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
     .st-thumb-grid:empty { display: none; }
-    .st-thumb-tile { position: relative; aspect-ratio: 1; border-radius: 10px; background: #F7F6F3; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; font-size: 1.1rem; }
+    .st-thumb-tile { position: relative; aspect-ratio: 1; border-radius: 10px; background: #FAFAFB; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; font-size: 1.1rem; }
     .st-thumb-tile img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
-    .st-thumb-more { background: #EFECE6; border-color: #D8D5CE; color: var(--primary); font-weight: 800; font-size: 0.86rem; }
+    .st-thumb-more { background: #F4F4F6; border-color: #E2E2E6; color: var(--primary); font-weight: 800; font-size: 0.86rem; }
     @media (max-width: 360px) {
       .st-sum-value { font-size: 0.9rem; }
       .st-bar-row { grid-template-columns: 46px minmax(0, 1fr) 68px; gap: 6px; }
@@ -249,10 +249,10 @@
     .st-color-row { display: grid; grid-template-columns: 14px 74px minmax(0, 1fr) 66px; align-items: center; gap: 8px; }
     .st-color-dot { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(17,17,17,0.38); flex: 0 0 auto; }
     .st-color-name { font-size: 0.78rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .st-color-track { height: 9px; background: #EFECE6; border-radius: 99px; overflow: hidden; }
+    .st-color-track { height: 9px; background: #F4F4F6; border-radius: 99px; overflow: hidden; }
     .st-color-fill { height: 100%; border-radius: 99px; box-shadow: inset 0 0 0 1px rgba(17,17,17,0.28); }
     .st-color-val { font-size: 0.71rem; color: var(--text-sub); text-align: right; font-weight: 600; white-space: nowrap; }
-    .st-color-row.is-empty .st-color-name { color: #9C9A93; }
+    .st-color-row.is-empty .st-color-name { color: #94949B; }
 
     .filter-toggle-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
     .filter-toggle-btn { flex: 0 0 auto; background: #fff; border: 1px solid var(--border); color: var(--primary); border-radius: 20px; padding: 6px 12px; font-size: 0.78rem; font-weight: 800; cursor: pointer; }
@@ -262,15 +262,15 @@
 
     .lb-folder-grid { display: flex; flex-direction: column; gap: 10px; }
     .lb-folder-card { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; cursor: pointer; position: relative; }
-    .lb-folder-card:active { background: #F7F6F3; }
+    .lb-folder-card:active { background: #FAFAFB; }
     .lb-folder-ico { width: 42px; height: 42px; border-radius: 12px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex: 0 0 auto; }
     .lb-folder-body { min-width: 0; flex: 1 1 auto; }
     .lb-folder-name { font-size: 0.95rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .lb-folder-meta { font-size: 0.72rem; color: var(--text-sub); font-weight: 600; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .lb-folder-cnt { flex: 0 0 auto; font-size: 0.9rem; font-weight: 800; color: var(--primary); }
-    .lb-folder-new { border-style: dashed; background: #FAF9F6; }
-    .lb-folder-new .lb-folder-ico { background: #EFECE6; }
-    .lb-folder-del { position: absolute; top: 8px; right: 8px; background: none; border: none; color: #C9C5BC; font-size: 0.9rem; cursor: pointer; padding: 2px 6px; }
+    .lb-folder-new { border-style: dashed; background: #FAFAFB; }
+    .lb-folder-new .lb-folder-ico { background: #F4F4F6; }
+    .lb-folder-del { position: absolute; top: 8px; right: 8px; background: none; border: none; color: #C3C3C9; font-size: 0.9rem; cursor: pointer; padding: 2px 6px; }
     .lb-folder-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
     .lb-folder-back { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 6px 12px; font-size: 0.78rem; font-weight: 800; color: var(--primary); cursor: pointer; flex: 0 0 auto; }
     .lb-folder-crumb { font-size: 0.82rem; font-weight: 800; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -279,9 +279,9 @@
     .lb-new-folder-box button { flex: 0 0 auto; }
     .lb-move-list { display: flex; flex-direction: column; gap: 8px; max-height: 44vh; overflow-y: auto; margin: 4px 0 12px; }
     .lb-move-btn { display: flex; align-items: center; gap: 8px; width: 100%; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 11px 12px; font-size: 0.86rem; font-weight: 700; color: var(--text-main); cursor: pointer; text-align: left; }
-    .lb-move-btn:active { background: #EFECE6; }
+    .lb-move-btn:active { background: #F4F4F6; }
     .lb-move-btn b { margin-left: auto; font-size: 0.76rem; color: var(--text-sub); font-weight: 800; }
-    .lb-move-btn.is-current { background: var(--primary-light); border-color: #D8D5CE; }
+    .lb-move-btn.is-current { background: var(--primary-light); border-color: #E2E2E6; }
     .lb-move-current { font-size: 0.66rem; font-weight: 800; color: var(--primary); }
 
     /* Modals */
@@ -289,8 +289,8 @@
     .modal-overlay.active { display: flex; }
     .modal-card { background: #fff; border-radius: var(--radius); width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.18); }
     .modal-title { font-size: 1.15rem; font-weight: 800; margin-bottom: 14px; }
-    .modal-close-icon { border: none; background: #EFECE6; width: 30px; height: 30px; border-radius: 50%; font-size: 1rem; cursor: pointer; color: var(--text-sub); display: flex; align-items: center; justify-content: center; }
-    .modal-close-icon:hover { background: #E6E4DF; }
+    .modal-close-icon { border: none; background: #F4F4F6; width: 30px; height: 30px; border-radius: 50%; font-size: 1rem; cursor: pointer; color: var(--text-sub); display: flex; align-items: center; justify-content: center; }
+    .modal-close-icon:hover { background: #E8E8E8; }
 
     .form-group { margin-bottom: 12px; }
     /* v8.10: 등록/수정 모달 2열 행 (브랜드·구매 사이즈 / 구매 가격·체감 핏) */
@@ -301,16 +301,16 @@
     .form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-light); }
     .btn-submit { width: 100%; background: var(--primary); color: #fff; border: none; border-radius: var(--radius-sm); padding: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer; margin-top: 10px; }
     .btn-submit:hover { background: var(--primary-hover); }
-    .btn-cancel { width: 100%; background: #EFECE6; color: var(--text-sub); border: none; border-radius: var(--radius-sm); padding: 10px; font-size: 0.88rem; font-weight: 600; cursor: pointer; margin-top: 6px; }
+    .btn-cancel { width: 100%; background: #F4F4F6; color: var(--text-sub); border: none; border-radius: var(--radius-sm); padding: 10px; font-size: 0.88rem; font-weight: 600; cursor: pointer; margin-top: 6px; }
 
     /* Step Selector Navigation */
-    .step-banner { background: #EFECE6; border-radius: var(--radius-sm); padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .step-banner { background: #F4F4F6; border-radius: var(--radius-sm); padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .step-badge { font-weight: 800; color: #2C2C2C; font-size: 0.85rem; }
-    .btn-skip-step { background: #fff; color: #2C2C2C; border: 1px solid #D8D5CE; border-radius: 20px; padding: 4px 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+    .btn-skip-step { background: #fff; color: #2C2C2C; border: 1px solid #E2E2E6; border-radius: 20px; padding: 4px 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
 
     /* Photo Preview & Nukki Tool Box */
-    .nukki-box { background: #F7F6F3; border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-top: 8px; text-align: center; }
-    .nukki-preview-stage { position: relative; background: repeating-conic-gradient(#EFECE6 0% 25%, #ffffff 0% 50%) 50% / 16px 16px; border-radius: 8px; border: 1px solid #C9C5BC; min-height: 220px; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 8px; touch-action: none; }
+    .nukki-box { background: #FAFAFB; border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-top: 8px; text-align: center; }
+    .nukki-preview-stage { position: relative; background: repeating-conic-gradient(#F4F4F6 0% 25%, #ffffff 0% 50%) 50% / 16px 16px; border-radius: 8px; border: 1px solid #C3C3C9; min-height: 220px; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 8px; touch-action: none; }
     .nukki-canvas { max-height: 240px; max-width: 100%; object-fit: contain; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.18)); cursor: crosshair; }
     
     .tool-bar { display: flex; gap: 6px; margin: 8px 0; justify-content: center; flex-wrap: wrap; }
@@ -329,22 +329,22 @@
     .modal-sticky-footer { position: sticky; bottom: 0; z-index: 30; background: #fff; padding: 10px 18px 14px; border-top: 1px solid var(--border); flex-shrink: 0; display: flex; gap: 8px; }
     .modal-sticky-footer .btn-submit { margin-top: 0; flex: 1.6; }
     .modal-sticky-footer .btn-cancel { margin-top: 0; flex: 1; }
-    .edit-modal-tabs { display: flex; gap: 6px; margin-top: 10px; background: #EFECE6; padding: 4px; border-radius: 10px; }
+    .edit-modal-tabs { display: flex; gap: 6px; margin-top: 10px; background: #F4F4F6; padding: 4px; border-radius: 10px; }
     .edit-modal-tab-btn { flex: 1; border: none; background: transparent; padding: 8px 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; color: var(--text-sub); cursor: pointer; transition: all 0.15s ease; }
     .edit-modal-tab-btn.active { background: #fff; color: var(--primary); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-    .btn-dt-more-toggle { width: 100%; background: #EFECE6; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 0.82rem; font-weight: 700; color: var(--text-sub); cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
-    .btn-dt-more-toggle:hover { background: #E6E4DF; }
+    .btn-dt-more-toggle { width: 100%; background: #F4F4F6; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 0.82rem; font-weight: 700; color: var(--text-sub); cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+    .btn-dt-more-toggle:hover { background: #E8E8E8; }
     .chips-row.expanded { flex-wrap: wrap; overflow-x: visible; }
     .brand-controls-right { display: flex; align-items: center; gap: 6px; }
     .brand-select-mini { border: 1px solid var(--border); border-radius: 14px; padding: 3px 8px; font-size: 0.75rem; font-weight: 600; background: #fff; color: var(--text-main); max-width: 145px; outline: none; }
-    .brand-expand-btn { border: 1px solid var(--border); background: #F7F6F3; color: var(--text-sub); border-radius: 14px; padding: 3px 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer; }
+    .brand-expand-btn { border: 1px solid var(--border); background: #FAFAFB; color: var(--text-sub); border-radius: 14px; padding: 3px 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer; }
 
     /* Detail Modal Styles */
     .detail-card { max-width: 440px; }
     .detail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0; }
-    .detail-photo-stage { width: 100%; aspect-ratio: 1; background: radial-gradient(circle, #ffffff 40%, #EFECE6 100%); border-radius: var(--radius); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 16px; margin-bottom: 14px; }
+    .detail-photo-stage { width: 100%; aspect-ratio: 1; background: radial-gradient(circle, #ffffff 40%, #F4F4F6 100%); border-radius: var(--radius); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 16px; margin-bottom: 14px; }
     .detail-photo-stage img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 12px 24px rgba(0,0,0,0.15)); }
-    .detail-photo-stage .no-img { font-size: 4rem; color: #C9C5BC; }
+    .detail-photo-stage .no-img { font-size: 4rem; color: #C3C3C9; }
     .detail-info-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
     .detail-info-row:last-child { border-bottom: none; }
     .detail-label { color: var(--text-sub); font-weight: 600; }
@@ -353,14 +353,14 @@
     .btn-action-wear { grid-column: span 2; background: var(--success); color: #fff; border: none; padding: 12px; border-radius: var(--radius-sm); font-size: 0.95rem; font-weight: 800; cursor: pointer; }
     .btn-action-wear:hover { background: #24473C; }
     .btn-action-edit { background: var(--primary); color: #fff; border: none; padding: 10px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 700; cursor: pointer; }
-    .btn-action-del { background: #EFECE6; color: #A5483B; border: none; padding: 10px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    .btn-action-del { background: #F4F4F6; color: #A5483B; border: none; padding: 10px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 700; cursor: pointer; }
 
     .empty-state { text-align: center; color: var(--text-sub); font-size: 0.85rem; padding: 24px; line-height: 1.5; }
   
     /* Clipboard Paste & Drop Zone */
     .clipboard-paste-zone {
       border: 2px dashed #2C2C2C;
-      background: #EFECE6;
+      background: #F4F4F6;
       border-radius: var(--radius-sm);
       padding: 14px 12px;
       text-align: center;
@@ -369,12 +369,12 @@
       transition: all 0.2s ease;
     }
     .clipboard-paste-zone:hover {
-      background: #EFECE6;
+      background: #F4F4F6;
       border-color: #111111;
     }
     .btn-paste-sub {
       background: #fff;
-      border: 1px solid #C9C5BC;
+      border: 1px solid #C3C3C9;
       border-radius: 6px;
       padding: 5px 12px;
       font-size: 0.78rem;
@@ -384,8 +384,8 @@
       transition: all 0.2s ease;
     }
     .btn-paste-sub:hover {
-      background: #F7F6F3;
-      border-color: #9C9A93;
+      background: #FAFAFB;
+      border-color: #94949B;
     }
     .btn-paste-sub.active {
       background: #2C2C2C;
@@ -400,55 +400,55 @@
     .reco-list { display:flex; flex-direction:column; gap:8px; }
     .reco-card { display:flex; gap:10px; background:#fff; border:1px solid var(--border); border-radius:12px; padding:9px; }
     .reco-thumbs { display:flex; gap:3px; flex-shrink:0; }
-    .reco-thumb { width:46px; height:58px; border-radius:8px; background:#EFECE6; overflow:hidden; display:flex; align-items:center; justify-content:center; cursor:pointer; border:1px solid #E6E4DF; }
+    .reco-thumb { width:46px; height:58px; border-radius:8px; background:#F4F4F6; overflow:hidden; display:flex; align-items:center; justify-content:center; cursor:pointer; border:1px solid #E8E8E8; }
     .reco-thumb img { width:100%; height:100%; object-fit:cover; }
     .reco-body, .pair-body { flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; }
     .reco-title, .pair-title { font-size:0.82rem; font-weight:800; color:#2C2C2C; line-height:1.25; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
     .reco-reason { font-size:0.68rem; color:#6B6B68; }
     .reco-btns { display:flex; gap:6px; margin-top:auto; padding-top:4px; }
-    .reco-btns button { flex:1; font-size:0.72rem; font-weight:700; padding:6px 4px; border-radius:7px; border:1px solid #D8D5CE; background:#EFECE6; color:#2C2C2C; cursor:pointer; }
-    .reco-btns button.reco-wear { background:#EFECE6; border-color:#D8D5CE; color:#2F5D50; }
-    .pair-card { display:flex; gap:10px; background:#F7F6F3; border:1px solid var(--border); border-radius:12px; padding:9px; margin-bottom:8px; }
-    .pair-dupe { margin-top:10px; background:#FAF9F6; border:1px solid #D8D5CE; border-radius:12px; padding:10px; }
+    .reco-btns button { flex:1; font-size:0.72rem; font-weight:700; padding:6px 4px; border-radius:7px; border:1px solid #E2E2E6; background:#F4F4F6; color:#2C2C2C; cursor:pointer; }
+    .reco-btns button.reco-wear { background:#F4F4F6; border-color:#E2E2E6; color:#2F5D50; }
+    .pair-card { display:flex; gap:10px; background:#FAFAFB; border:1px solid var(--border); border-radius:12px; padding:9px; margin-bottom:8px; }
+    .pair-dupe { margin-top:10px; background:#FAFAFB; border:1px solid #E2E2E6; border-radius:12px; padding:10px; }
 
     .dupe-live-head { display:flex; justify-content:space-between; align-items:baseline; gap:6px; margin-bottom:6px; }
     .dupe-live-title { font-size:0.82rem; font-weight:800; color:#111111; }
     .dupe-live-count { font-size:0.74rem; color:#2C2C2C; }
     .dupe-live-count b { color:#2C2C2C; }
-    .dupe-live-hint { font-size:0.68rem; color:#9C9A93; margin-top:6px; line-height:1.4; }
-    .dupe-live-empty { font-size:0.78rem; color:#2F5D50; background:#EFECE6; border:1px solid #D8D5CE; border-radius:8px; padding:8px 10px; font-weight:600; }
+    .dupe-live-hint { font-size:0.68rem; color:#94949B; margin-top:6px; line-height:1.4; }
+    .dupe-live-empty { font-size:0.78rem; color:#2F5D50; background:#F4F4F6; border:1px solid #E2E2E6; border-radius:8px; padding:8px 10px; font-weight:600; }
     .dupe-chip-row { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; }
     .dupe-chip { width:58px; flex-shrink:0; cursor:pointer; text-align:center; }
-    .dupe-chip-thumb { width:58px; height:70px; border-radius:9px; background:#EFECE6; overflow:hidden; display:flex; align-items:center; justify-content:center; border:1px solid #E6E4DF; }
+    .dupe-chip-thumb { width:58px; height:70px; border-radius:9px; background:#F4F4F6; overflow:hidden; display:flex; align-items:center; justify-content:center; border:1px solid #E8E8E8; }
     .dupe-chip-thumb img { width:100%; height:100%; object-fit:cover; }
     .dupe-chip-name { font-size:0.62rem; font-weight:700; color:#2C2C2C; margin-top:3px; line-height:1.15; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
-    .dupe-chip-sub { font-size:0.56rem; color:#9C9A93; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
-    .dupe-chip-more { display:flex; align-items:center; justify-content:center; font-size:0.62rem; font-weight:700; color:#2C2C2C; background:#EFECE6; border:1px dashed #D8D5CE; border-radius:9px; height:70px; }
+    .dupe-chip-sub { font-size:0.56rem; color:#94949B; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+    .dupe-chip-more { display:flex; align-items:center; justify-content:center; font-size:0.62rem; font-weight:700; color:#2C2C2C; background:#F4F4F6; border:1px dashed #E2E2E6; border-radius:9px; height:70px; }
     .dupe-result-head { font-size:0.9rem; font-weight:800; color:#111111; margin-bottom:10px; }
     .dupe-compare-list { display:flex; flex-direction:column; gap:6px; }
     .dupe-compare-row { display:flex; gap:10px; align-items:center; padding:7px; border:1px solid var(--border); border-radius:10px; background:#fff; cursor:pointer; }
-    .dupe-compare-thumb { width:44px; height:52px; border-radius:8px; background:#EFECE6; overflow:hidden; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .dupe-compare-thumb { width:44px; height:52px; border-radius:8px; background:#F4F4F6; overflow:hidden; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
     .dupe-compare-thumb img { width:100%; height:100%; object-fit:cover; }
     .dupe-compare-main { flex:1; min-width:0; }
     .dupe-compare-name { font-size:0.8rem; font-weight:700; color:#2C2C2C; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .dupe-compare-meta { font-size:0.68rem; color:#6B6B68; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .dupe-compare-side { text-align:right; flex-shrink:0; }
-    .dupe-badge { display:block; font-size:0.6rem; font-weight:700; color:#2C2C2C; background:#EFECE6; border-radius:5px; padding:2px 5px; margin-bottom:3px; }
-    .dupe-wear { font-size:0.62rem; color:#9C9A93; }
-    #dupe-live-panel { background:#F7F6F3; border:1px solid #E6E4DF; border-radius:12px; padding:10px; margin-bottom:14px; display:none; }
+    .dupe-badge { display:block; font-size:0.6rem; font-weight:700; color:#2C2C2C; background:#F4F4F6; border-radius:5px; padding:2px 5px; margin-bottom:3px; }
+    .dupe-wear { font-size:0.62rem; color:#94949B; }
+    #dupe-live-panel { background:#FAFAFB; border:1px solid #E8E8E8; border-radius:12px; padding:10px; margin-bottom:14px; display:none; }
 
     .sync-state { font-size:0.85rem; font-weight:800; padding:8px 10px; border-radius:8px; margin-bottom:8px; }
     .sync-state.sync-off { background:#F3E9E7; color:#A5483B; }
-    .sync-state.sync-on { background:#EFECE6; color:#2F5D50; }
+    .sync-state.sync-on { background:#F4F4F6; color:#2F5D50; }
     .sync-help { font-size:0.76rem; color:#4A4A47; line-height:1.55; }
     .sync-code-row { display:flex; gap:6px; }
     .sync-code-row .form-input { flex:1; }
-    .sync-mini-btn { font-size:0.72rem; font-weight:700; padding:0 12px; border-radius:8px; border:1px solid #D8D5CE; background:#EFECE6; color:#2C2C2C; cursor:pointer; white-space:nowrap; }
+    .sync-mini-btn { font-size:0.72rem; font-weight:700; padding:0 12px; border-radius:8px; border:1px solid #E2E2E6; background:#F4F4F6; color:#2C2C2C; cursor:pointer; white-space:nowrap; }
     .sync-counts { font-size:0.74rem; color:#4A4A47; margin-top:8px; line-height:1.5; }
     .sync-err { font-size:0.72rem; color:#A5483B; margin-top:6px; }
     .sync-section { margin-bottom:16px; }
     .sync-section-title { font-size:0.8rem; font-weight:800; color:#2C2C2C; margin-bottom:6px; }
-    .sync-note { font-size:0.68rem; color:#9C9A93; line-height:1.5; margin-top:6px; }
+    .sync-note { font-size:0.68rem; color:#94949B; line-height:1.5; margin-top:6px; }
     .sync-row { display:flex; align-items:center; gap:8px; }
     #sync-diag-out { font-size:0.7rem; color:#4A4A47; margin-top:6px; min-height:16px; }
 
@@ -456,10 +456,10 @@
     .season-toggle-row { display: flex; gap: 6px; flex-wrap: wrap; }
     .season-toggle { flex: 1 1 60px; padding: 9px 4px; border-radius: 10px; border: 1.5px solid var(--border); background: #fff; color: var(--text-sub); font-size: 0.84rem; font-weight: 700; cursor: pointer; transition: all .12s; }
     .season-toggle.active { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 2px 6px rgba(17,17,17,.28); }
-    .season-all-btn { width: 100%; margin-top: 6px; padding: 9px 8px; border-radius: 10px; border: 1.5px dashed var(--border); background: #F7F6F3; color: var(--text-sub); font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all .12s; }
-    .season-all-btn.active { border-style: solid; border-color: #8A7350; background: #F7F6F3; color: #2C2C2C; }
-    .season-hint { font-size: 0.72rem; color: #9C9A93; margin-top: 5px; line-height: 1.45; }
-    .badge.season { background: #EFECE6; color: #2C2C2C; }
+    .season-all-btn { width: 100%; margin-top: 6px; padding: 9px 8px; border-radius: 10px; border: 1.5px dashed var(--border); background: #FAFAFB; color: var(--text-sub); font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all .12s; }
+    .season-all-btn.active { border-style: solid; border-color: #8A7350; background: #FAFAFB; color: #2C2C2C; }
+    .season-hint { font-size: 0.72rem; color: #94949B; margin-top: 5px; line-height: 1.45; }
+    .badge.season { background: #F4F4F6; color: #2C2C2C; }
 
     /* 헤더 버튼 4개 대응 (모바일에서 줄바꿈) */
     header { flex-wrap: wrap; gap: 8px; }
@@ -471,12 +471,12 @@
       header .header-btns { gap: 5px; }
     }
     /* ===== v8.12 : PC 백업(297벌) 반영 · v8.11 모바일 첫 화면 레이아웃 · 내 옷장 / 날씨·오늘 코디 서브 탭 ===== */
-    .closet-subtabs { display: flex; gap: 6px; background: #EFECE6; border: 1px solid #D8D5CE; border-radius: 14px; padding: 4px; margin-bottom: 12px; }
+    .closet-subtabs { display: flex; gap: 6px; background: #F4F4F6; border: 1px solid #E2E2E6; border-radius: 14px; padding: 4px; margin-bottom: 12px; }
     .closet-subtab { flex: 1 1 0; min-width: 0; border: none; background: none; border-radius: 10px; padding: 9px 6px; font-size: 0.85rem; font-weight: 800; color: #2C2C2C; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.15s ease; }
     .closet-subtab.active { background: #fff; color: #111111; box-shadow: 0 2px 6px rgba(17,17,17,0.16); }
     .closet-subtab .sub-tab-cnt { font-size: 0.8rem; font-weight: 800; color: var(--primary); }
     /* 내 옷장 탭 상단 1줄 컴팩트 날씨 바 */
-    .weather-mini-bar { display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #EFECE6 0%, #EFECE6 100%); border: 1px solid #D8D5CE; border-radius: 12px; padding: 9px 12px; margin-bottom: 12px; min-width: 0; overflow: hidden; }
+    .weather-mini-bar { display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #F4F4F6 0%, #F4F4F6 100%); border: 1px solid #E2E2E6; border-radius: 12px; padding: 9px 12px; margin-bottom: 12px; min-width: 0; overflow: hidden; }
     .weather-mini-bar .wm-loc { font-size: 0.88rem; font-weight: 800; color: #111111; white-space: nowrap; flex-shrink: 0; }
     .weather-mini-bar .wm-temp { font-size: 1rem; font-weight: 800; color: #111111; white-space: nowrap; flex-shrink: 0; }
     .weather-mini-bar .wm-cond { flex: 1 1 auto; min-width: 0; font-size: 0.72rem; font-weight: 700; color: #2C2C2C; background: rgba(255,255,255,0.85); border-radius: 12px; padding: 3px 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
@@ -549,7 +549,7 @@
     .empty-desc { font-size: 0.86rem; color: #2C2C2C; line-height: 1.65; margin-bottom: 16px; }
     .empty-desc b { color: var(--primary); }
     .empty-card .btn-submit { margin-top: 0; }
-    .empty-note { font-size: 0.72rem; color: #9C9A93; line-height: 1.6; margin-top: 12px; }
+    .empty-note { font-size: 0.72rem; color: #94949B; line-height: 1.6; margin-top: 12px; }
     /* ===== v8.18 : 앱 모드(standalone) 안전영역 대응 — 노치·홈 인디케이터에 헤더/하단탭이 가리지 않게 ===== */
     header { padding-top: calc(14px + env(safe-area-inset-top, 0px)); }
     @media (max-width: 480px) {
@@ -564,15 +564,15 @@
       --ink: #111111;
       --charcoal: #2C2C2C;
       --sub: #6B6B68;
-      --hair: #D8D5CE;
-      --tint: #EFECE6;
-      --tint2: #FAF9F6;
-      --bg: #F7F6F3;
+      --hair: #E2E2E6;
+      --tint: #F4F4F6;
+      --tint2: #FAFAFB;
+      --bg: #FFFFFF;
       --card-bg: #FFFFFF;
-      --border: #E6E4DF;
+      --border: #E8E8E8;
       --primary: #111111;
       --primary-hover: #2C2C2C;
-      --primary-light: #EFECE6;
+      --primary-light: #F4F4F6;
       --text-main: #111111;
       --text-sub: #6B6B68;
       --danger: #B0453A;
@@ -588,9 +588,9 @@
     header { background: #fff; border-bottom: 1px solid var(--border); box-shadow: none; }
     header h1 { font-weight: 800; letter-spacing: -0.02em; }
     header h1 .brand-ico { width: 18px; height: 18px; fill: var(--ink); flex: 0 0 auto; display: block; }
-    .ver-badge { display: inline-block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.03em; background: var(--ink); color: #F7F6F3; padding: 3px 9px; border-radius: 999px; margin-left: 3px; vertical-align: middle; }
+    .ver-badge { display: inline-block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.03em; background: var(--ink); color: #FAFAFB; padding: 3px 9px; border-radius: 999px; margin-left: 3px; vertical-align: middle; }
     .icon-btn { display: inline-flex; align-items: center; gap: 5px; background: #fff; border: 1px solid var(--hair); color: var(--ink); font-weight: 600; border-radius: 999px; }
-    .icon-btn:hover { background: var(--tint); border-color: #C6C1B6; }
+    .icon-btn:hover { background: var(--tint); border-color: #D8D8DD; }
     .icon-btn .ico { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
 
     /* ---------- 서브 탭 (내 옷장 / 날씨·오늘 코디) ---------- */
@@ -619,7 +619,7 @@
     .add-btn { background: var(--ink); color: #fff; border: 1px solid var(--ink); font-weight: 700; border-radius: 999px; }
     .add-btn:hover { background: var(--charcoal); border-color: var(--charcoal); }
     .add-btn.ghost { background: #fff; color: var(--ink); border: 1px solid var(--hair); }
-    .add-btn.ghost:hover { background: var(--tint); border-color: #C6C1B6; }
+    .add-btn.ghost:hover { background: var(--tint); border-color: #D8D8DD; }
 
     /* ---------- 상태 세그먼트 ---------- */
     .status-segment { background: var(--tint); border-radius: 12px; }
@@ -635,15 +635,15 @@
 
     /* ---------- 검색·정렬 ---------- */
     .search-input, .sort-select, .brand-select-mini { background: #fff; border: 1px solid var(--hair); color: var(--ink); border-radius: 10px; }
-    .search-input::placeholder { color: #A8A49C; }
-    .search-icon { color: #A8A49C; }
+    .search-input::placeholder { color: #9C9CA3; }
+    .search-icon { color: #9C9CA3; }
     .brand-expand-btn { background: #fff; border: 1px solid var(--hair); color: var(--sub); }
 
     /* ---------- 옷 카드 ---------- */
     .clothes-grid { gap: 12px; }
     .clothes-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; box-shadow: none; }
     .clothes-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(17,17,17,0.07); }
-    .clothes-thumb { background: var(--tint2); color: #B8B3A9; }
+    .clothes-thumb { background: var(--tint2); color: #AEAEB4; }
     .clothes-thumb img { filter: drop-shadow(0 6px 14px rgba(17,17,17,0.09)); }
     .clothes-info { padding: 12px 12px 13px; }
     .clothes-name { color: var(--ink); letter-spacing: -0.01em; }
@@ -673,7 +673,7 @@
     .slot-box { border: 1.5px dashed var(--hair); background: var(--tint2); color: var(--sub); border-radius: 10px; }
     .slot-box.filled { border: 1.5px solid var(--ink); background: var(--tint); color: var(--ink); }
     .outfit-canvas-card { background: var(--tint2); border: 1px solid var(--border); border-radius: 14px; }
-    .outfit-placeholder { color: #A8A49C; border: 1px dashed #C9C5BC; }
+    .outfit-placeholder { color: #9C9CA3; border: 1px dashed #C3C3C9; }
     .lookbook-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; }
     .lookbook-thumb { background: var(--tint2); border: 1px solid var(--border); }
     .lb-folder-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; }
@@ -682,7 +682,7 @@
     .lb-folder-cnt { color: var(--ink); }
     .lb-folder-new { background: var(--tint2); }
     .lb-folder-new .lb-folder-ico { background: var(--tint); }
-    .lb-folder-del { color: #B8B3A9; }
+    .lb-folder-del { color: #AEAEB4; }
     .lb-folder-back { background: #fff; border: 1px solid var(--hair); color: var(--ink); }
     .lb-move-btn { background: #fff; border: 1px solid var(--border); }
     .lb-move-btn:active { background: var(--tint); }
@@ -713,7 +713,7 @@
     .modal-card { background: #fff; border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 24px 64px rgba(17,17,17,0.16); }
     .modal-title { letter-spacing: -0.02em; }
     .modal-close-icon { background: var(--tint); color: var(--charcoal); }
-    .modal-close-icon:hover { background: #E5E1D9; }
+    .modal-close-icon:hover { background: #ECECEF; }
     .modal-sticky-header, .modal-sticky-footer { background: #fff; }
     .form-input { background: #fff; border: 1px solid var(--hair); color: var(--ink); border-radius: 10px; }
     .form-input:focus { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(17,17,17,0.06); }
@@ -728,7 +728,7 @@
     .step-badge { color: var(--ink); }
     .btn-skip-step { background: #fff; color: var(--ink); border: 1px solid var(--hair); }
     .nukki-box { background: var(--tint2); border: 1px solid var(--border); }
-    .nukki-preview-stage { background: repeating-conic-gradient(#EFECE6 0% 25%, #FFFFFF 0% 50%) 50% / 16px 16px; border: 1px solid var(--hair); }
+    .nukki-preview-stage { background: repeating-conic-gradient(#F4F4F6 0% 25%, #FFFFFF 0% 50%) 50% / 16px 16px; border: 1px solid var(--hair); }
     .tool-btn { background: #fff; border: 1px solid var(--hair); color: var(--charcoal); }
     .tool-btn.active { background: var(--ink); color: #fff; border-color: var(--ink); }
     .mode-btn { background: #fff; border: 1px solid var(--hair); color: var(--charcoal); }
@@ -738,15 +738,15 @@
     .btn-dt-more-toggle { background: #fff; border: 1px solid var(--hair); color: var(--charcoal); }
     .btn-dt-more-toggle:hover { background: var(--tint); }
     .clipboard-paste-zone { border: 1.5px dashed var(--hair); background: var(--tint2); }
-    .clipboard-paste-zone:hover { background: var(--tint); border-color: #BFB9AD; }
+    .clipboard-paste-zone:hover { background: var(--tint); border-color: #C8C8CE; }
     .btn-paste-sub { background: #fff; border: 1px solid var(--hair); color: var(--charcoal); }
-    .btn-paste-sub:hover { background: var(--tint); border-color: #BFB9AD; }
+    .btn-paste-sub:hover { background: var(--tint); border-color: #C8C8CE; }
     .btn-paste-sub.active { background: var(--ink); color: #fff; border-color: var(--ink); }
 
     /* ---------- 옷 상세 모달 ---------- */
     .detail-photo-stage { background: var(--tint2); border: 1px solid var(--border); }
-    .detail-photo-stage .no-img { color: #C9C5BC; }
-    .detail-info-row { border-bottom: 1px solid #F0EEE9; }
+    .detail-photo-stage .no-img { color: #C3C3C9; }
+    .detail-info-row { border-bottom: 1px solid #EFEFF2; }
     .detail-label { color: var(--sub); }
     .detail-val { color: var(--ink); }
     .btn-action-wear { background: var(--ink); color: #fff; }
@@ -768,7 +768,7 @@
     .dupe-live-head .dupe-live-title { color: var(--ink); }
     .dupe-live-count { color: var(--charcoal); }
     .dupe-live-count b { color: var(--ink); }
-    .dupe-live-hint { color: #9C9A93; }
+    .dupe-live-hint { color: #94949B; }
     .dupe-live-empty { background: var(--tint); border: 1px solid var(--border); color: var(--charcoal); }
     .dupe-chip-thumb { background: var(--tint2); border: 1px solid var(--border); }
     .dupe-chip-name { color: var(--charcoal); }
@@ -784,7 +784,7 @@
     .sync-help, .sync-counts { color: var(--charcoal); }
     .sync-mini-btn { background: #fff; border: 1px solid var(--hair); color: var(--ink); }
     .sync-section-title { color: var(--charcoal); }
-    .sync-note { color: #9C9A93; }
+    .sync-note { color: #94949B; }
     .sync-err { color: #8C4A3C; }
 
     /* ---------- 계절 선택 ---------- */
@@ -803,7 +803,7 @@
     .empty-card { background: #fff; border: 1px solid var(--border); box-shadow: none; border-radius: 16px; }
     .empty-desc { color: var(--charcoal); }
     .empty-desc b { color: var(--ink); }
-    .empty-note { color: #9C9A93; }
+    .empty-note { color: #94949B; }
 
     /* ---------- 토스트 ---------- */
     #toast, .toast { background: rgba(17,17,17,0.94); }
@@ -826,11 +826,11 @@
     .st-order-btn:hover { background: var(--tint); }
     .st-order-btn.active { background: var(--ink); border-color: var(--ink); color: #fff; }
     .st-order-btn.ghost { color: var(--sub); }
-    .st-order-hint { flex: 1 1 100%; font-size: 0.68rem; color: #9C9A93; font-weight: 600; padding-left: 2px; }
+    .st-order-hint { flex: 1 1 100%; font-size: 0.68rem; color: #94949B; font-weight: 600; padding-left: 2px; }
     .st-move-bar { display: none; align-items: center; justify-content: flex-end; gap: 6px; margin: -2px 0 10px; }
     #tab-stats.stats-editing .st-move-bar { display: flex; }
-    #tab-stats.stats-editing .stats-card { border-style: dashed; border-color: #CFC9BD; }
-    .st-move-label { font-size: 0.66rem; font-weight: 700; color: #A8A49C; letter-spacing: 0.02em; margin-right: auto; }
+    #tab-stats.stats-editing .stats-card { border-style: dashed; border-color: #D0D0D6; }
+    .st-move-label { font-size: 0.66rem; font-weight: 700; color: #9C9CA3; letter-spacing: 0.02em; margin-right: auto; }
     .st-move-btn { width: 28px; height: 28px; border-radius: 9px; border: 1px solid var(--hair); background: #fff; color: var(--ink); font-size: 0.66rem; line-height: 1; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
     .st-move-btn:hover { background: var(--tint); }
     .st-move-btn:disabled { opacity: 0.25; cursor: default; background: #fff; }
@@ -848,13 +848,42 @@
     .clipboard-paste-zone, .dupe-result-head, .dupe-live-head, .st-move-label,
     .slot-box:not(.filled), .form-group label, #c-status, #lookbook-folder-select { filter: grayscale(1); }
     input[type="checkbox"], input[type="radio"] { accent-color: #111111; }
+
+    /* ===== v8.23 : 순백 화이트 · 내 옷장 3열(한 줄 3개) · 화사한 파스텔 ===== */
+    .clothes-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .clothes-card { border-radius: 12px; }
+    .clothes-thumb { padding: 6px; }
+    .clothes-thumb img { filter: drop-shadow(0 4px 8px rgba(17,17,17,0.08)); }
+    .clothes-info { padding: 7px 7px 8px; }
+    .clothes-name { font-size: 0.71rem; line-height: 1.28; letter-spacing: -0.01em; margin-bottom: 2px;
+                    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+                    min-height: 2.56em; word-break: keep-all; }
+    .clothes-brand { font-size: 0.62rem; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .clothes-card .card-date { font-size: 0.6rem !important; margin-bottom: 4px !important;
+                               white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .clothes-tags { gap: 3px; }
+    .clothes-tags .badge { font-size: 0.55rem; padding: 1px 4px; border-radius: 4px; font-weight: 700; }
+    .clothes-price { font-size: 0.68rem; }
+    .clothes-card .del-btn.card-actions { top: 4px; right: 4px; width: 19px; height: 19px; font-size: 0.58rem; }
+    .clothes-card .card-photo-toggle { font-size: 0.56rem; padding: 2px 5px; bottom: 4px; right: 4px; border-radius: 8px; }
+    @media (max-width: 360px) {
+      .clothes-grid { gap: 6px; }
+      .clothes-info { padding: 6px 6px 7px; }
+      .clothes-name { font-size: 0.68rem; }
+    }
+
+    /* ===== v8.23 : 추위 체감(체감온도 보정) 칩 ===== */
+    .coldfeel-row { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin: 10px 0 10px; }
+    .coldfeel-label { font-size: 0.74rem; font-weight: 800; color: var(--ink); margin-right: 1px; }
+    .coldfeel-row .chip { padding: 4px 9px; font-size: 0.7rem; border-radius: 999px; }
+    .coldfeel-note { flex: 1 1 100%; font-size: 0.66rem; color: var(--sub); font-weight: 600; padding-left: 2px; }
   </style>
 </head>
 <body>
 
   <!-- Top Header -->
   <header>
-    <h1><svg class="brand-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.1 2.5h2l.9 2.4.9-2.4h2l-1.6 4.1 1.8 4.1 3 8.5c.28.8-.32 1.67-1.18 1.67H6.08c-.86 0-1.46-.87-1.18-1.67l3-8.5 1.8-4.1z"/></svg> 마이 스마트 옷장 <span class="ver-badge">v8.22</span></h1>
+    <h1><svg class="brand-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.1 2.5h2l.9 2.4.9-2.4h2l-1.6 4.1 1.8 4.1 3 8.5c.28.8-.32 1.67-1.18 1.67H6.08c-.86 0-1.46-.87-1.18-1.67l3-8.5 1.8-4.1z"/></svg> 마이 스마트 옷장 <span class="ver-badge">v8.23</span></h1>
     <div class="header-btns">
       <button class="icon-btn" onclick="exportBackup()" title="현재 옷장 상태를 JSON 파일로 다운로드합니다"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5v9.5"/><path d="M8.6 9.6 12 13l3.4-3.4"/><path d="M4.5 15v3.2A1.8 1.8 0 0 0 6.3 20h11.4a1.8 1.8 0 0 0 1.8-1.8V15"/></svg> 백업 저장</button>
       <button class="icon-btn" onclick="document.getElementById('backup-file-input').click()" title="모바일/PC 백업 파일을 불러와 동기화합니다"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 13.5V4"/><path d="M8.6 7.4 12 4l3.4 3.4"/><path d="M4.5 15v3.2A1.8 1.8 0 0 0 6.3 20h11.4a1.8 1.8 0 0 0 1.8-1.8V15"/></svg> 백업 불러오기</button>
@@ -961,11 +990,11 @@
         <span>🌸 계절별 분류</span>
       </div>
       <div class="chips-row" id="closet-seasons">
-        <button class="chip active" onclick="filterSeason('전체계절')">전체 계절</button>
-        <button class="chip" onclick="filterSeason('봄')">🌸 봄</button>
-        <button class="chip" onclick="filterSeason('여름')">☀️ 여름</button>
-        <button class="chip" onclick="filterSeason('가을')">🍂 가을</button>
-        <button class="chip" onclick="filterSeason('겨울')">❄️ 겨울</button>
+        <button class="chip active" data-season="전체계절" onclick="filterSeason('전체계절')">전체 계절</button>
+        <button class="chip" data-season="봄/가을" onclick="filterSeason('봄/가을')">🌸 봄/가을</button>
+        <button class="chip" data-season="여름" onclick="filterSeason('여름')">☀️ 여름</button>
+        <button class="chip" data-season="초겨울" onclick="filterSeason('초겨울')">🍂 초겨울</button>
+        <button class="chip" data-season="겨울" onclick="filterSeason('겨울')">❄️ 겨울</button>
       </div>
 
       <!-- Category Filter Chips -->
@@ -1010,6 +1039,7 @@
             </div>
             <div class="weather-badge" id="weather-minmax-display">☀️ 맑음 · 최저 4℃ / 최고 16℃</div>
           </div>
+          <div class="coldfeel-row" id="coldfeel-row"></div>
           <div class="recommend-box">
             <div class="recommend-title">✨ 실시간 기온 맞춤 착장 추천</div>
             <div class="recommend-text" id="recommend-text">실시간 기온(11℃)에 맞춘 옷장 추천 착장입니다.</div>
@@ -1252,7 +1282,7 @@
         <div id="nukki-box" class="nukki-box" style="display: none;">
           <div style="font-size:0.8rem; font-weight:700; color:var(--primary); margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
             <span>✨ 자동 누끼 & 부분 지우개 스튜디오</span>
-            <span id="res-badge" style="font-size:0.7rem; color:var(--text-sub); background:#E6E4DF; padding:2px 6px; border-radius:4px;">1000px 고화질</span>
+            <span id="res-badge" style="font-size:0.7rem; color:var(--text-sub); background:#E8E8E8; padding:2px 6px; border-radius:4px;">1000px 고화질</span>
           </div>
 
           <!-- Interactive Editing Canvas -->
@@ -1285,10 +1315,10 @@
           </div>
         </div>
         <!-- Fit Photo Upload Box (Actual Wear / 착장샷) -->
-        <div style="margin-top: 14px; padding: 12px; background: #FAF9F6; border-radius: 12px; border: 1px dashed #C9C5BC;">
+        <div style="margin-top: 14px; padding: 12px; background: #FAFAFB; border-radius: 12px; border: 1px dashed #C3C3C9;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <span style="font-size:0.85rem; font-weight:700; color:var(--text-main);">🧍 실제 착장 사진 (착용샷/코디컷)</span>
-            <span style="font-size:0.7rem; color:var(--text-sub); background:#E6E4DF; padding:2px 6px; border-radius:4px;">선택 사항</span>
+            <span style="font-size:0.7rem; color:var(--text-sub); background:#E8E8E8; padding:2px 6px; border-radius:4px;">선택 사항</span>
           </div>
           <input type="file" id="c-fit-photo" accept="image/*" class="form-input" onchange="handleFitPhotoSelect(this)">
           <div id="fit-photo-preview-box" style="display:none; margin-top:8px; position:relative; width:100%; max-width:220px; border-radius:10px; overflow:hidden; border:1px solid var(--border);">
@@ -1333,6 +1363,14 @@
             <label>원피스 세부 종류</label>
             <select id="c-subcat" class="form-input" onchange="onClothesFormInput()"></select>
             <div class="season-hint">미니·미디/롱·니트·셔츠 원피스, 점프수트 등 세부 종류를 고르면 중복 체크가 더 정확해져요.</div>
+          </div>
+          <div class="form-group" id="cardigan-use-group" style="display:none;">
+            <label>가디건 착용 방식</label>
+            <select id="c-cardigan-use" class="form-input" onchange="this.dataset.auto='0'">
+              <option value="단독 상의">단독 상의 (상의 슬롯에 들어감)</option>
+              <option value="아우터 겸용">아우터 겸용 (아우터 슬롯에 들어감)</option>
+            </select>
+            <div class="season-hint">코디 조합기·코디 추천에서 이 설정대로 상의 또는 아우터 슬롯에 들어가요.</div>
           </div>
           <div class="form-group">
             <label>주요 색상</label>
@@ -1407,17 +1445,17 @@
       <div class="form-group">
         <label>입는 계절 (복수 선택)</label>
         <div class="season-toggle-row" id="c-season-row">
-          <button type="button" class="season-toggle" id="c-season-spring" data-season="봄" onclick="toggleFormSeason('봄')">🌸 봄</button>
+          <button type="button" class="season-toggle" id="c-season-spring" data-season="봄/가을" onclick="toggleFormSeason('봄/가을')">🌸 봄/가을</button>
           <button type="button" class="season-toggle" id="c-season-summer" data-season="여름" onclick="toggleFormSeason('여름')">☀️ 여름</button>
-          <button type="button" class="season-toggle" id="c-season-autumn" data-season="가을" onclick="toggleFormSeason('가을')">🍂 가을</button>
+          <button type="button" class="season-toggle" id="c-season-earlywinter" data-season="초겨울" onclick="toggleFormSeason('초겨울')">🍂 초겨울</button>
           <button type="button" class="season-toggle" id="c-season-winter" data-season="겨울" onclick="toggleFormSeason('겨울')">❄️ 겨울</button>
         </div>
         <button type="button" class="season-all-btn" id="c-season-all" onclick="toggleAllSeasons()">🌈 사계절 (전체 선택)</button>
-        <div class="season-hint">여러 계절을 함께 고를 수 있어요. 예: 셔츠·얇은 니트 → 봄 + 가을 / 반팔·얇은 바지 → 여름 / 패딩·기모 → 겨울</div>
+        <div class="season-hint">여러 계절을 함께 고를 수 있어요. 예: 셔츠·얇은 니트 → 봄/가을 / 반팔·얇은 바지 → 여름 / 경량패딩·도톰 가디건 → 초겨울 / 패딩·기모 → 겨울</div>
       </div>
 
             <!-- 바지 상세 실측 사이즈 (단면 cm) -->
-      <div id="pants-measurements-section" class="form-group" style="background:#F7F6F3; border:1px solid #E6E4DF; border-radius:var(--radius-sm); padding:12px; margin-bottom:14px;">
+      <div id="pants-measurements-section" class="form-group" style="background:#FAFAFB; border:1px solid #E8E8E8; border-radius:var(--radius-sm); padding:12px; margin-bottom:14px;">
         <div style="font-weight:700; font-size:0.9rem; color:#2C2C2C; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;">
           <span>📏 바지 상세 실측 사이즈 (단면 cm)</span>
           <span style="font-size:0.75rem; color:#2C2C2C; font-weight:normal;">바닥에 평평하게 잰 단면 기준</span>
@@ -1427,49 +1465,49 @@
             <label style="font-size:0.78rem; color:#2C2C2C; font-weight:600; display:block; margin-bottom:4px;">허리 단면</label>
             <div style="position:relative;">
               <input type="number" step="0.5" id="c-pants-waist" placeholder="예: 36" class="form-input" style="padding-right:24px; font-size:0.85rem;">
-              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#A8A49C;">cm</span>
+              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#9C9CA3;">cm</span>
             </div>
           </div>
           <div>
             <label style="font-size:0.78rem; color:#2C2C2C; font-weight:600; display:block; margin-bottom:4px;">힙/엉덩이</label>
             <div style="position:relative;">
               <input type="number" step="0.5" id="c-pants-hip" placeholder="예: 48" class="form-input" style="padding-right:24px; font-size:0.85rem;">
-              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#A8A49C;">cm</span>
+              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#9C9CA3;">cm</span>
             </div>
           </div>
           <div>
             <label style="font-size:0.78rem; color:#2C2C2C; font-weight:600; display:block; margin-bottom:4px;">밑위</label>
             <div style="position:relative;">
               <input type="number" step="0.5" id="c-pants-rise" placeholder="예: 27" class="form-input" style="padding-right:24px; font-size:0.85rem;">
-              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#A8A49C;">cm</span>
+              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#9C9CA3;">cm</span>
             </div>
           </div>
           <div>
             <label style="font-size:0.78rem; color:#2C2C2C; font-weight:600; display:block; margin-bottom:4px;">허벅지 단면</label>
             <div style="position:relative;">
               <input type="number" step="0.5" id="c-pants-thigh" placeholder="예: 29" class="form-input" style="padding-right:24px; font-size:0.85rem;">
-              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#A8A49C;">cm</span>
+              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#9C9CA3;">cm</span>
             </div>
           </div>
           <div>
             <label style="font-size:0.78rem; color:#2C2C2C; font-weight:600; display:block; margin-bottom:4px;">밑단 단면</label>
             <div style="position:relative;">
               <input type="number" step="0.5" id="c-pants-hem" placeholder="예: 21" class="form-input" style="padding-right:24px; font-size:0.85rem;">
-              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#A8A49C;">cm</span>
+              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#9C9CA3;">cm</span>
             </div>
           </div>
           <div>
             <label style="font-size:0.78rem; color:#2C2C2C; font-weight:600; display:block; margin-bottom:4px;">총기장</label>
             <div style="position:relative;">
               <input type="number" step="0.5" id="c-pants-length" placeholder="예: 101" class="form-input" style="padding-right:24px; font-size:0.85rem;">
-              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#A8A49C;">cm</span>
+              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#9C9CA3;">cm</span>
             </div>
           </div>
         </div>
       </div>
 
       <!-- 상의/아우터 상세 실측 사이즈 (단면 cm) -->
-      <div id="top-measurements-section" class="form-group" style="display:none; background:#F7F6F3; border:1px solid #E6E4DF; border-radius:var(--radius-sm); padding:12px; margin-bottom:14px;">
+      <div id="top-measurements-section" class="form-group" style="display:none; background:#FAFAFB; border:1px solid #E8E8E8; border-radius:var(--radius-sm); padding:12px; margin-bottom:14px;">
         <div style="font-weight:700; font-size:0.9rem; color:#2C2C2C; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;">
           <span>📏 상의/아우터 상세 실측 사이즈 (cm)</span>
           <span style="font-size:0.75rem; color:#2563eb; font-weight:normal;">실측 기준</span>
@@ -1479,42 +1517,42 @@
             <label style="font-size:0.78rem; color:#2C2C2C; font-weight:600; display:block; margin-bottom:4px;">어깨 단면</label>
             <div style="position:relative;">
               <input type="number" step="0.5" id="c-top-shoulder" placeholder="예: 42" class="form-input" style="padding-right:24px; font-size:0.85rem;">
-              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#A8A49C;">cm</span>
+              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#9C9CA3;">cm</span>
             </div>
           </div>
           <div>
             <label style="font-size:0.78rem; color:#2C2C2C; font-weight:600; display:block; margin-bottom:4px;">가슴 단면</label>
             <div style="position:relative;">
               <input type="number" step="0.5" id="c-top-chest" placeholder="예: 52" class="form-input" style="padding-right:24px; font-size:0.85rem;">
-              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#A8A49C;">cm</span>
+              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#9C9CA3;">cm</span>
             </div>
           </div>
           <div>
             <label style="font-size:0.78rem; color:#2C2C2C; font-weight:600; display:block; margin-bottom:4px;">소매/팔길이</label>
             <div style="position:relative;">
               <input type="number" step="0.5" id="c-top-sleeve" placeholder="예: 61" class="form-input" style="padding-right:24px; font-size:0.85rem;">
-              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#A8A49C;">cm</span>
+              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#9C9CA3;">cm</span>
             </div>
           </div>
           <div>
             <label style="font-size:0.78rem; color:#2C2C2C; font-weight:600; display:block; margin-bottom:4px;">암홀</label>
             <div style="position:relative;">
               <input type="number" step="0.5" id="c-top-armhole" placeholder="예: 22" class="form-input" style="padding-right:24px; font-size:0.85rem;">
-              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#A8A49C;">cm</span>
+              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#9C9CA3;">cm</span>
             </div>
           </div>
           <div>
             <label style="font-size:0.78rem; color:#2C2C2C; font-weight:600; display:block; margin-bottom:4px;">밑단 단면</label>
             <div style="position:relative;">
               <input type="number" step="0.5" id="c-top-hem" placeholder="예: 48" class="form-input" style="padding-right:24px; font-size:0.85rem;">
-              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#A8A49C;">cm</span>
+              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#9C9CA3;">cm</span>
             </div>
           </div>
           <div>
             <label style="font-size:0.78rem; color:#2C2C2C; font-weight:600; display:block; margin-bottom:4px;">총장</label>
             <div style="position:relative;">
               <input type="number" step="0.5" id="c-top-length" placeholder="예: 64" class="form-input" style="padding-right:24px; font-size:0.85rem;">
-              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#A8A49C;">cm</span>
+              <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#9C9CA3;">cm</span>
             </div>
           </div>
         </div>
@@ -1566,7 +1604,7 @@
         <div id="dt-brand" style="font-size: 0.85rem; color: var(--text-sub); margin-top: 2px;">브랜드</div>
       </div>
 
-      <div style="background: #FAF9F6; border-radius: var(--radius-sm); padding: 12px; border: 1px solid var(--border);">
+      <div style="background: #FAFAFB; border-radius: var(--radius-sm); padding: 12px; border: 1px solid var(--border);">
         <div class="detail-info-row">
           <span class="detail-label">구매 사이즈</span>
           <span class="detail-val" id="dt-size" style="color:var(--primary); font-weight:800;">-</span>
@@ -1577,7 +1615,7 @@
         </div>
         <div class="detail-info-row" id="dt-notes-row" style="flex-direction:column; gap:4px;">
           <span class="detail-label">사이즈·착화감 & 착용 후기</span>
-          <span class="detail-val" id="dt-notes" style="font-weight:600; color:#2C2C2C; line-height:1.35; background:#fff; padding:6px 8px; border-radius:6px; border:1px solid #E6E4DF;">-</span>
+          <span class="detail-val" id="dt-notes" style="font-weight:600; color:#2C2C2C; line-height:1.35; background:#fff; padding:6px 8px; border-radius:6px; border:1px solid #E8E8E8;">-</span>
         </div>
         <button type="button" class="btn-dt-more-toggle" id="btn-dt-more-toggle" onclick="toggleDetailMore()">
           <span>📋 구매시기 · 가격 · 총 착용횟수 더보기</span>
@@ -1607,6 +1645,10 @@
           <div class="detail-info-row">
             <span class="detail-label">계절</span>
             <span class="detail-val" id="dt-temp">-</span>
+          </div>
+          <div class="detail-info-row" id="dt-cardigan-row" style="display:none;">
+            <span class="detail-label">가디건 착용</span>
+            <span class="detail-val" id="dt-cardigan">-</span>
           </div>
           <div class="detail-info-row">
             <span class="detail-label">총 착용 횟수</span>
@@ -1670,7 +1712,7 @@
         <div class="sync-section">
           <button type="button" class="btn-submit" id="btn-sync-now" style="margin-top:0;" onclick="syncNow()">🔄 지금 동기화</button>
           <button type="button" class="btn-cancel" id="btn-sync-disconnect" style="display:none;" onclick="disconnectSync()">연결 해제</button>
-          <button type="button" class="btn-cancel" style="margin-top:6px; background:#F7F6F3; color:#2C2C2C; border:1px solid #E6E4DF;" onclick="syncDiag()">연결 상태 진단</button>
+          <button type="button" class="btn-cancel" style="margin-top:6px; background:#FAFAFB; color:#2C2C2C; border:1px solid #E8E8E8;" onclick="syncDiag()">연결 상태 진단</button>
           <div id="sync-diag-out"></div>
         </div>
 
@@ -1850,6 +1892,36 @@
     let editingClothesId = null;
     // ===== v8.9 : 원피스 분류 + 등록 폼 실시간 중복 체크 =====
     const CLOTHES_CATS = ['아우터', '상의', '하의', '원피스', '신발', '잡화'];
+    /* ===== v8.23 : 가디건 '단독 상의 / 아우터 겸용' =====
+       저장된 분류(cat)는 그대로 두고, 코디 조합기·추천에서만 슬롯(cat)을 바꾼다. */
+    const CARDIGAN_RE = /가디건/;
+    function isCardiganItem(item) {
+      if (!item) return false;
+      return CARDIGAN_RE.test(String(item.name || '')) || CARDIGAN_RE.test(String(item.subCat || ''));
+    }
+    function cardiganUseOf(item) {
+      if (!isCardiganItem(item)) return '';
+      if (item.cardiganUse === '아우터 겸용' || item.cardiganUse === '단독 상의') return item.cardiganUse;
+      return (String(item.cat || '') === '아우터') ? '아우터 겸용' : '단독 상의';
+    }
+    function effectiveCat(item) {
+      if (!item) return '';
+      if (isCardiganItem(item)) return cardiganUseOf(item) === '아우터 겸용' ? '아우터' : '상의';
+      return String(item.cat || '');
+    }
+    function refreshCardiganUseGroup() {
+      const grp = document.getElementById('cardigan-use-group');
+      const sel = document.getElementById('c-cardigan-use');
+      if (!grp || !sel) return;
+      const nmEl = document.getElementById('c-name');
+      const catEl = document.getElementById('c-cat');
+      const nm = nmEl ? nmEl.value : '';
+      const cat = catEl ? catEl.value : '';
+      const isCg = CARDIGAN_RE.test(String(nm || ''));
+      grp.style.display = isCg ? 'block' : 'none';
+      if (isCg && sel.dataset.auto !== '0') sel.value = (cat === '아우터') ? '아우터 겸용' : '단독 상의';
+      if (!isCg) sel.dataset.auto = '';
+    }
     const SUBCAT_OPTIONS = {
       '원피스': ['미니원피스', '미디/롱원피스', '니트원피스', '셔츠원피스', '점프수트', '투피스', '캐주얼 원피스', '자켓 원피스']
     };
@@ -1867,16 +1939,28 @@
     let fitPhotoData = '';
 
     // ===== v8.8 : 계절 복수 선택 =====
-    const SEASON_KEYS = ['봄', '여름', '가을', '겨울'];
+    /* ===== v8.23 : 계절 4종 — 봄·가을 통합 + 초겨울 신설 ===== */
+    const SEASON_KEYS = ['봄/가을', '여름', '초겨울', '겨울'];
     const SEASON_META = [
-      { key: '봄', icon: '🌸', id: 'c-season-spring' },
+      { key: '봄/가을', icon: '🌸', id: 'c-season-spring' },
       { key: '여름', icon: '☀️', id: 'c-season-summer' },
-      { key: '가을', icon: '🍂', id: 'c-season-autumn' },
+      { key: '초겨울', icon: '🍂', id: 'c-season-earlywinter' },
       { key: '겨울', icon: '❄️', id: 'c-season-winter' }
     ];
-    const SEASON_BUCKET = { '봄': '선선', '여름': '더움', '가을': '선선', '겨울': '추움' };
+    const SEASON_BUCKET = { '봄/가을': '선선', '여름': '더움', '초겨울': '쌀쌀', '겨울': '추움' };
+    /* 옛 표기('봄','가을')는 '봄/가을' 하나로 합친다(중복 없이, 저장 순서는 봄/가을→여름→초겨울→겨울) */
+    const SEASON_ALIAS = { '봄': '봄/가을', '가을': '봄/가을', '봄/가을': '봄/가을', '봄가을': '봄/가을',
+                           '여름': '여름', '초겨울': '초겨울', '겨울': '겨울' };
+    function normalizeSeasons(arr) {
+      const hit = [];
+      (Array.isArray(arr) ? arr : []).forEach(s => {
+        const k = SEASON_ALIAS[String(s == null ? '' : s).trim()];
+        if (k && hit.indexOf(k) < 0) hit.push(k);
+      });
+      return SEASON_KEYS.filter(k => hit.indexOf(k) >= 0);
+    }
     const TEMP_STEPS_5 = ['추움', '쌀쌀', '선선', '포근', '더움'];
-    let formSeasons = ['봄', '가을'];   // 등록/수정 모달에서 선택 중인 계절
+    let formSeasons = ['봄/가을'];   // 등록/수정 모달에서 선택 중인 계절 (v8.23: 계절 4종)
 
     function seasonIconOf(s) {
       const m = SEASON_META.filter(x => x.key === s)[0];
@@ -1887,21 +1971,19 @@
     function seasonsFromTemp(temp) {
       const t = String(temp == null ? '' : temp).replace(/\s+/g, '');
       if (!t) return [];
-      if (t.indexOf('사계절') >= 0) return ['봄', '여름', '가을', '겨울'];
+      if (t.indexOf('사계절') >= 0) return SEASON_KEYS.slice();
       if (t === '추움' || t === '겨울' || t === '한겨울') return ['겨울'];
+      if (t === '쌀쌀' || t === '초겨울') return ['초겨울'];
       if (t === '더움' || t === '여름' || t === '한여름') return ['여름'];
-      if (t === '선선' || t === '봄가을' || t === '봄/가을' || t === '쌀쌀' || t === '포근' || t === '간절기') return ['봄', '가을'];
-      const hit = SEASON_KEYS.filter(k => t.indexOf(k) >= 0);
-      return hit;
+      if (t === '선선' || t === '봄가을' || t === '봄/가을' || t === '봄' || t === '가을' || t === '포근' || t === '간절기') return ['봄/가을'];
+      return normalizeSeasons(SEASON_KEYS.filter(k => t.indexOf(k) >= 0));
     }
 
     // 옷의 계절 배열 (사용자가 저장한 seasons 우선, 없으면 옛 temp에서 변환)
     function seasonListOf(item) {
       if (!item) return [];
-      if (Array.isArray(item.seasons)) {
-        return item.seasons.filter(s => SEASON_KEYS.indexOf(s) >= 0);
-      }
-      return seasonsFromTemp(item.temp);
+      if (Array.isArray(item.seasons)) return normalizeSeasons(item.seasons);
+      return normalizeSeasons(seasonsFromTemp(item.temp));
     }
 
     // 계절 배열 → 기존 5단계 기온대(c.temp) 호환 값
@@ -1909,7 +1991,7 @@
       const s = (arr || []).filter(x => SEASON_KEYS.indexOf(x) >= 0);
       if (!s.length) return '';
       if (s.length >= 4) return '사계절';
-      const mid = { '봄': 2, '여름': 4, '가을': 2, '겨울': 0 };
+      const mid = { '봄/가을': 2, '여름': 4, '초겨울': 1, '겨울': 0 };
       let sum = 0;
       s.forEach(k => { sum += mid[k]; });
       const idx = Math.max(0, Math.min(4, Math.round(sum / s.length)));
@@ -2212,6 +2294,7 @@
       });
 
       normalizeAppData();
+      loadColdFeel();          // v8.23: 추위 체감 보정값(기본 -4℃)
       /* v8.21: 접힘/펼침 상태 복원 (기본은 접힘) */
       filterPanelCollapsed = filterPanelStored();
       applyFilterPanelState();
@@ -2304,38 +2387,49 @@
     function renderWeather() {
       const tempDisplay = document.getElementById('current-temp-display');
       const minmaxDisplay = document.getElementById('weather-minmax-display');
+      const feelsNow = perceivedTemp();
       if (tempDisplay) tempDisplay.innerText = `${liveTemp}℃`;
-      if (minmaxDisplay) minmaxDisplay.innerText = `${liveWeatherDesc} · 최저 ${liveMinTemp}℃ / 최고 ${liveMaxTemp}℃`;
+      if (minmaxDisplay) minmaxDisplay.innerText = `${liveWeatherDesc} · 체감 ${feelsNow}℃ · 최저 ${liveMinTemp}℃ / 최고 ${liveMaxTemp}℃`;
       // v8.11: 내 옷장 탭 상단 1줄 컴팩트 날씨 바
       const miniTempEl = document.getElementById('mini-temp');
       const miniCondEl = document.getElementById('mini-cond');
       if (miniTempEl) miniTempEl.innerText = `${liveTemp}℃`;
-      if (miniCondEl) miniCondEl.innerText = `${liveWeatherDesc} · 최저 ${liveMinTemp}℃ / 최고 ${liveMaxTemp}℃`;
+      if (miniCondEl) miniCondEl.innerText = `${liveWeatherDesc} · 체감 ${feelsNow}℃`;
 
+      /* v8.23: 실제 기온이 아니라 '체감 기온'으로 안내한다 (추위 많이 탐 -4℃ 기본) */
       let tempCategory = '선선';
       let tip = '';
-      if (liveTemp <= 5) {
-        tempCategory = '겨울';
-        tip = `<b>[${liveTemp}℃ 패딩·코트 필수]</b> 헤비 아우터와 목도리가 필수예요!`;
-      } else if (liveTemp <= 10) {
-        tempCategory = '쌀쌀';
-        tip = `<b>[${liveTemp}℃ 쌀쌀함]</b> 도톰한 코트나 경량패딩, 기모 슬랙스가 딱이에요.`;
-      } else if (liveTemp <= 16) {
+      if (feelsNow <= 5) {
+        tempCategory = '추움';
+        tip = `<b>[체감 ${feelsNow}℃ · 패딩 필수]</b> 오늘은 경량패딩·다운 아우터가 무조건 우선이에요. 기모 팬츠·목도리까지 챙기세요.`;
+      } else if (feelsNow <= 12) {
+        tempCategory = '초겨울';
+        tip = `<b>[체감 ${feelsNow}℃ · 초겨울]</b> 경량패딩이나 도톰한 코트가 딱이에요. 가디건은 아우터 겸용으로 걸치세요.`;
+      } else if (feelsNow <= 17) {
         tempCategory = '선선';
-        tip = `<b>[${liveTemp}℃ 선선함]</b> 자켓이나 트렌치코트에 얇은 니트를 레이어드하기 제일 좋은 날씨예요 (일교차 주의).`;
-      } else if (liveTemp <= 21) {
+        tip = `<b>[체감 ${feelsNow}℃ · 선선]</b> 자켓·트렌치코트에 얇은 니트를 레이어드하기 좋은 날씨예요 (일교차 주의).`;
+      } else if (feelsNow <= 22) {
         tempCategory = '포근';
-        tip = `<b>[${liveTemp}℃ 포근함]</b> 맨투맨이나 셔츠 단품에 가벼운 가디건을 걸치세요.`;
+        tip = `<b>[체감 ${feelsNow}℃ · 포근]</b> 맨투맨이나 셔츠 단품에 가벼운 가디건을 걸치세요.`;
       } else {
-        tempCategory = '여름';
-        tip = `<b>[${liveTemp}℃ 온화함]</b> 반팔이나 통기성 좋은 린넨 셔츠를 추천해요.`;
+        tempCategory = '더움';
+        tip = `<b>[체감 ${feelsNow}℃ · 더움]</b> 반팔이나 통기성 좋은 린넨 셔츠를 추천해요.`;
+      }
+      const cfRow = document.getElementById('coldfeel-row');
+      if (cfRow) {
+        cfRow.innerHTML = `<span class="coldfeel-label">🥶 추위 체감</span>`
+          + COLD_FEEL_OPTIONS.map(o => `<button class="chip ${coldFeel === o.offset ? 'active' : ''}" onclick="setColdFeel(${o.offset})">${o.label}</button>`).join('')
+          + `<span class="coldfeel-note">실제 ${liveTemp}℃ → 체감 ${feelsNow}℃ (보정 ${coldFeel}℃)</span>`;
       }
 
-      const matchBucket = tempBucketFromCelsius(liveTemp);
-      const matchingClothes = appData.clothes.filter(c => (c.status || '보유중') === '보유중' && itemMatchesBucket(c, matchBucket));
+      const matchBucket = tempBucketFromCelsius(feelsNow);
+      /* v8.23: 초겨울처럼 아직 태그가 적은 구간도 비어 보이지 않게, 한 단계 이웃 계절까지 포함 */
+      const matchingClothes = appData.clothes
+        .filter(c => (c.status || '보유중') === '보유중' && tempScore(c, matchBucket) >= 1.2)
+        .sort((a, b) => tempScore(b, matchBucket) - tempScore(a, matchBucket));
       let matchText = '';
       if (matchingClothes.length > 0) {
-        matchText = `<br>💡 <b>현재 기온(${liveTemp}℃) 옷장 매칭:</b> ${matchingClothes.slice(0, 3).map(c => c.name).join(', ')} 등 ${matchingClothes.length}벌 적합`;
+        matchText = `<br>💡 <b>체감 ${feelsNow}℃ 옷장 매칭:</b> ${matchingClothes.slice(0, 3).map(c => c.name).join(', ')} 등 ${matchingClothes.length}벌 어울려요`;
       } else {
         matchText = `<br>💡 현재 이 기온대에 지정된 옷이 없어요. 새 옷을 등록해 보세요!`;
       }
@@ -2430,7 +2524,7 @@
     function filterSeason(season) {
       currentSeasonFilter = season;
       document.querySelectorAll('#closet-seasons .chip').forEach(btn => {
-        btn.classList.toggle('active', btn.innerText.includes(season) || (season === '전체계절' && btn.innerText.includes('전체 계절')));
+        btn.classList.toggle('active', (btn.dataset.season || '전체계절') === season);
       });
       renderCloset();
     }
@@ -2481,6 +2575,14 @@
       renderCloset();
     }
 
+    /* v8.23: 카드에는 '2026년 11월 16일' → '26.11.16' 로 짧게 (3열 폭) */
+    function compactPeriod(s) {
+      const m = String(s == null ? '' : s).match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/);
+      if (!m) return s || '-';
+      const yy = m[1].slice(2), mm = ('0' + m[2]).slice(-2), dd = ('0' + m[3]).slice(-2);
+      return yy + '.' + mm + '.' + dd;
+    }
+
     function renderCloset() {
       if (!currentStatusFilter) currentStatusFilter = '보유중';
       if (!currentBrandFilter) currentBrandFilter = '전체브랜드';
@@ -2526,7 +2628,7 @@
         list = list.filter(c => seasonListOf(c).indexOf(currentSeasonFilter) >= 0);
       }
       if (currentCategoryFilter !== '전체') {
-        list = list.filter(c => c.cat === currentCategoryFilter);
+        list = list.filter(c => effectiveCat(c) === currentCategoryFilter);
       }
       if (currentColorFilter !== '전체색상') {
         list = list.filter(c => (c.color || '').includes(currentColorFilter) || (c.dispColor || '').includes(currentColorFilter));
@@ -2580,7 +2682,7 @@
       let trashBanner = '';
       if (currentStatusFilter === '휴지통' && list.length > 0) {
         trashBanner = `
-        <div style="grid-column: 1 / -1; display:flex; justify-content:space-between; align-items:center; background:#fef2f2; border:1px solid #E6E4DF; border-radius:10px; padding:10px 14px; margin-bottom:4px;">
+        <div style="grid-column: 1 / -1; display:flex; justify-content:space-between; align-items:center; background:#fef2f2; border:1px solid #E8E8E8; border-radius:10px; padding:10px 14px; margin-bottom:4px;">
           <span style="font-size:0.82rem; color:#2C2C2C; font-weight:700;">🗑️ 휴지통에 ${list.length}벌이 보관되어 있습니다.</span>
           <button onclick="emptyTrash()" style="background:#111111; color:#fff; border:none; border-radius:6px; padding:6px 12px; font-size:0.75rem; font-weight:700; cursor:pointer;">휴지통 비우기</button>
         </div>
@@ -2599,6 +2701,9 @@
         const seasonTxt = seasonsText(c);
         if (seasonTxt) {
           badges += `<span class="badge season">${seasonTxt}</span>`;
+        }
+        if (isCardiganItem(c)) {
+          badges += `<span class="badge style">가디건·${cardiganUseOf(c) === '아우터 겸용' ? '아우터' : '상의'}</span>`;
         }
         if (c.status && c.status !== '보유중') {
           badges += `<span class="badge returned">${statusLabelOf(c.status)}</span>`;
@@ -2626,7 +2731,7 @@
             <div>
               <div class="clothes-name">${c.name}</div>
               <div class="clothes-brand" style="margin-bottom:3px;">${brandStr}</div>
-              <div style="font-size:0.72rem; color:#6B6B68; margin-bottom:6px;">📅 ${periodStr}</div>
+              <div class="card-date" style="font-size:0.72rem; color:#6B6B68; margin-bottom:6px;">📅 ${compactPeriod(periodStr)}</div>
               <div class="clothes-tags" style="margin-bottom:0;">
                 ${badges}
               </div>
@@ -2690,6 +2795,12 @@
       setSafeText('dt-color', item.color || '-');
       setSafeText('dt-material-care', (item.material || item.care) ? `${item.material || '-'} · ${item.care || '-'}` : '미기재');
       setSafeText('dt-temp', seasonsLabel(item));
+      const dtCgRow = document.getElementById('dt-cardigan-row');
+      if (dtCgRow) {
+        const dtCgUse = cardiganUseOf(item);
+        dtCgRow.style.display = dtCgUse ? '' : 'none';
+        if (dtCgUse) setSafeText('dt-cardigan', dtCgUse === '아우터 겸용' ? '아우터 겸용 (아우터 슬롯)' : '단독 상의 (상의 슬롯)');
+      }
       setSafeText('dt-wear', `${item.wearCount || 0}회 착용`);
 
       // Reset '더보기' accordion to collapsed
@@ -2709,33 +2820,33 @@
           pantsBox.style.display = 'block';
           if (hasPantsSpecs) {
             pantsBox.innerHTML = `
-              <div style="background: #F7F6F3; border: 1px solid #E6E4DF; border-radius: var(--radius-sm); padding: 12px;">
+              <div style="background: #FAFAFB; border: 1px solid #E8E8E8; border-radius: var(--radius-sm); padding: 12px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                   <span style="font-weight:800; font-size:0.88rem; color:#2C2C2C;">📏 바지 상세 실측 치수 (단면 cm)</span>
-                  <button type="button" onclick="openEditClothesFromDetail()" style="background:#EFECE6; color:#2C2C2C; border:1px solid #D8D5CE; border-radius:4px; padding:3px 8px; font-size:0.75rem; font-weight:700; cursor:pointer;">✏️ 수정</button>
+                  <button type="button" onclick="openEditClothesFromDetail()" style="background:#F4F4F6; color:#2C2C2C; border:1px solid #E2E2E6; border-radius:4px; padding:3px 8px; font-size:0.75rem; font-weight:700; cursor:pointer;">✏️ 수정</button>
                 </div>
                 <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px; text-align:center;">
-                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #EFECE6;">
+                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #F4F4F6;">
                     <div style="font-size:0.72rem; color:#6B6B68;">허리 단면</div>
                     <div style="font-size:0.9rem; font-weight:800; color:#2C2C2C;">${item.pantsWaist ? item.pantsWaist + 'cm' : '-'}</div>
                   </div>
-                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #EFECE6;">
+                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #F4F4F6;">
                     <div style="font-size:0.72rem; color:#6B6B68;">힙/엉덩이</div>
                     <div style="font-size:0.9rem; font-weight:800; color:#2C2C2C;">${item.pantsHip ? item.pantsHip + 'cm' : '-'}</div>
                   </div>
-                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #EFECE6;">
+                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #F4F4F6;">
                     <div style="font-size:0.72rem; color:#6B6B68;">밑위</div>
                     <div style="font-size:0.9rem; font-weight:800; color:#2C2C2C;">${item.pantsRise ? item.pantsRise + 'cm' : '-'}</div>
                   </div>
-                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #EFECE6;">
+                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #F4F4F6;">
                     <div style="font-size:0.72rem; color:#6B6B68;">허벅지 단면</div>
                     <div style="font-size:0.9rem; font-weight:800; color:#2C2C2C;">${item.pantsThigh ? item.pantsThigh + 'cm' : '-'}</div>
                   </div>
-                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #EFECE6;">
+                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #F4F4F6;">
                     <div style="font-size:0.72rem; color:#6B6B68;">밑단 단면</div>
                     <div style="font-size:0.9rem; font-weight:800; color:#2C2C2C;">${item.pantsHem ? item.pantsHem + 'cm' : '-'}</div>
                   </div>
-                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #EFECE6;">
+                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #F4F4F6;">
                     <div style="font-size:0.72rem; color:#6B6B68;">총기장</div>
                     <div style="font-size:0.9rem; font-weight:800; color:#2C2C2C;">${item.pantsLength ? item.pantsLength + 'cm' : '-'}</div>
                   </div>
@@ -2744,7 +2855,7 @@
             `;
           } else {
             pantsBox.innerHTML = `
-              <div style="background: #FAF9F6; border: 1px dashed #C9C5BC; border-radius: var(--radius-sm); padding: 12px; text-align:center;">
+              <div style="background: #FAFAFB; border: 1px dashed #C3C3C9; border-radius: var(--radius-sm); padding: 12px; text-align:center;">
                 <div style="font-size:0.82rem; color:#6B6B68; font-weight:600; margin-bottom:8px;">📏 아직 등록된 바지 실측 치수가 없어요</div>
                 <button type="button" onclick="openEditClothesFromDetail()" style="background:#111111; color:#fff; border:none; border-radius:6px; padding:6px 14px; font-size:0.8rem; font-weight:700; cursor:pointer;">+ 바지 실측 치수 기입하기</button>
               </div>
@@ -2754,33 +2865,33 @@
           pantsBox.style.display = 'block';
           if (hasTopSpecs) {
             pantsBox.innerHTML = `
-              <div style="background: #F7F6F3; border: 1px solid #E6E4DF; border-radius: var(--radius-sm); padding: 12px;">
+              <div style="background: #FAFAFB; border: 1px solid #E8E8E8; border-radius: var(--radius-sm); padding: 12px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                   <span style="font-weight:800; font-size:0.88rem; color:#2C2C2C;">📏 ${item.cat} 상세 실측 치수 (cm)</span>
-                  <button type="button" onclick="openEditClothesFromDetail()" style="background:#EFECE6; color:#2C2C2C; border:1px solid #D8D5CE; border-radius:4px; padding:3px 8px; font-size:0.75rem; font-weight:700; cursor:pointer;">✏️ 수정</button>
+                  <button type="button" onclick="openEditClothesFromDetail()" style="background:#F4F4F6; color:#2C2C2C; border:1px solid #E2E2E6; border-radius:4px; padding:3px 8px; font-size:0.75rem; font-weight:700; cursor:pointer;">✏️ 수정</button>
                 </div>
                 <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px; text-align:center;">
-                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #EFECE6;">
+                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #F4F4F6;">
                     <div style="font-size:0.72rem; color:#6B6B68;">어깨 단면</div>
                     <div style="font-size:0.9rem; font-weight:800; color:#2C2C2C;">${parsedTop.shoulder ? parsedTop.shoulder + 'cm' : '-'}</div>
                   </div>
-                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #EFECE6;">
+                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #F4F4F6;">
                     <div style="font-size:0.72rem; color:#6B6B68;">가슴 단면</div>
                     <div style="font-size:0.9rem; font-weight:800; color:#2C2C2C;">${parsedTop.chest ? parsedTop.chest + 'cm' : '-'}</div>
                   </div>
-                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #EFECE6;">
+                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #F4F4F6;">
                     <div style="font-size:0.72rem; color:#6B6B68;">소매/팔길이</div>
                     <div style="font-size:0.9rem; font-weight:800; color:#2C2C2C;">${parsedTop.sleeve ? parsedTop.sleeve + 'cm' : '-'}</div>
                   </div>
-                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #EFECE6;">
+                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #F4F4F6;">
                     <div style="font-size:0.72rem; color:#6B6B68;">암홀</div>
                     <div style="font-size:0.9rem; font-weight:800; color:#2C2C2C;">${parsedTop.armhole ? parsedTop.armhole + 'cm' : '-'}</div>
                   </div>
-                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #EFECE6;">
+                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #F4F4F6;">
                     <div style="font-size:0.72rem; color:#6B6B68;">밑단 단면</div>
                     <div style="font-size:0.9rem; font-weight:800; color:#2C2C2C;">${parsedTop.hem ? parsedTop.hem + 'cm' : '-'}</div>
                   </div>
-                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #EFECE6;">
+                  <div style="background:#fff; padding:6px 4px; border-radius:6px; border:1px solid #F4F4F6;">
                     <div style="font-size:0.72rem; color:#6B6B68;">총장</div>
                     <div style="font-size:0.9rem; font-weight:800; color:#2C2C2C;">${parsedTop.length ? parsedTop.length + 'cm' : '-'}</div>
                   </div>
@@ -2789,7 +2900,7 @@
             `;
           } else {
             pantsBox.innerHTML = `
-              <div style="background: #FAF9F6; border: 1px dashed #C9C5BC; border-radius: var(--radius-sm); padding: 12px; text-align:center;">
+              <div style="background: #FAFAFB; border: 1px dashed #C3C3C9; border-radius: var(--radius-sm); padding: 12px; text-align:center;">
                 <div style="font-size:0.82rem; color:#6B6B68; font-weight:600; margin-bottom:8px;">📏 아직 등록된 ${item.cat} 실측 치수가 없어요</div>
                 <button type="button" onclick="openEditClothesFromDetail()" style="background:#111111; color:#fff; border:none; border-radius:6px; padding:6px 14px; font-size:0.8rem; font-weight:700; cursor:pointer;">+ ${item.cat} 실측 치수 기입하기</button>
               </div>
@@ -3422,6 +3533,7 @@
 
     // v8.9: 이름·브랜드·색상·분류·세부종류가 바뀔 때마다 비슷한 옷 목록을 즉시 다시 계산
     function onClothesFormInput() {
+      try { refreshCardiganUseGroup(); } catch (e) { console.warn('[cardigan]', e); }
       try { renderDupeLive(); } catch (e) { console.warn('[dupe-live]', e); }
     }
 
@@ -3539,6 +3651,13 @@
       document.getElementById('c-notes').value = item.notes || '';
       // v8.10: 스타일·소재·세탁법 입력란은 모달에서 제거 (기존 값은 저장 시 건드리지 않아 보존)
       setFormSeasons(seasonListOf(item));
+      /* v8.23: 가디건 착용 방식 */
+      const cgSelEdit = document.getElementById('c-cardigan-use');
+      if (cgSelEdit) {
+        cgSelEdit.value = cardiganUseOf(item) || '단독 상의';
+        cgSelEdit.dataset.auto = '0';
+      }
+      try { refreshCardiganUseGroup(); } catch (e) {}
 
       document.getElementById('c-pants-waist').value = item.pantsWaist || '';
       document.getElementById('c-pants-hip').value = item.pantsHip || '';
@@ -3636,7 +3755,10 @@
       renderSubCatOptions('신발', '');
       clearDupeLive();
       if (document.getElementById('c-period')) document.getElementById('c-period').value = '';
-      setFormSeasons(['봄', '가을']);
+      setFormSeasons(['봄/가을']);
+      const cgSelReset = document.getElementById('c-cardigan-use');
+      if (cgSelReset) { cgSelReset.value = '단독 상의'; cgSelReset.dataset.auto = ''; }
+      try { refreshCardiganUseGroup(); } catch (e) {}
     }
 
     function closeModal(id) {
@@ -3694,6 +3816,10 @@
       const notes = document.getElementById('c-notes').value.trim();
       const seasons = SEASON_KEYS.filter(k => formSeasons.indexOf(k) >= 0);
       const temp = tempFromSeasons(seasons);
+      /* v8.23: 가디건이면 단독 상의 / 아우터 겸용을 저장, 아니면 빈 값 */
+      const cgSel = document.getElementById('c-cardigan-use');
+      const cardiganUse = CARDIGAN_RE.test(String(name || ''))
+        ? ((cgSel && cgSel.value) ? cgSel.value : '단독 상의') : '';
 
       const pantsWaist = document.getElementById('c-pants-waist').value.trim();
       const pantsHip = document.getElementById('c-pants-hip').value.trim();
@@ -3735,6 +3861,7 @@
           //        기존 옷에 원래 들어 있던 값(style/material/care)은 그대로 보존된다.
           item.temp = temp;
           item.seasons = seasons.slice();
+          item.cardiganUse = cardiganUse;
           item.pantsWaist = pantsWaist;
           item.pantsHip = pantsHip;
           item.pantsRise = pantsRise;
@@ -3760,7 +3887,7 @@
           status, name, cat, color, brand, price, foreignPrice, foreignCurrency,
           subCat: subCatVal || '',
           purchasePeriod: autoPeriod,
-          size, fit, notes, style: '', material: '', care: '', temp, seasons,
+          size, fit, notes, style: '', material: '', care: '', temp, seasons, cardiganUse,
           pantsWaist, pantsHip, pantsRise, pantsThigh, pantsHem, pantsLength,
           topShoulder, topChest, topSleeve, topArmhole, topHem, topLength,
           wearCount: 0, photo: photoData, fitPhoto: fitPhotoData
@@ -3791,7 +3918,8 @@
       const stepIdx = WORKFLOW_STEPS.indexOf(category) + 1;
       document.getElementById('step-indicator').innerText = `${stepIdx}단계: ${category} 선택`;
 
-      const candidateList = appData.clothes.filter(c => (c.status || '보유중') === '보유중' && String(c.cat || '').indexOf(category) === 0);
+      /* v8.23: 가디건은 '단독 상의/아우터 겸용' 설정대로 슬롯에 들어간다 */
+      const candidateList = appData.clothes.filter(c => (c.status || '보유중') === '보유중' && effectiveCat(c) === category);
       const grid = document.getElementById('selector-grid');
 
       if (candidateList.length === 0) {
@@ -4124,7 +4252,7 @@
             ${del}
             <div class="lb-folder-ico">${icon}</div>
             <div class="lb-folder-body">
-              <div class="lb-folder-name">${escHtml(f)}${isBase ? ' <span style="font-weight:600;color:#9C9A93;font-size:0.75rem;">(미분류)</span>' : ''}</div>
+              <div class="lb-folder-name">${escHtml(f)}${isBase ? ' <span style="font-weight:600;color:#94949B;font-size:0.75rem;">(미분류)</span>' : ''}</div>
               <div class="lb-folder-meta">코디 ${n}개${n ? '' : ' · 비어 있음'}</div>
             </div>
             <div class="lb-folder-cnt">${n}</div>
@@ -4177,10 +4305,10 @@
       if (!lb) return;
 
       const items = lb.itemIds.map(itemId => appData.clothes.find(c => c.id === itemId)).filter(Boolean);
-      const outer = items.find(c => c.cat === '아우터');
-      const top = items.find(c => c.cat === '상의');
-      const bottom = items.find(c => c.cat === '하의');
-      const shoes = items.find(c => c.cat === '신발');
+      const outer = items.find(c => effectiveCat(c) === '아우터');
+      const top = items.find(c => effectiveCat(c) === '상의');
+      const bottom = items.find(c => effectiveCat(c) === '하의');
+      const shoes = items.find(c => effectiveCat(c) === '신발');
 
       const stage = document.getElementById('popup-outfit-stage');
       let html = '';
@@ -4251,15 +4379,16 @@
 
     // --- Stats Tab (v8.20 : 요약 카드 · SVG 도넛 · 컬러 바 · 사진 카드) ---
     /* v8.22: 파스텔 에디토리얼 팔레트 */
-    const ST_CAT_COLORS = { '아우터': '#B4AEC4', '상의': '#B7C6B4', '하의': '#AEC4D6', '원피스': '#E2BDB5', '신발': '#DCC8A9', '잡화': '#C8C2B8' };
-    const ST_SEASON_COLORS = { '봄': '#E3C4CB', '여름': '#B6CFDA', '가을': '#DCC3A4', '겨울': '#C2C3D4' };
-    const ST_BRAND_COLOR = '#B4AEC4';   // v8.22: 브랜드 막대는 단일 파스텔 컬러
+    /* v8.23: 채도 있는 맑은 파스텔 (라일락·스카이·민트·피치·버터·시안) */
+    const ST_CAT_COLORS = { '아우터': '#C4B5FD', '상의': '#93C5FD', '하의': '#86EFAC', '원피스': '#FDA4AF', '신발': '#FDE047', '잡화': '#67E8F9' };
+    const ST_SEASON_COLORS = { '봄/가을': '#C4B5FD', '여름': '#7DD3FC', '초겨울': '#FDBA74', '겨울': '#93C5FD' };
+    const ST_BRAND_COLOR = '#A7F3D0';   // v8.23: 브랜드 막대 단일 파스텔(민트)
     const ST_BRAND_COLORS = [ST_BRAND_COLOR];
     /* ===== v8.21 : 컬러 통계 — 색상 이름 그대로 집계하고, 비어 있으면 '미입력' ===== */
     const ST_COLOR_GROUPS = [
       { name: '블랙', dot: '#111827', words: ['블랙', '검정', '검은'] },
       { name: '화이트', dot: '#ffffff', words: ['화이트', '흰색', '하양', '아이보리', '오프화이트', '실버'] },
-      { name: '그레이', dot: '#9C9A93', words: ['그레이', '회색', '차콜'] },
+      { name: '그레이', dot: '#94949B', words: ['그레이', '회색', '차콜'] },
       { name: '네이비', dot: '#1e3a8a', words: ['네이비', '데님', '인디고', '남색'] },
       { name: '베이지', dot: '#e7d5b5', words: ['베이지', '오트밀', '크림', '샌드'] },
       { name: '브라운', dot: '#8b5e34', words: ['브라운', '카멜', '밤색', '초코'] },
@@ -4274,7 +4403,7 @@
 
     function stColorGroupOf(raw) {
       const s = String(raw == null ? '' : raw).replace(/[^\uAC00-\uD7A3a-zA-Z0-9\/·]/g, '').trim();
-      if (!s) return { key: '미입력', name: '미입력', dot: '#C9C5BC', empty: true };
+      if (!s) return { key: '미입력', name: '미입력', dot: '#C3C3C9', empty: true };
       const low = s.toLowerCase();
       for (let i = 0; i < ST_COLOR_GROUPS.length; i++) {
         const g = ST_COLOR_GROUPS[i];
@@ -4283,7 +4412,7 @@
         }
       }
       /* 사전에 없는 색상명은 추측해서 바꾸지 않고 입력한 이름 그대로 보여준다 */
-      return { key: s, name: s, dot: '#C9C5BC', empty: false };
+      return { key: s, name: s, dot: '#C3C3C9', empty: false };
     }
 
     function stNum(n) { return String(Math.round(Number(n) || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
@@ -4436,14 +4565,14 @@
       const catRows = CLOTHES_CATS.map(cat => ({ cat: cat, n: active.filter(c => c.cat === cat).length })).filter(r => r.n > 0);
       setTxt('st-cat-sub', total ? total + '벌' : '');
       setTxt('st-donut-total', String(total));
-      let svg = `<circle cx="21" cy="21" r="15.915" fill="none" stroke="#EFECE6" stroke-width="7" pathLength="100"></circle>`;
+      let svg = `<circle cx="21" cy="21" r="15.915" fill="none" stroke="#F4F4F6" stroke-width="7" pathLength="100"></circle>`;
       if (total > 0) {
         let cum = 0;
         catRows.forEach(r => {
           const raw = (r.n / total) * 100;
           const seg = Math.max(raw - 0.6, 0.25);
           const off = 25 - cum;
-          svg += `<circle cx="21" cy="21" r="15.915" fill="none" stroke="${ST_CAT_COLORS[r.cat] || '#9C9A93'}" stroke-width="7" pathLength="100"`
+          svg += `<circle cx="21" cy="21" r="15.915" fill="none" stroke="${ST_CAT_COLORS[r.cat] || '#94949B'}" stroke-width="7" pathLength="100"`
             + ` stroke-dasharray="${seg.toFixed(2)} ${(100 - seg).toFixed(2)}" stroke-dashoffset="${off.toFixed(2)}">`
             + `<title>${escHtml(r.cat)} ${r.n}벌 (${pctOf(r.n)}%)</title></circle>`;
           cum += raw;
@@ -4452,7 +4581,7 @@
       setHtml('st-donut', svg);
       setHtml('st-cat-legend', CLOTHES_CATS.map(cat => {
         const n = active.filter(c => c.cat === cat).length;
-        return `<div class="st-legend-row"><i style="background:${ST_CAT_COLORS[cat] || '#9C9A93'}"></i>`
+        return `<div class="st-legend-row"><i style="background:${ST_CAT_COLORS[cat] || '#94949B'}"></i>`
           + `<span class="st-legend-name">${catEmoji(cat)} ${cat}</span>`
           + `<b class="st-legend-val">${n}</b><span class="st-legend-pct">${pctOf(n)}%</span></div>`;
       }).join(''));
@@ -4718,20 +4847,58 @@
       if (!s) return '선선';
       if (s === '봄가을' || s === '사계절' || s === '봄/가을' || s === '봄' || s === '가을' || s === '간절기') return '선선';
       if (s === '겨울' || s === '한겨울') return '추움';
+      if (s === '쌀쌀' || s === '초겨울') return '쌀쌀';
       if (s === '여름' || s === '한여름') return '더움';
       return TEMP_STEPS.indexOf(s) >= 0 ? s : '선선';
     }
+    /* v8.23: 초겨울(5~12℃) 구간을 살리고, 체감온도 보정(-4℃ 기본)을 반영한다 */
     function tempBucketFromCelsius(t) {
       const n = Number(t);
       if (!isFinite(n)) return '선선';
       if (n <= 5) return '추움';
-      if (n <= 10) return '쌀쌀';
-      if (n <= 16) return '선선';
-      if (n <= 21) return '포근';
+      if (n <= 12) return '쌀쌀';
+      if (n <= 17) return '선선';
+      if (n <= 22) return '포근';
       return '더움';
     }
     function currentTempBucket() {
-      return tempBucketFromCelsius(typeof liveTemp === 'number' ? liveTemp : 14);
+      return tempBucketFromCelsius(perceivedTemp());
+    }
+
+    /* ===== v8.23 : 추위 체감 보정 (추위 많이 탐 -4℃ 기본) ===== */
+    const COLD_FEEL_KEY = 'yujacloset_coldfeel_v1';
+    const COLD_FEEL_OPTIONS = [
+      { offset: 0, label: '안 탐' },
+      { offset: -2, label: '조금 탐 -2℃' },
+      { offset: -4, label: '많이 탐 -4℃' }
+    ];
+    let coldFeel = -4;
+    function loadColdFeel() {
+      let v = -4;
+      try {
+        const raw = localStorage.getItem(COLD_FEEL_KEY);
+        if (raw === '0' || raw === '-2' || raw === '-4') v = parseInt(raw, 10);
+      } catch (e) {}
+      if (appData && appData.user && typeof appData.user.coldFeel === 'number') {
+        const uv = appData.user.coldFeel;
+        if (uv === 0 || uv === -2 || uv === -4) v = uv;
+      }
+      coldFeel = v;
+      return coldFeel;
+    }
+    function setColdFeel(v) {
+      coldFeel = (v === 0 || v === -2 || v === -4) ? v : -4;
+      try { localStorage.setItem(COLD_FEEL_KEY, String(coldFeel)); } catch (e) {}
+      if (appData) {
+        appData.user = appData.user || {};
+        appData.user.coldFeel = coldFeel;
+      }
+      try { saveAppStorage(); } catch (e) {}
+      try { renderWeather(); } catch (e) {}
+    }
+    function perceivedTemp() {
+      const t = (typeof liveTemp === 'number') ? liveTemp : 11;
+      return Math.round(t + coldFeel);
     }
 
     const COLOR_KEYS = [
@@ -4991,9 +5158,24 @@
       rule.avoid.forEach(w => { if (text.indexOf(w) >= 0) s -= 3; });
       return s;
     }
+    /* ===== v8.23 : 기온 매칭 재작성 =====
+       v8.22까지는 계절이 덮는 [최소~최대] 구간이면 만점(3점)을 줬다. 그래서 봄/가을+겨울로
+       태그된 간절기·경량 아우터가 '추움'까지 만점을 받아 다운 패딩과 동점이 됐고, 동점은
+       난수로 갈려 추운 날 경량 아우터가 섞여 나왔다. 이제는 '가장 가까운 계절'까지의 거리로
+       점수를 주고, 패딩류에는 기온별 가중치를 더한다. */
+    const PADDING_WORDS = ['패딩', '푸퍼', '다운', '웰론', '솜', '경량'];
+    const LIGHT_PADDING_WORDS = ['경량', '라이트', '퀼팅', '다운필', '얇은패딩'];
+    function isPaddingOuter(item) {
+      if (!item) return false;
+      if (item.cat !== '아우터' && effectiveCat(item) !== '아우터') return false;
+      const t = String(item.name || '') + ' ' + String(item.subCat || '');
+      return PADDING_WORDS.some(w => t.indexOf(w) >= 0);
+    }
+    function isLightPadding(item) {
+      const t = String(item.name || '') + ' ' + String(item.subCat || '');
+      return isPaddingOuter(item) && LIGHT_PADDING_WORDS.some(w => t.indexOf(w) >= 0);
+    }
     function tempScore(item, bucket) {
-      // v8.8: 계절 배열이 덮는 기온 구간이면 만점, 벗어나면 가까운 정도로 감점
-      //   예) 봄·가을·겨울 옷은 '쌀쌀' 구간까지 덮으므로 6~10℃에서도 만점
       const bi = TEMP_STEPS.indexOf(bucket);
       const idx = [];
       itemSeasonBuckets(item).forEach(b => {
@@ -5001,12 +5183,21 @@
         if (x >= 0) idx.push(x);
       });
       if (!idx.length) idx.push(TEMP_STEPS.indexOf('선선'));
-      const lo = Math.min.apply(null, idx);
-      const hi = Math.max.apply(null, idx);
-      if (bi >= lo && bi <= hi) return 3;
-      const d = bi < lo ? lo - bi : bi - hi;
-      if (d === 1) return 1.2;
-      return -1.5;
+      let d = 99;
+      idx.forEach(x => { const gap = Math.abs(x - bi); if (gap < d) d = gap; });
+      let s = d === 0 ? 3 : (d === 1 ? 1.2 : -1.5);
+      /* 패딩 가중치: 추움(체감 ≤5℃)에는 무조건 최우선, 초겨울(6~12℃)에는 경량패딩 우대 */
+      if (effectiveCat(item) === '아우터') {
+        if (bi <= 0) {
+          if (isPaddingOuter(item)) s += 2.4;
+        } else if (bi === 1) {
+          if (isLightPadding(item)) s += 1.8;
+          else if (isPaddingOuter(item)) s += 0.6;
+        } else if (bi === 2) {
+          if (isPaddingOuter(item)) s -= 1.6;   /* 선선한 날 두꺼운 패딩은 감점 */
+        }
+      }
+      return s;
     }
     function itemMatchesBucket(item, bucket) {
       return tempScore(item, bucket) >= 3;
@@ -5025,9 +5216,9 @@
     }
     function styleHarmony(items) {
       let s = 0;
-      const top = items.find(i => i.cat === '상의' || i.cat === '원피스');
-      const bottom = items.find(i => i.cat === '하의');
-      const shoes = items.find(i => i.cat === '신발');
+      const top = items.find(i => effectiveCat(i) === '상의' || effectiveCat(i) === '원피스');
+      const bottom = items.find(i => effectiveCat(i) === '하의');
+      const shoes = items.find(i => effectiveCat(i) === '신발');
       if (shoes && top && Math.abs(formalityOf(shoes) - formalityOf(top)) >= 2) s -= 2;
       if (shoes && bottom && Math.abs(formalityOf(shoes) - formalityOf(bottom)) >= 2) s -= 2.5;
       if (top && bottom && Math.abs(formalityOf(top) - formalityOf(bottom)) >= 2) s -= 1;
@@ -5063,9 +5254,10 @@
     // 옷장 전체에서 조합 생성
     function buildCombos(bucket, tpo, seed, mustInclude) {
       const pool = ownedClothes();
-      const want = (cats) => pool.filter(c => cats.some(x => String(c.cat || '').indexOf(x) >= 0 || String(c.subCat || '').indexOf(x) >= 0));
+      const want = (cats) => pool.filter(c => cats.some(x => effectiveCat(c) === x));
       const base = mustInclude ? itemById(mustInclude) : null;
-      const isAcc = base && base.cat === '잡화';
+      const baseCat = base ? effectiveCat(base) : '';
+      const isAcc = baseCat === '잡화';
 
       const rank = (arr) => arr.map(c => ({ c, s: tempScore(c, bucket) + tpoScore(c, tpo) + Math.random() * 0.9 + Math.max(0, 2 - (c.wearCount || 0)) * 0.5 }))
         .sort((a, b) => b.s - a.s).map(x => x.c);
@@ -5078,9 +5270,13 @@
       const accs = rank(want(['잡화'])).slice(0, 6);   // v8.9: 원피스 조합에 가방·스카프 활용
 
       const needOuter = bucket === '추움' || bucket === '쌀쌀';
-      const outerPool = (base && base.cat === '아우터') ? [base]
-        : (needOuter ? outs.slice(0, 7) : outs.slice(0, 5).concat([null]));
-      const shoesPool = (base && base.cat === '신발') ? [base] : shoes;
+      /* v8.23: 체감 5℃ 이하(추움)에는 패딩 아우터를 무조건 우선 사용한다 */
+      const padOuts = outs.filter(isPaddingOuter);
+      const coldMandatory = (bucket === '추움');
+      const orderedOuts = (coldMandatory && padOuts.length) ? padOuts.concat(outs.filter(c => padOuts.indexOf(c) < 0)) : outs;
+      const outerPool = (baseCat === '아우터') ? [base]
+        : (needOuter ? (coldMandatory && padOuts.length ? padOuts.slice(0, 7) : orderedOuts.slice(0, 7)) : outs.slice(0, 5).concat([null]));
+      const shoesPool = (baseCat === '신발') ? [base] : shoes;
       const pick = (arr, i) => arr.length ? arr[((i % arr.length) + arr.length) % arr.length] : null;
 
       const combos = [];
@@ -5089,19 +5285,19 @@
         if (items.length >= 2) combos.push(items);
       };
 
-      if (base && base.cat === '원피스') {
+      if (base && baseCat === '원피스') {
         // v8.9: 아우터 + 원피스 + 신발 (+ 잡화) 조합
         for (let i = 0; i < Math.min(shoesPool.length, 5); i++) {
           push([pick(outerPool, i), base, shoesPool[i], i % 2 === 0 ? pick(accs, i) : null]);
         }
-      } else if (base && base.cat === '상의') {
+      } else if (base && baseCat === '상의') {
         for (let i = 0; i < Math.min(bottoms.length, 7); i++) push([pick(outerPool, i), base, bottoms[i], pick(shoesPool, i)]);
-      } else if (base && base.cat === '하의') {
+      } else if (base && baseCat === '하의') {
         const tops = topsAll.slice(0, 8);
         for (let i = 0; i < tops.length; i++) push([pick(outerPool, i), tops[i], base, pick(shoesPool, i)]);
       }
 
-      if (!base || base.cat === '아우터' || base.cat === '신발' || isAcc) {
+      if (!base || baseCat === '아우터' || baseCat === '신발' || isAcc) {
         const tops = topsAll.slice(0, 6);
         for (let i = 0; i < tops.length; i++) {
           for (let k = 0; k < Math.min(4, bottoms.length); k++) {
@@ -5124,11 +5320,11 @@
         let s = 0;
         items.forEach(it => { s += tempScore(it, bucket) + tpoScore(it, tpo); });
         s += colorHarmony(items) + freshnessScore(items) + styleHarmony(items);
-        if (items.some(i => i.cat === '상의') && items.some(i => i.cat === '하의')) s += 1;
-        if (items.some(i => i.cat === '원피스')) s += 0.6;
-        if (items.some(i => i.cat === '신발')) s += 0.5;
-        if (needOuter && items.some(i => i.cat === '아우터')) s += 1;
-        if (!needOuter && items.some(i => i.cat === '아우터')) s -= 0.8;
+        if (items.some(i => effectiveCat(i) === '상의') && items.some(i => effectiveCat(i) === '하의')) s += 1;
+        if (items.some(i => effectiveCat(i) === '원피스')) s += 0.6;
+        if (items.some(i => effectiveCat(i) === '신발')) s += 0.5;
+        if (needOuter && items.some(i => effectiveCat(i) === '아우터')) s += 1;
+        if (!needOuter && items.some(i => effectiveCat(i) === '아우터')) s -= 0.8;
         if (base && !items.some(i => String(i.id) === String(base.id))) s -= 100;
         return { type: 'combo', items, score: s };
       });
@@ -5153,7 +5349,7 @@
       // 아이템이 2개 이상 겹치는 조합은 하나만 노출 (같은 옷 반복 방지)
       // v8.9: 상의·하의·원피스(몸판)를 기준으로 비교한다. 아우터·신발만 겹치는
       //       '아우터+원피스+신발' 룩이 '상의+하의' 룩에 중복으로 처리되어 사라지지 않게.
-      const coreOf = (items) => items.filter(i => i.cat === '상의' || i.cat === '하의' || i.cat === '원피스')
+      const coreOf = (items) => items.filter(i => { const k = effectiveCat(i); return k === '상의' || k === '하의' || k === '원피스'; })
         .map(i => String(i.id));
       const out = [];
       for (const m of merged) {
@@ -5171,7 +5367,7 @@
 
     function recoReason(m, bucket) {
       const parts = [];
-      parts.push(`${TEMP_STEPS.indexOf(bucket) <= 1 ? '추운' : TEMP_STEPS.indexOf(bucket) >= 3 ? '따뜻한' : '선선한'} ${liveTemp}℃`);
+      parts.push(`${TEMP_STEPS.indexOf(bucket) <= 1 ? '추운' : TEMP_STEPS.indexOf(bucket) >= 3 ? '따뜻한' : '선선한'} 체감 ${perceivedTemp()}℃`);
       if (recoTpo !== '상관없음') parts.push(recoTpo);
       const worn = m.items.filter(i => (i.wearCount || 0) === 0).length;
       if (worn > 0) parts.push(`안 입은 옷 ${worn}벌 활용`);
@@ -5211,7 +5407,7 @@
       box.innerHTML = `
         <div class="reco-head">
           <span class="reco-head-title">🧥 오늘의 코디 추천</span>
-          <span class="reco-head-sub">${liveTemp}℃ · ${escHtml(bucket)} 기준 · ${ownedClothes().length}벌 / ${(appData.lookbooks || []).length}코디에서 골랐어요</span>
+          <span class="reco-head-sub">실제 ${liveTemp}℃ · 체감 ${perceivedTemp()}℃ · ${escHtml(bucket)} 기준 · ${ownedClothes().length}벌 / ${(appData.lookbooks || []).length}코디에서 골랐어요</span>
         </div>
         <div class="chips-row" id="reco-tpo-chips" style="margin-bottom:8px;">${tpoChips}</div>
         <div class="reco-list">${inner}</div>
@@ -5220,10 +5416,10 @@
 
     function openRecoCollage(ids) {      const list = String(ids).split(',').map(x => itemById(x)).filter(Boolean);
       if (!list.length) return;
-      const outer = list.find(c => c.cat === '아우터');
-      const top = list.find(c => c.cat === '상의' || c.cat === '원피스');
-      const bottom = list.find(c => c.cat === '하의');
-      const shoes = list.find(c => c.cat === '신발');
+      const outer = list.find(c => effectiveCat(c) === '아우터');
+      const top = list.find(c => effectiveCat(c) === '상의' || effectiveCat(c) === '원피스');
+      const bottom = list.find(c => effectiveCat(c) === '하의');
+      const shoes = list.find(c => effectiveCat(c) === '신발');
       const stage = document.getElementById('popup-outfit-stage');
       let html = '';
       html += `<div class="outfit-layer top-layer">`;
@@ -5758,8 +5954,9 @@
           const mapped = seasonsFromTemp(c.temp);
           if (mapped.length) c.seasons = mapped;
         } else {
-          const clean = c.seasons.filter(s => SEASON_KEYS.indexOf(s) >= 0);
-          if (clean.length !== c.seasons.length) c.seasons = clean;
+          /* v8.23: 옛 '봄'·'가을' → '봄/가을' 병합 (중복 제거) */
+          const clean = normalizeSeasons(c.seasons);
+          if (clean.join('|') !== c.seasons.join('|')) c.seasons = clean;
         }
       });
       // v8.12: 카테고리가 비어 있는데 세부 종류가 원피스 계열이면 원피스로 채운다(백업 데이터 호환)
