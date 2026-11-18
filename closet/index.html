@@ -4617,7 +4617,7 @@
       const R = (remoteDoc && remoteDoc.data) ? remoteDoc.data : null;
       if (!R) return { data: local, stats: { added: 0, updated: 0, kept: 0 } };
       const L = JSON.parse(JSON.stringify(local));
-      const stats = { added: 0, updated: 0, kept: 0, remoteTotal: (R.clothes || []).length, localTotal: (L.clothes || []).length };
+      const stats = { added: 0, updated: 0, kept: 0, addedLookbooks: 0, remoteTotal: (R.clothes || []).length, localTotal: (L.clothes || []).length };
 
       const delIds = new Set([].concat(L.deletedIds || [], R.deletedIds || []).map(String));
       const lDelOnly = (L.deletedIds || []).map(String).filter(x => (R.deletedIds || []).map(String).indexOf(x) < 0).length;
@@ -4655,7 +4655,7 @@
       (R.lookbooks || []).forEach(lb => {
         const key = String(lb.id);
         const mine = lbMap.get(key);
-        if (!mine) { lbMap.set(key, lb); stats.added++; return; }
+        if (!mine) { lbMap.set(key, lb); stats.addedLookbooks++; return; }   /* v8.19: 코디는 '벌' 수에 섞지 않는다 */
         if (Number(lb.updatedAt || 0) > Number(mine.updatedAt || 0)) lbMap.set(key, lb);
       });
       L.lookbooks = Array.from(lbMap.values()).filter(lb => !delLb.has(String(lb.id)));
