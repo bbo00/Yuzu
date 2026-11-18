@@ -302,6 +302,56 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
   .tab, .chip, .btn, .segb { transition: background-color .15s, border-color .15s; }
 }
 
+/* ---- 만족도 · 후기 · 성분 (v2) ---- */
+.pill.rate { background: var(--surface-2); color: var(--ink-2); border: 1px solid var(--line); line-height: 18px; }
+.pill.rate.good { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+.pill.rate.ok { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+.pill.rate.bad { background: var(--bad-soft); color: var(--bad); border-color: transparent; }
+.rvbox { display: grid; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.rvh { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 13px; color: var(--ink-2); }
+.rvh b { font-size: 14px; color: var(--ink); }
+.rvq { margin: 0; font-size: 14px; color: var(--ink); overflow-wrap: anywhere; white-space: pre-wrap; }
+.ingtags { display: flex; flex-wrap: wrap; gap: 6px; }
+.ingtag { border: 1px solid var(--line); background: var(--surface-2); color: var(--ink-2); border-radius: 999px; padding: 2px 9px; font-size: 12px; font-weight: 700; min-height: 26px; }
+button.ingtag:hover { border-color: var(--accent); color: var(--accent); }
+.rvacts2 { display: flex; gap: 8px; flex-wrap: wrap; }
+.wchips { flex-wrap: wrap; overflow: visible; }
+.wchips .chip { white-space: normal; text-align: left; }
+.ingnone { margin: 0 0 6px; font-size: 13px; color: var(--ink-2); }
+.ingtop { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 4px; }
+.ingtop .pill { line-height: 26px; padding: 0 10px; font-size: 13px; }
+.ingtop .pill b { font-variant-numeric: tabular-nums; }
+.seg4 { grid-template-columns: repeat(4, 1fr); }
+.seg4 .segb { padding: 8px 4px; font-size: 13px; min-height: 36px; }
+.rvrow .line2 { display: grid; gap: 5px; padding: 10px 12px 12px 14px; }
+.rvrow .nmrow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.rvrow .name { padding: 0; }
+.inghit { margin-top: 12px; }
+.ihh { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 8px; font-size: 14px; }
+/* 후기 입력 시트 */
+.rvwrap { position: fixed; inset: 0; z-index: 40; display: flex; align-items: flex-end; justify-content: center; }
+.rvwrap[hidden] { display: none; }
+.rvback { position: absolute; inset: 0; background: rgba(12, 20, 16, .42); }
+.rvcard { position: relative; width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; background: var(--surface); border-radius: 18px 18px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 10px; box-shadow: 0 -8px 30px rgba(0, 0, 0, .18); }
+.rvtop { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.rvtop b { font-family: var(--font-display); font-weight: 400; font-size: 19px; color: var(--ink); }
+.rvsub { margin: -4px 0 0; font-size: 13px; color: var(--ink-2); overflow-wrap: anywhere; }
+.rvrate { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.rvb { border: 1px solid var(--line); background: var(--surface-2); border-radius: 12px; min-height: 46px; font-size: 15px; font-weight: 700; color: var(--ink-2); }
+.rvb[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); }
+.rvb[aria-pressed="true"][data-rvrate="ok"] { border-color: var(--warn); background: var(--warn-soft); color: var(--ink); }
+.rvb[aria-pressed="true"][data-rvrate="bad"] { border-color: var(--bad); background: var(--bad-soft); color: var(--ink); }
+.rvlab { display: grid; gap: 5px; font-size: 13px; color: var(--ink-2); }
+.rvlab input, .rvlab textarea { width: 100%; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); color: var(--ink); font: inherit; font-size: 15px; padding: 9px 11px; }
+.rvlab textarea { min-height: 78px; resize: vertical; }
+.rvchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.rvchips .chip { min-height: 32px; font-size: 13px; padding: 4px 10px; }
+.rverr { margin: 0; font-size: 13px; font-weight: 700; color: var(--bad); }
+.rverr[hidden] { display: none; }
+.rvacts { display: flex; gap: 8px; }
+.rvacts .btn { flex: 1; }
+body.rvopen { overflow: hidden; }
+
 /* ---- 동기화 상태 칩 · 패널 (v2) ---- */
 .syncchip { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: 12px; padding: 8px 12px; font-size: 13px; font-weight: 500; min-height: 40px; }
 .syncchip:hover { border-color: var(--accent); }
@@ -368,6 +418,24 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
 </div>
 <div class="toast" aria-live="polite"><span id="toastMsg" hidden></span></div>
 
+<div class="rvwrap" id="rvSheet" hidden>
+  <div class="rvback" data-act="rv-cancel"></div>
+  <section class="rvcard" role="dialog" aria-modal="true" aria-labelledby="rvTitle">
+    <div class="rvtop"><b id="rvTitle">사용 후기</b><button class="x" type="button" data-act="rv-cancel" aria-label="닫기">×</button></div>
+    <p class="rvsub" id="rvSub"></p>
+    <div class="rvrate" id="rvRate" role="group" aria-label="만족도 (필수)">
+      <button class="rvb" type="button" data-rvrate="good" aria-pressed="false">👍 좋음</button>
+      <button class="rvb" type="button" data-rvrate="ok" aria-pressed="false">😐 보통</button>
+      <button class="rvb" type="button" data-rvrate="bad" aria-pressed="false">👎 별로</button>
+    </div>
+    <p class="rverr" id="rvErr" hidden>만족도를 골라 주세요</p>
+    <label class="rvlab"><span>사용 후기 <small>(선택)</small></span><textarea id="rvText" maxlength="300" rows="3" placeholder="예: 트러블 없이 촉촉했어요 · 재구매 의사 있어요"></textarea></label>
+    <label class="rvlab"><span>주요 성분 <small>(선택 · 쉼표로 구분)</small></span><input id="rvIng" maxlength="160" placeholder="예: 시카, 판테놀, 나이아신아마이드" autocomplete="off"></label>
+    <div class="rvchips" id="rvChips"></div>
+    <div class="rvacts"><button class="btn" type="button" data-act="rv-cancel">취소</button><button class="btn primary" type="button" data-act="rv-save">저장</button></div>
+  </section>
+</div>
+
 <script type="application/json" id="seed">{"notice":"","items":[],"shop":[],"goods":[],"sales":[]}</script>
 <script id="app">
 (function () {
@@ -386,7 +454,7 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
   var ready = { items: true, shop: true, goods: true, sales: true };
   var items = new Map(), shop = new Map(), goods = new Map(), sales = new Map();
   var notice = '';
-  var ui = { sub: 'all', dopen: {}, tab: 'dash', mode: 'exp', range: 90, cat: 'all', q: '', open: null, del: null, add: false, gtab: 'own', ggroup: 'all', gopen: null, gdel: null, sell: null, sdel: null, gby: 'group', gbrand: 'all' };
+  var ui = { sub: 'all', dopen: {}, tab: 'dash', mode: 'exp', range: 90, cat: 'all', q: '', open: null, del: null, add: false, gtab: 'own', ggroup: 'all', gopen: null, gdel: null, sell: null, sdel: null, gby: 'group', gbrand: 'all', rf: 'all', ing: '' };
   try { var m = localStorage.getItem('salimkan-mode2'); if (m === 'exp' || m === 'cat') ui.mode = m; } catch (e) {}
   try { var rg0 = parseInt(localStorage.getItem('salimkan-range'), 10); if ([30, 90, 180, 365].indexOf(rg0) >= 0) ui.range = rg0; } catch (e) {}
   try { var gb = localStorage.getItem('salimkan-gby'); if (gb === 'brand' || gb === 'group') ui.gby = gb; } catch (e) {}
@@ -1119,6 +1187,7 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
     var e = expHTML(it); if (e) bits.push(e);
     if (sizeNum(it.size)) bits.push('<span>' + esc(sizeNum(it.size)) + 'ml</span>');
     var opn = openUse(it); if (opn) bits.push('<span class="pill tag">사용 중 ' + useDays(opn) + '일째</span>');
+    if (rateOf(it)) bits.push(ratePill(rateOf(it)));
     if (!out && firstIds[it.id]) bits.push('<span class="pill tag">먼저 쓰기</span>');
     if (out) bits.push('<span class="pill out">다 씀</span>');
     var open = ui.open === it.id && !ro;
@@ -1140,6 +1209,7 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
         '<label>소비기한 <small>(숫자만: 270109)</small><input data-f="exp" type="text" inputmode="numeric" value="' + esc(expInputVal(it)) + '" maxlength="8" placeholder="예: 270109" autocomplete="off"></label>' +
         '<label>구매금액 (원) <small>(1개 가격)</small><input data-f="price" type="text" inputmode="numeric" value="' + esc(priceNum(it.price)) + '" maxlength="9" placeholder="숫자만 (예: 15000)"></label>' +
         useBox(it) +
+        reviewBox(it) +
         '<label class="wide">메모<input data-f="note" value="' + esc(it.note || '') + '" maxlength="80"></label>' +
         '<label>알림 수량 <small>(이 수량 이하면 대시보드에 떠요)</small><input data-f="min" type="number" inputmode="numeric" min="0" value="' + (it.min || 0) + '"></label>' +
         '<div class="acts wide"><span></span>' +
@@ -1779,6 +1849,163 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
     return '<button type="button" class="chk" data-act="bought" data-id="' + esc(i.id) + '" aria-pressed="' + (i.bought ? 'true' : 'false') + '" aria-label="' + esc(i.name) + ' 샀어요"' + (canWrite() ? '' : ' disabled') + '>' + (i.bought ? '✓' : '') + '</button>';
   }
 
+
+  /* ---------- 만족도 · 사용 후기 · 성분 (v2) ---------- */
+  var RATE = { good: { e: '👍', t: '좋음' }, ok: { e: '😐', t: '보통' }, bad: { e: '👎', t: '별로' } };
+  var RATE_ORDER = ['good', 'ok', 'bad'];
+  var ING_PRESET = ['시카', '판테놀', '나이아신아마이드', '히알루론산', '세라마이드', '마데카소사이드', '레티놀', '비타민C', '콜라겐', '펩타이드', '어성초', '알코올', '향료', '징크', 'AHA·BHA'];
+  var rvDraft = null;
+
+  function rateOf(it) { return it && RATE[it.rating] ? it.rating : ''; }
+  function ratePill(r) { return RATE[r] ? '<span class="pill rate ' + r + '">' + RATE[r].e + ' ' + RATE[r].t + '</span>' : ''; }
+  function splitIng(v) {
+    var raw = v == null ? '' : v;
+    if (Array.isArray(raw)) raw = raw.join(',');
+    var out = [], seen = {};
+    String(raw).split(/[,、\n\/]+/).forEach(function (s) {
+      s = s.trim().replace(/^#+/, '').replace(/\s+/g, ' ');
+      if (!s) return;
+      if (s.length > 24) s = s.slice(0, 24);
+      var k = s.toLowerCase();
+      if (seen[k]) return;
+      seen[k] = 1; out.push(s);
+    });
+    return out;
+  }
+  function ingList(it) { return it ? splitIng(it.ingredients).slice(0, 12) : []; }
+  function ingNorm(v) { return splitIng(v).slice(0, 12).join(', '); }
+  function ingTags(it) {
+    var l = ingList(it);
+    return l.length ? '<div class="ingtags">' + l.map(function (n) { return '<button class="ingtag" type="button" data-act="ing" data-ing="' + esc(n) + '">' + esc(n) + '</button>'; }).join('') + '</div>' : '';
+  }
+
+  function reviewBox(it) {
+    var r = rateOf(it), ing = ingList(it), has = !!(r || it.review || ing.length);
+    var h = '<div class="rvbox wide"><div class="rvh"><b>만족도 · 후기</b><span>' + (r ? RATE[r].e + ' ' + RATE[r].t : '아직 없어요') + '</span></div>';
+    if (it.review) h += '<p class="rvq">' + esc(it.review) + '</p>';
+    if (ing.length) h += '<div class="ingtags">' + ing.map(function (n) { return '<span class="ingtag">' + esc(n) + '</span>'; }).join('') + '</div>';
+    h += '<div class="rvacts2"><button class="btn sm" type="button" data-act="review-open">' + (has ? '후기 · 만족도 수정' : '후기 · 만족도 남기기') + '</button></div></div>';
+    return h;
+  }
+
+  function rvSheetEl() { return document.getElementById('rvSheet'); }
+  function openReview(id, reason) {
+    var it = items.get(id);
+    if (!it || !canWrite()) return;
+    var sh = rvSheetEl(); if (!sh) return;
+    rvDraft = { id: id, rating: rateOf(it), review: it.review || '', ing: ingList(it).join(', ') };
+    $('#rvSub').textContent = (reason === 'use-end' ? '다 썼어요 · 만족도를 골라 주세요 · ' : '') + it.name;
+    $('#rvText').value = rvDraft.review;
+    $('#rvIng').value = rvDraft.ing;
+    sh.hidden = false;
+    document.body.classList.add('rvopen');
+    paintReview();
+    var f = sh.querySelector('[data-rvrate]'); if (f && !rvDraft.rating) f.focus();
+  }
+  function closeReview() {
+    var sh = rvSheetEl(); if (sh) sh.hidden = true;
+    document.body.classList.remove('rvopen');
+    rvDraft = null;
+  }
+  function paintReview() {
+    var sh = rvSheetEl(); if (!sh || !rvDraft) return;
+    Array.prototype.forEach.call(sh.querySelectorAll('[data-rvrate]'), function (b) {
+      b.setAttribute('aria-pressed', String(rvDraft.rating === b.getAttribute('data-rvrate')));
+    });
+    var err = $('#rvErr'); if (err) err.hidden = !!rvDraft.rating;
+    var box = $('#rvChips');
+    if (box) {
+      var cur = splitIng(rvDraft.ing).map(function (x) { return x.toLowerCase(); });
+      box.innerHTML = ING_PRESET.map(function (n) {
+        var on = cur.indexOf(n.toLowerCase()) >= 0;
+        return '<button class="chip" type="button" data-act="rv-ing-add" data-ing="' + esc(n) + '" aria-pressed="' + on + '">' + esc(n) + '</button>';
+      }).join('');
+    }
+  }
+  function saveReview() {
+    if (!rvDraft || !canWrite()) return;
+    var sh = rvSheetEl();
+    if (!rvDraft.rating) {
+      var err = $('#rvErr'); if (err) err.hidden = false;
+      toast('만족도를 골라 주세요 (👍 좋음 · 😐 보통 · 👎 별로)');
+      var f = sh && sh.querySelector('[data-rvrate]'); if (f) f.focus();
+      return;
+    }
+    var it = items.get(rvDraft.id); if (!it) { closeReview(); return; }
+    var rating = rvDraft.rating;
+    patchItem(it, { rating: rating, review: String(rvDraft.review || '').slice(0, 300), ingredients: ingNorm(rvDraft.ing), reviewAt: Date.now() });
+    closeReview(); render();
+    toast('후기를 저장했어요 · ' + RATE[rating].e + ' ' + RATE[rating].t);
+  }
+
+  function ingRank(list) {
+    var m = {}, order = [];
+    list.forEach(function (i) {
+      ingList(i).forEach(function (n) {
+        var k = n.toLowerCase();
+        if (!m[k]) { m[k] = { name: n, n: 0 }; order.push(k); }
+        m[k].n++;
+      });
+    });
+    return order.map(function (k) { return m[k]; }).sort(function (a, b) { return b.n - a.n || (a.name < b.name ? -1 : 1); });
+  }
+  function ingChipRow(rank, word) {
+    if (!rank.length) return '<p class="ingnone">성분을 적은 제품이 아직 없어요</p>';
+    return '<div class="chips wchips">' + rank.slice(0, 12).map(function (x) {
+      var on = !!ui.ing && ui.ing.toLowerCase() === x.name.toLowerCase();
+      return '<button class="chip" type="button" data-act="ing" data-ing="' + esc(x.name) + '" aria-pressed="' + on + '">' + esc(x.name) + '<small>' + x.n + '회 ' + word + '</small></button>';
+    }).join('') + '</div>';
+  }
+  function ingRowsHTML(list) {
+    if (!list.length) return '';
+    return '<ul class="rows">' + list.map(function (i) {
+      var ing = ingList(i);
+      return '<li class="row rvrow"><div class="line2"><button class="name" type="button" data-dgo="' + esc(i.id) + '">' +
+        '<span class="nmrow"><span class="nm">' + esc(i.name) + '</span>' + ratePill(rateOf(i)).replace('pill rate', 'pill rate') + '</span>' +
+        '<span class="meta"><span>' + esc(pathOf(i)) + '</span>' + (i.qty <= 0 ? '<span>다 씀</span>' : '') + '</span></button>' +
+        (i.review ? '<p class="rvq">' + esc(i.review) + '</p>' : '') +
+        (ing.length ? '<div class="ingtags">' + ing.map(function (n) { return '<button class="ingtag" type="button" data-act="ing" data-ing="' + esc(n) + '">' + esc(n) + '</button>'; }).join('') + '</div>' : '') +
+        '</div></li>';
+    }).join('') + '</ul>';
+  }
+  function ingredientsHTML(all) {
+    var good = [], okr = [], bad = [], rated = [];
+    all.forEach(function (i) {
+      var r = rateOf(i); if (!r) return;
+      rated.push(i);
+      if (r === 'good') good.push(i); else if (r === 'bad') bad.push(i); else okr.push(i);
+    });
+    var h = '<section class="dsec" id="ingsec"><h2>🧪 나에게 맞는 성분 리포트 <small>후기 기준</small></h2>';
+    if (!rated.length) {
+      return h + '<p class="empty">아직 남긴 후기가 없어요. 전체 목록에서 물건을 눌러 ‘후기 · 만족도’를 남기면, 좋았던 성분과 별로였던 성분이 여기에 쌓여요.</p></section>';
+    }
+    h += '<div class="ingtop">' + RATE_ORDER.map(function (r) {
+      var n = r === 'good' ? good.length : r === 'ok' ? okr.length : bad.length;
+      return '<span class="pill rate ' + r + '">' + RATE[r].e + ' ' + RATE[r].t + ' <b>' + n + '</b></span>';
+    }).join('') + '<span class="pill">후기 ' + rated.length + '</span></div>';
+
+    h += '<h3 class="sth">👍 좋았던 성분 <small>좋음 ' + good.length + '개 제품</small></h3>' + ingChipRow(ingRank(good), '좋음');
+    h += '<h3 class="sth">👎 주의할 성분 <small>별로 ' + bad.length + '개 제품</small></h3>' + ingChipRow(ingRank(bad), '별로');
+
+    var flt = ui.rf || 'all';
+    var list = rated.filter(function (i) { return flt === 'all' || rateOf(i) === flt; });
+    list.sort(function (a, b) { return (Number(b.reviewAt || 0) - Number(a.reviewAt || 0)) || ((a.ord || 0) - (b.ord || 0)); });
+    h += '<h3 class="sth">후기 모아보기 <small>' + list.length + '개</small></h3>';
+    h += '<div class="seg seg4" role="group" aria-label="만족도로 거르기">' + [['all', '전체'], ['good', '👍 좋음'], ['ok', '😐 보통'], ['bad', '👎 별로']].map(function (x) {
+      return '<button class="segb" type="button" data-act="rf" data-rf="' + x[0] + '" aria-pressed="' + (flt === x[0]) + '">' + x[1] + '</button>';
+    }).join('') + '</div>';
+    h += list.length ? ingRowsHTML(list) : '<p class="empty">이 만족도로 남긴 후기가 없어요.</p>';
+
+    if (ui.ing) {
+      var key = ui.ing.toLowerCase();
+      var hit = all.filter(function (i) { return ingList(i).some(function (n) { return n.toLowerCase() === key; }); });
+      hit.sort(function (a, b) { return ((a.qty > 0 ? 0 : 1) - (b.qty > 0 ? 0 : 1)) || ((a.ord || 0) - (b.ord || 0)); });
+      h += '<div class="inghit" id="inghit"><div class="ihh"><b>‘' + esc(ui.ing) + '’ 들어간 내 제품 ' + hit.length + '개</b><button class="btn sm" type="button" data-act="ing-clear">선택 해제</button></div>' +
+        (hit.length ? ingRowsHTML(hit) : '<p class="empty">이 성분이 적힌 제품이 없어요.</p>') + '</div>';
+    }
+    return h + '</section>';
+  }
+
   function priceHTML(all) {
     var cm = cornerMap(), by = {}, order = [], tot = 0, n = 0, have = 0;
     all.forEach(function (i) {
@@ -1832,7 +2059,7 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
     return h + '</section>';
   }
 
-  function viewHTML() { calcFirst(); if (ui.tab === 'stock') return stockHTML(); var af = ui.add && canWrite() ? addForm() : ''; return af + (ui.tab === 'stats' ? priceHTML(allItems()) + statsHTML(allItems()) : dashHTML()); }
+  function viewHTML() { calcFirst(); if (ui.tab === 'stock') return stockHTML(); var af = ui.add && canWrite() ? addForm() : ''; return af + (ui.tab === 'stats' ? priceHTML(allItems()) + statsHTML(allItems()) + ingredientsHTML(allItems()) : dashHTML()); }
 
   function syncBarH() { var b = $('.bar'); if (b) document.documentElement.style.setProperty('--barh', b.offsetHeight + 'px'); }
   try { if (window.ResizeObserver) new ResizeObserver(syncBarH).observe(document.querySelector('.bar')); } catch (e) {}
@@ -1872,6 +2099,9 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
   }
 
   document.addEventListener('click', function (e) {
+    var rvsel = e.target.closest('[data-rvrate]');
+    if (rvsel) { if (rvDraft) { rvDraft.rating = rvsel.getAttribute('data-rvrate'); paintReview(); } return; }
+
     var dt = e.target.closest('[data-dtog]');
     if (dt) { var y0 = window.scrollY; ui.dopen[dt.dataset.dtog] = !ui.dopen[dt.dataset.dtog]; render(); window.scrollTo(0, y0); return; }
     var da = e.target.closest('[data-dall]');
@@ -1902,6 +2132,30 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
     var w = canWrite();
 
     if (goodsAct(act, b, w)) return;
+    if (act === 'review-open' && it) { openReview(it.id); return; }
+    if (act === 'rv-cancel') { closeReview(); return; }
+    if (act === 'rv-save') { saveReview(); return; }
+    if (act === 'rv-ing-add') {
+      if (!rvDraft) return;
+      var rnm = b.getAttribute('data-ing') || '', rcur = splitIng(rvDraft.ing);
+      var rhas = rcur.some(function (x) { return x.toLowerCase() === rnm.toLowerCase(); });
+      var rnx = rhas ? rcur.filter(function (x) { return x.toLowerCase() !== rnm.toLowerCase(); }) : rcur.concat([rnm]);
+      rvDraft.ing = rnx.join(', ');
+      $('#rvIng').value = rvDraft.ing;
+      paintReview(); return;
+    }
+    if (act === 'rf') { ui.rf = b.getAttribute('data-rf') || 'all'; render(); return; }
+    if (act === 'ing-clear') { ui.ing = ''; render(); return; }
+    if (act === 'ing') {
+      var inm = b.getAttribute('data-ing') || '', yin = window.scrollY;
+      ui.ing = (ui.ing && ui.ing.toLowerCase() === inm.toLowerCase()) ? '' : inm;
+      ui.tab = 'stats'; ui.add = false; ui.open = null;
+      render();
+      var ih = document.getElementById('inghit');
+      if (ih && ui.ing) window.scrollTo(0, ih.getBoundingClientRect().top + window.scrollY - 108); else window.scrollTo(0, yin);
+      return;
+    }
+
     if (act === 'add-toggle') {
       ui.add = !ui.add; ui.sell = null; render(ui.add ? '.add input[name="name"]' : null);
     } else if (act === 'sync-open') {
@@ -1926,6 +2180,9 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
         var us2 = usesOf(it).map(function (r) { return r === op2 ? { s: r.s, e: today() } : r; });
         patchItem(it, { uses: us2, qty: Math.max(0, (it.qty || 0) - 1) });
         toast(useDays({ s: op2.s, e: today() }) + '일 썼어요 · 수량을 1개 줄였어요');
+        render(keep);
+        if (!rateOf(it)) openReview(it.id, 'use-end');
+        return;
       }
       render(keep);
     } else if (act === 'use-del' && it && w) {
@@ -2035,6 +2292,15 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
   renderHead();
   setSync();
   init();
+
+  /* 후기 시트 입력 · 닫기 (init 바깥에서 한 번만) */
+  (function () {
+    var sh = rvSheetEl(); if (!sh) return;
+    var tx = document.getElementById('rvText'), ig = document.getElementById('rvIng');
+    if (tx) tx.addEventListener('input', function () { if (rvDraft) rvDraft.review = tx.value; });
+    if (ig) ig.addEventListener('input', function () { if (rvDraft) { rvDraft.ing = ig.value; paintReview(); } });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && rvDraft) { closeReview(); } });
+  })();
 })();
 </script>
 </body></html>
