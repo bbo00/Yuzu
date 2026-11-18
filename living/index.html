@@ -1,0 +1,1536 @@
+<!doctype html><html lang="ko"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><title>우리 살림칸 공유</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="우리 살림칸 · 생활용품 재고와 소비기한을 함께 보는 개인용 목록">
+<meta name="theme-color" content="#eef2ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1512" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="우리 살림칸">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style id="pagecss">
+/* Layout: 한 줄 요약(기한 지남·30일·90일) → 고정 탭과 보기 전환 → 분류별/기한순 목록. 부부가 같은 목록을 함께 고친다. */
+:root {
+  --bg: #eef2ee;
+  --surface: #ffffff;
+  --surface-2: #f4f7f4;
+  --ink: #1b2622;
+  --ink-2: #5b6b64;
+  --line: #dce3dd;
+  --accent: #2d6a57;
+  --accent-ink: #ffffff;
+  --accent-soft: #ddebe4;
+  --c2: #3d6f9e;
+  --warn: #8a5a00;
+  --warn-soft: #fbebc8;
+  --bad: #b23a2b;
+  --bad-soft: #f8ddd8;
+  --font-display: "Gowun Dodum", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1512; --surface: #17201c; --surface-2: #1d2823; --ink: #e6eee9; --ink-2: #9daea5;
+    --line: #2a3731; --accent: #6cc3a6; --accent-ink: #0b1511; --accent-soft: #1f3a31; --c2: #7fb0e0;
+    --warn: #f0c26a; --warn-soft: #3a2e12; --bad: #f19a8c; --bad-soft: #3e1e19;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1512; --surface: #17201c; --surface-2: #1d2823; --ink: #e6eee9; --ink-2: #9daea5;
+  --line: #2a3731; --accent: #6cc3a6; --accent-ink: #0b1511; --accent-soft: #1f3a31; --c2: #7fb0e0;
+  --warn: #f0c26a; --warn-soft: #3a2e12; --bad: #f19a8c; --bad-soft: #3e1e19;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  padding-block: 0 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 10; background: var(--bg);
+}
+.app { max-width: 680px; margin: 0 auto; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.head { padding-top: 24px; display: grid; gap: 10px; }
+.topbtns { display: flex; gap: 8px; flex: none; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+h1 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 30px; letter-spacing: -0.01em; line-height: 1.2; }
+.glance { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0; padding: 0; list-style: none; color: var(--ink-2); font-size: 14px; }
+.glance b { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+.glance .hot b { color: var(--bad); }
+.glance .soon b { color: var(--warn); }
+
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 9px 14px; font-weight: 500; line-height: 1.2; min-height: 40px; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
+.btn.danger { color: var(--bad); border-color: transparent; background: transparent; }
+.btn.sm { min-height: 36px; padding: 7px 11px; font-size: 14px; }
+
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding: 14px 0 10px; display: grid; gap: 10px; }
+.tabs, .seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 3px; gap: 3px; }
+.tabs { grid-template-columns: repeat(3, 1fr); }
+.tab, .segb { border: 0; background: transparent; border-radius: 9px; padding: 9px 8px; font-weight: 500; color: var(--ink-2); display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; }
+.segb { padding: 9px 12px; font-size: 14px; }
+.tab[aria-selected="true"], .segb[aria-pressed="true"] { background: var(--surface); color: var(--ink); font-weight: 700; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.badge { background: var(--accent); color: var(--accent-ink); border-radius: 999px; font-size: 12px; font-weight: 700; padding: 0 7px; line-height: 18px; min-width: 18px; text-align: center; font-variant-numeric: tabular-nums; }
+.tools { display: flex; gap: 8px; align-items: center; }
+.tools .search { flex: 1 1 0; min-width: 0; }
+.tools .seg { flex: none; }
+
+input, select { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; font-size: 16px; min-height: 42px; min-width: 0; width: 100%; }
+input::placeholder { color: var(--ink-2); opacity: .8; }
+
+.chips { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 12px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.stickwrap .chips { padding: 2px 0 8px; }
+.subchips .chip { min-height: 32px; font-size: 13px; padding: 4px 10px; }
+.stickwrap { position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--barh, 120px)); z-index: 4; background: var(--bg); margin-top: -2px; padding-top: 6px; }
+.chip { flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 12px; font-size: 14px; color: var(--ink-2); min-height: 36px; white-space: nowrap; }
+.chip[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--ink); font-weight: 700; }
+.chip small { font-size: 12px; margin-left: 4px; opacity: .8; font-variant-numeric: tabular-nums; }
+
+.group { margin: 0 0 18px; }
+.ghead { display: flex; justify-content: space-between; align-items: baseline; margin: 0 2px 6px; font-size: 13px; color: var(--ink-2); }
+.ghead h2 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 17px; color: var(--ink); }
+.rows { margin: 0; padding: 0; list-style: none; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.row { border-top: 1px solid var(--line); }
+.rows > :first-child { border-top: 0; }
+.subh { display: flex; justify-content: space-between; padding: 6px 14px; font-size: 13px; font-weight: 700; color: var(--ink-2); background: var(--surface-2); border-top: 1px solid var(--line); }
+.line { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 6px 10px 6px 14px; }
+.name { border: 0; background: none; text-align: left; padding: 6px 0; min-width: 0; display: grid; gap: 2px; }
+.nm { font-weight: 700; font-size: 16px; overflow-wrap: anywhere; }
+.meta { display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: center; font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.memo { font-size: 12px; color: var(--ink-2); overflow-wrap: anywhere; }
+.pill { border-radius: 999px; padding: 0 8px; font-size: 12px; font-weight: 700; line-height: 20px; }
+.pill.out { background: var(--surface-2); color: var(--ink-2); border: 1px solid var(--line); line-height: 18px; }
+.pill.expbad { background: var(--bad-soft); color: var(--bad); }
+.pill.expsoon { background: var(--warn-soft); color: var(--warn); }
+.dim .nm, .dim .meta { opacity: .55; }
+.step { display: flex; align-items: center; gap: 2px; }
+.step button { width: 40px; height: 40px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-2); font-size: 20px; line-height: 1; padding: 0; }
+.q { min-width: 44px; text-align: center; font-variant-numeric: tabular-nums; }
+.q b { font-size: 18px; }
+.q i { font-style: normal; font-size: 12px; color: var(--ink-2); margin-left: 1px; }
+
+.edit { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; padding: 12px 14px 14px; background: var(--surface-2); border-top: 1px dashed var(--line); }
+.edit label, .add label { display: grid; gap: 4px; font-size: 13px; color: var(--ink-2); min-width: 0; }
+.wide { grid-column: 1 / -1; }
+.acts { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; }
+.add { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
+
+.note { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; background: var(--accent-soft); border-radius: 12px; padding: 10px 12px; margin-bottom: 14px; font-size: 14px; }
+.note span { flex: 1 1 200px; }
+.empty { color: var(--ink-2); text-align: center; padding: 28px 12px; margin: 0; }
+
+.quick { display: grid; grid-template-columns: minmax(0, 1fr) 72px auto; gap: 8px; margin-bottom: 14px; }
+.sugg { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; }
+.sugg h2 { margin: 0 0 8px; font-family: var(--font-display); font-weight: 400; font-size: 17px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.sugg ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.sugg li button { border: 1px dashed var(--accent); background: transparent; border-radius: 999px; padding: 6px 12px; font-size: 14px; min-height: 36px; }
+.shop { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 6px; align-items: center; padding: 6px 6px 6px 10px; }
+.chk { width: 40px; height: 40px; border: 0; background: none; display: grid; place-items: center; padding: 0; }
+.chk span { width: 24px; height: 24px; border: 2px solid var(--ink-2); border-radius: 8px; display: grid; place-items: center; color: transparent; }
+.chk[aria-checked="true"] span { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.shop.done .nm { text-decoration: line-through; color: var(--ink-2); font-weight: 400; }
+.shop .step button { width: 36px; height: 36px; }
+.x { border: 0; background: none; width: 36px; height: 36px; font-size: 20px; color: var(--ink-2); padding: 0; }
+.donebar { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: 10px 2px 0; font-size: 14px; color: var(--ink-2); flex-wrap: wrap; }
+
+.pill.tag { background: var(--accent-soft); color: var(--accent); }
+.gsub { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.gsub .seg { flex: 1 1 150px; max-width: 260px; }
+.sale { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; padding: 10px 12px 8px 14px; }
+.sinfo { min-width: 0; display: grid; gap: 2px; }
+.calc { font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.profit { font-weight: 700; font-size: 17px; text-align: right; font-variant-numeric: tabular-nums; color: var(--accent); white-space: nowrap; }
+.profit.neg { color: var(--bad); }
+.sale .acts { grid-column: 1 / -1; justify-content: flex-end; }
+.sell { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+.sell label { display: grid; gap: 4px; font-size: 13px; color: var(--ink-2); min-width: 0; }
+
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0 0 18px; }
+@media (min-width: 560px) { .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; display: grid; gap: 2px; min-width: 0; }
+.tile span { font-size: 13px; color: var(--ink-2); }
+.tile b { font-family: var(--font-display); font-weight: 400; font-size: 30px; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.tile small { font-size: 12px; color: var(--ink-2); }
+.tile.hot { background: var(--bad-soft); border-color: transparent; }
+.tile.hot b, .tile.hot span { color: var(--bad); }
+.tile.soon { background: var(--warn-soft); border-color: transparent; }
+.tile.soon b, .tile.soon span { color: var(--warn); }
+.dsec { margin: 0 0 22px; }
+.dsec > h2 { margin: 0 2px 8px; font-family: var(--font-display); font-weight: 400; font-size: 19px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.dsec > h2 small { font-family: var(--font-body); font-size: 13px; color: var(--ink-2); }
+.urow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; align-items: center; padding: 10px 14px; }
+.urow .nm { font-size: 15px; }
+.urow .meta { margin-top: 1px; }
+.urow .end { display: grid; justify-items: end; gap: 3px; font-variant-numeric: tabular-nums; }
+.urow .end b { font-size: 16px; }
+.cats { margin: 0; padding: 0; list-style: none; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.cats li { border-top: 1px solid var(--line); }
+.cats li:first-child { border-top: 0; }
+.crow { width: 100%; text-align: left; background: none; border: 0; padding: 12px 14px; display: grid; gap: 6px; }
+.chead { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.chead .nm { font-size: 15px; }
+.chead span { font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.chead span b { color: var(--ink); font-size: 17px; }
+.track { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.track i { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+.subs { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.subs b { color: var(--ink); font-weight: 700; }
+.usedup { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.usedup li { border: 1px dashed var(--line); border-radius: 999px; padding: 5px 12px; font-size: 14px; color: var(--ink-2); }
+.alert { display: grid; gap: 4px; border-radius: 14px; padding: 12px 14px; margin: 0 0 14px; background: var(--warn-soft); color: var(--ink); }
+.alert.bad { background: var(--bad-soft); }
+.alert.ok { background: var(--accent-soft); }
+.alert .big { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-weight: 700; font-size: 15px; }
+.alert .big b { font-size: 30px; line-height: 1; font-variant-numeric: tabular-nums; }
+.alert .nms { font-size: 13px; color: var(--ink-2); overflow-wrap: anywhere; }
+.chk { width: 30px; height: 30px; min-height: 30px; border-radius: 8px; border: 2px solid var(--line); background: var(--surface); display: grid; place-items: center; font-size: 17px; line-height: 1; padding: 0; color: var(--accent-ink); }
+.chk[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); }
+.chk[disabled] { opacity: .7; }
+.row.done .nm { text-decoration: line-through; color: var(--ink-2); }
+.row.done { opacity: .65; }
+.price { display: grid; gap: 4px; }
+.price .prow { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.price .prow:last-child { border-bottom: 0; }
+.price .prow b { font-variant-numeric: tabular-nums; }
+.price .ptot { font-size: 18px; font-weight: 700; }
+.noticebox { display: grid; gap: 6px; background: var(--accent-soft); border-radius: 14px; padding: 12px 14px; margin: 0 0 14px; font-size: 14px; }
+.noticebox span { font-weight: 700; }
+.noticebox span small { font-weight: 400; color: var(--ink-2); font-size: 12px; }
+.noticebox.view b { font-size: 16px; font-weight: 700; overflow-wrap: anywhere; }
+.edit label small { font-size: 12px; }
+.goline { width: 100%; background: none; border: 0; text-align: left; }
+.go { color: var(--ink-2); font-size: 22px; }
+.yr { display: grid; grid-template-columns: 64px minmax(0, 1fr) 36px; gap: 10px; align-items: center; padding: 10px 14px; }
+.ylab { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.ylab.bad { color: var(--bad); }
+.yr b { text-align: right; font-variant-numeric: tabular-nums; }
+.track i.bad { background: var(--bad); }
+.track i.mute { background: var(--ink-2); opacity: .5; }
+.linkbtn { border: 0; background: none; color: var(--accent); font: inherit; font-size: 13px; font-weight: 700; padding: 6px 2px; min-height: 32px; }
+.crow[aria-expanded="true"] { padding-bottom: 8px; }
+.stk { padding: 0 14px 10px; display: grid; gap: 0; }
+.subh2 { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: var(--ink-2); background: var(--surface-2); border-radius: 8px; padding: 4px 10px; margin-top: 8px; font-variant-numeric: tabular-nums; }
+.irow { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 7px 10px; border-bottom: 1px solid var(--line); font-size: 15px; }
+.irow:last-child { border-bottom: 0; }
+.irow .inm { min-width: 0; overflow-wrap: anywhere; }
+.irow small { font-size: 12px; color: var(--ink-2); }
+.irow b { font-size: 16px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.irow.dim .inm, .irow.dim b { opacity: .5; }
+.dsec > h2 small .tot { color: var(--ink); font-size: 17px; }
+.chead .num { font-size: 22px; font-weight: 700; color: var(--accent); font-family: var(--font-display); }
+.chead span b.num { color: var(--accent); font-size: 22px; }
+.kinds { font-style: normal; background: var(--accent-soft); color: var(--accent); border-radius: 999px; padding: 1px 9px; font-weight: 700; font-size: 12px; margin-left: 4px; }
+.irow { display: grid !important; grid-template-columns: minmax(0, 1fr) 64px 46px; gap: 10px; align-items: center; }
+.irow b { text-align: right; }
+.irow .vol { display: block; margin-top: 1px; }
+.mini { height: 6px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.mini i { display: block; height: 100%; background: var(--accent); border-radius: 999px; opacity: .75; }
+.volnote { margin: -2px 2px 8px; font-size: 12px; color: var(--ink-2); }
+.ov { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.ovg { min-width: 0; }
+.ovg { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px 8px; --bar: var(--accent); }
+.ovg.g1 { --bar: var(--c2); }
+.ovgh { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--font-display); font-size: 18px; margin-bottom: 4px; }
+.ovgh b { font-size: 24px; font-weight: 700; color: var(--bar); font-variant-numeric: tabular-nums; }
+.ovc { padding: 6px 0 4px; border-top: 1px solid var(--line); }
+.ovch { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; font-size: 14px; color: var(--ink-2); margin-bottom: 2px; }
+.ovch b { color: var(--ink); font-size: 14px; font-variant-numeric: tabular-nums; }
+.vchart { display: flex; gap: 14px; overflow-x: auto; padding: 6px 0 8px; }
+.vgc { flex: none; display: grid; gap: 6px; align-content: start; }
+.vgbars { display: flex; gap: 2px; align-items: flex-end; height: 146px; border-bottom: 1px solid var(--line); }
+.vcol { width: 30px; display: grid; justify-items: center; align-content: end; gap: 3px; height: 100%; }
+.vcol b { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+.vbar { width: 18px; border-radius: 5px 5px 0 0; background: var(--bar); }
+.vcol.dim { opacity: .45; }
+.vlabs { display: flex; gap: 2px; }
+.vlab { width: 30px; height: 96px; writing-mode: vertical-rl; text-align: start; font-size: 12px; line-height: 30px; color: var(--ink); padding-top: 2px; overflow: hidden; }
+.vlab.dim { opacity: .45; }
+.vgname { display: flex; justify-content: space-between; gap: 6px; font-size: 13px; font-weight: 700; color: var(--ink-2); }
+.vgname b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.usebox { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 10px 12px; display: grid; gap: 8px; }
+.useh { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 13px; color: var(--ink-2); }
+.useh b { color: var(--ink); font-size: 14px; }
+.useb { display: flex; gap: 8px; }
+.useb .btn { flex: 1 1 0; }
+.useb .btn:disabled { opacity: .45; cursor: default; }
+.urecs { display: grid; gap: 6px; }
+.urec { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) 44px 34px; gap: 6px; align-items: center; font-size: 13px; }
+.urec input { min-height: 38px; padding: 6px 8px; font-size: 15px; }
+.urec .ud { text-align: right; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.usehint { margin: 0; font-size: 12px; color: var(--ink-2); }
+.sth { margin: 14px 2px 6px; font-family: var(--font-display); font-weight: 400; font-size: 16px; display: flex; justify-content: space-between; align-items: baseline; }
+.sth small { font-family: var(--font-body); font-size: 12px; color: var(--ink-2); }
+.stat { display: grid; gap: 8px; }
+.scard { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.snm { font-weight: 700; font-size: 15px; overflow-wrap: anywhere; }
+.snm small { font-weight: 400; font-size: 12px; color: var(--ink-2); }
+.sgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 10px; margin-top: 6px; }
+.sgrid span { display: block; font-size: 12px; color: var(--ink-2); }
+.sgrid b { font-size: 15px; font-variant-numeric: tabular-nums; }
+.savebar { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: var(--warn-soft); color: var(--warn); border-radius: 12px; padding: 6px 6px 6px 14px; font-size: 14px; font-weight: 700; }
+.foot { margin-top: 24px; font-size: 13px; color: var(--ink-2); text-align: center; }
+.toast { position: fixed; left: 0; right: 0; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; justify-content: center; z-index: 20; pointer-events: none; }
+.toast span { background: var(--ink); color: var(--bg); border-radius: 14px; padding: 10px 18px; font-size: 14px; font-weight: 500; text-align: center; }
+
+@media (max-width: 420px) {
+  .quick { grid-template-columns: minmax(0, 1fr) 64px; }
+  .quick .btn { grid-column: 1 / -1; }
+  .tools { flex-direction: column; align-items: stretch; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tab, .chip, .btn, .segb { transition: background-color .15s, border-color .15s; }
+}
+</style>
+
+<div class="app">
+  <header class="head">
+    <div class="top">
+      <h1>우리 살림칸</h1>
+      <div class="topbtns"><button class="btn" type="button" data-act="dl-html" id="dlBtn" hidden>HTML 저장</button><button class="btn primary" type="button" data-act="add-toggle" id="addBtn">+ 물건 추가</button></div>
+    </div>
+    <ul class="glance" id="glance" aria-label="재고 요약"></ul>
+  </header>
+
+  <div class="bar">
+    <div class="savebar" id="saveBar" hidden><span id="saveMsg">저장하지 않은 변경이 있어요</span><button class="btn primary sm" type="button" data-act="save-now">지금 저장</button></div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-dash" data-tab="dash" aria-selected="true">대시보드</button>
+      <button class="tab" role="tab" id="tab-stock" data-tab="stock" aria-selected="false">전체 목록</button>
+      <button class="tab" role="tab" id="tab-stats" data-tab="stats" aria-selected="false">사용 통계</button>
+    </div>
+    <div class="tools" id="tools">
+      <div class="search"><input id="q" type="search" placeholder="이름·브랜드로 찾기" autocomplete="off" aria-label="물건 찾기"></div>
+      <div class="seg" id="modeSeg" role="group" aria-label="보기 방식">
+        <button class="segb" type="button" data-mode="cat" aria-pressed="true">분류별</button>
+        <button class="segb" type="button" data-mode="exp" aria-pressed="false">기한순</button>
+      </div>
+    </div>
+  </div>
+
+  <main id="view"><p class="empty">불러오는 중…</p></main>
+  <p class="foot" id="sync"></p>
+  <datalist id="sublist"></datalist>
+  <datalist id="brandlist"></datalist>
+</div>
+<div class="toast" aria-live="polite"><span id="toastMsg" hidden></span></div>
+
+<script type="application/json" id="seed">{"notice":"","items":[{"cat":"얼굴 화장","exp":"2027-01-09","name":"듀이트리 선크림","ord":1,"qty":1,"sub":"선크림","id":"i001"},{"cat":"얼굴 화장","exp":"2027-12-27","name":"코페르 선크림","ord":2,"qty":1,"sub":"선크림","id":"i002"},{"cat":"얼굴 화장","exp":"2028-03-09","name":"닥터지 나이스 버디업선","ord":3,"qty":1,"sub":"선크림","id":"i003"},{"cat":"얼굴 화장","exp":"2028-04-03","name":"맥스클리닉 워터베리어 선세럼","ord":4,"qty":1,"sub":"선크림","id":"i004","size":"40"},{"cat":"얼굴 화장","exp":"2028-06-04","name":"에스쁘아 워터스플래쉬 세라마이드선크림","ord":5,"qty":1,"sub":"선크림","id":"i005"},{"cat":"얼굴 화장","exp":"2029-04-14","name":"아이레시피 선세럼","ord":6,"qty":2,"size":"10","sub":"선크림","id":"i006"},{"cat":"얼굴 화장","exp":"2029-05-21","name":"홀리카홀리카 선세럼","ord":7,"qty":1,"size":"50","sub":"선크림","id":"i007"},{"cat":"얼굴 화장","exp":"2029-05-11","name":"센텔라 선세럼","ord":8,"qty":1,"sub":"선크림","id":"i008"},{"cat":"얼굴 화장","name":"투쿨포스쿨 더누드핏쿠션","ord":9,"qty":1,"sub":"쿠션","id":"i009"},{"cat":"얼굴 화장","exp":"2028-07-02","name":"라네즈 네오쿠션 23N +리필","ord":10,"qty":1,"sub":"쿠션","id":"i010"},{"cat":"얼굴 화장","exp":"2028-08-27","name":"에스쁘아 비벨벳쿠션","ord":11,"qty":1,"sub":"쿠션","id":"i011"},{"cat":"얼굴 화장","exp":"2028-02-10","name":"스킨푸드 레몬딜버터 립밤","ord":12,"qty":1,"sub":"립밤","id":"i012"},{"cat":"얼굴 화장","exp":"2027-10-01","name":"스킨푸드 허니 립슬리핑팩","ord":13,"qty":3,"sub":"립밤","id":"i013"},{"cat":"얼굴 씻을거리","exp":"2027-06-23","name":"셀리맥스 클렌징밤","ord":14,"qty":1,"sub":"클렌징밤·오일","id":"i014","size":"50"},{"cat":"얼굴 씻을거리","exp":"2027-10-29","name":"쏘울 클렌징밤","ord":15,"qty":1,"sub":"클렌징밤·오일","id":"i015"},{"cat":"얼굴 씻을거리","exp":"2028-12-14","name":"프리메라 오일투폼","ord":16,"qty":1,"size":"300","sub":"클렌징밤·오일","id":"i016"},{"cat":"얼굴 씻을거리","exp":"2028-06-15","name":"듀이트리 클렌징밀크","ord":17,"qty":1,"sub":"클렌징밤·오일","id":"i017","size":"200"},{"cat":"얼굴 씻을거리","exp":"2027-06-13","name":"유세린 폼클렌저 (여행용)","ord":18,"qty":1,"size":"","sub":"클렌징폼","id":"i018","note":"용량 50g"},{"cat":"얼굴 씻을거리","exp":"2028-03-08","name":"잇퓨 사해바다 딥포어클렌저","ord":19,"qty":1,"sub":"클렌징폼","id":"i019"},{"cat":"얼굴 씻을거리","exp":"2028-02-25","name":"에이솔루션 아크네클렌징폼","ord":20,"qty":1,"size":"","sub":"클렌징폼","id":"i020","note":"용량 50g"},{"cat":"얼굴 씻을거리","exp":"2028-02-06","name":"락토 시카 약산성 클렌저","ord":21,"qty":1,"sub":"클렌징폼","id":"i021","uses":[{"s":"2026-11-14","e":""}]},{"cat":"얼굴 씻을거리","exp":"2028-07-28","name":"에이지 투에니스 오일투폼","ord":22,"qty":1,"sub":"클렌징폼","id":"i022"},{"cat":"얼굴 씻을거리","exp":"2028-08-13","name":"런드리유 젤투폼 클렌저 딥클렌징","ord":23,"qty":1,"sub":"클렌징폼","id":"i023"},{"cat":"얼굴 씻을거리","exp":"2028-12-11","name":"설화수 순행클렌징폼","ord":24,"qty":1,"sub":"클렌징폼","id":"i024"},{"cat":"얼굴 씻을거리","exp":"2028-12-15","name":"프리메라 오일투폼","ord":25,"qty":1,"sub":"클렌징폼","id":"i025","size":"200"},{"cat":"얼굴 씻을거리","exp":"2029-01-19","name":"지우개 폼클렌저","ord":26,"qty":1,"sub":"클렌징폼","id":"i026"},{"approx":true,"cat":"얼굴 씻을거리","exp":"2029-02-28","name":"세타필 데일리 페이셜 클렌져","ord":27,"qty":1,"sub":"클렌징폼","id":"i027","size":"473"},{"cat":"얼굴 씻을거리","exp":"2029-04-13","name":"라곰 워터클렌져","ord":28,"qty":2,"sub":"클렌징폼","id":"i028","size":"350"},{"cat":"얼굴 씻을거리","name":"파넬 도자기 워시오프세럼","note":"적어둔 날짜 27.95.11 (확인 필요)","ord":29,"qty":1,"sub":"워시오프·팩","id":"i029","size":"30"},{"cat":"얼굴 씻을거리","exp":"2027-11-06","name":"마리앤메이 로즈 워시오프팩","ord":30,"qty":1,"sub":"워시오프·팩","id":"i030"},{"cat":"얼굴 씻을거리","exp":"2028-02-21","name":"스킨푸드 워시오프 마스크","ord":31,"qty":1,"sub":"워시오프·팩","id":"i031"},{"cat":"얼굴 씻을거리","exp":"2028-08-04","name":"스킨푸드 라이스 필오프팩","ord":32,"qty":1,"sub":"워시오프·팩","id":"i032"},{"cat":"얼굴 씻을거리","exp":"2028-11-05","name":"에이솔루션 3분 진정 클레이팩","ord":33,"qty":1,"sub":"워시오프·팩","id":"i033"},{"cat":"얼굴 바를거리","name":"두환이 에센스","ord":34,"qty":3,"sub":"에센스","id":"i034"},{"cat":"얼굴 바를거리","exp":"2027-02-06","name":"티르티르 글로시코팅미스트 기능성","ord":35,"qty":1,"sub":"미스트·토너","id":"i035","size":"70","uses":[{"s":"2026-11-14","e":""}]},{"cat":"얼굴 바를거리","exp":"2027-06-10","name":"디어달리아 미스트","ord":36,"qty":1,"sub":"미스트·토너","id":"i036"},{"cat":"얼굴 바를거리","exp":"2028-07-21","name":"파인다이브 리포좀 미스트","ord":37,"qty":1,"sub":"미스트·토너","id":"i037"},{"cat":"얼굴 바를거리","exp":"2029-03-23","name":"원씽 나이아신마이드 미스트","ord":38,"qty":1,"sub":"미스트·토너","id":"i038"},{"cat":"얼굴 바를거리","exp":"2029-07-26","name":"닥터엘시아 크림미스트 작은거","ord":39,"qty":1,"sub":"미스트·토너","id":"i039"},{"cat":"얼굴 바를거리","exp":"2029-07-29","name":"뉴니스 미스트 작은거","ord":40,"qty":1,"sub":"미스트·토너","id":"i040"},{"cat":"얼굴 바를거리","exp":"2028-07-05","name":"디피노르 딥워터 부스팅 토너","ord":41,"qty":2,"sub":"미스트·토너","id":"i041"},{"cat":"얼굴 바를거리","exp":"2028-07-27","name":"파인다이브","ord":42,"qty":1,"sub":"미스트·토너","id":"i042"},{"cat":"얼굴 바를거리","exp":"2028-09-08","name":"다이소 pdrn 토너","ord":43,"qty":1,"sub":"미스트·토너","id":"i043"},{"cat":"얼굴 바를거리","exp":"2028-09-09","name":"톤28 히알루론 시카토너","ord":44,"qty":1,"sub":"미스트·토너","id":"i044"},{"cat":"얼굴 바를거리","exp":"2029-06-21","name":"로벡틴 프랩부스트 토너","ord":45,"qty":1,"sub":"미스트·토너","id":"i045"},{"cat":"얼굴 바를거리","exp":"2027-09-05","name":"플래니스트 마그크팩","ord":46,"qty":1,"size":"","sub":"패드·마스크팩","id":"i046","note":"용량 20매"},{"cat":"얼굴 바를거리","exp":"2028-01-05","name":"비플레인 모공 필터패드","ord":47,"qty":1,"sub":"패드·마스크팩","id":"i047"},{"cat":"얼굴 바를거리","exp":"2028-05-08","name":"파넬 도자기패드","ord":48,"qty":1,"sub":"패드·마스크팩","id":"i048"},{"cat":"얼굴 바를거리","exp":"2028-05-26","name":"비플레인 모공패드","ord":49,"qty":1,"sub":"패드·마스크팩","id":"i049"},{"cat":"얼굴 바를거리","exp":"2028-10-19","name":"라센스 로에 큐어 릴렉싱패드","ord":50,"qty":1,"size":"","sub":"패드·마스크팩","id":"i050","note":"용량 30매"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-04-29","min":0,"name":"메디힐 마데카소사이드","note":"","ord":51,"qty":1,"size":"","sub":"패드·마스크팩","id":"i051"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-09-07","min":0,"name":"프리메라 워터리 에센스","note":"","ord":52,"qty":1,"size":"","sub":"에센스","id":"i052"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-05-21","min":0,"name":"설화수 윤조 에센스","note":"","ord":53,"qty":1,"size":"","sub":"에센스","id":"i053"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-01-06","min":0,"name":"에센스 (이름 안 적음)","note":"","ord":54,"qty":1,"size":"","sub":"에센스","id":"i054"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-02-08","min":0,"name":"에센스 (이름 안 적음)","note":"","ord":55,"qty":1,"size":"","sub":"에센스","id":"i055"},{"approx":false,"cat":"얼굴 바를거리","exp":"2027-10-06","min":0,"name":"이니스프리 레티놀 시카흔적세럼","note":"","ord":56,"qty":1,"size":"30","sub":"앰플","id":"i056"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-01-02","min":0,"name":"이니스프리 피디알엔 스킨부스터앰플","note":"","ord":57,"qty":1,"size":"25","sub":"앰플","id":"i057"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-03-11","min":0,"name":"리더스피디알엔 액티브앰플","note":"","ord":58,"qty":1,"size":"","sub":"앰플","id":"i058"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-02-22","min":0,"name":"뷰스타 pdrn 콜라겐세럼","note":"","ord":59,"qty":1,"size":"","sub":"앰플","id":"i059"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-04-01","min":0,"name":"메디힐 마데카소사이드 앰플","note":"","ord":60,"qty":1,"size":"40","sub":"앰플","id":"i060"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-02-19","min":0,"name":"셀라딕스 트러블 앰플","note":"","ord":61,"qty":1,"size":"30","sub":"앰플","id":"i061"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-03-30","min":0,"name":"살랑드파리 기미앰플","note":"","ord":62,"qty":1,"size":"","sub":"앰플","id":"i062"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-07-01","min":0,"name":"라운드랩 수분드롭세럼","note":"","ord":63,"qty":1,"size":"50","sub":"앰플","id":"i063"},{"approx":false,"cat":"얼굴 바를거리","exp":"2027-09-29","min":0,"name":"이니스프리 그린티세럼","note":"","ord":64,"qty":1,"size":"","sub":"세럼","id":"i064"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-05-08","min":0,"name":"파넬 시카마누 세럼","note":"","ord":65,"qty":1,"size":"","sub":"세럼","id":"i065"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-06-18","min":0,"name":"한스킨 광채세럼","note":"","ord":66,"qty":1,"size":"","sub":"세럼","id":"i066"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-05-20","min":0,"name":"레이어랩 세럼","note":"","ord":67,"qty":2,"size":"","sub":"세럼","id":"i067"},{"approx":false,"cat":"얼굴 바를거리","exp":"2027-01-14","min":0,"name":"티르티르 도자기펩타닐크림","note":"","ord":68,"qty":0,"size":"50","sub":"크림","id":"i068"},{"approx":false,"cat":"얼굴 바를거리","exp":"2027-03-05","min":0,"name":"원씽 모이스쳐 플러스크림","note":"","ord":69,"qty":1,"size":"50","sub":"크림","id":"i069"},{"approx":false,"cat":"얼굴 바를거리","exp":"2027-05-08","min":0,"name":"잇퓨 리바이탈 시카윤크림","note":"","ord":70,"qty":1,"size":"","sub":"크림","id":"i070"},{"approx":false,"cat":"얼굴 바를거리","exp":"2027-06-09","min":0,"name":"티르티르 도자기크림","note":"","ord":71,"qty":1,"size":"100","sub":"크림","id":"i071"},{"approx":false,"cat":"얼굴 바를거리","exp":"2027-07-21","min":0,"name":"파넬 시카마누 젤크림","note":"","ord":72,"qty":1,"size":"75","sub":"크림","id":"i072"},{"approx":false,"cat":"얼굴 바를거리","exp":"2027-09-29","min":0,"name":"그린티 씨드 히알루론산 크림","note":"","ord":73,"qty":1,"size":"","sub":"크림","id":"i073"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-02-20","min":0,"name":"구달 어성초 수딩크림","note":"","ord":74,"qty":1,"size":"","sub":"크림","id":"i074"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-02-23","min":0,"name":"시크릿키 아쿠아 수딩크림","note":"","ord":75,"qty":1,"size":"","sub":"크림","id":"i075"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-03-22","min":0,"name":"톤28 시카하이드레이터 크림","note":"","ord":76,"qty":1,"size":"","sub":"크림","id":"i076"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-06-09","min":0,"name":"마일드랩 리페어크림","note":"","ord":77,"qty":1,"size":"","sub":"크림","id":"i077"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-08-20","min":0,"name":"센텔라 마데카크림","note":"","ord":78,"qty":1,"size":"50","sub":"크림","id":"i078"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-09-16","min":0,"name":"프리메라 워터리크림","note":"","ord":79,"qty":1,"size":"75","sub":"크림","id":"i079"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-05-15","min":0,"name":"에이비앤씨 케어시카수딩크림","note":"","ord":80,"qty":1,"size":"","sub":"크림","id":"i080"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-05-18","min":0,"name":"닥터엘시아 크림작은거","note":"","ord":81,"qty":1,"size":"50","sub":"크림","id":"i081"},{"approx":false,"cat":"바디 바를거리","exp":"2027-10-21","min":0,"name":"바세린 바디로션 태국","note":"","ord":82,"qty":1,"size":"290","sub":"바디로션","id":"i082","corner":"바디"},{"approx":false,"cat":"바디 바를거리","exp":"2027-12-04","min":0,"name":"메리미 바디로션","note":"","ord":83,"qty":1,"size":"","sub":"바디로션","id":"i083"},{"approx":true,"cat":"바디 바를거리","exp":"2028-09-30","min":0,"name":"올리브 바디로션","note":"","ord":84,"qty":1,"size":"","sub":"바디로션","id":"i084"},{"approx":false,"cat":"바디 바를거리","exp":"2028-03-06","min":0,"name":"뷰카 딥퍼퓸 바디로션","note":"","ord":85,"qty":1,"size":"1050","sub":"바디로션","id":"i085"},{"approx":true,"cat":"바디 바를거리","exp":"2028-06-30","min":0,"name":"지아자 산양유 바디로션","note":"","ord":86,"qty":2,"size":"400","sub":"바디로션","id":"i086"},{"approx":false,"cat":"바디 바를거리","exp":"2029-03-05","min":0,"name":"더마팩토리 비제로 바디로션","note":"","ord":87,"qty":1,"size":"","sub":"바디로션","id":"i087"},{"approx":false,"cat":"바디 씻을거리","exp":"2029-01-06","min":0,"name":"하라즈 퍼퓸바디워시","note":"","ord":88,"qty":1,"size":"1000","sub":"바디워시","id":"i088"},{"approx":false,"cat":"바디 씻을거리","exp":"2029-06-24","min":0,"name":"샤워메이트","note":"","ord":89,"qty":1,"size":"900","sub":"바디워시","id":"i089"},{"approx":true,"cat":"헤어","exp":"2028-01-31","min":0,"name":"헤드앤숄더","note":"","ord":90,"qty":1,"size":"","sub":"샴푸","id":"i090"},{"approx":true,"cat":"헤어","exp":"2028-10-31","min":0,"name":"보타닉가든","note":"","ord":91,"qty":1,"size":"","sub":"샴푸","id":"i091"},{"approx":false,"cat":"헤어","exp":"2027-11-12","min":0,"name":"미국 트리트먼트","note":"2024-11-12 제조 · 3년","ord":92,"qty":1,"size":"","sub":"트리트먼트","id":"i092","uses":[{"s":"2026-11-14","e":""}]},{"approx":false,"cat":"헤어","exp":"2030-02-14","min":0,"name":"피노 헤어팩","note":"개당 2,052원 · 당근 4개 판매","ord":93,"qty":3,"size":"","sub":"트리트먼트","id":"i093"},{"approx":false,"cat":"헤어","exp":"2027-08-22","min":0,"name":"시티르","note":"","ord":94,"qty":3,"size":"","sub":"헤어오일","id":"i094"},{"approx":false,"cat":"헤어","exp":"2028-03-15","min":0,"name":"모로칸 오일","note":"","ord":95,"qty":1,"size":"","sub":"헤어오일","id":"i095"},{"approx":false,"cat":"헤어","exp":"2028-12-28","min":0,"name":"케라시스세럼","note":"","ord":96,"qty":2,"size":"70","sub":"헤어오일","id":"i096"},{"approx":false,"cat":"헤어","exp":"2028-10-13","min":0,"name":"컬크림","note":"","ord":97,"qty":2,"size":"","sub":"헤어오일","id":"i097"},{"approx":false,"cat":"치약","exp":"","min":0,"name":"유시몰","note":"","ord":98,"qty":0,"size":"","sub":"치약","id":"i098"},{"approx":false,"cat":"생필품","exp":"","min":0,"name":"화장솜","note":"","ord":99,"qty":1,"size":"","sub":"생필품","id":"i099"},{"approx":false,"cat":"생필품","exp":"","min":0,"name":"화장지","note":"","ord":100,"qty":1,"size":"","sub":"생필품","id":"i100"},{"approx":false,"cat":"세탁세제","exp":"","min":0,"name":"퍼울 세탁세제 컬러","note":"제조 2024-10-01","ord":101,"qty":0,"size":"1900","sub":"세탁세제","id":"i101"},{"approx":false,"cat":"세탁세제","exp":"","min":0,"name":"슈퍼큐 실내건조 캡슐","note":"적어둔 날짜 24.11.15 (제조일인지 확인 필요) · 용량 42개입","ord":102,"qty":1,"size":"","sub":"세탁세제","id":"i102"},{"approx":false,"cat":"세탁세제","exp":"","min":0,"name":"수뜰리에 캡슐","note":"제조 2025-12-12 · 용량 40개입","ord":103,"qty":3,"size":"","sub":"세탁세제","id":"i103"},{"id":"xmwhte0hwaw9f","name":"온살 하이퍼 나이아신 세험","cat":"얼굴 바를거리","sub":"세럼","qty":1,"size":"30","exp":"2029-09-27","approx":false,"note":"","min":0,"ord":104,"corner":"스킨케어","price":"100"},{"id":"xmwigwg79f7r9","name":"가히 한겹톤업선크림","cat":"얼굴 화장","sub":"선크림","qty":1,"size":"40","exp":"2028-02-10","approx":false,"note":"","min":0,"ord":105,"corner":"베이스","price":""}],"shop":[],"goods":[],"sales":[]}</script>
+<script id="app">
+(function () {
+  var SRC = (function () {
+    var st = document.getElementById('pagecss'), ap = document.getElementById('app');
+    return { style: st ? st.textContent : '', script: ap ? ap.textContent : '',
+      markup: document.querySelector('.app').outerHTML + '\n' + document.querySelector('.toast').outerHTML };
+  })();
+  var CATS = ['얼굴 화장', '얼굴 씻을거리', '얼굴 바를거리', '바디 바를거리', '바디 씻을거리', '헤어', '치약', '생필품', '세탁세제'];
+
+  function $(s) { return document.querySelector(s); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function uid() { return 'x' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+  var db = true, ro = true, failed = false, stale = false, dirty = false, saving = false, artifactNS = null, dlNS = null;
+  var ready = { items: true, shop: true, goods: true, sales: true };
+  var items = new Map(), shop = new Map(), goods = new Map(), sales = new Map();
+  var notice = '';
+  var ui = { sub: 'all', dopen: {}, tab: 'dash', mode: 'exp', range: 90, cat: 'all', q: '', open: null, del: null, add: false, gtab: 'own', ggroup: 'all', gopen: null, gdel: null, sell: null, sdel: null, gby: 'group', gbrand: 'all' };
+  try { var m = localStorage.getItem('salimkan-mode2'); if (m === 'exp' || m === 'cat') ui.mode = m; } catch (e) {}
+  try { var rg0 = parseInt(localStorage.getItem('salimkan-range'), 10); if ([30, 90, 180, 365].indexOf(rg0) >= 0) ui.range = rg0; } catch (e) {}
+  try { var gb = localStorage.getItem('salimkan-gby'); if (gb === 'brand' || gb === 'group') ui.gby = gb; } catch (e) {}
+
+  function allItems() { return Array.from(items.values()); }
+  function allShop() { return Array.from(shop.values()); }
+  function allGoods() { return Array.from(goods.values()); }
+  function allSales() { return Array.from(sales.values()); }
+  function won(n) { return Math.round(n || 0).toLocaleString('ko-KR') + '원'; }
+  function num(v) { var n = parseInt(String(v == null ? '' : v).replace(/[^\d-]/g, ''), 10); return isNaN(n) ? 0 : n; }
+  function profitOf(s) { return (s.sale || 0) - (s.cost || 0) - (s.fee || 0); }
+  function today() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+
+  /* ---------- derived ---------- */
+  function dday(exp) {
+    if (!exp) return null;
+    var t = new Date(); t.setHours(0, 0, 0, 0);
+    var p = exp.split('-');
+    return Math.round((new Date(+p[0], +p[1] - 1, +p[2]) - t) / 86400000);
+  }
+  function fmtExp(it) {
+    var p = (it.exp || '').split('-');
+    if (p.length < 3) return '';
+    var s = p[0].slice(2) + '.' + p[1];
+    return it.approx ? s : s + '.' + p[2];
+  }
+  function expHTML(it) {
+    if (!it.exp) return '';
+    var n = dday(it.exp), h = '<span>' + fmtExp(it) + (it.approx ? ' (월말)' : '') + '</span>';
+    if (it.qty <= 0) return h;
+    if (n < 0) return h + '<span class="pill expbad">기한 지남</span>';
+    if (n <= 30) return h + '<span class="pill expbad">D-' + n + '</span>';
+    if (n <= 90) return h + '<span class="pill expsoon">D-' + n + '</span>';
+    return h;
+  }
+  function cmpExp(a, b) {
+    var x = a.exp || '9999', y = b.exp || '9999';
+    return x < y ? -1 : x > y ? 1 : (a.ord || 0) - (b.ord || 0);
+  }
+  function cmpItem(a, b) { return ((a.qty > 0 ? 0 : 1) - (b.qty > 0 ? 0 : 1)) || cmpExp(a, b); }
+  function inList(it) { return allShop().some(function (x) { return x.itemId === it.id && !x.done; }); }
+  function nextOrd() { return allItems().reduce(function (m, i) { return Math.max(m, i.ord || 0); }, 0) + 1; }
+  function canWrite() { return !!db && !ro; }
+
+  /* ---------- 저장: 데이터는 페이지 안에 들어 있고, 편집 권한이 있는 사람이 고치면 페이지를 다시 게시한다 ---------- */
+  var SKEL_HEAD = "<!doctype html><html><head><meta charset=utf8><meta name=viewport content=\"width=device-width,initial-scale=1,viewport-fit=cover\"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>";
+  var SKEL_TAIL = '</body></html>';
+  var PAGE_HEAD = '<title>우리 살림칸 공유</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500;700&display=swap">\n';
+  var saveTimer = null;
+
+  function setSync() {
+    var t;
+    if (ro) t = '보기 전용이에요';
+    else if (saving) t = '저장하는 중…';
+    else if (dirty) t = '저장하지 않은 변경이 있어요';
+    else t = '저장됨 · 고친 내용은 같은 링크로 보는 모두에게 보여요';
+    $('#sync').textContent = t;
+    var sb = $('#saveBar');
+    if (sb) { sb.hidden = ro || !(dirty || saving); $('#saveMsg').textContent = saving ? '저장하는 중…' : '저장하지 않은 변경이 있어요'; }
+  }
+  function markDirty() {
+    if (ro) return;
+    dirty = true; setSync();
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(autoSave, 8000);
+  }
+  function queue() { markDirty(); }
+  function patchItem(it, patch) { if ('qty' in patch && patch.qty !== it.qty) patch.bought = false; Object.assign(it, patch); markDirty(); }
+  function patchShop(x, patch) { Object.assign(x, patch); markDirty(); }
+  function createDoc(col, map, o) {
+    var id = uid(), copy = Object.assign({ id: id }, o);
+    map.set(id, copy); markDirty();
+    return copy;
+  }
+  function removeDoc(col, map, id) { map.delete(id); markDirty(); }
+  function addItem(o) {
+    return createDoc('items', items, Object.assign({ name: '', cat: '생필품', sub: '', qty: 1, size: '', exp: '', approx: false, note: '', min: 0, ord: nextOrd() }, o));
+  }
+  function isTyping() {
+    var a = document.activeElement;
+    return a && a.closest && a.closest('#view') && (a.tagName === 'INPUT' || a.tagName === 'SELECT');
+  }
+
+  function buildDoc() {
+    var seed = JSON.stringify({ notice: notice, items: allItems(), shop: allShop(), goods: allGoods(), sales: allSales() })
+      .replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
+    return SKEL_HEAD + PAGE_HEAD + '<style id="pagecss">' + SRC.style + '</style>\n\n' + SRC.markup +
+      '\n\n<script type="application/json" id="seed">' + seed + '<\/script>\n<script id="app">' + SRC.script + '<\/script>\n' + SKEL_TAIL;
+  }
+
+  function autoSave() {
+    if (!dirty || saving) return;
+    if (isTyping()) { saveTimer = setTimeout(autoSave, 4000); return; }
+    save();
+  }
+  function save() {
+    clearTimeout(saveTimer);
+    if (ro || saving || !dirty || !artifactNS) return;
+    var html;
+    try { html = buildDoc(); } catch (e) { toast('저장하지 못했어요'); return; }
+    saving = true; setSync();
+    try {
+      sessionStorage.setItem('salimkan-ui', JSON.stringify({ tab: ui.tab, gtab: ui.gtab, cat: ui.cat, ggroup: ui.ggroup, gbrand: ui.gbrand, y: window.scrollY || 0, saved: 1 }));
+    } catch (e) {}
+    artifactNS.publish(html).then(function () {
+      /* 저장되면 화면이 새 버전으로 다시 열린다 */
+    }, function (err) {
+      saving = false;
+      var c = err && err.code;
+      try { var s = JSON.parse(sessionStorage.getItem('salimkan-ui') || '{}'); delete s.saved; sessionStorage.setItem('salimkan-ui', JSON.stringify(s)); } catch (e) {}
+      if (c === 'conflict') return;
+      if (c === 'not_writer' || c === 'not_granted' || c === 'consent_required' || c === 'capability_disabled' || c === 'not_declared') {
+        ro = true; render(); toast('이 계정으로는 저장할 수 없어요. 보기 전용이에요');
+      } else if (c === 'rate_limited') {
+        toast('저장이 너무 잦아요. 잠시 뒤 ‘지금 저장’을 눌러 주세요');
+      } else {
+        toast('저장하지 못했어요. ‘지금 저장’을 다시 눌러 주세요');
+      }
+      setSync();
+    });
+  }
+
+  function init() {
+    var seed = {};
+    try { seed = JSON.parse(document.getElementById('seed').textContent) || {}; } catch (e) {}
+    function fill(map, arr) { (arr || []).forEach(function (o) { if (o && o.id) map.set(o.id, o); }); }
+    notice = typeof seed.notice === 'string' ? seed.notice : '';
+    fill(items, seed.items);
+    items.forEach(function (it) {
+      var sz = String(it.size == null ? '' : it.size).trim();
+      if (!sz || /^\d+(?:\.\d+)?$/.test(sz)) return;
+      var mm = sz.match(/^(\d+(?:[.,]\d+)?)\s*(ml|mL|ML|L|l)$/);
+      if (mm) it.size = sizeNum(parseFloat(mm[1].replace(',', '.')) * (mm[2] === 'L' || mm[2] === 'l' ? 1000 : 1));
+      else { it.note = (it.note ? it.note + ' · ' : '') + '용량 ' + sz; it.size = ''; }
+    }); fill(shop, seed.shop); fill(goods, seed.goods); fill(sales, seed.sales);
+    var back = null;
+    try { back = JSON.parse(sessionStorage.getItem('salimkan-ui') || 'null'); } catch (e) {}
+    if (back) {
+      if (['dash', 'stock', 'stats'].indexOf(back.tab) >= 0) ui.tab = back.tab;
+      if (back.gtab === 'own' || back.gtab === 'sold') ui.gtab = back.gtab;
+      if (typeof back.cat === 'string') ui.cat = back.cat;
+      if (typeof back.ggroup === 'string') ui.ggroup = back.ggroup;
+      if (typeof back.gbrand === 'string') ui.gbrand = back.gbrand;
+    }
+    setSync(); render();
+    if (back) {
+      if (back.y) window.scrollTo(0, back.y);
+      if (back.saved) toast('저장했어요');
+      try { sessionStorage.removeItem('salimkan-ui'); } catch (e) {}
+    }
+    var cl = window.claude;
+    if (!cl || !cl.use) return;
+    Promise.all([cl.use('artifact'), cl.use('user'), cl.use('downloads').catch(function () { return null; })]).then(function (r) {
+      artifactNS = r[0]; dlNS = r[2];
+      var user = r[1];
+      var can = false;
+      try { can = !!artifactNS && !!user && (user.isOwner() || user.canEdit()); } catch (e) {}
+      ro = !can; setSync(); render();
+    }).catch(function () {});
+  }
+
+  var tt = null;
+  function toast(msg) {
+    var el = $('#toastMsg');
+    el.textContent = msg; el.hidden = false;
+    clearTimeout(tt);
+    tt = setTimeout(function () { el.hidden = true; }, 2600);
+  }
+
+  /* ---------- render ---------- */
+  function opts(arr, cur) {
+    return arr.map(function (v) { return '<option' + (v === cur ? ' selected' : '') + '>' + esc(v) + '</option>'; }).join('');
+  }
+  function catList() {
+    var extra = [];
+    allItems().forEach(function (i) { if (CATS.indexOf(i.cat) < 0 && extra.indexOf(i.cat) < 0 && i.cat) extra.push(i.cat); });
+    return CATS.concat(extra);
+  }
+
+  function renderHead() {
+    var live = allItems().filter(function (i) { return i.qty > 0 && i.exp; });
+    var past = 0, d30 = 0, d90 = 0;
+    live.forEach(function (i) { var n = dday(i.exp); if (n < 0) past++; else if (n <= 30) d30++; else if (n <= 90) d90++; });
+    var g;
+    if (ui.tab === 'goods') {
+      var pieces = 0, worth = 0, priced = 0, prof = 0, ss = allSales();
+      allGoods().forEach(function (x) { pieces += x.qty || 0; if (x.cost > 0 && x.qty > 0) { worth += x.cost * x.qty; priced += x.qty; } });
+      ss.forEach(function (s) { prof += profitOf(s); });
+      g = '<li>보유 <b>' + pieces + '</b>개</li>';
+      if (worth) g += '<li>매입가 합계 <b>' + won(worth) + '</b> <span>(가격 적은 ' + priced + '개)</span></li>';
+      if (ss.length) g += '<li>판매 <b>' + ss.length + '</b>건 · 이익 <b>' + won(prof) + '</b></li>';
+    } else {
+      g = '';
+      if (past) g += '<li class="hot">기한 지남 <b>' + past + '</b></li>';
+      if (d30) g += '<li class="hot">30일 안 <b>' + d30 + '</b></li>';
+      if (d90) g += '<li class="soon">90일 안 <b>' + d90 + '</b></li>';
+    }
+    $('#glance').innerHTML = g;
+    ['dash', 'stock', 'stats'].forEach(function (t) { $('#tab-' + t).setAttribute('aria-selected', ui.tab === t ? 'true' : 'false'); });
+    document.querySelectorAll('[data-mode]').forEach(function (el) { el.setAttribute('aria-pressed', el.dataset.mode === ui.mode ? 'true' : 'false'); });
+    $('#tools').hidden = ui.tab !== 'stock';
+    $('#q').placeholder = '이름·브랜드로 찾기';
+    var ab = $('#addBtn'); ab.hidden = ro || !db;
+    $('#dlBtn').hidden = !dlNS;
+    ab.textContent = ui.add ? '닫기' : '+ 물건 추가';
+    var subs = [];
+    allItems().forEach(function (i) { if (i.sub && subs.indexOf(i.sub) < 0) subs.push(i.sub); });
+    $('#sublist').innerHTML = subs.map(function (s) { return '<option value="' + esc(s) + '">'; }).join('');
+  }
+
+  function roNote() {
+    return '';
+  }
+
+  function addForm() {
+    var c = CORNER_NAMES.indexOf(ui.cat) >= 0 ? ui.cat : '스킨케어';
+    return '<form class="add" data-form="item">' +
+      '<label class="wide">이름<input name="name" required maxlength="60" placeholder="예: 닥터지 선크림" autocomplete="off"></label>' +
+      '<label>분류<select name="corner" data-addcorner>' + opts(CORNER_NAMES, c) + '</select></label>' +
+      '<label>소분류<input name="sub" required maxlength="20" list="subpreset" placeholder="눌러서 고르기 / 직접 적기" autocomplete="off"></label>' +
+      '<datalist id="subpreset">' + CORNER_PRESET[c].map(function (k) { return '<option value="' + esc(k) + '">'; }).join('') + '</datalist>' +
+      '<label>수량<input name="qty" type="number" inputmode="numeric" min="0" value="1"></label>' +
+      '<label>용량 (ml)<input name="size" type="text" inputmode="decimal" maxlength="7" placeholder="숫자만 (예: 50)"></label>' +
+      '<label>소비기한<input name="exp" type="text" inputmode="numeric" maxlength="8" placeholder="숫자만 (예: 270109)" autocomplete="off"></label>' +
+      '<label>구매금액 (원)<input name="price" type="text" inputmode="numeric" maxlength="9" placeholder="1개 가격, 숫자만"></label>' +
+      '<label class="wide">메모<input name="note" maxlength="80" autocomplete="off"></label>' +
+      '<div class="acts wide"><button class="btn primary" type="submit">추가</button></div></form>';
+  }
+
+  var firstIds = {};
+  function calcFirst() {
+    var g = {};
+    allItems().forEach(function (i) { if (i.qty > 0 && i.exp) { var k = i.cat + '|' + (i.sub || ''); (g[k] = g[k] || []).push(i); } });
+    firstIds = {};
+    Object.keys(g).forEach(function (k) { if (g[k].length >= 2) firstIds[g[k].slice().sort(cmpExp)[0].id] = 1; });
+  }
+
+  function useBox(it) {
+    var u = usesOf(it), op = openUse(it);
+    var h = '<div class="usebox wide"><div class="useh"><b>사용 기록</b><span>' + (op ? '지금 사용 중 · ' + useDays(op) + '일째' : (u.length ? '사용 중인 건 없어요' : '아직 기록이 없어요')) + '</span></div>' +
+      '<div class="useb"><button class="btn sm" type="button" data-act="use-start"' + (op ? ' disabled' : '') + '>사용 시작</button><button class="btn sm primary" type="button" data-act="use-end"' + (op ? '' : ' disabled') + '>사용 종료</button></div>';
+    if (u.length) {
+      h += '<div class="urecs">' + u.map(function (r, ix) {
+        return '<div class="urec" data-ux="' + ix + '"><input data-uf="s" inputmode="numeric" maxlength="8" value="' + esc(dayInputVal(r.s)) + '" placeholder="시작 270109" aria-label="사용 시작일"><span>~</span><input data-uf="e" inputmode="numeric" maxlength="8" value="' + esc(dayInputVal(r.e)) + '" placeholder="종료 (사용 중)" aria-label="사용 종료일"><span class="ud">' + (r.s ? useDays(r) + '일' : '') + '</span><button class="x" type="button" data-act="use-del" aria-label="이 기록 지우기">×</button></div>';
+      }).join('') + '</div><p class="usehint">날짜는 숫자만 고치면 돼요 (예: 270109). 종료 칸을 비우면 사용 중이에요.</p>';
+    }
+    return h + '</div>';
+  }
+
+  function itemRow(it, showPath) {
+    var out = it.qty <= 0;
+    var bits = [];
+    if (showPath) bits.push('<span>' + esc(pathOf(it)) + '</span>');
+    var e = expHTML(it); if (e) bits.push(e);
+    if (sizeNum(it.size)) bits.push('<span>' + esc(sizeNum(it.size)) + 'ml</span>');
+    var opn = openUse(it); if (opn) bits.push('<span class="pill tag">사용 중 ' + useDays(opn) + '일째</span>');
+    if (!out && firstIds[it.id]) bits.push('<span class="pill tag">먼저 쓰기</span>');
+    if (out) bits.push('<span class="pill out">다 씀</span>');
+    var open = ui.open === it.id && !ro;
+    var step = ro
+      ? '<div class="step"><span class="q"><b>' + it.qty + '</b><i>개</i></span></div>'
+      : '<div class="step"><button type="button" data-act="dec" aria-label="' + esc(it.name) + ' 하나 줄이기">−</button>' +
+        '<span class="q"><b>' + it.qty + '</b><i>개</i></span>' +
+        '<button type="button" data-act="inc" aria-label="' + esc(it.name) + ' 하나 늘리기">+</button></div>';
+    var h = '<li class="row' + (out ? ' dim' : '') + '" data-id="' + esc(it.id) + '"><div class="line">' +
+      '<button class="name" type="button" data-act="open" aria-expanded="' + open + '"><span class="nm">' + esc(it.name) + '</span>' +
+      (bits.length ? '<span class="meta">' + bits.join('') + '</span>' : '') +
+      (it.note ? '<span class="memo">' + esc(it.note) + '</span>' : '') + '</button>' + step + '</div>';
+    if (open) {
+      h += '<div class="edit">' +
+        '<label class="wide">이름<input data-f="name" value="' + esc(it.name) + '" maxlength="60"></label>' +
+        '<label>분류<select data-f="corner">' + opts(CORNER_NAMES, cornerMap().map[it.id] || '기타') + '</select></label>' +
+        '<label>소분류<input data-f="sub" value="' + esc(it.sub || '') + '" maxlength="20" list="sublist"></label>' +
+        '<label>용량 (ml)<input data-f="size" type="text" inputmode="decimal" value="' + esc(sizeNum(it.size)) + '" maxlength="7" placeholder="숫자만"></label>' +
+        '<label>소비기한 <small>(숫자만: 270109)</small><input data-f="exp" type="text" inputmode="numeric" value="' + esc(expInputVal(it)) + '" maxlength="8" placeholder="예: 270109" autocomplete="off"></label>' +
+        '<label>구매금액 (원) <small>(1개 가격)</small><input data-f="price" type="text" inputmode="numeric" value="' + esc(priceNum(it.price)) + '" maxlength="9" placeholder="숫자만 (예: 15000)"></label>' +
+        useBox(it) +
+        '<label class="wide">메모<input data-f="note" value="' + esc(it.note || '') + '" maxlength="80"></label>' +
+        '<label>알림 수량 <small>(이 수량 이하면 대시보드에 떠요)</small><input data-f="min" type="number" inputmode="numeric" min="0" value="' + (it.min || 0) + '"></label>' +
+        '<div class="acts wide"><span></span>' +
+        '<button class="btn danger sm" type="button" data-act="del">' + (ui.del === it.id ? '한 번 더 누르면 삭제' : '삭제') + '</button></div></div>';
+    }
+    return h + '</li>';
+  }
+
+  function chipsHTML(all) {
+    var cm = cornerMap(), counts = {};
+    all.forEach(function (i) { var c = cm.map[i.id] || '기타'; counts[c] = (counts[c] || 0) + 1; });
+    var h = '<div class="stickwrap"><div class="chips" role="group" aria-label="분류 고르기"><button class="chip" type="button" data-act="cat" data-cat="all" aria-pressed="' + (ui.cat === 'all') + '">전체<small>' + all.length + '</small></button>';
+    cm.names.forEach(function (c) {
+      h += '<button class="chip" type="button" data-act="cat" data-cat="' + esc(c) + '" aria-pressed="' + (ui.cat === c) + '">' + esc(c) + '<small>' + (counts[c] || 0) + '</small></button>';
+    });
+    h += '</div>';
+    if (ui.cat !== 'all') {
+      var sc = {}, so = {};
+      all.forEach(function (i) {
+        if ((cm.map[i.id] || '기타') !== ui.cat) return;
+        var k = i.sub || '기타'; sc[k] = (sc[k] || 0) + 1;
+        if (!(k in so) || (i.ord || 0) < so[k]) so[k] = i.ord || 0;
+      });
+      var ks = Object.keys(sc).sort(function (a, b) { return so[a] - so[b]; });
+      if (ks.length > 1) {
+        h += '<div class="chips subchips" role="group" aria-label="소분류 고르기"><button class="chip" type="button" data-act="sub" data-sub="all" aria-pressed="' + (ui.sub === 'all') + '">전체 소분류</button>';
+        ks.forEach(function (k) { h += '<button class="chip" type="button" data-act="sub" data-sub="' + esc(k) + '" aria-pressed="' + (ui.sub === k) + '">' + esc(k) + '<small>' + sc[k] + '</small></button>'; });
+        h += '</div>';
+      }
+    }
+    return h + '</div>';
+  }
+
+  function byCat(list) {
+    var h = '', groups = computeCorners(allItems());
+    groups.forEach(function (gd) {
+      gd.corners.forEach(function (cn) {
+        var g = list.filter(function (i) { return cn.ids.indexOf(i.id) >= 0; });
+        if (!g.length) return;
+        var keyOf = {}; cn.rows.forEach(function (r, ix) { keyOf[r.k] = ix; });
+        var subs = {}, order = [];
+        g.slice().sort(function (a, b) { return (a.ord || 0) - (b.ord || 0); }).forEach(function (i) {
+          var k = cornerKey(cn, i); if (!(k in subs)) { subs[k] = []; order.push(k); } subs[k].push(i);
+        });
+        order.sort(function (a, b) { return (keyOf[a] === undefined ? 999 : keyOf[a]) - (keyOf[b] === undefined ? 999 : keyOf[b]); });
+        h += '<section class="group"><div class="ghead"><h2>' + esc(cn.name) + '</h2><span>' + gd.title.replace(' 재고', '') + ' · ' + g.length + '개</span></div><ul class="rows">';
+        order.forEach(function (k) {
+          var gs = subs[k].sort(cmpItem);
+          if (order.length > 1 || k !== cn.name) h += '<li class="subh"><span>' + esc(k) + '</span><span>' + gs.length + '</span></li>';
+          h += gs.map(function (i) { return itemRow(i, false); }).join('');
+        });
+        h += '</ul></section>';
+      });
+    });
+    return h;
+  }
+
+  function byExpiry(list) {
+    var live = list.filter(function (i) { return i.qty > 0; });
+    var withExp = live.filter(function (i) { return i.exp; }).sort(cmpExp);
+    var noExp = live.filter(function (i) { return !i.exp; }).sort(function (a, b) { return (a.ord || 0) - (b.ord || 0); });
+    var used = list.filter(function (i) { return i.qty <= 0; }).sort(cmpExp);
+    var groups = [], idx = {};
+    withExp.forEach(function (i) {
+      var k = i.exp.slice(0, 7);
+      if (!(k in idx)) { idx[k] = groups.length; groups.push({ t: k.slice(0, 4) + '년 ' + (+k.slice(5)) + '월', rows: [] }); }
+      groups[idx[k]].rows.push(i);
+    });
+    if (noExp.length) groups.push({ t: '기한을 안 적은 것', rows: noExp });
+    if (used.length) groups.push({ t: '다 쓴 것', rows: used });
+    return groups.map(function (g) {
+      return '<section class="group"><div class="ghead"><h2>' + esc(g.t) + '</h2><span>' + g.rows.length + '개</span></div><ul class="rows">' +
+        g.rows.map(function (i) { return itemRow(i, true); }).join('') + '</ul></section>';
+    }).join('');
+  }
+
+  function stockHTML() {
+    var all = allItems();
+    if (ui.cat === 'all') ui.sub = 'all';
+    else if (ui.sub !== 'all') {
+      var cm0 = cornerMap();
+      if (!all.some(function (i) { return (cm0.map[i.id] || '기타') === ui.cat && (i.sub || '기타') === ui.sub; })) ui.sub = 'all';
+    }
+    var h = roNote() + (ui.add && canWrite() ? addForm() : '') + chipsHTML(all);
+    if (!ready.items) return h + '<p class="empty">' + (failed || !db ? '저장소에 연결하지 못했어요.' : '불러오는 중…') + '</p>';
+    if (!all.length) return h + '<p class="empty">아직 비어 있어요. 위의 ‘물건 추가’로 첫 물건을 적어보세요.</p>';
+    var q = ui.q.trim().toLowerCase();
+    var cmx = cornerMap();
+    if (ui.cat !== 'all' && cmx.names.indexOf(ui.cat) < 0) ui.cat = 'all';
+    var list = all.filter(function (i) {
+      if (ui.cat !== 'all' && cmx.map[i.id] !== ui.cat) return false;
+      if (ui.sub !== 'all' && (i.sub || '기타') !== ui.sub) return false;
+      return !q || (i.name + ' ' + i.cat + ' ' + (cmx.map[i.id] || '') + ' ' + (i.sub || '') + ' ' + (i.note || '') + ' ' + (i.size || '')).toLowerCase().indexOf(q) >= 0;
+    });
+    if (!list.length) return h + '<p class="empty">찾는 물건이 없어요.</p>';
+    return h + (ui.mode === 'exp' ? byExpiry(list) : byCat(list));
+  }
+
+  function shopHTML() {
+    var h = roNote();
+    if (!ready.shop) return h + '<p class="empty">' + (failed || !db ? '저장소에 연결하지 못했어요.' : '불러오는 중…') + '</p>';
+    if (canWrite()) {
+      h += '<form class="quick" data-form="shop"><input name="name" required maxlength="40" placeholder="사야 할 것" autocomplete="off" aria-label="사야 할 것"><input name="qty" type="number" inputmode="numeric" min="1" value="1" aria-label="수량"><button class="btn primary" type="submit">담기</button></form>';
+      var sug = allItems().filter(function (i) { return i.qty <= 0 && !inList(i); }).sort(function (a, b) { return (a.ord || 0) - (b.ord || 0); });
+      if (sug.length) {
+        h += '<section class="sugg"><h2>다 쓴 물건 ' + sug.length + '<button class="btn sm" type="button" data-act="sug-all">모두 담기</button></h2><ul>' +
+          sug.map(function (i) { return '<li><button type="button" data-act="sug-add" data-iid="' + esc(i.id) + '">+ ' + esc(i.name) + '</button></li>'; }).join('') + '</ul></section>';
+      }
+    }
+    var list = allShop();
+    if (!list.length) return h + '<p class="empty">살 것이 없어요.' + (canWrite() ? ' 위 입력칸이나 ‘다 쓴 물건’에서 담아보세요.' : '') + '</p>';
+    var rows = list.slice().sort(function (a, b) { return ((a.done ? 1 : 0) - (b.done ? 1 : 0)) || ((a.at || 0) - (b.at || 0)); });
+    h += '<ul class="rows">' + rows.map(function (x) {
+      var dis = ro ? ' disabled' : '';
+      return '<li class="row shop' + (x.done ? ' done' : '') + '" data-sid="' + esc(x.id) + '">' +
+        '<button class="chk" type="button" role="checkbox" aria-checked="' + !!x.done + '" aria-label="' + esc(x.name) + ' 샀어요" data-act="chk"' + dis + '><span><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 7.5l3 3 6-7"/></svg></span></button>' +
+        '<span class="nm">' + esc(x.name) + '</span>' +
+        (ro ? '<span class="q"><b>' + x.qty + '</b><i>개</i></span><span></span>'
+          : '<div class="step"><button type="button" data-act="s-dec" aria-label="하나 줄이기">−</button><span class="q"><b>' + x.qty + '</b><i>개</i></span><button type="button" data-act="s-inc" aria-label="하나 늘리기">+</button></div>' +
+            '<button class="x" type="button" data-act="rm" aria-label="' + esc(x.name) + ' 빼기">×</button>') + '</li>';
+    }).join('') + '</ul>';
+    var done = list.filter(function (x) { return x.done; }).length;
+    h += '<div class="donebar"><span>' + list.length + '개 중 ' + done + '개 샀어요</span>' +
+      (done && canWrite() ? '<button class="btn primary sm" type="button" data-act="buy">산 물건 재고에 넣기</button>' : '') + '</div>';
+    return h;
+  }
+
+  /* ---------- 재고제품 (의류·잡화) ---------- */
+  var GROUPS = ['맨즈', '우먼', '보이즈', '걸즈', '키즈', '가방·잡화', '생활·소품', '기타'];
+  var PLATFORMS = ['당근', '크림', '번개장터', '기타'];
+  function groupList() {
+    var extra = [];
+    allGoods().forEach(function (g) { if (g.group && GROUPS.indexOf(g.group) < 0 && extra.indexOf(g.group) < 0) extra.push(g.group); });
+    return GROUPS.concat(extra);
+  }
+  function nextOrdOf(map) { var m = 0; map.forEach(function (x) { if ((x.ord || 0) > m) m = x.ord; }); return m + 1; }
+  function patchGoods(g, patch) { Object.assign(g, patch); queue('goods', g.id, patch); }
+  /* 브랜드를 따로 적지 않은 제품은 이름의 첫 단어를 브랜드로 본다. 빈 문자열은 '브랜드 없음'. */
+  var NOBRAND = ['바이크레깅스', '모카신', '멀티플백', '의자', '타올', '패딩백'];
+  function brandOf(g) {
+    if (typeof g.brand === 'string') return g.brand;
+    var w = String(g.name || '').trim().split(/\s+/)[0] || '';
+    return NOBRAND.indexOf(w) >= 0 ? '' : w;
+  }
+  function brandKeys(list) {
+    var c = {};
+    list.forEach(function (g) { var k = brandOf(g); c[k] = (c[k] || 0) + 1; });
+    return Object.keys(c).sort(function (a, b) {
+      if (!a) return 1;
+      if (!b) return -1;
+      return (c[b] - c[a]) || a.localeCompare(b, 'ko');
+    });
+  }
+
+  function sellForm() {
+    return '<form class="sell" data-form="sell">' +
+      '<label>판매처<select name="platform">' + opts(PLATFORMS, '당근') + '</select></label>' +
+      '<label>판매가(원)<input name="sale" type="number" inputmode="numeric" min="0" required></label>' +
+      '<label>수수료 등(원)<input name="fee" type="number" inputmode="numeric" min="0" value="0"></label>' +
+      '<label>날짜<input name="date" type="date" value="' + today() + '"></label>' +
+      '<div class="acts wide"><button class="btn primary" type="submit">판매 기록에 넣기</button></div></form>';
+  }
+  function goodsForm() {
+    var c = ui.ggroup === 'all' ? GROUPS[0] : ui.ggroup;
+    return '<form class="add" data-form="goods">' +
+      '<label class="wide">이름<input name="name" required maxlength="60" placeholder="예: 폴로 보이즈 니트 블루" autocomplete="off"></label>' +
+      '<label>분류<select name="group">' + opts(groupList(), c) + '</select></label>' +
+      '<label>브랜드<input name="brand" maxlength="30" list="brandlist" placeholder="비우면 이름 첫 단어"></label>' +
+      '<label>사이즈<input name="size" maxlength="20" placeholder="예: XL"></label>' +
+      '<label>수량<input name="qty" type="number" inputmode="numeric" min="0" value="1"></label>' +
+      '<label>매입가(원, 개당)<input name="cost" type="number" inputmode="numeric" min="0"></label>' +
+      '<label>상태<select name="sealed"><option value="0">보통</option><option value="1">미개봉</option></select></label>' +
+      '<label class="wide">메모<input name="note" maxlength="80" autocomplete="off"></label>' +
+      '<div class="acts wide"><button class="btn primary" type="submit">추가</button></div></form>';
+  }
+  function saleForm() {
+    return '<form class="add" data-form="sale">' +
+      '<label class="wide">제품<input name="name" required maxlength="60" placeholder="예: 폴로 걸즈 가디건 블랙 XL" autocomplete="off"></label>' +
+      '<label>판매처<select name="platform">' + opts(PLATFORMS, '당근') + '</select></label>' +
+      '<label>판매가(원)<input name="sale" type="number" inputmode="numeric" min="0" required></label>' +
+      '<label>매입가(원)<input name="cost" type="number" inputmode="numeric" min="0"></label>' +
+      '<label>수수료 등(원)<input name="fee" type="number" inputmode="numeric" min="0" value="0"></label>' +
+      '<label>날짜<input name="date" type="date" value="' + today() + '"></label>' +
+      '<div class="acts wide"><button class="btn primary" type="submit">기록하기</button></div></form>';
+  }
+
+  function goodsRow(g, showGroup) {
+    var out = (g.qty || 0) <= 0, bits = [];
+    if (showGroup && g.group) bits.push('<span>' + esc(g.group) + '</span>');
+    if (g.size) bits.push('<span>' + esc(g.size) + '</span>');
+    if (g.cost > 0) bits.push('<span>매입 ' + won(g.cost) + '</span>');
+    if (g.sealed) bits.push('<span class="pill tag">미개봉</span>');
+    if (out) bits.push('<span class="pill out">재고 없음</span>');
+    var open = ui.gopen === g.id && !ro;
+    var step = ro
+      ? '<div class="step"><span class="q"><b>' + (g.qty || 0) + '</b><i>개</i></span></div>'
+      : '<div class="step"><button type="button" data-act="g-dec" aria-label="' + esc(g.name) + ' 하나 줄이기">−</button>' +
+        '<span class="q"><b>' + (g.qty || 0) + '</b><i>개</i></span>' +
+        '<button type="button" data-act="g-inc" aria-label="' + esc(g.name) + ' 하나 늘리기">+</button></div>';
+    var h = '<li class="row' + (out ? ' dim' : '') + '" data-gid="' + esc(g.id) + '"><div class="line">' +
+      '<button class="name" type="button" data-act="g-open" aria-expanded="' + open + '"><span class="nm">' + esc(g.name) + '</span>' +
+      (bits.length ? '<span class="meta">' + bits.join('') + '</span>' : '') +
+      (g.note ? '<span class="memo">' + esc(g.note) + '</span>' : '') + '</button>' + step + '</div>';
+    if (open) {
+      h += '<div class="edit">' +
+        '<label class="wide">이름<input data-gf="name" value="' + esc(g.name) + '" maxlength="60"></label>' +
+        '<label>분류<select data-gf="group">' + opts(groupList(), g.group) + '</select></label>' +
+        '<label>브랜드<input data-gf="brand" value="' + esc(brandOf(g)) + '" maxlength="30" list="brandlist" placeholder="비우면 브랜드 없음"></label>' +
+        '<label>사이즈<input data-gf="size" value="' + esc(g.size || '') + '" maxlength="20"></label>' +
+        '<label>매입가(원, 개당)<input data-gf="cost" type="number" inputmode="numeric" min="0" value="' + (g.cost > 0 ? g.cost : '') + '"></label>' +
+        '<label>상태<select data-gf="sealed"><option value="0"' + (g.sealed ? '' : ' selected') + '>보통</option><option value="1"' + (g.sealed ? ' selected' : '') + '>미개봉</option></select></label>' +
+        '<label class="wide">메모<input data-gf="note" value="' + esc(g.note || '') + '" maxlength="80"></label>' +
+        '<div class="acts wide"><button class="btn sm" type="button" data-act="g-sell">' + (ui.sell === g.id ? '판매 입력 닫기' : '팔았어요') + '</button>' +
+        '<button class="btn danger sm" type="button" data-act="g-del">' + (ui.gdel === g.id ? '한 번 더 누르면 삭제' : '삭제') + '</button></div>' +
+        (ui.sell === g.id ? sellForm() : '') + '</div>';
+    }
+    return h + '</li>';
+  }
+
+  function saleRow(s) {
+    var p = profitOf(s);
+    var n = function (v) { return Math.round(v || 0).toLocaleString('ko-KR'); };
+    var parts = ['판매 ' + n(s.sale), s.cost > 0 ? '매입 ' + n(s.cost) : '매입가 미입력'];
+    if (s.fee > 0) parts.push('수수료 등 ' + n(s.fee));
+    var when = s.date ? s.date.slice(2).replace(/-/g, '.') : '';
+    var meta = [when, s.platform].filter(Boolean).join(' · ');
+    return '<li class="row sale" data-saleid="' + esc(s.id) + '"><div class="sinfo"><span class="nm">' + esc(s.name) + '</span>' +
+      (meta ? '<span class="meta"><span>' + esc(meta) + '</span></span>' : '') +
+      '<span class="calc">' + parts.join(' − ') + '</span></div>' +
+      '<div class="profit' + (p < 0 ? ' neg' : '') + '">' + (p > 0 ? '+' : '') + won(p) + '</div>' +
+      (ro ? '' : '<div class="acts"><button class="btn danger sm" type="button" data-act="sale-del">' + (ui.sdel === s.id ? '한 번 더 누르면 삭제' : '삭제') + '</button></div>') + '</li>';
+  }
+
+  function goodsHTML() {
+    var all = allGoods();
+    var h = ui.add && canWrite() ? goodsForm() : '';
+    var byB = ui.gby === 'brand', counts = {};
+    all.forEach(function (g) { var k = byB ? brandOf(g) : g.group; counts[k] = (counts[k] || 0) + 1; });
+    var cur = byB ? ui.gbrand : ui.ggroup;
+    var keys = byB ? brandKeys(all) : groupList();
+    h += '<div class="chips" role="group" aria-label="' + (byB ? '브랜드' : '분류') + ' 고르기"><button class="chip" type="button" data-act="ggroup" data-g="all" aria-pressed="' + (cur === 'all') + '">전체<small>' + all.length + '</small></button>';
+    keys.forEach(function (c) {
+      if (!counts[c] && cur !== c) return;
+      h += '<button class="chip" type="button" data-act="ggroup" data-g="' + esc(c) + '" aria-pressed="' + (cur === c) + '">' + esc(c || '브랜드 없음') + '<small>' + (counts[c] || 0) + '</small></button>';
+    });
+    h += '</div>';
+    if (!ready.goods) return h + '<p class="empty">불러오는 중…</p>';
+    if (!all.length) return h + '<p class="empty">아직 비어 있어요. 위의 ‘제품 추가’로 첫 제품을 적어보세요.</p>';
+    var q = ui.q.trim().toLowerCase();
+    var list = all.filter(function (g) {
+      if (cur !== 'all' && (byB ? brandOf(g) : g.group) !== cur) return false;
+      return !q || (g.name + ' ' + brandOf(g) + ' ' + (g.size || '') + ' ' + (g.note || '') + ' ' + g.group).toLowerCase().indexOf(q) >= 0;
+    });
+    if (!list.length) return h + '<p class="empty">찾는 제품이 없어요.</p>';
+    (byB ? brandKeys(list) : groupList()).forEach(function (c) {
+      var gs = list.filter(function (g) { return (byB ? brandOf(g) : g.group) === c; });
+      if (!gs.length) return;
+      gs.sort(function (a, b) { return (((a.qty || 0) > 0 ? 0 : 1) - ((b.qty || 0) > 0 ? 0 : 1)) || ((a.ord || 0) - (b.ord || 0)); });
+      var pcs = 0; gs.forEach(function (g) { pcs += g.qty || 0; });
+      h += '<section class="group"><div class="ghead"><h2>' + esc(c || '브랜드 없음') + '</h2><span>' + gs.length + '종 · ' + pcs + '개</span></div><ul class="rows">' + gs.map(function (g) { return goodsRow(g, byB); }).join('') + '</ul></section>';
+    });
+    return h;
+  }
+
+  function salesHTML() {
+    var h = ui.add && canWrite() ? saleForm() : '';
+    if (!ready.sales) return h + '<p class="empty">불러오는 중…</p>';
+    var list = allSales();
+    var q = ui.q.trim().toLowerCase();
+    if (q) list = list.filter(function (s) { return (s.name + ' ' + (s.platform || '')).toLowerCase().indexOf(q) >= 0; });
+    if (!list.length) return h + '<p class="empty">' + (q ? '찾는 기록이 없어요.' : '아직 판매 기록이 없어요. ‘보유 중’ 목록에서 ‘팔았어요’를 누르면 여기에 쌓여요.') + '</p>';
+    list.sort(function (a, b) { return (b.ord || 0) - (a.ord || 0); });
+    return h + '<ul class="rows">' + list.map(function (s) { return saleRow(s); }).join('') + '</ul>';
+  }
+
+  function goodsView() {
+    var h = roNote() +
+      '<div class="gsub"><div class="seg" role="group" aria-label="재고제품 보기">' +
+      '<button class="segb" type="button" data-act="gtab" data-gtab="own" aria-pressed="' + (ui.gtab === 'own') + '">보유 중</button>' +
+      '<button class="segb" type="button" data-act="gtab" data-gtab="sold" aria-pressed="' + (ui.gtab === 'sold') + '">판매 기록</button></div>' +
+      (ui.gtab === 'own' ? '<div class="seg" role="group" aria-label="묶는 방식"><button class="segb" type="button" data-act="gby" data-gby="group" aria-pressed="' + (ui.gby !== 'brand') + '">분류별</button>' +
+        '<button class="segb" type="button" data-act="gby" data-gby="brand" aria-pressed="' + (ui.gby === 'brand') + '">브랜드별</button></div>' : '') + '</div>';
+    if (failed || !db) return h + '<p class="empty">저장소에 연결하지 못했어요.</p>';
+    return h + (ui.gtab === 'sold' ? salesHTML() : goodsHTML());
+  }
+
+  function goodsAct(act, b, w) {
+    if (act === 'save-now') { save(); return true; }
+    if (act === 'gtab') { ui.gtab = b.dataset.gtab; ui.add = false; ui.sell = null; ui.q = ''; $('#q').value = ''; render(); return true; }
+    if (act === 'gby') { ui.gby = b.dataset.gby; try { localStorage.setItem('salimkan-gby', ui.gby); } catch (x) {} render(); return true; }
+    if (act === 'ggroup') { if (ui.gby === 'brand') ui.gbrand = b.dataset.g; else ui.ggroup = b.dataset.g; render(); return true; }
+    var grow = b.closest('[data-gid]'), g = grow ? goods.get(grow.dataset.gid) : null;
+    var srow = b.closest('[data-saleid]'), s = srow ? sales.get(srow.dataset.saleid) : null;
+    var keep = grow ? '[data-gid="' + grow.dataset.gid + '"] [data-act="' + act + '"]' : (srow ? '[data-saleid="' + srow.dataset.saleid + '"] [data-act="' + act + '"]' : null);
+    if (act === 'g-open' && g) { if (ro) return true; ui.gopen = ui.gopen === g.id ? null : g.id; ui.gdel = null; ui.sell = null; render(); return true; }
+    if ((act === 'g-inc' || act === 'g-dec') && g && w) { patchGoods(g, { qty: Math.max(0, (g.qty || 0) + (act === 'g-inc' ? 1 : -1)) }); render(keep); return true; }
+    if (act === 'g-sell' && g && w) { ui.sell = ui.sell === g.id ? null : g.id; render(ui.sell ? '[data-gid="' + g.id + '"] .sell select' : keep); return true; }
+    if (act === 'g-del' && g && w) {
+      if (ui.gdel === g.id) { removeDoc('goods', goods, g.id); ui.gopen = null; ui.gdel = null; ui.sell = null; render(); toast('삭제했어요'); }
+      else { ui.gdel = g.id; render(keep); }
+      return true;
+    }
+    if (act === 'sale-del' && s && w) {
+      if (ui.sdel === s.id) { removeDoc('sales', sales, s.id); ui.sdel = null; render(); toast('삭제했어요'); }
+      else { ui.sdel = s.id; render(keep); }
+      return true;
+    }
+    return false;
+  }
+
+  function goodsChange(el, gf) {
+    if (!canWrite()) return;
+    var row = el.closest('[data-gid]'), g = row && goods.get(row.dataset.gid);
+    if (!g) return;
+    var v = el.value.trim();
+    if (gf === 'name' && !v) { el.value = g.name; return; }
+    var patch = {};
+    if (gf === 'cost') patch.cost = Math.max(0, num(v));
+    else if (gf === 'sealed') patch.sealed = v === '1';
+    else patch[gf] = v;
+    patchGoods(g, patch);
+    render();
+  }
+
+  function goodsSubmit(form) {
+    var kind = form.dataset.form;
+    if (kind !== 'goods' && kind !== 'sell' && kind !== 'sale') return false;
+    var fd = new FormData(form);
+    if (kind === 'goods') {
+      var name = String(fd.get('name') || '').trim();
+      if (!name) return true;
+      var go = {
+        name: name, group: String(fd.get('group')), size: String(fd.get('size') || '').trim(),
+        qty: Math.max(0, num(fd.get('qty'))), cost: Math.max(0, num(fd.get('cost'))),
+        sealed: fd.get('sealed') === '1', note: String(fd.get('note') || '').trim(), ord: nextOrdOf(goods)
+      };
+      var br = String(fd.get('brand') || '').trim();
+      if (br) go.brand = br;
+      createDoc('goods', goods, go);
+      ui.add = true; render('.add input[name="name"]'); toast('‘' + name + '’을(를) 추가했어요');
+    } else if (kind === 'sell') {
+      var row = form.closest('[data-gid]'), g = row && goods.get(row.dataset.gid);
+      if (!g) return true;
+      var rec = createDoc('sales', sales, {
+        name: g.name + (g.size ? ' ' + g.size : ''), platform: String(fd.get('platform')),
+        sale: Math.max(0, num(fd.get('sale'))), cost: g.cost || 0, fee: Math.max(0, num(fd.get('fee'))),
+        date: String(fd.get('date') || ''), goodsId: g.id, ord: nextOrdOf(sales)
+      });
+      patchGoods(g, { qty: Math.max(0, (g.qty || 0) - 1) });
+      ui.sell = null; ui.gopen = null; render();
+      toast('판매 기록에 넣었어요 · 이익 ' + won(profitOf(rec)));
+    } else {
+      var nm = String(fd.get('name') || '').trim();
+      if (!nm) return true;
+      createDoc('sales', sales, {
+        name: nm, platform: String(fd.get('platform')), sale: Math.max(0, num(fd.get('sale'))),
+        cost: Math.max(0, num(fd.get('cost'))), fee: Math.max(0, num(fd.get('fee'))),
+        date: String(fd.get('date') || ''), goodsId: '', ord: nextOrdOf(sales)
+      });
+      ui.add = true; render('.add input[name="name"]'); toast('판매 기록에 넣었어요');
+    }
+    return true;
+  }
+
+  var RANGES = [[30, '30일'], [90, '90일'], [180, '6개월'], [365, '1년']];
+  function rangeLabel() { return (RANGES.filter(function (r) { return r[0] === ui.range; })[0] || RANGES[1])[1]; }
+  var COSM = ['얼굴 화장', '얼굴 씻을거리', '얼굴 바를거리', '바디 바를거리', '바디 씻을거리', '헤어'];
+  function pillFor(n) {
+    if (n < 0) return '<span class="pill expbad">기한 지남</span>';
+    return '<span class="pill ' + (n <= 30 ? 'expbad' : n <= 90 ? 'expsoon' : 'tag') + '">D-' + n + '</span>';
+  }
+  /* 소비기한: 숫자만 쳐도 된다. 270109 / 20270109 -> 2027-01-09, 2701 -> 2027-01 (그 달 말일) */
+  function parseExpInput(v) {
+    var d = String(v || '').replace(/\D/g, '');
+    if (!d) return { exp: '', approx: false };
+    var y, m, dd, approx = false;
+    if (d.length === 8) { y = +d.slice(0, 4); m = +d.slice(4, 6); dd = +d.slice(6, 8); }
+    else if (d.length === 6) { y = 2000 + +d.slice(0, 2); m = +d.slice(2, 4); dd = +d.slice(4, 6); }
+    else if (d.length === 4) { y = 2000 + +d.slice(0, 2); m = +d.slice(2, 4); approx = true; dd = new Date(y, m, 0).getDate(); }
+    else return null;
+    if (m < 1 || m > 12 || y < 2000 || y > 2100) return null;
+    if (dd < 1 || dd > new Date(y, m, 0).getDate()) return null;
+    return { exp: y + '-' + String(m).padStart(2, '0') + '-' + String(dd).padStart(2, '0'), approx: approx };
+  }
+  function expInputVal(it) {
+    var p = (it.exp || '').split('-');
+    if (p.length < 3) return '';
+    return p[0].slice(2) + p[1] + (it.approx ? '' : p[2]);
+  }
+  function sizeNum(v) {
+    var n = parseFloat(String(v == null ? '' : v).replace(',', '.'));
+    return isFinite(n) && n > 0 ? String(Math.round(n * 100) / 100) : '';
+  }
+  function priceNum(v) { var d = String(v == null ? '' : v).replace(/\D/g, ''); return d ? String(parseInt(d, 10)) : ''; }
+  function parseDay(v) {
+    var d = String(v || '').replace(/\D/g, ''), y, m, dd;
+    if (d.length === 8) { y = +d.slice(0, 4); m = +d.slice(4, 6); dd = +d.slice(6, 8); }
+    else if (d.length === 6) { y = 2000 + +d.slice(0, 2); m = +d.slice(2, 4); dd = +d.slice(4, 6); }
+    else return null;
+    if (m < 1 || m > 12 || y < 2000 || y > 2100 || dd < 1 || dd > new Date(y, m, 0).getDate()) return null;
+    return y + '-' + String(m).padStart(2, '0') + '-' + String(dd).padStart(2, '0');
+  }
+  function dayInputVal(iso) { var p = (iso || '').split('-'); return p.length === 3 ? p[0].slice(2) + p[1] + p[2] : ''; }
+  function dayFmt(iso) { var p = (iso || '').split('-'); return p.length === 3 ? p[0].slice(2) + '.' + p[1] + '.' + p[2] : ''; }
+  function daysBetween(a, b) {
+    var x = a.split('-'), y = b.split('-');
+    return Math.round((new Date(+y[0], +y[1] - 1, +y[2]) - new Date(+x[0], +x[1] - 1, +x[2])) / 86400000);
+  }
+  function usesOf(it) { return Array.isArray(it.uses) ? it.uses : []; }
+  function openUse(it) { var u = usesOf(it); for (var k = u.length - 1; k >= 0; k--) if (u[k].s && !u[k].e) return u[k]; return null; }
+  function useDays(u) { return Math.max(1, daysBetween(u.s, u.e || today())); }
+  function parseSize(str) {
+    var m0 = String(str || '').trim().match(/^\d+(?:\.\d+)?$/);
+    if (m0) return { v: parseFloat(m0[0]), u: 'ml' };
+    return null;
+  }
+  function parseSizeOld(str) {
+    var m = String(str || '').trim().match(/^(\d+(?:[.,]\d+)?)\s*(ml|mL|ML|㎖|g|G|kg|KG|L|l|매|개입|개)$/);
+    if (!m) return null;
+    var v = parseFloat(m[1].replace(',', '.')), u = m[2].toLowerCase();
+    if (u === '㎖') u = 'ml';
+    if (u === 'l') { v *= 1000; u = 'ml'; }
+    if (u === 'kg') { v *= 1000; u = 'g'; }
+    if (m[2] === 'L') { v = parseFloat(m[1].replace(',', '.')) * 1000; u = 'ml'; }
+    return { v: v, u: u };
+  }
+  function volText(o) {
+    if (!o) return '';
+    return Object.keys(o).map(function (u) { var n = Math.round(o[u]); return n.toLocaleString('ko-KR') + u + (u === 'ml' && n >= 1000 ? ' (' + (Math.round(n / 10) / 100) + 'L)' : ''); }).join(' · ');
+  }
+  var FACE = ['얼굴 화장', '얼굴 바를거리'];
+  var SUN = ['선크림'], BASE = ['쿠션', '파운데이션', '프라이머', '컨실러', '파우더', '팩트'];
+  var COLOR = ['립', '립틴트', '립스틱', '립글로스', '아이', '아이섀도', '섀도', '마스카라', '아이라이너', '브로우', '치크', '블러셔', '하이라이터', '컨투어', '색조'];
+  var CORNER_NAMES = ['스킨케어', '베이스', '색조', '얼굴', '바디', '헤어', '세탁', '기타'];
+  var CORNER_CAT = { '스킨케어': '얼굴 바를거리', '베이스': '얼굴 화장', '색조': '얼굴 화장', '얼굴': '얼굴 씻을거리', '바디': '바디 바를거리', '헤어': '헤어', '세탁': '세탁세제', '기타': '생필품' };
+  var CORNER_PRESET = {
+    '스킨케어': ['미스트·토너', '에센스', '앰플', '세럼', '크림', '패드·마스크팩', '립밤'],
+    '베이스': ['선크림', '쿠션', '파운데이션', '프라이머', '컨실러', '파우더'],
+    '색조': ['립', '아이', '치크'],
+    '얼굴': ['클렌징밤·오일', '클렌징폼', '워시오프·팩'],
+    '바디': ['바디워시', '바디로션'],
+    '헤어': ['샴푸', '트리트먼트', '헤어오일'],
+    '세탁': ['세제', '섬유유연제', '건조기시트'],
+    '기타': ['치약', '화장지', '화장솜']
+  };
+  function faceCorner(i) {
+    if (i.corner === '스킨케어' || i.corner === '베이스' || i.corner === '색조') return i.corner;
+    var k = i.sub || '';
+    if (SUN.indexOf(k) >= 0 || BASE.indexOf(k) >= 0) return '베이스';
+    if (COLOR.indexOf(k) >= 0) return '색조';
+    if (k) return '스킨케어';
+    return i.cat === '얼굴 화장' ? '색조' : '스킨케어';
+  }
+  function subKey(i) { return i.sub || i.cat; }
+  function computeCorners(all) {
+    var groups = [
+      { title: '화장품 재고', corners: [
+        { name: '스킨케어', m: function (i) { return FACE.indexOf(i.cat) >= 0 && faceCorner(i) === '스킨케어'; }, key: subKey, order: ['미스트·토너', '에센스', '앰플', '세럼', '크림', '패드·마스크팩', '립밤'] },
+        { name: '베이스', m: function (i) { return FACE.indexOf(i.cat) >= 0 && faceCorner(i) === '베이스'; }, key: subKey, order: ['선크림', '쿠션'], fixed: true },
+        { name: '색조', m: function (i) { return FACE.indexOf(i.cat) >= 0 && faceCorner(i) === '색조'; }, key: subKey, order: ['립', '아이', '치크'], fixed: true }
+      ] },
+      { title: '생필품 재고', corners: [
+        { name: '얼굴', m: function (i) { return i.cat === '얼굴 씻을거리'; }, key: subKey, order: ['클렌징밤·오일', '클렌징폼', '워시오프·팩'] },
+        { name: '바디', m: function (i) { return i.cat === '바디 씻을거리' || i.cat === '바디 바를거리'; }, key: subKey, order: ['바디워시', '바디로션'], fixed: true },
+        { name: '헤어', m: function (i) { return i.cat === '헤어'; }, key: subKey, order: ['샴푸', '트리트먼트', '헤어오일'] },
+        { name: '세탁', m: function (i) { return i.cat === '세탁세제'; }, key: function (i) { return (!i.sub || i.sub === '세탁세제') ? '세제' : i.sub; }, order: ['세제', '섬유유연제', '건조기시트'], fixed: true },
+        { name: '기타', rest: true, key: function (i) { return (i.sub && i.sub !== i.cat && i.sub !== '생필품') ? i.sub : (i.cat === '치약' ? '치약' : i.name); }, order: ['치약', '화장지', '화장솜'] }
+      ] }
+    ];
+    var taken = {};
+    groups.forEach(function (g) {
+      g.corners.forEach(function (cn) {
+        var rows = {}, ord = [], kinds = 0, vols = {}, ids = [];
+        if (cn.fixed) cn.order.forEach(function (k) { rows[k] = 0; ord.push(k); });
+        all.slice().sort(function (a, b) { return (a.ord || 0) - (b.ord || 0); }).forEach(function (i) {
+          if (taken[i.id]) return;
+          if (i.corner && CORNER_NAMES.indexOf(i.corner) >= 0 ? i.corner !== cn.name : (cn.rest ? FACE.indexOf(i.cat) >= 0 : !cn.m(i))) return;
+          taken[i.id] = cn.name; ids.push(i.id);
+          var k = cn.key(i);
+          if (!(k in rows)) { rows[k] = 0; ord.push(k); }
+          rows[k] += i.qty;
+          if (i.qty > 0) { kinds++; var pz = parseSize(i.size); if (pz) { vols[k] = vols[k] || {}; vols[k][pz.u] = (vols[k][pz.u] || 0) + pz.v * i.qty; } }
+        });
+        var rank = function (k) { var x = cn.order.indexOf(k); return x < 0 ? 999 : x; };
+        ord = ord.map(function (k, ix) { return [k, ix]; }).sort(function (a, b) { return (rank(a[0]) - rank(b[0])) || (a[1] - b[1]); }).map(function (x) { return x[0]; });
+        cn.rows = ord.map(function (k) { return { k: k, q: rows[k], vol: volText(vols[k]) }; });
+        cn.kinds = kinds; cn.ids = ids; cn.keyFn = cn.key;
+        cn.pc = 0; ord.forEach(function (k) { cn.pc += rows[k]; });
+        cn.show = cn.rows.length > 0;
+      });
+      g.corners = g.corners.filter(function (cn) { return cn.show; });
+    });
+    return groups;
+  }
+  function cornerKey(cn, i) { return cn.keyFn(i); }
+  function cornerMap() {
+    var map = {}, names = [];
+    computeCorners(allItems()).forEach(function (g) { g.corners.forEach(function (cn) { names.push(cn.name); cn.ids.forEach(function (id) { map[id] = cn.name; }); }); });
+    return { map: map, names: names };
+  }
+  function pathOf(i, cm) {
+    cm = cm || cornerMap();
+    var c = cm.map[i.id] || i.cat, k = i.sub;
+    return c + (k && k !== c ? ' · ' + k : '');
+  }
+  function dashHTML() {
+    var all = allItems();
+    var have = all.filter(function (i) { return i.qty > 0; });
+    var pieces = 0; have.forEach(function (i) { pieces += i.qty; });
+    var past = [], inr = [];
+    have.forEach(function (i) {
+      if (!i.exp) return;
+      var n = dday(i.exp);
+      if (n < 0) past.push(i); else if (n <= ui.range) inr.push(i);
+    });
+    var near = past.concat(inr).sort(cmpExp);
+    var h = '';
+
+    /* 지금 쓰는 중 */
+    var inuse = all.filter(function (i) { return openUse(i); }).sort(function (x, y) { return openUse(x).s < openUse(y).s ? -1 : 1; });
+    if (inuse.length) {
+      h += '<section class="dsec"><h2>지금 쓰는 중 <small>' + inuse.length + '종</small></h2><ul class="rows">' + inuse.map(function (i) {
+        var o = openUse(i);
+        return '<li class="row urow" data-id="' + esc(i.id) + '"><div style="min-width:0"><div class="nm">' + esc(i.name) + '</div><div class="meta"><span>' + esc(pathOf(i)) + '</span><span>' + dayFmt(o.s) + ' 시작</span></div></div>' +
+          '<div class="end"><b>' + useDays(o) + '일째</b>' + (canWrite() ? '<button class="btn sm primary" type="button" data-act="use-end">사용 종료</button>' : '') + '</div></li>';
+      }).join('') + '</ul></section>';
+    }
+
+    /* 곧 끝나는 것 */
+    (function () {
+      var soon = have.filter(function (i) { return i.exp && dday(i.exp) <= 30; }).sort(cmpExp);
+      var pn = soon.filter(function (i) { return dday(i.exp) < 0; }).length;
+      if (!soon.length) { h += '<div class="alert ok"><div class="big">30일 안에 끝나는 물건이 없어요</div></div>'; return; }
+      h += '<div class="alert' + (pn ? ' bad' : '') + '"><div class="big"><span>30일 안에 끝나는 물건</span><b>' + soon.length + '</b><span>개' + (pn ? ' (기한 지남 ' + pn + ')' : '') + '</span></div><div class="nms">' +
+        soon.slice(0, 4).map(function (i) { var n = dday(i.exp); return esc(i.name) + ' ' + (n < 0 ? '지남' : 'D-' + n); }).join(' · ') + (soon.length > 4 ? ' 외 ' + (soon.length - 4) + '개' : '') + '</div></div>';
+    })();
+
+    /* 공지 */
+    if (canWrite()) {
+      h += '<label class="noticebox"><span>남편에게 남기는 한 줄 <small>(저장하면 링크로 보는 사람에게 보여요)</small></span><input id="noticeInput" maxlength="120" value="' + esc(notice) + '" placeholder="예: 이번 주 화장지, 세탁세제 사 오기" autocomplete="off"></label>';
+    } else if (notice.trim()) {
+      h += '<div class="noticebox view"><span>메모</span><b>' + esc(notice) + '</b></div>';
+    }
+
+    /* 물품별 재고 (공지 바로 아래): 화장품 / 생필품, 코너를 펼치면 중분류별 수량 */
+    computeCorners(all).forEach(function (gd, gi) {
+      var cs = gd.corners;
+      if (!cs.length) return;
+      var tot = 0; cs.forEach(function (cn) { tot += cn.pc; });
+      var mx = cs.reduce(function (m, cn) { return Math.max(m, cn.pc); }, 1);
+      h += '<section class="dsec"><h2>' + gd.title + ' <small><b class="tot">' + tot + '개</b>' +
+        ' <button class="linkbtn" type="button" data-dall="' + gi + '">' + (cs.every(function (cn) { return ui.dopen[cn.name]; }) ? '모두 접기' : '모두 펼치기') + '</button></small></h2>' + (gi === 1 ? '<p class="volnote">용량을 적어 둔 물건은 펼치면 ‘총 용량’이 같이 보여요 (예: 50ml, 1.9L, 20매)</p>' : '') + '<ul class="cats">' + cs.map(function (cn) {
+        var open = !!ui.dopen[cn.name];
+        var li = '<li><button class="crow" type="button" data-dtog="' + esc(cn.name) + '" aria-expanded="' + open + '"><div class="chead"><span class="nm" style="color:var(--ink);font-weight:700">' + (open ? '▾ ' : '▸ ') + esc(cn.name) + '</span><span><b class="num">' + cn.pc + '</b>개 <i class="kinds">' + cn.kinds + '종</i></span></div>' +
+          '<div class="track"><i style="width:' + Math.max(3, Math.round(cn.pc / mx * 100)) + '%"></i></div></button>';
+        if (open) {
+          var rmx = cn.rows.reduce(function (m, r) { return Math.max(m, r.q); }, 1);
+          li += '<div class="stk">' + cn.rows.map(function (r) {
+            return '<div class="irow' + (r.q <= 0 ? ' dim' : '') + '"><span class="inm">' + esc(r.k) + (r.vol ? '<small class="vol">총 ' + esc(r.vol) + '</small>' : '') + '</span><span class="mini"><i style="width:' + (r.q > 0 ? Math.max(6, Math.round(r.q / rmx * 100)) : 0) + '%"></i></span><b>' + r.q + '<small>개</small></b></div>';
+          }).join('') + '</div>';
+        }
+        return li + '</li>';
+      }).join('') + '</ul></section>';
+    });
+
+    /* 한눈에 보기: 모든 중분류의 개수를 세로 막대 그래프로 */
+    (function () {
+      var groups = computeCorners(all), gmax = 1;
+      groups.forEach(function (g) { g.corners.forEach(function (cn) { cn.rows.forEach(function (r) { if (r.q > gmax) gmax = r.q; }); }); });
+      h += '<section class="dsec"><h2>한눈에 보기 <small>물건별 개수</small></h2><div class="ov">' + groups.map(function (g, gi) {
+        var tot = 0; g.corners.forEach(function (cn) { tot += cn.pc; });
+        return '<div class="ovg g' + gi + '"><div class="ovgh"><span>' + esc(g.title.replace(' 재고', '')) + '</span><b>' + tot + '개</b></div><div class="vchart">' + g.corners.map(function (cn) {
+          return '<div class="vgc"><div class="vgbars">' + cn.rows.map(function (r) {
+            return '<div class="vcol' + (r.q <= 0 ? ' dim' : '') + '"><b>' + r.q + '</b><div class="vbar" style="height:' + (r.q > 0 ? Math.max(4, Math.round(r.q / gmax * 110)) : 2) + 'px"></div></div>';
+          }).join('') + '</div><div class="vlabs">' + cn.rows.map(function (r) { return '<span class="vlab' + (r.q <= 0 ? ' dim' : '') + '">' + esc(r.k) + '</span>'; }).join('') + '</div><div class="vgname"><span>' + esc(cn.name) + '</span><b>' + cn.pc + '</b></div></div>';
+        }).join('') + '</div></div>';
+      }).join('') + '</div></section>';
+    })();
+
+    /* 사야 할 것 */
+    var low = all.filter(function (i) { return (i.min || 0) > 0 && i.qty <= i.min; }).sort(function (a, b) { return (a.qty - b.qty) || ((a.ord || 0) - (b.ord || 0)); });
+    if (low.length) {
+      h += '<section class="dsec"><h2>사야 할 것 <small>' + low.filter(function (i) { return !i.bought; }).length + '종 남음 · 산 것은 체크</small></h2><ul class="rows">' + low.map(function (i) {
+        return '<li class="row urow' + (i.bought ? ' done' : '') + '"><div style="min-width:0"><div class="nm">' + esc(i.name) + '</div><div class="meta"><span>' + esc(pathOf(i)) + '</span><span>알림 수량 ' + i.min + '개</span></div></div>' +
+          '<div class="end">' + (i.qty <= 0 ? '<span class="pill expbad">다 씀</span>' : '<span class="pill expsoon">' + i.qty + '개 남음</span>') + boughtBtn(i) + '</div></li>';
+      }).join('') + '</ul></section>';
+    } else if (canWrite()) {
+      h += '<section class="dsec"><h2>사야 할 것</h2><p class="empty">없어요. 목록에서 물건을 눌러 ‘알림 수량’을 적으면, 그 수량 이하일 때 여기에 떠요.</p></section>';
+    }
+
+    /* 임박 */
+    h += '<section class="dsec"><h2>유통기한 임박 <small>' + rangeLabel() + ' 안 · ' + near.length + '종</small></h2>' +
+      '<div class="chips" role="group" aria-label="기간 고르기">' + RANGES.map(function (r) {
+        return '<button class="chip" type="button" data-range="' + r[0] + '" aria-pressed="' + (ui.range === r[0]) + '">' + r[1] + '</button>';
+      }).join('') + '</div>';
+    if (!near.length) h += '<p class="empty">' + rangeLabel() + ' 안에 기한이 오는 물건은 없어요.</p>';
+    else h += '<ul class="rows">' + near.map(function (i) {
+      var n = dday(i.exp);
+      return '<li class="row urow"><div style="min-width:0"><div class="nm">' + esc(i.name) + '</div><div class="meta"><span>' + esc(pathOf(i)) + '</span>' + (sizeNum(i.size) ? '<span>' + esc(sizeNum(i.size)) + 'ml</span>' : '') + (firstIds[i.id] ? '<span class="pill tag">먼저 쓰기</span>' : '') + '</div></div>' +
+        '<div class="end">' + pillFor(n) + '<span class="meta">' + fmtExp(i) + (i.approx ? ' (월말)' : '') + ' · <b>' + i.qty + '개</b></span></div></li>';
+    }).join('') + '</ul>';
+    h += '</section>';
+
+    /* 날짜 확인 필요 */
+    var chk = all.filter(function (i) { return (i.note || '').indexOf('확인') >= 0 || (!i.exp && COSM.indexOf(i.cat) >= 0); });
+    if (chk.length) {
+      h += '<section class="dsec"><h2>날짜 확인이 필요해요 <small>' + chk.length + '종</small></h2><ul class="rows">' + chk.map(function (i) {
+        var why = (i.note || '').indexOf('확인') >= 0 ? i.note : '소비기한을 안 적었어요';
+        return '<li class="row"><button class="line goline" type="button" data-dgo="' + esc(i.id) + '"><span class="name"><span class="nm">' + esc(i.name) + '</span><span class="meta"><span>' + esc(pathOf(i)) + '</span></span><span class="memo">' + esc(why) + '</span></span><span class="go">›</span></button></li>';
+      }).join('') + '</ul></section>';
+    }
+
+    /* 연도별 */
+    var yr = {}, noexp = 0;
+    have.forEach(function (i) {
+      if (!i.exp) { noexp++; return; }
+      var k = dday(i.exp) < 0 ? '지남' : i.exp.slice(0, 4);
+      yr[k] = (yr[k] || 0) + 1;
+    });
+    var yks = Object.keys(yr).sort(function (a, b) { return a === '지남' ? -1 : b === '지남' ? 1 : (a < b ? -1 : 1); });
+    var ymax = yks.reduce(function (m, k) { return Math.max(m, yr[k]); }, noexp || 1);
+    if (yks.length || noexp) {
+      h += '<section class="dsec"><h2>소비기한이 몰린 해 <small>종류 수</small></h2><ul class="cats">' + yks.map(function (k) {
+        return '<li class="yr"><span class="ylab' + (k === '지남' ? ' bad' : '') + '">' + (k === '지남' ? '기한 지남' : k + '년') + '</span><div class="track"><i class="' + (k === '지남' ? 'bad' : '') + '" style="width:' + Math.max(3, Math.round(yr[k] / ymax * 100)) + '%"></i></div><b>' + yr[k] + '</b></li>';
+      }).join('') + (noexp ? '<li class="yr"><span class="ylab">기한 없음</span><div class="track"><i class="mute" style="width:' + Math.max(3, Math.round(noexp / ymax * 100)) + '%"></i></div><b>' + noexp + '</b></li>' : '') + '</ul></section>';
+    }
+
+    var used = all.filter(function (i) { return i.qty <= 0 && !((i.min || 0) > 0); });
+    if (used.length) h += '<section class="dsec"><h2>다 쓴 물건 · 다시 사기 <small>' + used.filter(function (i) { return !i.bought; }).length + '종 남음 · 산 것은 체크</small></h2><ul class="rows">' + used.map(function (i) {
+      return '<li class="row urow' + (i.bought ? ' done' : '') + '"><div style="min-width:0"><div class="nm">' + esc(i.name) + '</div><div class="meta"><span>' + esc(pathOf(i)) + '</span></div></div><div class="end">' + boughtBtn(i) + '</div></li>';
+    }).join('') + '</ul></section>';
+    return h;
+  }
+
+  function fmtN(n, d) { var k = Math.pow(10, d || 0); return (Math.round(n * k) / k).toLocaleString('ko-KR'); }
+  function boughtBtn(i) {
+    return '<button type="button" class="chk" data-act="bought" data-id="' + esc(i.id) + '" aria-pressed="' + (i.bought ? 'true' : 'false') + '" aria-label="' + esc(i.name) + ' 샀어요"' + (canWrite() ? '' : ' disabled') + '>' + (i.bought ? '✓' : '') + '</button>';
+  }
+
+  function priceHTML(all) {
+    var cm = cornerMap(), by = {}, order = [], tot = 0, n = 0, have = 0;
+    all.forEach(function (i) {
+      if (i.qty > 0) have++;
+      var p = parseInt(priceNum(i.price), 10) || 0;
+      if (!p || i.qty <= 0) return;
+      var c = cm.map[i.id] || '기타';
+      if (!(c in by)) { by[c] = 0; order.push(c); }
+      by[c] += p * i.qty; tot += p * i.qty; n++;
+    });
+    var h = '<section class="dsec"><h2>구매금액 <small>지금 갖고 있는 재고 기준 (가격 × 수량)</small></h2>';
+    if (!n) return h + '<p class="empty">아직 가격을 적은 물건이 없어요. 전체 목록에서 물건을 누르고 ‘구매금액’을 적으면 코너별 합계가 여기에 나와요.</p></section>';
+    return h + '<div class="usebox price"><div class="prow ptot"><span>합계</span><b>' + won(tot) + '</b></div>' + order.map(function (c) { return '<div class="prow"><span>' + esc(c) + '</span><b>' + won(by[c]) + '</b></div>'; }).join('') + '<div class="meta">가격을 적은 ' + n + '종 기준 · 재고가 있는 ' + have + '종 중</div></div></section>';
+  }
+
+  function statsHTML(all) {
+    var cm = cornerMap(), rowsDone = [], inuse = [];
+    all.forEach(function (i) {
+      var done = usesOf(i).filter(function (r) { return r.s && r.e; });
+      var op = openUse(i);
+      if (op) inuse.push({ i: i, op: op });
+      if (!done.length) return;
+      var tot = 0; done.forEach(function (r) { tot += useDays(r); });
+      var avg = tot / done.length, sz = parseFloat(sizeNum(i.size)) || 0, pr = parseInt(priceNum(i.price), 10) || 0;
+      rowsDone.push({ i: i, n: done.length, avg: avg, sz: sz, pr: pr, perDay: sz ? sz / avg : 0, costDay: pr ? pr / avg : 0, perMl: (sz && pr) ? pr / sz : 0, sub: (i.sub || cm.map[i.id] || ''), corner: cm.map[i.id] || '' });
+    });
+    var h = '<section class="dsec"><h2>사용 통계 <small>물건을 눌러 ‘사용 시작 · 종료’를 기록해요</small></h2>';
+    if (!rowsDone.length && !inuse.length) return h + '<p class="empty">아직 기록이 없어요. 전체 목록에서 물건을 누르고 ‘사용 시작’, 다 쓰면 ‘사용 종료’를 누르면 며칠 썼는지와 하루 사용량이 여기에 쌓여요.</p></section>';
+    if (inuse.length) {
+      h += '<h3 class="sth">지금 쓰는 중 <small>' + inuse.length + '개</small></h3><ul class="rows">' + inuse.map(function (x) {
+        var rd = rowsDone.filter(function (r) { return r.sub === (x.i.sub || cm.map[x.i.id] || ''); });
+        var avgs = 0, an = 0; rd.forEach(function (r) { avgs += r.avg * r.n; an += r.n; });
+        var days = useDays(x.op), note = '';
+        if (an) { var av = avgs / an, left = Math.round(av - days); note = '같은 종류 평균 ' + fmtN(av) + '일 · ' + (left > 0 ? '약 ' + left + '일 남음' : '평균보다 ' + (-left) + '일 더 씀'); }
+        return '<li class="row urow"><div style="min-width:0"><div class="nm">' + esc(x.i.name) + '</div><div class="meta"><span>' + esc(pathOf(x.i, cm)) + '</span><span>시작 ' + dayFmt(x.op.s) + '</span></div>' + (note ? '<div class="memo">' + esc(note) + '</div>' : '') + '</div><div class="end"><span class="pill tag">' + days + '일째</span></div></li>';
+      }).join('') + '</ul>';
+    }
+    if (rowsDone.length) {
+      var gs = {}, order = [];
+      rowsDone.forEach(function (r) { var k = r.corner + ' · ' + r.sub; if (!(k in gs)) { gs[k] = []; order.push(k); } gs[k].push(r); });
+      h += '<h3 class="sth">중분류별 평균</h3><div class="stat">' + order.map(function (k) {
+        var g = gs[k], n = 0, ds = 0, pd = [], cd = [];
+        g.forEach(function (r) { n += r.n; ds += r.avg * r.n; if (r.perDay) pd.push(r.perDay); if (r.costDay) cd.push(r.costDay); });
+        var avgP = pd.length ? pd.reduce(function (a, b) { return a + b; }, 0) / pd.length : 0, avgC = cd.length ? cd.reduce(function (a, b) { return a + b; }, 0) / cd.length : 0;
+        return '<div class="scard"><div class="snm">' + esc(k) + ' <small>기록 ' + n + '회</small></div><div class="sgrid"><div><span>평균 사용</span><b>' + fmtN(ds / n) + '일</b></div><div><span>하루 사용량</span><b>' + (avgP ? fmtN(avgP, 1) + 'ml' : '-') + '</b></div><div><span>하루 비용</span><b>' + (avgC ? fmtN(avgC) + '원' : '-') + '</b></div></div></div>';
+      }).join('') + '</div>';
+      h += '<h3 class="sth">제품별 기록</h3><div class="stat">' + rowsDone.sort(function (a, b) { return b.avg - a.avg; }).map(function (r) {
+        return '<div class="scard"><div class="snm">' + esc(r.i.name) + ' <small>' + esc(r.corner + ' · ' + r.sub) + ' · ' + r.n + '회</small></div><div class="sgrid"><div><span>용량</span><b>' + (r.sz ? fmtN(r.sz) + 'ml' : '-') + '</b></div><div><span>사용 기간</span><b>' + fmtN(r.avg) + '일</b></div><div><span>하루 사용량</span><b>' + (r.perDay ? fmtN(r.perDay, 1) + 'ml' : '-') + '</b></div><div><span>구매금액</span><b>' + (r.pr ? fmtN(r.pr) + '원' : '-') + '</b></div><div><span>하루 비용</span><b>' + (r.costDay ? fmtN(r.costDay) + '원' : '-') + '</b></div><div><span>1ml 가격</span><b>' + (r.perMl ? fmtN(r.perMl, 1) + '원' : '-') + '</b></div></div></div>';
+      }).join('') + '</div>';
+    }
+    return h + '</section>';
+  }
+
+  function viewHTML() { calcFirst(); if (ui.tab === 'stock') return stockHTML(); var af = ui.add && canWrite() ? addForm() : ''; return af + (ui.tab === 'stats' ? priceHTML(allItems()) + statsHTML(allItems()) : dashHTML()); }
+
+  function syncBarH() { var b = $('.bar'); if (b) document.documentElement.style.setProperty('--barh', b.offsetHeight + 'px'); }
+  try { if (window.ResizeObserver) new ResizeObserver(syncBarH).observe(document.querySelector('.bar')); } catch (e) {}
+  window.addEventListener('resize', syncBarH);
+
+  function render(focus) {
+    stale = false;
+    renderHead();
+    syncBarH();
+    var oc = $('#view .chips'), sl = oc ? oc.scrollLeft : 0;
+    $('#view').innerHTML = viewHTML();
+    var nc = $('#view .chips');
+    if (nc) {
+      nc.scrollLeft = sl;
+      var act = nc.querySelector('[aria-pressed="true"]');
+      if (act && (act.offsetLeft < nc.scrollLeft || act.offsetLeft + act.offsetWidth > nc.scrollLeft + nc.clientWidth)) nc.scrollLeft = Math.max(0, act.offsetLeft - (nc.clientWidth - act.offsetWidth) / 2);
+    }
+    if (focus) { var el = $('#view').querySelector(focus); if (el) el.focus(); }
+  }
+
+  /* ---------- actions ---------- */
+  function toList(it) {
+    if (inList(it)) return false;
+    createDoc('shop', shop, { name: it.name, qty: 1, done: false, itemId: it.id, at: Date.now() });
+    return true;
+  }
+  function applyBought() {
+    var done = allShop().filter(function (x) { return x.done; });
+    done.forEach(function (x) {
+      var it = (x.itemId && items.get(x.itemId)) || allItems().filter(function (i) { return i.name === x.name; })[0];
+      if (it) patchItem(it, { qty: (it.qty || 0) + x.qty });
+      else addItem({ name: x.name, qty: x.qty, cat: '생필품', sub: '생필품' });
+      removeDoc('shop', shop, x.id);
+    });
+    render();
+    toast(done.length + '개를 재고에 넣었어요. 새 소비기한은 물건을 눌러 적어두세요');
+  }
+
+  document.addEventListener('click', function (e) {
+    var dt = e.target.closest('[data-dtog]');
+    if (dt) { var y0 = window.scrollY; ui.dopen[dt.dataset.dtog] = !ui.dopen[dt.dataset.dtog]; render(); window.scrollTo(0, y0); return; }
+    var da = e.target.closest('[data-dall]');
+    if (da) {
+      var y1 = window.scrollY, gd2 = computeCorners(allItems())[+da.dataset.dall];
+      var cns = gd2 ? gd2.corners : [];
+      var on = !cns.every(function (cn) { return ui.dopen[cn.name]; });
+      cns.forEach(function (cn) { ui.dopen[cn.name] = on; });
+      render(); window.scrollTo(0, y1); return;
+    }
+    var bt = e.target.closest('[data-act="bought"]');
+    if (bt) { if (!canWrite()) return; var bi = items.get(bt.dataset.id); if (bi) { var y3 = window.scrollY; patchItem(bi, { bought: !bi.bought }); render(); window.scrollTo(0, y3); } return; }
+    var rg = e.target.closest('[data-range]');
+    if (rg) { var y2 = window.scrollY; ui.range = +rg.dataset.range; try { localStorage.setItem('salimkan-range', String(ui.range)); } catch (x) {} render(); window.scrollTo(0, y2); return; }
+    var go = e.target.closest('[data-dgo]');
+    if (go) { var gi = items.get(go.dataset.dgo); if (gi) { ui.tab = 'stock'; ui.cat = 'all'; ui.add = false; ui.q = gi.name; ui.open = ro ? null : gi.id; render(); $('#q').value = gi.name; window.scrollTo(0, 0); } return; }
+    var tab = e.target.closest('[data-tab]');
+    if (tab) { ui.tab = tab.dataset.tab; ui.add = false; ui.sell = null; ui.q = ''; $('#q').value = ''; render(); return; }
+    var mode = e.target.closest('[data-mode]');
+    if (mode) { ui.mode = mode.dataset.mode; try { localStorage.setItem('salimkan-mode2', ui.mode); } catch (x) {} render(); return; }
+    var b = e.target.closest('[data-act]');
+    if (!b || b.disabled) return;
+    var act = b.dataset.act;
+    var row = b.closest('[data-id]'), srow = b.closest('[data-sid]');
+    var it = row ? items.get(row.dataset.id) : null;
+    var sx = srow ? shop.get(srow.dataset.sid) : null;
+    var keep = row ? '[data-id="' + row.dataset.id + '"] [data-act="' + act + '"]' : (srow ? '[data-sid="' + srow.dataset.sid + '"] [data-act="' + act + '"]' : null);
+    var w = canWrite();
+
+    if (goodsAct(act, b, w)) return;
+    if (act === 'add-toggle') {
+      ui.add = !ui.add; ui.sell = null; render(ui.add ? '.add input[name="name"]' : null);
+    } else if (act === 'dl-html') {
+      if (!dlNS) return;
+      var dd = new Date(), stamp = String(dd.getFullYear()).slice(2) + String(dd.getMonth() + 1).padStart(2, '0') + String(dd.getDate()).padStart(2, '0');
+      dlNS.save({ filename: 'salimkan-' + stamp + '.html', data: buildDoc() }).then(function () { toast('HTML을 저장했어요'); }).catch(function (er) {
+        var c = er && er.code;
+        if (c === 'declined') return;
+        toast(c === 'rate_limited' ? '잠시 뒤에 다시 눌러 주세요' : 'HTML 저장을 지원하지 않는 화면이에요');
+      });
+    } else if (act === 'cat') {
+      var yc = window.scrollY; ui.cat = b.dataset.cat; ui.sub = 'all'; render(); window.scrollTo(0, yc);
+    } else if (act === 'sub') {
+      var ys = window.scrollY; ui.sub = b.dataset.sub; render(); window.scrollTo(0, ys);
+    } else if (act === 'open' && it) {
+      if (ro) return;
+      ui.open = ui.open === it.id ? null : it.id; ui.del = null; render();
+    } else if ((act === 'inc' || act === 'dec') && it && w) {
+      patchItem(it, { qty: Math.max(0, (it.qty || 0) + (act === 'inc' ? 1 : -1)) }); render(keep);
+    } else if (act === 'to-list' && it && w) {
+      var added = toList(it); toast(added ? '장보기에 담았어요' : '이미 장보기에 있어요'); render(keep);
+    } else if (act === 'use-start' && it && w) {
+      if (!openUse(it)) { var us = usesOf(it).slice(); us.push({ s: today(), e: '' }); patchItem(it, { uses: us }); toast('사용을 시작했어요 · ' + dayFmt(today())); }
+      render(keep);
+    } else if (act === 'use-end' && it && w) {
+      var op2 = openUse(it);
+      if (op2) {
+        var us2 = usesOf(it).map(function (r) { return r === op2 ? { s: r.s, e: today() } : r; });
+        patchItem(it, { uses: us2, qty: Math.max(0, (it.qty || 0) - 1) });
+        toast(useDays({ s: op2.s, e: today() }) + '일 썼어요 · 수량을 1개 줄였어요');
+      }
+      render(keep);
+    } else if (act === 'use-del' && it && w) {
+      var ux = +b.closest('[data-ux]').dataset.ux;
+      patchItem(it, { uses: usesOf(it).filter(function (r, ix) { return ix !== ux; }) }); render(keep);
+    } else if (act === 'del' && it && w) {
+      if (ui.del === it.id) { removeDoc('items', items, it.id); ui.open = null; ui.del = null; render(); toast('삭제했어요'); }
+      else { ui.del = it.id; render(keep); }
+    } else if (act === 'sug-add' && w) {
+      var si = items.get(b.dataset.iid); if (si && toList(si)) { render(); toast('장보기에 담았어요'); }
+    } else if (act === 'sug-all' && w) {
+      var n = 0; allItems().filter(function (i) { return i.qty <= 0; }).forEach(function (i) { if (toList(i)) n++; });
+      if (n) { render(); toast(n + '개를 담았어요'); }
+    } else if (act === 'chk' && sx && w) {
+      patchShop(sx, { done: !sx.done }); render(keep);
+    } else if ((act === 's-inc' || act === 's-dec') && sx && w) {
+      patchShop(sx, { qty: Math.max(1, sx.qty + (act === 's-inc' ? 1 : -1)) }); render(keep);
+    } else if (act === 'rm' && sx && w) {
+      removeDoc('shop', shop, sx.id); render();
+    } else if (act === 'buy' && w) {
+      applyBought();
+    }
+  });
+
+  document.addEventListener('change', function (e) {
+    var uf = e.target.dataset && e.target.dataset.uf;
+    if (uf) {
+      if (!canWrite()) return;
+      var urow = e.target.closest('[data-ux]'), irow = e.target.closest('[data-id]');
+      var uit = irow && items.get(irow.dataset.id);
+      if (!uit || !urow) return;
+      var ux2 = +urow.dataset.ux, rec = usesOf(uit)[ux2];
+      if (!rec) return;
+      var raw = e.target.value.trim(), iso = raw ? parseDay(raw) : '';
+      if (raw && !iso) { toast('날짜를 확인해 주세요. 숫자만 예: 270109'); e.target.value = dayInputVal(rec[uf]); return; }
+      if (uf === 's' && !iso) { e.target.value = dayInputVal(rec.s); return; }
+      var ns = uf === 's' ? iso : rec.s, ne = uf === 'e' ? iso : rec.e;
+      if (ne && ne < ns) { toast('종료일이 시작일보다 빠를 수 없어요'); e.target.value = dayInputVal(rec[uf]); return; }
+      patchItem(uit, { uses: usesOf(uit).map(function (r, ix) { return ix === ux2 ? { s: ns, e: ne } : r; }) });
+      render();
+      return;
+    }
+    if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-addcorner')) {
+      var dl = $('#subpreset');
+      if (dl) dl.innerHTML = (CORNER_PRESET[e.target.value] || []).map(function (k) { return '<option value="' + esc(k) + '">'; }).join('');
+      return;
+    }
+    var gf = e.target.dataset && e.target.dataset.gf;
+    if (gf) { goodsChange(e.target, gf); return; }
+    var f = e.target.dataset && e.target.dataset.f;
+    if (!f || !canWrite()) return;
+    var row = e.target.closest('[data-id]');
+    var it = row && items.get(row.dataset.id);
+    if (!it) return;
+    var v = e.target.value.trim();
+    if (f === 'name' && !v) { e.target.value = it.name; return; }
+    var patch = {};
+    patch[f] = v;
+    if (f === 'exp') {
+      var pe = parseExpInput(v);
+      if (!pe) { toast('날짜를 확인해 주세요. 숫자만 예: 270109 (연월일) 또는 2701 (연월)'); e.target.value = expInputVal(it); return; }
+      patch.exp = pe.exp; patch.approx = pe.approx;
+    }
+    if (f === 'size') {
+      if (v && !sizeNum(v)) { toast('용량은 숫자만 적어 주세요 (ml)'); e.target.value = sizeNum(it.size); return; }
+      patch.size = sizeNum(v);
+    }
+    if (f === 'corner') { if (CORNER_NAMES.indexOf(v) < 0) return; patch.corner = v; patch.cat = CORNER_CAT[v]; }
+    if (f === 'price') patch.price = priceNum(v);
+    if (f === 'min') patch.min = Math.max(0, parseInt(v, 10) || 0);
+    patchItem(it, patch);
+    render();
+  });
+
+  document.addEventListener('submit', function (e) {
+    var form = e.target.closest('[data-form]');
+    if (!form) return;
+    e.preventDefault();
+    if (!canWrite()) return;
+    if (goodsSubmit(form)) return;
+    var fd = new FormData(form);
+    var name = String(fd.get('name') || '').trim();
+    if (!name) return;
+    if (form.dataset.form === 'item') {
+      var addExp = parseExpInput(fd.get('exp'));
+      if (!addExp) { toast('소비기한을 확인해 주세요. 숫자만 예: 270109'); return; }
+      var corner = String(fd.get('corner') || '기타');
+      if (CORNER_NAMES.indexOf(corner) < 0) corner = '기타';
+      addItem({
+        name: name, corner: corner, cat: CORNER_CAT[corner], sub: String(fd.get('sub') || '').trim(),
+        qty: Math.max(0, parseInt(fd.get('qty'), 10) || 0), size: sizeNum(fd.get('size')), price: priceNum(fd.get('price')),
+        exp: addExp.exp, approx: addExp.approx, note: String(fd.get('note') || '').trim()
+      });
+      ui.add = true; ui.cat = 'all'; render('.add input[name="name"]'); toast('‘' + name + '’을(를) 추가했어요');
+    } else {
+      var match = allItems().filter(function (i) { return i.name === name; })[0];
+      createDoc('shop', shop, { name: name, qty: Math.max(1, parseInt(fd.get('qty'), 10) || 1), done: false, itemId: match ? match.id : '', at: Date.now() });
+      render('.quick input[name="name"]');
+    }
+  });
+
+  document.addEventListener('input', function (e) {
+    if (e.target && e.target.id === 'noticeInput' && canWrite()) { notice = e.target.value; markDirty(); }
+  });
+  $('#q').addEventListener('input', function (e) { ui.q = e.target.value; if (ui.tab === 'stock') $('#view').innerHTML = viewHTML(); });
+
+  renderHead();
+  setSync();
+  init();
+})();
+</script>
+
+</body></html>
