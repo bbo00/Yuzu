@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>마이 스마트 옷장 (My Closet 8.19)</title>
+  <title>마이 스마트 옷장 (My Closet 8.20)</title>
   <!-- ===== v8.18 : iOS 사파리 '홈 화면에 추가' 시 주소창 없는 앱 모드(standalone) ===== -->
   <meta name="theme-color" content="#f8fafc">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -170,23 +170,75 @@
     .lookbook-thumb { width: 68px; height: 68px; border-radius: var(--radius-sm); background: #f8fafc; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; overflow: hidden; border: 1px solid var(--border); cursor: pointer; padding: 4px; }
     .lookbook-thumb img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); }
 
-    /* Calendar Tab */
-    .calendar-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
-    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-weight: 800; font-size: 1.05rem; }
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-    .cal-day-label { text-align: center; font-size: 0.75rem; font-weight: 700; color: var(--text-sub); padding-bottom: 6px; }
-    .cal-cell { aspect-ratio: 1; border: 1px solid var(--border); border-radius: 8px; padding: 2px; display: flex; flex-direction: column; font-size: 0.7rem; font-weight: 600; cursor: pointer; background: #fff; overflow: hidden; }
-    .cal-cell.today { border-color: var(--primary); background: #f5f3ff; }
-    .cal-cell.has-ootd { background: #f0fdf4; border-color: var(--success); }
-    .cal-thumb-stack { display: flex; gap: 1px; margin-top: auto; overflow: hidden; height: 18px; }
-    .cal-thumb-stack img { width: 16px; height: 16px; object-fit: contain; }
-
-    /* Stats Tab */
-    .stats-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; }
-    .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
-    .stat-row:last-child { border-bottom: none; }
-    .stat-val { font-weight: 800; color: var(--primary); }
-    .top-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; padding: 6px 0; }
+    /* ===== v8.20 : 통계 탭 — 요약 카드·SVG 도넛·컬러 바·사진 카드 ===== */
+    .st-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .st-sum-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 11px 7px 10px; text-align: center; min-width: 0; box-shadow: 0 1px 2px rgba(15,23,42,0.03); }
+    .st-sum-ico { font-size: 1.05rem; line-height: 1.15; }
+    .st-sum-label { font-size: 0.67rem; font-weight: 700; color: var(--text-sub); margin-top: 2px; }
+    .st-sum-value { font-size: 0.98rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text-main); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.25; }
+    .st-sum-value small { font-size: 0.62rem; font-weight: 700; color: var(--text-sub); margin-left: 1px; }
+    .st-sum-sub { font-size: 0.58rem; color: #94a3b8; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+    .st-note { font-size: 0.68rem; color: #94a3b8; margin: 9px 2px 14px; line-height: 1.55; }
+    .st-card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 13px; }
+    .st-card-head .section-title { font-size: 0.98rem; }
+    .st-head-sub { font-size: 0.71rem; color: var(--text-sub); font-weight: 700; white-space: nowrap; flex: 0 0 auto; }
+    .st-donut-wrap { position: relative; width: 100%; max-width: 196px; margin: 2px auto 4px; }
+    .st-donut { display: block; width: 100%; height: auto; }
+    .st-donut-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+    .st-donut-center b { font-size: 1.5rem; font-weight: 800; line-height: 1; letter-spacing: -0.02em; }
+    .st-donut-center span { font-size: 0.64rem; color: var(--text-sub); font-weight: 700; margin-top: 4px; }
+    .st-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 12px; margin-top: 12px; }
+    .st-legend-row { display: flex; align-items: center; gap: 6px; font-size: 0.76rem; min-width: 0; }
+    .st-legend-row i { width: 9px; height: 9px; border-radius: 3px; flex: 0 0 auto; }
+    .st-legend-name { color: var(--text-main); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .st-legend-val { margin-left: auto; font-weight: 800; color: var(--text-main); flex: 0 0 auto; }
+    .st-legend-pct { color: var(--text-sub); font-size: 0.69rem; font-weight: 600; width: 32px; text-align: right; flex: 0 0 auto; }
+    .st-season-bars { display: flex; flex-direction: column; gap: 9px; }
+    .st-bar-row { display: grid; grid-template-columns: 50px minmax(0, 1fr) 74px; align-items: center; gap: 8px; }
+    .st-bar-name { font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+    .st-bar-track { height: 9px; background: #f1f5f9; border-radius: 99px; overflow: hidden; }
+    .st-bar-fill { height: 100%; border-radius: 99px; }
+    .st-bar-val { font-size: 0.71rem; color: var(--text-sub); text-align: right; font-weight: 600; white-space: nowrap; }
+    .st-foot-note { font-size: 0.66rem; color: #94a3b8; line-height: 1.55; margin-top: 11px; }
+    .st-brand-bars { display: flex; flex-direction: column; gap: 9px; }
+    .st-brand-row { display: flex; flex-direction: column; gap: 4px; }
+    .st-brand-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+    .st-brand-name { font-size: 0.78rem; font-weight: 700; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .st-brand-val { font-size: 0.71rem; color: var(--text-sub); font-weight: 700; flex: 0 0 auto; }
+    .st-item-list { display: flex; flex-direction: column; gap: 8px; }
+    .st-item-row { display: flex; align-items: center; gap: 10px; padding: 7px 9px 7px 7px; border: 1px solid var(--border); border-radius: 12px; background: #fbfcfe; cursor: pointer; }
+    .st-item-row:active { background: #f1f5f9; }
+    .st-item-thumb { width: 46px; height: 46px; border-radius: 10px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden; flex: 0 0 auto; font-size: 1.25rem; }
+    .st-item-thumb img { width: 100%; height: 100%; object-fit: contain; padding: 2px; }
+    .st-item-body { min-width: 0; flex: 1 1 auto; }
+    .st-item-name { font-size: 0.82rem; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .st-item-meta { font-size: 0.7rem; color: var(--text-sub); margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .st-item-right { flex: 0 0 auto; text-align: right; }
+    .st-item-big { font-size: 0.82rem; font-weight: 800; color: var(--primary); white-space: nowrap; }
+    .st-item-small { font-size: 0.64rem; color: var(--text-sub); font-weight: 600; margin-top: 2px; white-space: nowrap; }
+    .st-sub-head { font-size: 0.78rem; font-weight: 800; color: var(--text-sub); margin: 16px 0 8px; }
+    .st-cat-thumbs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+    .st-cat-thumb { border: 1px solid var(--border); border-radius: 10px; padding: 4px; background: #fff; text-align: center; cursor: pointer; min-width: 0; }
+    .st-cat-thumb:active { background: #f8fafc; }
+    .st-cat-thumb.dim { opacity: 0.42; cursor: default; }
+    .st-ct-img { width: 100%; aspect-ratio: 1; border-radius: 7px; background: #f8fafc; display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 1.1rem; }
+    .st-ct-img img { width: 100%; height: 100%; object-fit: contain; }
+    .st-cat-thumb span { display: block; font-size: 0.61rem; font-weight: 700; color: var(--text-sub); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .st-dormant-count { display: flex; align-items: baseline; gap: 8px; margin-bottom: 11px; flex-wrap: wrap; }
+    .st-dormant-count b { font-size: 1.35rem; font-weight: 800; color: var(--accent); letter-spacing: -0.02em; }
+    .st-dormant-count span { font-size: 0.74rem; color: var(--text-sub); font-weight: 600; }
+    .st-dormant-count.ok b { color: var(--success); }
+    .st-thumb-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+    .st-thumb-grid:empty { display: none; }
+    .st-thumb-tile { position: relative; aspect-ratio: 1; border-radius: 10px; background: #f8fafc; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; font-size: 1.1rem; }
+    .st-thumb-tile img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
+    .st-thumb-more { background: #eef2ff; border-color: #c7d2fe; color: var(--primary); font-weight: 800; font-size: 0.86rem; }
+    @media (max-width: 360px) {
+      .st-sum-value { font-size: 0.9rem; }
+      .st-bar-row { grid-template-columns: 46px minmax(0, 1fr) 68px; gap: 6px; }
+      .st-legend { gap: 6px 8px; }
+      .st-donut-wrap { max-width: 168px; }
+    }
 
     /* Modals */
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.55); z-index: 200; display: none; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(3px); }
@@ -467,7 +519,7 @@
 
   <!-- Top Header -->
   <header>
-    <h1>👗 마이 스마트 옷장 <span style='font-size:0.75rem; background:#4f46e5; color:#fff; padding:2px 8px; border-radius:12px; font-weight:700; vertical-align:middle; margin-left:4px;'>v8.19</span></h1>
+    <h1>👗 마이 스마트 옷장 <span style='font-size:0.75rem; background:#4f46e5; color:#fff; padding:2px 8px; border-radius:12px; font-weight:700; vertical-align:middle; margin-left:4px;'>v8.20</span></h1>
     <div class="header-btns">
       <button class="icon-btn" onclick="exportBackup()" title="현재 옷장 상태를 JSON 파일로 다운로드합니다">📥 백업 저장</button>
       <button class="icon-btn" onclick="document.getElementById('backup-file-input').click()" title="모바일/PC 백업 파일을 불러와 동기화합니다">📤 백업 불러오기</button>
@@ -676,84 +728,103 @@
       <div class="lookbook-grid" id="lookbook-list"></div>
     </div>
 
-    <!-- TAB 3: CALENDAR (OOTD) -->
-    <div id="tab-calendar" class="tab-content">
-      <div class="calendar-card">
-        <div class="calendar-header">
-          <span id="cal-month-title">2026년 11월</span>
-          <span style="font-size: 0.8rem; color: var(--primary); font-weight: 600;">OOTD 착장 일기</span>
-        </div>
-        <div class="cal-grid" id="calendar-days-header">
-          <div class="cal-day-label">일</div>
-          <div class="cal-day-label">월</div>
-          <div class="cal-day-label">화</div>
-          <div class="cal-day-label">수</div>
-          <div class="cal-day-label">목</div>
-          <div class="cal-day-label">금</div>
-          <div class="cal-day-label">토</div>
-        </div>
-        <div class="cal-grid" id="calendar-grid"></div>
-      </div>
-      <div id="ootd-detail-box" style="margin-top: 14px;"></div>
-    </div>
-
-    <!-- TAB 4: STATS -->
+    <!-- TAB 3: STATS (v8.20 개편) -->
     <div id="tab-stats" class="tab-content">
-      <div class="stats-card">
-        <div class="section-title" style="margin-bottom: 12px;">📊 옷장 자산 & 분석</div>
-        <div class="stat-row">
-          <span>총 보유 수량</span>
-          <span class="stat-val" id="st-total-count">0벌</span>
+
+      <!-- 요약 카드 3종 -->
+      <div class="st-summary">
+        <div class="st-sum-card">
+          <div class="st-sum-ico">👚</div>
+          <div class="st-sum-label">총 보유</div>
+          <div class="st-sum-value" id="st-sum-count">0<small>벌</small></div>
+          <div class="st-sum-sub" id="st-sum-count-sub">전체 0벌</div>
         </div>
-        <div class="stat-row">
-          <span>옷장 추정 총 자산</span>
-          <span class="stat-val" id="st-total-price">₩0</span>
+        <div class="st-sum-card">
+          <div class="st-sum-ico">💰</div>
+          <div class="st-sum-label">총 자산</div>
+          <div class="st-sum-value" id="st-sum-price">₩0</div>
+          <div class="st-sum-sub" id="st-sum-price-sub">입력 0벌</div>
         </div>
-        <div class="stat-row">
-          <span>평균 옷 단가</span>
-          <span class="stat-val" id="st-avg-price">₩0</span>
+        <div class="st-sum-card">
+          <div class="st-sum-ico">🏷️</div>
+          <div class="st-sum-label">평균 단가</div>
+          <div class="st-sum-value" id="st-sum-avg">₩0</div>
+          <div class="st-sum-sub" id="st-sum-avg-sub">입력분 기준</div>
         </div>
       </div>
+      <div class="st-note" id="st-asset-note"></div>
 
+      <!-- 분류별 보유 비율 도넛 -->
       <div class="stats-card">
-        <div class="section-title" style="margin-bottom: 10px;">👗 분류별 보유 현황</div>
-        <div id="st-cat-list"></div>
+        <div class="st-card-head">
+          <span class="section-title">👗 분류별 보유 비율</span>
+          <span class="st-head-sub" id="st-cat-sub"></span>
+        </div>
+        <div class="st-donut-wrap">
+          <svg class="st-donut" viewBox="0 0 42 42" id="st-donut" role="img" aria-label="분류별 보유 비율 도넛 차트"></svg>
+          <div class="st-donut-center">
+            <b id="st-donut-total">0</b>
+            <span>벌 보유</span>
+          </div>
+        </div>
+        <div class="st-legend" id="st-cat-legend"></div>
       </div>
 
+      <!-- 계절별 보유 분포 -->
       <div class="stats-card">
-        <div class="stats-card" style="margin-bottom: 16px;">
-        <div class="section-title" style="margin-bottom: 10px;">🏷️ 브랜드 점유율 TOP 5</div>
-        <div id="st-brand-list"></div>
+        <div class="st-card-head">
+          <span class="section-title">🌤️ 계절별 보유 분포</span>
+          <span class="st-head-sub" id="st-season-sub"></span>
+        </div>
+        <div class="st-season-bars" id="st-season-bars"></div>
+        <div class="st-foot-note" id="st-season-note"></div>
       </div>
 
+      <!-- 브랜드 점유율 -->
       <div class="stats-card">
-        <div class="section-title" style="margin-bottom: 10px;">🏆 가장 많이 입은 최애템 TOP 3</div>
-        <div id="top-worn-list"></div>
+        <div class="st-card-head">
+          <span class="section-title">🏷️ 브랜드 점유율 TOP 8</span>
+          <span class="st-head-sub" id="st-brand-sub"></span>
+        </div>
+        <div class="st-brand-bars" id="st-brand-bars"></div>
       </div>
 
+      <!-- 대표 아이템 (사진 썸네일) -->
       <div class="stats-card">
-        <div class="section-title" style="margin-bottom: 10px;">💤 방치된 옷 (착용 0회)</div>
-        <div id="dormant-worn-list"></div>
+        <div class="st-card-head">
+          <span class="section-title" id="st-highlight-title">💎 대표 아이템</span>
+        </div>
+        <div class="st-item-list" id="st-highlight-list"></div>
+        <div class="st-sub-head">분류별 대표 아이템</div>
+        <div class="st-cat-thumbs" id="st-cat-thumbs"></div>
       </div>
+
+      <!-- 방치된 옷 -->
+      <div class="stats-card">
+        <div class="st-card-head">
+          <span class="section-title">💤 방치된 옷 (착용 0회)</span>
+          <span class="st-head-sub" id="st-dormant-sub"></span>
+        </div>
+        <div id="st-dormant-summary"></div>
+        <div class="st-thumb-grid" id="st-dormant-thumbs"></div>
+        <div class="st-foot-note" id="st-dormant-note"></div>
+      </div>
+
     </div>
 
   </div>
 
   <!-- Bottom Navigation -->
   <nav class="nav-bar">
-    <button class="nav-item active" onclick="switchTab('closet')">
+    <button class="nav-item active" data-tab="closet" onclick="switchTab('closet')">
       <svg viewBox="0 0 24 24"><path d="M12 2a4 4 0 0 0-4 4c0 1.1.45 2.1 1.17 2.83L2 15v5h20v-5l-7.17-6.17A4 4 0 0 0 16 6a4 4 0 0 0-4-4zm0 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
       <span>내 옷장</span>
     </button>
-    <button class="nav-item" onclick="switchTab('lookbook')">
+    <button class="nav-item" data-tab="lookbook" onclick="switchTab('lookbook')">
       <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.22 19.57 10.57 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
       <span>코디</span>
     </button>
-    <button class="nav-item" onclick="switchTab('calendar')">
-      <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
-      <span>캘린더</span>
-    </button>
-    <button class="nav-item" onclick="switchTab('stats')">
+    <button class="nav-item" data-tab="stats" onclick="switchTab('stats')">
       <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
       <span>통계</span>
     </button>
@@ -1753,20 +1824,22 @@
       if (!skipSync) { try { if (syncCfg && syncCfg.ns) syncCfg.dirty = true; scheduleSyncPush(); } catch (e) { console.warn('[sync]', e); } }
     }
 
-    // --- Tab Navigation ---
+    // --- Tab Navigation (v8.20: 캘린더 탭 제거 → 옷장·코디·통계 3탭) ---
     let closetSubtab = 'closet';   // v8.11: 내 옷장 / 날씨·오늘 코디 서브 탭 상태
     function switchTab(tabId) {
+      const target = document.getElementById('tab-' + tabId);
+      if (!target) return;   // v8.20: 없는 탭(제거된 캘린더 등)은 조용히 무시
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      document.getElementById(`tab-${tabId}`).classList.add('active');
-      const idx = tabId === 'closet' ? 0 : tabId === 'lookbook' ? 1 : tabId === 'calendar' ? 2 : 3;
-      document.querySelectorAll('.nav-item')[idx].classList.add('active');
+      target.classList.add('active');
+      // v8.20: 탭 개수가 바뀌어도 어긋나지 않게 하드코딩 인덱스 대신 data-tab 으로 활성 표시
+      document.querySelectorAll('.nav-item').forEach(el => {
+        el.classList.toggle('active', el.getAttribute('data-tab') === tabId);
+      });
       if (tabId === 'closet') {
         // v8.11: 하단 '내 옷장'을 누르면 날씨 뷰에 있더라도 내 옷장 목록으로 돌아온다
         if (closetSubtab === 'weather') { switchClosetSubtab('closet'); } else { renderCloset(); }
       }
       if (tabId === 'lookbook') renderLookbooks();
-      if (tabId === 'calendar') renderCalendar();
       if (tabId === 'stats') renderStats();
     }
 
@@ -3253,6 +3326,11 @@
     // --- Lookbook & Step-by-Step Auto Sequence Workflow ---
     let activeSlots = { outer: null, top: null, bottom: null, shoes: null };
 
+    /* ===== v8.20 : 코디 조합기 단계 순서 (정의 누락 복구) =====
+       이 상수가 없어서 슬롯 클릭 시 ReferenceError: WORKFLOW_STEPS is not defined 가 나고
+       아우터/상의/하의/신발 선택 창이 열리지 않았다. */
+    const WORKFLOW_STEPS = ['아우터', '상의', '하의', '신발'];
+
     function startWorkflowAt(slotCat) {
       pickSlotItem(slotCat);
     }
@@ -3262,7 +3340,7 @@
       const stepIdx = WORKFLOW_STEPS.indexOf(category) + 1;
       document.getElementById('step-indicator').innerText = `${stepIdx}단계: ${category} 선택`;
 
-      const candidateList = appData.clothes.filter(c => (c.status || '보유중') === '보유중' && c.cat.startsWith(category));
+      const candidateList = appData.clothes.filter(c => (c.status || '보유중') === '보유중' && String(c.cat || '').indexOf(category) === 0);
       const grid = document.getElementById('selector-grid');
 
       if (candidateList.length === 0) {
@@ -3285,7 +3363,7 @@
     }
 
     function selectSlotItem(id) {
-      const item = appData.clothes.find(c => c.id === id);
+      const item = appData.clothes.find(c => c.id === id) || appData.clothes.find(c => String(c.id) === String(id));
       if (!item || !selectedSlot) return;
 
       activeSlots[selectedSlot] = item.id;
@@ -3405,7 +3483,7 @@
       }
 
       container.innerHTML = list.map(lb => {
-        const thumbs = lb.itemIds.map(id => {
+        const thumbs = (lb.itemIds || []).map(id => {
           const item = appData.clothes.find(c => c.id === id);
           if (!item) return '';
           return `<div class="lookbook-thumb" onclick="openClothesDetail(${item.id})" title="${item.name}">${(item.photo || item.fitPhoto) ? `<img src="${item.photo || item.fitPhoto}" alt="${item.name}">` : '👕'}</div>`;
@@ -3498,167 +3576,181 @@
       });
 
       await saveAppStorage();
-      renderCalendar();
       renderCloset();
       renderStats();
       alert(`오늘(${today}) 착장으로 [${lb.name}]이 기록되었습니다! 🎉`);
     }
 
-    // --- Calendar Tab (OOTD) ---
-    function renderCalendar() {
-      const grid = document.getElementById('calendar-grid');
-      const daysInMonth = 30;
-      const startDayOfWeek = 0;
+    // --- Stats Tab (v8.20 : 요약 카드 · SVG 도넛 · 컬러 바 · 사진 카드) ---
+    const ST_CAT_COLORS = { '아우터': '#6366f1', '상의': '#22c55e', '하의': '#0ea5e9', '원피스': '#ec4899', '신발': '#f59e0b', '잡화': '#8b5cf6' };
+    const ST_SEASON_COLORS = { '봄': '#f472b6', '여름': '#fbbf24', '가을': '#fb923c', '겨울': '#38bdf8' };
+    const ST_BRAND_COLORS = ['#4f46e5', '#0ea5e9', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6', '#f43f5e'];
 
-      let html = '';
-      for (let i = 0; i < startDayOfWeek; i++) {
-        html += `<div class="cal-cell" style="background:#f8fafc; border-color:transparent;"></div>`;
-      }
-
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateStr = `2026-11-${String(day).padStart(2, '0')}`;
-        const hasOotd = appData.ootdCalendar && appData.ootdCalendar[dateStr];
-        const isToday = day === 12;
-
-        let ootdThumbs = '';
-        if (hasOotd) {
-          const lb = appData.lookbooks.find(l => l.id === hasOotd.lookbookId);
-          const ootdIds = (lb && lb.itemIds) ? lb.itemIds : (hasOotd.itemIds || []);
-          if (ootdIds.length) {
-            ootdThumbs = ootdIds.slice(0, 3).map(id => {
-              const item = appData.clothes.find(c => c.id === id);
-              return item && (item.photo || item.fitPhoto) ? `<img src="${item.photo || item.fitPhoto}">` : '👕';
-            }).join('');
-          }
-        }
-
-        html += `
-          <div class="cal-cell ${isToday ? 'today' : ''} ${hasOotd ? 'has-ootd' : ''}" onclick="showOotdDetail('${dateStr}')">
-            <div>${day}${isToday ? '★' : ''}</div>
-            <div class="cal-thumb-stack">${ootdThumbs}</div>
-          </div>
-        `;
-      }
-
-      grid.innerHTML = html;
+    function stNum(n) { return String(Math.round(Number(n) || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+    function stWon(n) { return '₩' + stNum(n); }
+    function stId(id) { return String(id == null ? '' : id).replace(/[^0-9A-Za-z_-]/g, ''); }
+    function stPriceOf(c) { const n = Number(String(c && c.price != null ? c.price : '').replace(/[^0-9.-]/g, '')); return isFinite(n) && n > 0 ? n : 0; }
+    function stRecentOf(c) { return Number(c && c.updatedAt ? c.updatedAt : 0) || 0; }
+    function stPhotoOf(item) {
+      const src = item ? (item.photo || item.fitPhoto || '') : '';
+      return src ? `<img src="${src}" alt="">` : catEmoji(item && item.cat);
+    }
+    function stOpen(id) {
+      const it = (appData.clothes || []).filter(c => String(c.id) === String(id))[0];
+      if (it) openClothesDetail(it.id);
     }
 
-    function showOotdDetail(dateStr) {
-      const record = appData.ootdCalendar[dateStr];
-      const box = document.getElementById('ootd-detail-box');
-
-      if (!record) {
-        box.innerHTML = `
-          <div class="lookbook-card" style="background:#f1f5f9;">
-            <div class="lookbook-title">${dateStr} 착장 없음</div>
-            <div class="lookbook-desc">[코디] 탭에서 완성된 룩북의 <b>[오늘 착용]</b>을 누르면 캘린더에 착용 내역이 등록됩니다.</div>
-          </div>
-        `;
-        return;
-      }
-
-      const lb = appData.lookbooks.find(l => l.id === record.lookbookId);
-      const recIds = (lb && lb.itemIds) ? lb.itemIds : (record.itemIds || []);
-      const thumbs = recIds.map(id => {
-        const item = appData.clothes.find(c => c.id === id);
-        return item ? `<div class="lookbook-thumb" onclick="openClothesDetail(${item.id})">${item.photo ? `<img src="${item.photo}">` : '👕'}</div>` : '';
-      }).join('');
-
-      box.innerHTML = `
-        <div class="lookbook-card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div class="lookbook-title">📅 ${dateStr} OOTD: ${record.name}</div>
-            <button class="del-btn" onclick="deleteOotd('${dateStr}')">✕</button>
-          </div>
-          <div class="lookbook-items-preview" style="margin-top:8px;">${thumbs}</div>
-          <button class="btn-submit" style="margin-top:8px; padding:6px 10px; font-size:0.78rem;" onclick="openOotdCollage('${dateStr}')">👗 착장 매칭 보기</button>
-        </div>
-      `;
-    }
-
-    async function deleteOotd(dateStr) {
-      if (confirm(`${dateStr} 착장 기록을 삭제할까요?`)) {
-        delete appData.ootdCalendar[dateStr];
-        await saveAppStorage();
-        renderCalendar();
-        document.getElementById('ootd-detail-box').innerHTML = '';
-      }
-    }
-
-    // --- Stats Tab ---
     function renderStats() {
       const clothes = appData.clothes || [];
-      const activeClothes = clothes.filter(c => (c.status || '보유중') === '보유중');
-      const totalCount = activeClothes.length;
-      const pricedClothes = activeClothes.filter(c => (c.price || 0) > 0);
-      const totalPrice = pricedClothes.reduce((sum, c) => sum + c.price, 0);
-      const avgPrice = pricedClothes.length > 0 ? Math.round(totalPrice / pricedClothes.length) : 0;
+      const active = clothes.filter(c => (c.status || '보유중') === '보유중');
+      const total = active.length;
+      const priced = active.filter(c => stPriceOf(c) > 0);
+      const totalPrice = priced.reduce((s, c) => s + stPriceOf(c), 0);
+      const avgPrice = priced.length ? Math.round(totalPrice / priced.length) : 0;
+      const noPrice = total - priced.length;
+      const pctOf = n => total ? Math.round((n / total) * 100) : 0;
 
-      document.getElementById('st-total-count').innerText = `${totalCount}벌`;
-      document.getElementById('st-total-price').innerText = pricedClothes.length > 0 ? `₩${totalPrice.toLocaleString()} (${pricedClothes.length}벌)` : '미기재';
-      document.getElementById('st-avg-price').innerText = pricedClothes.length > 0 ? `₩${avgPrice.toLocaleString()}` : '-';
+      const setTxt = (id, t) => { const el = document.getElementById(id); if (el) el.innerText = t; };
+      const setHtml = (id, h) => { const el = document.getElementById(id); if (el) el.innerHTML = h; };
 
-      // Brand Ranking Bar Chart
+      /* ---------- 1. 요약 카드 3종 ---------- */
+      setHtml('st-sum-count', `${total}<small>벌</small>`);
+      setTxt('st-sum-count-sub', clothes.length > total ? `전체 ${clothes.length}벌` : '전체 보유');
+      setTxt('st-sum-price', stWon(totalPrice));
+      setTxt('st-sum-price-sub', `입력 ${priced.length} · 미입력 ${noPrice}`);
+      setTxt('st-sum-avg', stWon(avgPrice));
+      setTxt('st-sum-avg-sub', priced.length ? `입력분 ${priced.length}벌` : '가격 미입력');
+      setTxt('st-asset-note', priced.length
+        ? `총 자산 ${stWon(totalPrice)} · 평균 단가 ${stWon(avgPrice)} — 가격을 입력한 ${priced.length}벌 기준이고, 미입력 ${noPrice}벌은 빠져 있어요.`
+        : '아직 가격을 입력한 옷이 없어 자산을 계산할 수 없어요. 옷을 열어 구매 가격을 넣으면 여기에 쌓입니다.');
+
+      /* ---------- 2. 분류별 보유 비율 (SVG 도넛) ---------- */
+      const catRows = CLOTHES_CATS.map(cat => ({ cat: cat, n: active.filter(c => c.cat === cat).length })).filter(r => r.n > 0);
+      setTxt('st-cat-sub', total ? total + '벌' : '');
+      setTxt('st-donut-total', String(total));
+      let svg = `<circle cx="21" cy="21" r="15.915" fill="none" stroke="#eef2f7" stroke-width="7" pathLength="100"></circle>`;
+      if (total > 0) {
+        let cum = 0;
+        catRows.forEach(r => {
+          const raw = (r.n / total) * 100;
+          const seg = Math.max(raw - 0.6, 0.25);
+          const off = 25 - cum;
+          svg += `<circle cx="21" cy="21" r="15.915" fill="none" stroke="${ST_CAT_COLORS[r.cat] || '#94a3b8'}" stroke-width="7" pathLength="100"`
+            + ` stroke-dasharray="${seg.toFixed(2)} ${(100 - seg).toFixed(2)}" stroke-dashoffset="${off.toFixed(2)}">`
+            + `<title>${escHtml(r.cat)} ${r.n}벌 (${pctOf(r.n)}%)</title></circle>`;
+          cum += raw;
+        });
+      }
+      setHtml('st-donut', svg);
+      setHtml('st-cat-legend', CLOTHES_CATS.map(cat => {
+        const n = active.filter(c => c.cat === cat).length;
+        return `<div class="st-legend-row"><i style="background:${ST_CAT_COLORS[cat] || '#94a3b8'}"></i>`
+          + `<span class="st-legend-name">${catEmoji(cat)} ${cat}</span>`
+          + `<b class="st-legend-val">${n}</b><span class="st-legend-pct">${pctOf(n)}%</span></div>`;
+      }).join(''));
+
+      /* ---------- 3-1. 계절별 보유 분포 ---------- */
+      const seasonRows = SEASON_KEYS.map(s => ({ s: s, n: active.filter(c => seasonListOf(c).indexOf(s) >= 0).length }));
+      const multiSeason = active.filter(c => seasonListOf(c).length > 1).length;
+      const noSeason = active.filter(c => seasonListOf(c).length === 0).length;
+      const seasonMax = Math.max.apply(null, seasonRows.map(r => r.n).concat([1]));
+      setTxt('st-season-sub', multiSeason ? `복수 계절 ${multiSeason}벌` : '');
+      setHtml('st-season-bars', seasonRows.map(r => {
+        const w = Math.round((r.n / seasonMax) * 100);
+        return `<div class="st-bar-row">`
+          + `<span class="st-bar-name">${seasonIconOf(r.s)} ${r.s}</span>`
+          + `<div class="st-bar-track"><div class="st-bar-fill" style="width:${r.n ? Math.max(w, 3) : 0}%;background:${ST_SEASON_COLORS[r.s]}"></div></div>`
+          + `<span class="st-bar-val">${r.n}벌 ${pctOf(r.n)}%</span></div>`;
+      }).join(''));
+      setTxt('st-season-note', noSeason
+        ? `계절 미지정 ${noSeason}벌은 어느 계절에도 잡히지 않아요. 한 벌이 여러 계절에 들어가므로 합계는 보유 수보다 클 수 있어요.`
+        : '한 벌이 여러 계절에 들어가므로 합계는 보유 수보다 클 수 있어요.');
+
+      /* ---------- 3-2. 브랜드 점유율 TOP 8 ---------- */
       const brandMap = {};
-      activeClothes.forEach(c => {
-        const b = (c.brand || '').trim() || '노브랜드/미기재';
+      active.forEach(c => {
+        const b = String(c.brand || '').trim() || '브랜드 미기재';
         brandMap[b] = (brandMap[b] || 0) + 1;
       });
-      const topBrands = Object.entries(brandMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
-      const brandStatsEl = document.getElementById('st-brand-list');
-      if (brandStatsEl) {
-        brandStatsEl.innerHTML = topBrands.map(([b, cnt]) => {
-          const pct = Math.round((cnt / (totalCount || 1)) * 100);
-          return `
-            <div class="brand-stat-bar">
-              <span class="brand-stat-name">${b}</span>
-              <div class="brand-stat-track">
-                <div class="brand-stat-fill" style="width: ${pct}%;"></div>
-              </div>
-              <span class="brand-stat-val">${cnt}벌 (${pct}%)</span>
-            </div>
-          `;
-        }).join('');
+      const brandRows = Object.keys(brandMap).map(b => ({ b: b, n: brandMap[b] }))
+        .sort((x, y) => y.n - x.n || x.b.localeCompare(y.b)).slice(0, 8);
+      setTxt('st-brand-sub', Object.keys(brandMap).length ? Object.keys(brandMap).length + '개 브랜드' : '');
+      const brandMax = brandRows.length ? brandRows[0].n : 1;
+      setHtml('st-brand-bars', brandRows.map((r, i) => {
+        const pct = pctOf(r.n);
+        const w = Math.max(Math.round((r.n / brandMax) * 100), 4);
+        return `<div class="st-brand-row">`
+          + `<div class="st-brand-top"><span class="st-brand-name">${escHtml(r.b)}</span>`
+          + `<span class="st-brand-val">${r.n}벌 · ${pct}%</span></div>`
+          + `<div class="st-bar-track"><div class="st-bar-fill" style="width:${w}%;background:${ST_BRAND_COLORS[i % ST_BRAND_COLORS.length]}"></div></div></div>`;
+      }).join('') || '<div class="empty-state">아직 브랜드 정보가 없어요.</div>');
+
+      /* ---------- 4-1. 대표 아이템 (사진 썸네일) ---------- */
+      const wornTop = active.filter(c => Number(c.wearCount || 0) > 0)
+        .sort((a, b) => Number(b.wearCount || 0) - Number(a.wearCount || 0) || stRecentOf(b) - stRecentOf(a));
+      const pricedTop = priced.slice().sort((a, b) => stPriceOf(b) - stPriceOf(a) || stRecentOf(b) - stRecentOf(a));
+      const recentTop = active.slice().sort((a, b) => stRecentOf(b) - stRecentOf(a));
+      let picks = [], pickTitle = '💎 대표 아이템', bigOf = null, smallOf = null;
+      if (wornTop.length) {
+        picks = wornTop.slice(0, 3);
+        pickTitle = '🏆 최애템 TOP 3';
+        bigOf = c => `${Number(c.wearCount || 0)}회`;
+        smallOf = c => '착용';
+      } else if (pricedTop.length) {
+        picks = pricedTop.slice(0, 4);
+        pickTitle = '💎 대표 고가템 TOP 4';
+        bigOf = c => stWon(stPriceOf(c));
+        smallOf = c => '입력 가격';
+      } else {
+        picks = recentTop.slice(0, 4);
+        pickTitle = '🆕 최근 등록한 옷';
+        bigOf = c => catEmoji(c.cat);
+        smallOf = c => '';
       }
+      setTxt('st-highlight-title', pickTitle);
+      setHtml('st-highlight-list', picks.map(c => {
+        const meta = [catEmoji(c.cat) + ' ' + escHtml(c.cat || '분류 미지정')]
+          .concat(c.brand ? [escHtml(c.brand)] : [])
+          .concat(Number(c.wearCount || 0) > 0 && wornTop.length ? ['착용 ' + Number(c.wearCount || 0) + '회'] : [])
+          .join(' · ');
+        return `<div class="st-item-row" onclick="stOpen('${stId(c.id)}')">`
+          + `<div class="st-item-thumb">${stPhotoOf(c)}</div>`
+          + `<div class="st-item-body"><div class="st-item-name">${escHtml(c.name)}</div><div class="st-item-meta">${meta}</div></div>`
+          + `<div class="st-item-right"><div class="st-item-big">${bigOf(c)}</div>`
+          + (smallOf(c) ? `<div class="st-item-small">${smallOf(c)}</div>` : '')
+          + `</div></div>`;
+      }).join('') || '<div class="empty-state">아직 등록한 옷이 없어요.</div>');
 
-      // v8.9: 분류별 보유 현황 (원피스 포함 6종)
-      const catStatsEl = document.getElementById('st-cat-list');
-      if (catStatsEl) {
-        catStatsEl.innerHTML = CLOTHES_CATS.map(cat => {
-          const n = activeClothes.filter(c => c.cat === cat).length;
-          const pct = Math.round((n / (totalCount || 1)) * 100);
-          return `
-            <div class="brand-stat-bar">
-              <span class="brand-stat-name">${catEmoji(cat)} ${cat}</span>
-              <div class="brand-stat-track">
-                <div class="brand-stat-fill" style="width: ${pct}%;"></div>
-              </div>
-              <span class="brand-stat-val">${n}벌 (${pct}%)</span>
-            </div>
-          `;
-        }).join('');
-      }
+      /* ---------- 4-2. 분류별 대표 아이템 ---------- */
+      setHtml('st-cat-thumbs', CLOTHES_CATS.map(cat => {
+        const list = active.filter(c => c.cat === cat);
+        if (!list.length) {
+          return `<div class="st-cat-thumb dim"><div class="st-ct-img">${catEmoji(cat)}</div><span>${cat}</span></div>`;
+        }
+        const withPhoto = list.filter(c => c.photo || c.fitPhoto);
+        const pool = withPhoto.length ? withPhoto : list;
+        const pick = pool.slice().sort((a, b) => stPriceOf(b) - stPriceOf(a) || stRecentOf(b) - stRecentOf(a))[0];
+        return `<div class="st-cat-thumb" onclick="stOpen('${stId(pick.id)}')" title="${escHtml(pick.name)}">`
+          + `<div class="st-ct-img">${stPhotoOf(pick)}</div><span>${cat} ${list.length}</span></div>`;
+      }).join(''));
 
-      const sortedByWear = [...activeClothes].sort((a, b) => (b.wearCount || 0) - (a.wearCount || 0));
-      const top3 = sortedByWear.slice(0, 3).filter(c => (c.wearCount || 0) > 0);
-
-      document.getElementById('top-worn-list').innerHTML = top3.map((c, i) => `
-        <div class="top-item" onclick="openClothesDetail(${c.id})" style="cursor:pointer;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-weight:800; color:var(--primary); font-size:1.1rem;">${i+1}</span>
-            <span>${c.name} (${c.brand || '브랜드 미기재'})</span>
-          </div>
-          <div style="font-weight:700; color:var(--success);">${c.wearCount}회 착용</div>
-        </div>
-      `).join('') || '<div class="empty-state">아직 착용 기록이 없어요. 코디를 입고 기록해 보세요!</div>';
-
-      const dormant = activeClothes.filter(c => (c.wearCount || 0) === 0);
-      document.getElementById('dormant-worn-list').innerHTML = dormant.slice(0, 5).map(c => `
-        <div class="top-item" onclick="openClothesDetail(${c.id})" style="cursor:pointer;">
-          <div>${c.name} (${c.brand || '브랜드 미기재'})</div>
-          <div style="color:var(--text-sub);">0회 착용</div>
-        </div>
-      `).join('') || '<div class="empty-state">방치된 옷이 없어요! 모든 옷을 잘 활용하고 계십니다 👍</div>';
+      /* ---------- 4-3. 방치된 옷 (착용 0회) ---------- */
+      const dormant = active.filter(c => Number(c.wearCount || 0) === 0)
+        .sort((a, b) => stPriceOf(b) - stPriceOf(a) || stRecentOf(b) - stRecentOf(a));
+      const hasWear = active.some(c => Number(c.wearCount || 0) > 0);
+      setTxt('st-dormant-sub', total ? pctOf(dormant.length) + '%' : '');
+      setHtml('st-dormant-summary', dormant.length
+        ? `<div class="st-dormant-count"><b>${dormant.length}벌</b><span>보유 ${total}벌 중 ${pctOf(dormant.length)}%가 아직 한 번도 안 입었어요</span></div>`
+        : `<div class="st-dormant-count ok"><b>0벌</b><span>모든 옷에 착용 기록이 있어요 👍</span></div>`);
+      const preview = dormant.slice(0, 8);
+      let tiles = preview.map(c => `<div class="st-thumb-tile" onclick="stOpen('${stId(c.id)}')" title="${escHtml(c.name)}">${stPhotoOf(c)}</div>`).join('');
+      if (dormant.length > preview.length) tiles += `<div class="st-thumb-tile st-thumb-more">+${dormant.length - preview.length}</div>`;
+      setHtml('st-dormant-thumbs', tiles);
+      setTxt('st-dormant-note', dormant.length
+        ? (hasWear
+          ? '코디 탭에서 [오늘 착용]을 누르면 그 옷의 착용 횟수가 쌓여 여기서 빠져요.'
+          : '아직 착용 기록이 하나도 없어 보유한 옷이 모두 0회로 잡혀요. 코디 탭에서 [오늘 착용]을 누르면 기록이 시작돼요.')
+        : '');
     }
 
     // --- Reset & Export ---
@@ -3738,7 +3830,6 @@
       renderWeather();
       renderCloset();
       renderLookbooks();
-      renderCalendar();
       renderStats();
     }
 
@@ -4278,15 +4369,6 @@
       `;
     }
 
-    function openOotdCollage(dateStr) {
-      const rec = (appData.ootdCalendar || {})[dateStr];
-      if (!rec) { showToast('이 날짜의 착장 기록이 없습니다'); return; }
-      const lb = (appData.lookbooks || []).find(l => l.id === rec.lookbookId);
-      if (lb) return openLookbookCollageModal(lb.id);
-      if (rec.itemIds && rec.itemIds.length) return openRecoCollage(rec.itemIds.join(','));
-      showToast('이 착장의 아이템을 찾을 수 없습니다');
-    }
-
     function openRecoCollage(ids) {      const list = String(ids).split(',').map(x => itemById(x)).filter(Boolean);
       if (!list.length) return;
       const outer = list.find(c => c.cat === '아우터');
@@ -4326,7 +4408,7 @@
       };
       list.forEach(it => { it.wearCount = (it.wearCount || 0) + 1; });
       await saveAppStorage();
-      renderCalendar(); renderCloset(); renderStats(); renderOutfitReco();
+      renderCloset(); renderStats(); renderOutfitReco();
       showToast(`오늘 착장으로 기록했습니다 (+1회씩) 🎉`);
     }
 
