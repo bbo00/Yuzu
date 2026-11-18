@@ -141,7 +141,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .chip.on{background:#1F242B;border-color:#1F242B;color:#fff;font-weight:650}
 .chip .n{color:var(--muted2);font-size:11px;margin-left:3px}
 .chip.on .n{color:#C9CED7}
-.filterrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:11px}
+.filterrow{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;margin-bottom:11px;align-items:center}
 .filterrow select{
   width:100%;font-size:16px;background:var(--card2);border:1px solid var(--line2);border-radius:12px;
   padding:10px 11px;color:var(--fg);appearance:none;
@@ -189,6 +189,35 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .mini:disabled{opacity:.4}
 .pmenu{position:absolute;right:9px;top:9px;width:26px;height:26px;border-radius:8px;border:0;background:transparent;color:#9AA2AD;font-size:15px;display:grid;place-items:center}
 .pcard .ptop{padding-right:22px}
+.pcard:active{background:#FCFCFD}
+
+/* ---------- 보기 밀도: 펼치기(상세 카드) / 접기(제품명 위주 행) ---------- */
+.denseg{display:flex;background:var(--card2);border:1px solid var(--line2);border-radius:12px;padding:2px;height:40px}
+.denseg button{
+  border:0;background:transparent;color:#6B7280;font-size:12px;font-weight:650;letter-spacing:-.2px;
+  padding:0 9px;border-radius:10px;line-height:1.1;white-space:nowrap
+}
+.denseg button.on{background:#fff;color:var(--fg);box-shadow:0 1px 3px rgba(16,24,40,.12)}
+.plist.compact{gap:5px}
+.crow{
+  display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:12px;
+  padding:8px 9px;position:relative;min-height:42px
+}
+.crow:active{background:var(--card2)}
+.crow.sold{opacity:.62}
+.crow .cname{
+  flex:1 1 auto;min-width:0;font-size:13.5px;font-weight:650;letter-spacing:-.25px;color:var(--fg);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.crow .csz{
+  flex:0 1 auto;min-width:0;max-width:42%;font-size:11px;color:var(--muted);letter-spacing:-.2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right
+}
+.crow .csz i{font-style:normal;color:var(--muted2);margin-right:2px}
+.crow .csz b{color:var(--accent2);font-weight:800;margin-left:1px}
+.crow .cq{flex:0 0 auto;min-width:32px;text-align:right;font-size:12px;font-weight:750;letter-spacing:-.2px;color:var(--fg)}
+.crow .cq small{font-weight:600;color:var(--muted2);font-size:10.5px;margin-left:1px}
+.crow .pmenu{position:static;flex:0 0 26px;width:26px;height:26px}
 
 /* ---------- empty ---------- */
 .empty{text-align:center;padding:40px 16px 34px;color:var(--muted)}
@@ -448,16 +477,20 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     <div class="chips" id="statuschips"></div>
     <div class="filterrow">
       <select id="catsel" aria-label="카테고리">
-        <option value="all">카테고리 전체</option>
+        <option value="all">카테고리</option>
         <option>의류</option><option>신발</option><option>잡화</option>
         <option>가전·IT</option><option>생활용품</option><option>기타</option>
       </select>
       <select id="sortsel" aria-label="정렬">
-        <option value="recent">최근 등록순</option>
-        <option value="qty">재고 많은순</option>
-        <option value="value">재고 금액순</option>
+        <option value="recent">최근순</option>
+        <option value="qty">많은순</option>
+        <option value="value">금액순</option>
         <option value="name">이름순</option>
       </select>
+      <div class="denseg" id="denseg" role="group" aria-label="보기 방식">
+        <button type="button" data-act="density" data-mode="open">펼치기</button>
+        <button type="button" data-act="density" data-mode="compact">접기</button>
+      </div>
     </div>
     <div class="plist" id="invgrid"></div>
   </section>
@@ -564,7 +597,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 
   var CATS = ['의류', '신발', '잡화', '가전·IT', '생활용품', '기타'];
   var CATICON = { '의류': '👕', '신발': '👟', '잡화': '👜', '가전·IT': '💻', '생활용품': '🧴', '기타': '📦' };
-  var SOURCES = ['당근', '번개장터', '크림', '네이버특가', '쿠팡', '직접입력'];
+  var SOURCES = ['공홈', '직접입력'];
   /* 판매처는 크림을 기본(첫 번째 추천)으로 둔다 — 사용자가 판매를 주로 크림에서 한다 */
   var SALE_VENUES = ['크림', '당근', '번개장터', '직접입력'];
   var SIZE_ORDER = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'FREE', '프리'];
@@ -905,10 +938,21 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     status: 'all',
     cat: 'all',
     sort: 'recent',
+    density: 'open',
     month: 'all',
     txType: 'all',
     plMonth: ''
   };
+
+  /* 보기 밀도(펼치기/접기)는 기기에 기억해 둔다 — 앱 데이터에는 넣지 않는다 */
+  var DENS_KEY = 'resellbook_density_v1';
+  try {
+    var savedDens = localStorage.getItem(DENS_KEY);
+    if (savedDens === 'compact' || savedDens === 'open') view.density = savedDens;
+  } catch (e) { }
+  function saveDensity(m) {
+    try { localStorage.setItem(DENS_KEY, m); } catch (e) { }
+  }
 
   /* ============================================================
      render: header + dashboard
@@ -1095,11 +1139,11 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       : '<div class="stepper"><button data-act="minus" data-id="' + esc(it.id) + '" aria-label="수량 줄이기">−</button>' +
         '<span class="q">' + q + '</span>' +
         '<button data-act="plus" data-id="' + esc(it.id) + '" aria-label="수량 늘리기">+</button></div>';
-    var html = '<div class="pcard' + (q <= 0 ? ' sold' : '') + '" data-id="' + esc(it.id) + '">' +
+    var html = '<div class="pcard' + (q <= 0 ? ' sold' : '') + '" data-act="edit" data-id="' + esc(it.id) + '">' +
       '<button class="pmenu" data-act="menu" data-id="' + esc(it.id) + '" aria-label="상품 메뉴">⋯</button>' +
       thumbHtml(it) +
       '<div class="pmain">' +
-      '<div class="ptop"><div class="pname" data-act="detail" data-id="' + esc(it.id) + '">' + esc(it.name) + '</div>' +
+      '<div class="ptop"><div class="pname">' + esc(it.name) + '</div>' +
       '<span class="badge ' + st + '">' + st + '</span></div>' +
       '<div class="pmeta">' + esc(meta.join(' · ')) + '</div>' +
       (q > 0 && heldSizes(it).length ? '<div class="sizerow"><span class="szlab">보유 사이즈</span>' + sizeChips(it) + '</div>' : '') +
@@ -1121,24 +1165,53 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     return '<div class="empty">' +
       '<div class="big">📒</div>' +
       '<h3>아직 등록한 상품이 없어요</h3>' +
-      '<p>당근·번개장터에서 산 물건을 원가로 적어두면<br />재고와 순수익이 자동으로 계산돼요.</p>' +
+      '<p>공홈이나 매장에서 산 물건을 원가로 적어두면<br />재고와 순수익이 자동으로 계산돼요.</p>' +
       '<button class="btn-primary" data-act="add">＋ 첫 상품 등록</button>' +
       '<div class="hintbox">상품명 · 구매가 · 수량만 넣으면 시작돼요. 사진은 나중에 붙여도 됩니다.</div>' +
       (syncOn() ? '' : '<div class="hintbox">이미 쓰던 기기가 있다면 <b>동기화 코드</b>로 연결하면 기록이 그대로 들어와요. 위 <b>코드로 연결</b>을 누르거나 오른쪽 위 <b>🔄</b> 버튼을 쓰세요.</div>') +
       '</div>';
   }
 
+  /* 접기(제품명 위주) — 사진·손익을 접고 이름·보유 사이즈·총 수량만 한 줄에 */
+  function itemRow(it) {
+    var q = itemQty(it);
+    var held = heldSizes(it).slice().sort(bySizeOrder);
+    var sz = '';
+    if (held.length) {
+      sz = held.map(function (v) { return esc(v.size) + '<b>' + (Number(v.qty) || 0) + '</b>'; }).join(' ');
+    }
+    return '<div class="crow' + (q <= 0 ? ' sold' : '') + '" data-act="edit" data-id="' + esc(it.id) + '">' +
+      '<div class="cname">' + esc(it.name) + '</div>' +
+      (sz ? '<div class="csz">' + sz + '</div>' : '') +
+      '<div class="cq">' + q + '<small>개</small></div>' +
+      '<button class="pmenu" data-act="menu" data-id="' + esc(it.id) + '" aria-label="상품 메뉴">⋯</button>' +
+      '</div>';
+  }
+
+  function renderDensity() {
+    var box = $('#denseg');
+    if (box) {
+      box.classList.toggle('hidden', !state.items.length);
+      $$('button', box).forEach(function (b) {
+        b.classList.toggle('on', b.getAttribute('data-mode') === view.density);
+      });
+    }
+    var grid = $('#invgrid');
+    if (grid) grid.classList.toggle('compact', view.density === 'compact');
+  }
+
   function renderInv() {
     var grid = $('#invgrid');
-    if (!state.items.length) { grid.innerHTML = emptyInventory(); return; }
+    if (!state.items.length) { grid.innerHTML = emptyInventory(); renderDensity(); return; }
     var list = filteredItems();
+    renderDensity();
     if (!list.length) {
       grid.innerHTML = '<div class="empty"><div class="big">🔍</div><h3>조건에 맞는 상품이 없어요</h3>' +
         '<p>검색어나 필터를 바꿔보세요.</p>' +
         '<button class="btn-primary" data-act="reset-filter">필터 초기화</button></div>';
       return;
     }
-    grid.innerHTML = list.map(itemCard).join('');
+    grid.innerHTML = list.map(view.density === 'compact' ? itemRow : itemCard).join('');
   }
 
   /* ============================================================
@@ -1339,6 +1412,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   }
 
   var activeSheet = null;
+  var sheetScrollY = 0;
+  var tapGuardUntil = 0;
 
   function closeSheet() {
     if (!activeSheet) return;
@@ -1347,11 +1422,18 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     if (activeSheet.sheet) activeSheet.sheet.remove();
     activeSheet = null;
     document.body.style.overflow = '';
+    /* 시트를 닫을 때 페이지 위치를 되돌린다 — iOS가 입력 포커스·키보드 때문에
+       뒤 페이지를 밀어 둔 경우, 화면에 보이는 자리와 카드가 어긋나
+       엉뚱한 버튼(상단 ☰·🔄)이 눌리는 일을 막는다 */
+    try { window.scrollTo(0, sheetScrollY); } catch (e) { }
+    /* 닫힌 직후 생기는 잔여(고스트) 탭은 상단 버튼에 닿지 않게 잠시 쉼 */
+    tapGuardUntil = Date.now() + 380;
     if (cb) { try { cb(); } catch (e) { } }
   }
 
   function openSheet(opt) {
     closeSheet();
+    sheetScrollY = window.scrollY;
     var back = document.createElement('div');
     back.className = 'backdrop';
     back.addEventListener('click', closeSheet);
@@ -1423,7 +1505,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   function openItemForm(itemId) {
     var it = itemId ? itemById(itemId) : null;
     var draft = it ? Object.assign({}, it) : {
-      id: '', name: '', cat: '의류', source: '당근', buyDate: today(), avgCost: 0, qty: 1,
+      id: '', name: '', cat: '의류', source: '공홈', buyDate: today(), avgCost: 0, qty: 1,
       status: '판매중', memo: '', photo: ''
     };
     var sourceIsCustom = draft.source && SOURCES.indexOf(draft.source) < 0;
@@ -1467,7 +1549,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       '</div>';
 
     body += '<div class="field' + (sourceIsCustom ? '' : ' hidden') + '" id="custom-src-wrap"><label>구매처 직접입력</label>' +
-      '<input id="f-source-etc" type="text" maxlength="30" placeholder="예: 동네 벼룩시장" value="' + esc(sourceIsCustom ? draft.source : '') + '" /></div>';
+      '<input id="f-source-etc" type="text" maxlength="30" placeholder="예: 무신사, 백화점 매장" value="' + esc(sourceIsCustom ? draft.source : '') + '" /></div>';
 
     body += '<div class="field"><label>메모</label><textarea id="f-memo" maxlength="500" placeholder="사이즈·상태·구매 이유 등">' + esc(draft.memo) + '</textarea></div>';
     if (it) {
@@ -1914,6 +1996,11 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         '<option value="__new">＋ 새 사이즈 추가</option></select>' +
         '<input id="r-size-new" class="hidden" type="text" maxlength="12" placeholder="새 사이즈 (예: XL)" style="margin-top:8px" /></div>';
     }
+    /* 구매처는 공홈이 기본 — 기존에 다른 값이 있으면 그 값을 그대로 선택지로 보여준다 */
+    var stockSrcs = SOURCES.slice();
+    var itSrc = String(it.source || '');
+    if (itSrc && stockSrcs.indexOf(itSrc) < 0) stockSrcs.splice(stockSrcs.length - 1, 0, itSrc);
+    var stockSel = stockSrcs.indexOf(itSrc) >= 0 ? itSrc : '공홈';
     body += '<div class="row2">' +
       '<div class="field"><label>입고일</label><input id="r-date" type="date" placeholder="YYYY-MM-DD" value="' + today() + '" /></div>' +
       '<div class="field"><label>수량</label><input id="r-qty" type="number" inputmode="numeric" min="1" step="1" value="1" /></div>' +
@@ -1921,7 +2008,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     body += '<div class="row2">' +
       '<div class="field"><label>개당 단가</label><input id="r-price" type="number" inputmode="numeric" min="0" step="100" placeholder="0" /></div>' +
       '<div class="field"><label>구매처</label><select id="r-src">' +
-      SOURCES.map(function (s) { return '<option value="' + s + '"' + ((it.source || '당근') === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') +
+      stockSrcs.map(function (s) { return '<option value="' + esc(s) + '"' + (stockSel === s ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') +
       '</select></div></div>';
     body += '<div class="calc" id="r-calc"></div>';
     var sheet = openSheet({
@@ -2678,7 +2765,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     var inv = invStats();
     var sizeTxt = '—';
     try { sizeTxt = (JSON.stringify(state).length / 1024).toFixed(0) + 'KB'; } catch (e) { }
-    var body = '<div class="syncbox"><div class="ownername">📒 리셀북 <span style="color:var(--muted2)">v1.3</span></div>' +
+    var body = '<div class="syncbox"><div class="ownername">📒 리셀북 <span style="color:var(--muted2)">v1.4</span></div>' +
       '<p class="desc">재고 ' + state.items.length + '종 · 거래 ' + state.txns.length + '건 · 저장 ' + sizeTxt + '</p>' +
       '<div class="syncacts">' +
       '<button class="btn" data-mm="sync">🔄 동기화</button>' +
@@ -2727,7 +2814,12 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     else if (act === 'txtype') { view.txType = t.getAttribute('data-txtype'); renderTx(); }
     else if (act === 'plmonth') { view.plMonth = t.getAttribute('data-month'); renderPL(); }
     else if (act === 'detail') openDetail(id);
+    else if (act === 'edit') openItemForm(id);
     else if (act === 'menu') openItemMenu(id);
+    else if (act === 'density') {
+      var mode = t.getAttribute('data-mode');
+      if (mode !== view.density) { view.density = mode; saveDensity(mode); renderInv(); }
+    }
     else if (act === 'sell') openSell(id);
     else if (act === 'restock') openRestock(id);
     else if (act === 'plus') quickQty(id, 1);
@@ -2755,8 +2847,14 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     if (b) setTab(b.getAttribute('data-view'));
   });
   $('#fab').addEventListener('click', function () { openItemForm(); });
-  $('#btn-menu').addEventListener('click', openMenu);
-  $('#btn-sync').addEventListener('click', function () { openSyncSheet(); });
+  $('#btn-menu').addEventListener('click', function () {
+    if (Date.now() < tapGuardUntil) return;
+    openMenu();
+  });
+  $('#btn-sync').addEventListener('click', function () {
+    if (Date.now() < tapGuardUntil) return;
+    openSyncSheet();
+  });
 
   var qTimer = null;
   $('#q').addEventListener('input', function (e) {
@@ -2875,7 +2973,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   /* expose a tiny hook for self-checks */
   window.__resellbook = {
     get state() { return state; },
-    version: '1.3'
+    version: '1.4'
   };
 })();
 
