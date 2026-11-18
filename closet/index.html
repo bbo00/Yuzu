@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>마이 스마트 옷장 (My Closet 8.18)</title>
+  <title>마이 스마트 옷장 (My Closet 8.19)</title>
   <!-- ===== v8.18 : iOS 사파리 '홈 화면에 추가' 시 주소창 없는 앱 모드(standalone) ===== -->
   <meta name="theme-color" content="#f8fafc">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -467,7 +467,7 @@
 
   <!-- Top Header -->
   <header>
-    <h1>👗 마이 스마트 옷장 <span style='font-size:0.75rem; background:#4f46e5; color:#fff; padding:2px 8px; border-radius:12px; font-weight:700; vertical-align:middle; margin-left:4px;'>v8.18</span></h1>
+    <h1>👗 마이 스마트 옷장 <span style='font-size:0.75rem; background:#4f46e5; color:#fff; padding:2px 8px; border-radius:12px; font-weight:700; vertical-align:middle; margin-left:4px;'>v8.19</span></h1>
     <div class="header-btns">
       <button class="icon-btn" onclick="exportBackup()" title="현재 옷장 상태를 JSON 파일로 다운로드합니다">📥 백업 저장</button>
       <button class="icon-btn" onclick="document.getElementById('backup-file-input').click()" title="모바일/PC 백업 파일을 불러와 동기화합니다">📤 백업 불러오기</button>
@@ -509,7 +509,8 @@
             <button type="button" class="btn-submit" onclick="openSyncModal()">🔑 동기화 키 입력</button>
             <div class="empty-note">
               처음 쓰는 기기라면 <b>[🔗 새 동기화 코드 만들기]</b>로 이 기기의 옷장을 올릴 수도 있습니다.<br>
-              백업 파일(.json)이 있다면 상단 <b>[📤 백업 불러오기]</b>로 복원할 수 있습니다.
+              백업 파일(.json)이 있다면 상단 <b>[📤 백업 불러오기]</b>로 복원할 수 있습니다.<br>
+              <b>동기화 링크(?k=코드)</b>를 열었다면 자동으로 연결됩니다.
             </div>
           </div>
         </div>
@@ -1196,7 +1197,8 @@
           <div class="sync-section-title">2️⃣ 다른 기기에서 이어받기 (코드 입력)</div>
           <input type="text" id="sync-join-input" class="form-input" placeholder="예: yujacloset-ab12cd34ef" style="font-size:0.8rem;">
           <button type="button" class="btn-submit" id="btn-sync-join" style="margin-top:8px; background:#0ea5e9;" onclick="joinSyncCode()">📲 이 코드로 연결</button>
-          <div class="sync-note">위의 코드를 그대로 붙여넣으면 이 기기의 옷장이 코드와 합쳐집니다. 기존 옷은 지워지지 않습니다.</div>
+          <div class="sync-note">위의 코드를 그대로 붙여넣으면 이 기기의 옷장이 코드와 합쳐집니다. 기존 옷은 지워지지 않습니다.<br>
+          연결된 뒤 <b>[링크 복사]</b>한 주소를 다른 기기에서 열면 코드 입력 없이 바로 연결됩니다.</div>
         </div>
 
         <div class="sync-section">
@@ -4856,7 +4858,8 @@
 
     function syncCodeLink() {
       if (!syncConnected()) return '';
-      return location.origin + location.pathname + '#sync=' + syncCfg.ns;
+      /* v8.19: ?k=코드 링크로 열면 자동 연결된다 */
+      return location.origin + location.pathname + '?k=' + syncCfg.ns;
     }
 
     function renderSyncStatus() {
@@ -5039,34 +5042,95 @@
       }
     }
 
+    /* ===== v8.19 : ?k=동기화코드 링크 한 번으로 자동 연결 ===== */
+    function syncCodeFromUrl() {
+      try {
+        const q = (location.search || '').match(/[?&](?:k|key|code|sync)=([^&]+)/i);
+        if (q) return parseSyncCode(decodeURIComponent(q[1].replace(/\+/g, ' ')));
+        const h = (location.hash || '').match(/[#&]sync=([A-Za-z0-9\-_]+)/);
+        if (h) return parseSyncCode(h[1]);
+      } catch (e) { console.warn('[sync url]', e); }
+      return '';
+    }
+
+    async function connectFromUrl() {
+      const code = syncCodeFromUrl();
+      if (!code || code.indexOf('yujacloset-') !== 0) return false;
+      if (syncCfg && code === syncCfg.ns) return false;
+      const prevNs = (syncCfg && syncCfg.ns) || '';
+      syncCfg.ns = code;
+      syncCfg.rev = 0;
+      syncCfg.lastRev = 0;
+      syncCfg.lastSync = 0;
+      syncCfg.lastError = '';
+      syncCfg.auto = true;
+      syncSaveCfg();
+      renderSyncStatus();
+      showToast('링크의 동기화 코드로 연결하는 중...');
+      let manifest = null;
+      try {
+        manifest = await syncReadManifest();
+      } catch (e) {
+        syncCfg.ns = prevNs;
+        syncSaveCfg();
+        renderSyncStatus();
+        showToast('동기화 코드를 확인하지 못했습니다: ' + syncErrMsg(e));
+        return false;
+      }
+      // 코드는 맞는데 클라우드 사본이 없으면, 이 기기의 옷장을 그 코드로 덮어쓰지 않는다
+      if (!manifest) {
+        syncCfg.ns = prevNs;
+        syncSaveCfg();
+        renderSyncStatus();
+        showToast('이 코드에는 아직 클라우드 옷장이 없습니다' + (prevNs ? ' (기존 연결 유지)' : ''));
+        return false;
+      }
+      await syncNow({ silent: true });
+      if (syncCfg.lastError) { showToast('동기화 실패: ' + syncCfg.lastError); return false; }
+      showToast('☁️ 연결 완료 · 옷장을 불러왔습니다 (보유 ' + ownedClothes().length + '벌)');
+      renderSyncStatus();
+      return true;
+    }
+
+    /* 빈 기기(아이폰 홈 화면 앱 등 저장소가 분리된 새 화면)에서 코드 입력창을 한 번 띄운다 */
+    const EMPTY_PROMPT_FLAG = 'yujacloset_emptyprompt_v819';
+    function promptConnectIfEmpty() {
+      let done = false;
+      try { done = localStorage.getItem(EMPTY_PROMPT_FLAG) === '1'; } catch (e) {}
+      const total = (appData && appData.clothes) ? appData.clothes.length : 0;
+      if (done || total > 0) return;
+      try { localStorage.setItem(EMPTY_PROMPT_FLAG, '1'); } catch (e) {}
+      setTimeout(() => {
+        const box = document.getElementById('empty-onboarding');
+        if (box) box.style.display = 'block';
+        openSyncModal();
+        showToast('이 기기는 아직 비어 있어요. 동기화 코드를 입력해 주세요.');
+      }, 700);
+    }
+
     function startSyncOnBoot() {
       syncLoadCfg();
       // v8.12: PC 백업을 이 기기에 반영했다면 클라우드 사본도 297벌로 갱신한다
       if (pcBackupJustApplied || hqImgJustApplied || backup1117JustApplied) { syncCfg.dirty = true; syncSaveCfg(); }
       renderSyncStatus();
-      if (!syncConnected()) {
-        const hash = location.hash || '';
-        const m = hash.match(/sync=([A-Za-z0-9\-_]+)/);
-        if (m) {
-          setTimeout(() => {
-            openSyncModal();
-            const input = document.getElementById('sync-join-input');
-            if (input) input.value = m[1];
-            showToast('연결 코드를 발견했습니다. [이 코드로 연결]을 눌러 주세요.');
-          }, 800);
-        }
-        return;
-      }
-      // 자동 동기화가 켜져 있으면 늘, 꺼져 있어도 14일 이상 지났으면 한 번 맞춘다(만료 연장·복구)
-      const lastUp = Number(syncCfg.lastPushTs || syncCfg.lastSync || 0);
-      const ttlDue = !lastUp || (Date.now() - lastUp) >= SYNC_TOUCH_MS;
-      if (syncCfg.auto || ttlDue) setTimeout(() => syncNow({ silent: true }), 1500);
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible' && syncCfg.auto && syncConnected() && (Date.now() - (syncCfg.lastSync || 0) > 60000)) {
           syncNow({ silent: true });
         }
       });
       window.addEventListener('online', () => { if (syncCfg.auto && syncConnected()) syncNow({ silent: true }); });
+
+      // v8.19: ?k=코드 링크면 사용자 조작 없이 바로 연결한다
+      const urlCode = syncCodeFromUrl();
+      if (urlCode && urlCode.indexOf('yujacloset-') === 0 && urlCode !== (syncCfg.ns || '')) {
+        setTimeout(() => { connectFromUrl(); }, 400);
+        return;
+      }
+      if (!syncConnected()) { promptConnectIfEmpty(); return; }
+      // 자동 동기화가 켜져 있으면 늘, 꺼져 있어도 14일 이상 지났으면 한 번 맞춘다(만료 연장·복구)
+      const lastUp = Number(syncCfg.lastPushTs || syncCfg.lastSync || 0);
+      const ttlDue = !lastUp || (Date.now() - lastUp) >= SYNC_TOUCH_MS;
+      if (syncCfg.auto || ttlDue) setTimeout(() => syncNow({ silent: true }), 1500);
     }
 
     initApp();
