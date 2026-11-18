@@ -996,7 +996,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     return '<div class="chartcard">' +
       '<div class="ch-head"><b>최근 6개월 추이</b><span>매출 · 순수익</span></div>' +
       (max > 0 ? '<div class="cbars">' + cols + '</div>' :
-        '<div class="chempty">아직 판매 기록이 없어요. <b>[판매]</b>를 누르면 여기에 추이가 그려집니다.</div>') +
+        '<div class="chempty"><span>아직 판매 기록이 없어요.<br /><b>[판매]</b>를 누르면 여기에 추이가 그려집니다.</span></div>') +
       '<div class="legend"><span><i style="background:var(--accent)"></i>매출</span><span><i style="background:var(--ok)"></i>순수익</span>' +
       (max > 0 ? '<span style="margin-left:auto;color:var(--muted2)">막대에 마우스를 올리면 정확한 금액</span>' : '') +
       '</div>' +
@@ -1237,7 +1237,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       return { m: m, s: s };
     });
     var barsHtml = '<div class="sec-title">최근 6개월</div>' +
-      '<div class="bars">' + bars.map(function (b) {
+      (maxRev > 0 ? '<div class="bars">' + bars.map(function (b) {
         var h = maxRev > 0 ? clamp((b.s.revenue / maxRev) * 100, 0, 100) : 0;
         var hp = maxRev > 0 ? clamp((b.s.profit / maxRev) * 100, 0, 100) : 0;
         return '<div class="barcol">' +
@@ -1248,7 +1248,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
           '<div class="lbl">' + esc(monthLabel(b.m)) + '</div>' +
           '</div>';
       }).join('') + '</div>' +
-      '<div class="legend"><span><i style="background:var(--accent)"></i>매출</span><span><i style="background:var(--ok)"></i>순수익</span></div>';
+      '<div class="legend"><span><i style="background:var(--accent)"></i>매출</span><span><i style="background:var(--ok)"></i>순수익</span></div>'
+        : '<div class="chempty"><span>아직 판매 기록이 없어요.<br />재고 목록에서 <b>[판매]</b>를 누르면 월별 손익이 그려집니다.</span></div>');
 
     /* 카테고리별 */
     var byCat = {};
