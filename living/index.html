@@ -1,4 +1,7 @@
-<!doctype html><html lang="ko"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><title>우리 살림칸 공유</title>
+<!doctype html><html lang="ko"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>우리 살림칸 공유</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="우리 살림칸 · 생활용품 재고와 소비기한을 함께 보는 개인용 목록">
 <meta name="theme-color" content="#eef2ee" media="(prefers-color-scheme: light)">
@@ -10,9 +13,8 @@
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
-<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>[hidden]:not([hidden="until-found"]){display:none!important}</style>
 <style id="pagecss">
 /* Layout: 한 줄 요약(기한 지남·30일·90일) → 고정 탭과 보기 전환 → 분류별/기한순 목록. 부부가 같은 목록을 함께 고친다. */
 :root {
@@ -299,19 +301,52 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
 @media (prefers-reduced-motion: no-preference) {
   .tab, .chip, .btn, .segb { transition: background-color .15s, border-color .15s; }
 }
-</style>
 
+/* ---- 동기화 상태 칩 · 패널 (v2) ---- */
+.syncchip { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: 12px; padding: 8px 12px; font-size: 13px; font-weight: 500; min-height: 40px; }
+.syncchip:hover { border-color: var(--accent); }
+.syncchip span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.syncchip .sbx { margin-left: auto; color: var(--ink-2); font-size: 17px; line-height: 1; padding-left: 6px; }
+#syncDot { width: 8px; height: 8px; border-radius: 999px; background: #b9c4bd; flex: none; }
+#syncDot[data-state="on"] { background: #2f9e6f; }
+#syncDot[data-state="busy"] { background: var(--c2); }
+#syncDot[data-state="err"] { background: var(--bad); }
+.syncchip[data-state="on"] { color: var(--ink); }
+.syncchip[data-state="err"] { color: var(--bad); border-color: #e7c7c1; }
+.syncbox { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); padding: 12px; display: grid; gap: 8px; }
+.syncbox[hidden] { display: none; }
+.sbp { margin: 0; font-size: 13px; color: var(--ink-2); line-height: 1.55; }
+.sbrow { display: flex; gap: 6px; align-items: center; min-width: 0; }
+.sbrow .btn { flex: none; }
+.sbinput { flex: 1 1 auto; min-width: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); padding: 8px 10px; font-size: 13px; min-height: 38px; }
+.sbcode { font-size: 12px; letter-spacing: -0.01em; }
+.sbbtns { display: flex; gap: 6px; flex-wrap: wrap; }
+.sbbtns .btn { flex: 1 1 120px; }
+.sbinfo { display: flex; gap: 14px; font-size: 13px; color: var(--ink-2); flex-wrap: wrap; }
+.sbinfo b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.sberr { margin: 0; font-size: 12px; color: var(--bad); font-weight: 600; }
+.onboard { border: 1px dashed var(--line); border-radius: 16px; background: var(--surface); padding: 26px 18px; text-align: center; display: grid; gap: 10px; justify-items: center; margin-top: 8px; }
+.onboard .obicon { font-size: 30px; line-height: 1; }
+.onboard .obt { margin: 0; font-family: var(--font-display); font-size: 19px; }
+.onboard .obp { margin: 0; font-size: 14px; color: var(--ink-2); line-height: 1.6; max-width: 30em; }
+.onboard .btn { min-width: 160px; }
+</style>
+</head><body>
 <div class="app">
   <header class="head">
     <div class="top">
       <h1>우리 살림칸</h1>
-      <div class="topbtns"><button class="btn" type="button" data-act="dl-html" id="dlBtn" hidden>HTML 저장</button><button class="btn primary" type="button" data-act="add-toggle" id="addBtn">+ 물건 추가</button></div>
+      <div class="topbtns"><button class="btn primary" type="button" data-act="add-toggle" id="addBtn">+ 물건 추가</button></div>
     </div>
+    <button class="syncchip" type="button" data-sact="open" id="syncBtn" aria-expanded="false" aria-controls="syncBox">
+      <span id="syncDot" data-state="off"></span><span id="syncBtnText">동기화 코드로 연결하기</span><span class="sbx">›</span>
+    </button>
+    <section class="syncbox" id="syncBox" hidden><div id="syncBoxIn"></div></section>
     <ul class="glance" id="glance" aria-label="재고 요약"></ul>
   </header>
 
   <div class="bar">
-    <div class="savebar" id="saveBar" hidden><span id="saveMsg">저장하지 않은 변경이 있어요</span><button class="btn primary sm" type="button" data-act="save-now">지금 저장</button></div>
+    <div class="savebar" id="saveBar" hidden><span id="saveMsg">저장하지 않은 변경이 있어요</span><button class="btn primary sm" type="button" data-act="save-now">다시 시도</button></div>
     <div class="tabs" role="tablist">
       <button class="tab" role="tab" id="tab-dash" data-tab="dash" aria-selected="true">대시보드</button>
       <button class="tab" role="tab" id="tab-stock" data-tab="stock" aria-selected="false">전체 목록</button>
@@ -333,7 +368,7 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
 </div>
 <div class="toast" aria-live="polite"><span id="toastMsg" hidden></span></div>
 
-<script type="application/json" id="seed">{"notice":"","items":[{"cat":"얼굴 화장","exp":"2027-01-09","name":"듀이트리 선크림","ord":1,"qty":1,"sub":"선크림","id":"i001"},{"cat":"얼굴 화장","exp":"2027-12-27","name":"코페르 선크림","ord":2,"qty":1,"sub":"선크림","id":"i002"},{"cat":"얼굴 화장","exp":"2028-03-09","name":"닥터지 나이스 버디업선","ord":3,"qty":1,"sub":"선크림","id":"i003"},{"cat":"얼굴 화장","exp":"2028-04-03","name":"맥스클리닉 워터베리어 선세럼","ord":4,"qty":1,"sub":"선크림","id":"i004","size":"40"},{"cat":"얼굴 화장","exp":"2028-06-04","name":"에스쁘아 워터스플래쉬 세라마이드선크림","ord":5,"qty":1,"sub":"선크림","id":"i005"},{"cat":"얼굴 화장","exp":"2029-04-14","name":"아이레시피 선세럼","ord":6,"qty":2,"size":"10","sub":"선크림","id":"i006"},{"cat":"얼굴 화장","exp":"2029-05-21","name":"홀리카홀리카 선세럼","ord":7,"qty":1,"size":"50","sub":"선크림","id":"i007"},{"cat":"얼굴 화장","exp":"2029-05-11","name":"센텔라 선세럼","ord":8,"qty":1,"sub":"선크림","id":"i008"},{"cat":"얼굴 화장","name":"투쿨포스쿨 더누드핏쿠션","ord":9,"qty":1,"sub":"쿠션","id":"i009"},{"cat":"얼굴 화장","exp":"2028-07-02","name":"라네즈 네오쿠션 23N +리필","ord":10,"qty":1,"sub":"쿠션","id":"i010"},{"cat":"얼굴 화장","exp":"2028-08-27","name":"에스쁘아 비벨벳쿠션","ord":11,"qty":1,"sub":"쿠션","id":"i011"},{"cat":"얼굴 화장","exp":"2028-02-10","name":"스킨푸드 레몬딜버터 립밤","ord":12,"qty":1,"sub":"립밤","id":"i012"},{"cat":"얼굴 화장","exp":"2027-10-01","name":"스킨푸드 허니 립슬리핑팩","ord":13,"qty":3,"sub":"립밤","id":"i013"},{"cat":"얼굴 씻을거리","exp":"2027-06-23","name":"셀리맥스 클렌징밤","ord":14,"qty":1,"sub":"클렌징밤·오일","id":"i014","size":"50"},{"cat":"얼굴 씻을거리","exp":"2027-10-29","name":"쏘울 클렌징밤","ord":15,"qty":1,"sub":"클렌징밤·오일","id":"i015"},{"cat":"얼굴 씻을거리","exp":"2028-12-14","name":"프리메라 오일투폼","ord":16,"qty":1,"size":"300","sub":"클렌징밤·오일","id":"i016"},{"cat":"얼굴 씻을거리","exp":"2028-06-15","name":"듀이트리 클렌징밀크","ord":17,"qty":1,"sub":"클렌징밤·오일","id":"i017","size":"200"},{"cat":"얼굴 씻을거리","exp":"2027-06-13","name":"유세린 폼클렌저 (여행용)","ord":18,"qty":1,"size":"","sub":"클렌징폼","id":"i018","note":"용량 50g"},{"cat":"얼굴 씻을거리","exp":"2028-03-08","name":"잇퓨 사해바다 딥포어클렌저","ord":19,"qty":1,"sub":"클렌징폼","id":"i019"},{"cat":"얼굴 씻을거리","exp":"2028-02-25","name":"에이솔루션 아크네클렌징폼","ord":20,"qty":1,"size":"","sub":"클렌징폼","id":"i020","note":"용량 50g"},{"cat":"얼굴 씻을거리","exp":"2028-02-06","name":"락토 시카 약산성 클렌저","ord":21,"qty":1,"sub":"클렌징폼","id":"i021","uses":[{"s":"2026-11-14","e":""}]},{"cat":"얼굴 씻을거리","exp":"2028-07-28","name":"에이지 투에니스 오일투폼","ord":22,"qty":1,"sub":"클렌징폼","id":"i022"},{"cat":"얼굴 씻을거리","exp":"2028-08-13","name":"런드리유 젤투폼 클렌저 딥클렌징","ord":23,"qty":1,"sub":"클렌징폼","id":"i023"},{"cat":"얼굴 씻을거리","exp":"2028-12-11","name":"설화수 순행클렌징폼","ord":24,"qty":1,"sub":"클렌징폼","id":"i024"},{"cat":"얼굴 씻을거리","exp":"2028-12-15","name":"프리메라 오일투폼","ord":25,"qty":1,"sub":"클렌징폼","id":"i025","size":"200"},{"cat":"얼굴 씻을거리","exp":"2029-01-19","name":"지우개 폼클렌저","ord":26,"qty":1,"sub":"클렌징폼","id":"i026"},{"approx":true,"cat":"얼굴 씻을거리","exp":"2029-02-28","name":"세타필 데일리 페이셜 클렌져","ord":27,"qty":1,"sub":"클렌징폼","id":"i027","size":"473"},{"cat":"얼굴 씻을거리","exp":"2029-04-13","name":"라곰 워터클렌져","ord":28,"qty":2,"sub":"클렌징폼","id":"i028","size":"350"},{"cat":"얼굴 씻을거리","name":"파넬 도자기 워시오프세럼","note":"적어둔 날짜 27.95.11 (확인 필요)","ord":29,"qty":1,"sub":"워시오프·팩","id":"i029","size":"30"},{"cat":"얼굴 씻을거리","exp":"2027-11-06","name":"마리앤메이 로즈 워시오프팩","ord":30,"qty":1,"sub":"워시오프·팩","id":"i030"},{"cat":"얼굴 씻을거리","exp":"2028-02-21","name":"스킨푸드 워시오프 마스크","ord":31,"qty":1,"sub":"워시오프·팩","id":"i031"},{"cat":"얼굴 씻을거리","exp":"2028-08-04","name":"스킨푸드 라이스 필오프팩","ord":32,"qty":1,"sub":"워시오프·팩","id":"i032"},{"cat":"얼굴 씻을거리","exp":"2028-11-05","name":"에이솔루션 3분 진정 클레이팩","ord":33,"qty":1,"sub":"워시오프·팩","id":"i033"},{"cat":"얼굴 바를거리","name":"두환이 에센스","ord":34,"qty":3,"sub":"에센스","id":"i034"},{"cat":"얼굴 바를거리","exp":"2027-02-06","name":"티르티르 글로시코팅미스트 기능성","ord":35,"qty":1,"sub":"미스트·토너","id":"i035","size":"70","uses":[{"s":"2026-11-14","e":""}]},{"cat":"얼굴 바를거리","exp":"2027-06-10","name":"디어달리아 미스트","ord":36,"qty":1,"sub":"미스트·토너","id":"i036"},{"cat":"얼굴 바를거리","exp":"2028-07-21","name":"파인다이브 리포좀 미스트","ord":37,"qty":1,"sub":"미스트·토너","id":"i037"},{"cat":"얼굴 바를거리","exp":"2029-03-23","name":"원씽 나이아신마이드 미스트","ord":38,"qty":1,"sub":"미스트·토너","id":"i038"},{"cat":"얼굴 바를거리","exp":"2029-07-26","name":"닥터엘시아 크림미스트 작은거","ord":39,"qty":1,"sub":"미스트·토너","id":"i039"},{"cat":"얼굴 바를거리","exp":"2029-07-29","name":"뉴니스 미스트 작은거","ord":40,"qty":1,"sub":"미스트·토너","id":"i040"},{"cat":"얼굴 바를거리","exp":"2028-07-05","name":"디피노르 딥워터 부스팅 토너","ord":41,"qty":2,"sub":"미스트·토너","id":"i041"},{"cat":"얼굴 바를거리","exp":"2028-07-27","name":"파인다이브","ord":42,"qty":1,"sub":"미스트·토너","id":"i042"},{"cat":"얼굴 바를거리","exp":"2028-09-08","name":"다이소 pdrn 토너","ord":43,"qty":1,"sub":"미스트·토너","id":"i043"},{"cat":"얼굴 바를거리","exp":"2028-09-09","name":"톤28 히알루론 시카토너","ord":44,"qty":1,"sub":"미스트·토너","id":"i044"},{"cat":"얼굴 바를거리","exp":"2029-06-21","name":"로벡틴 프랩부스트 토너","ord":45,"qty":1,"sub":"미스트·토너","id":"i045"},{"cat":"얼굴 바를거리","exp":"2027-09-05","name":"플래니스트 마그크팩","ord":46,"qty":1,"size":"","sub":"패드·마스크팩","id":"i046","note":"용량 20매"},{"cat":"얼굴 바를거리","exp":"2028-01-05","name":"비플레인 모공 필터패드","ord":47,"qty":1,"sub":"패드·마스크팩","id":"i047"},{"cat":"얼굴 바를거리","exp":"2028-05-08","name":"파넬 도자기패드","ord":48,"qty":1,"sub":"패드·마스크팩","id":"i048"},{"cat":"얼굴 바를거리","exp":"2028-05-26","name":"비플레인 모공패드","ord":49,"qty":1,"sub":"패드·마스크팩","id":"i049"},{"cat":"얼굴 바를거리","exp":"2028-10-19","name":"라센스 로에 큐어 릴렉싱패드","ord":50,"qty":1,"size":"","sub":"패드·마스크팩","id":"i050","note":"용량 30매"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-04-29","min":0,"name":"메디힐 마데카소사이드","note":"","ord":51,"qty":1,"size":"","sub":"패드·마스크팩","id":"i051"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-09-07","min":0,"name":"프리메라 워터리 에센스","note":"","ord":52,"qty":1,"size":"","sub":"에센스","id":"i052"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-05-21","min":0,"name":"설화수 윤조 에센스","note":"","ord":53,"qty":1,"size":"","sub":"에센스","id":"i053"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-01-06","min":0,"name":"에센스 (이름 안 적음)","note":"","ord":54,"qty":1,"size":"","sub":"에센스","id":"i054"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-02-08","min":0,"name":"에센스 (이름 안 적음)","note":"","ord":55,"qty":1,"size":"","sub":"에센스","id":"i055"},{"approx":false,"cat":"얼굴 바를거리","exp":"2027-10-06","min":0,"name":"이니스프리 레티놀 시카흔적세럼","note":"","ord":56,"qty":1,"size":"30","sub":"앰플","id":"i056"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-01-02","min":0,"name":"이니스프리 피디알엔 스킨부스터앰플","note":"","ord":57,"qty":1,"size":"25","sub":"앰플","id":"i057"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-03-11","min":0,"name":"리더스피디알엔 액티브앰플","note":"","ord":58,"qty":1,"size":"","sub":"앰플","id":"i058"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-02-22","min":0,"name":"뷰스타 pdrn 콜라겐세럼","note":"","ord":59,"qty":1,"size":"","sub":"앰플","id":"i059"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-04-01","min":0,"name":"메디힐 마데카소사이드 앰플","note":"","ord":60,"qty":1,"size":"40","sub":"앰플","id":"i060"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-02-19","min":0,"name":"셀라딕스 트러블 앰플","note":"","ord":61,"qty":1,"size":"30","sub":"앰플","id":"i061"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-03-30","min":0,"name":"살랑드파리 기미앰플","note":"","ord":62,"qty":1,"size":"","sub":"앰플","id":"i062"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-07-01","min":0,"name":"라운드랩 수분드롭세럼","note":"","ord":63,"qty":1,"size":"50","sub":"앰플","id":"i063"},{"approx":false,"cat":"얼굴 바를거리","exp":"2027-09-29","min":0,"name":"이니스프리 그린티세럼","note":"","ord":64,"qty":1,"size":"","sub":"세럼","id":"i064"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-05-08","min":0,"name":"파넬 시카마누 세럼","note":"","ord":65,"qty":1,"size":"","sub":"세럼","id":"i065"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-06-18","min":0,"name":"한스킨 광채세럼","note":"","ord":66,"qty":1,"size":"","sub":"세럼","id":"i066"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-05-20","min":0,"name":"레이어랩 세럼","note":"","ord":67,"qty":2,"size":"","sub":"세럼","id":"i067"},{"approx":false,"cat":"얼굴 바를거리","exp":"2027-01-14","min":0,"name":"티르티르 도자기펩타닐크림","note":"","ord":68,"qty":0,"size":"50","sub":"크림","id":"i068"},{"approx":false,"cat":"얼굴 바를거리","exp":"2027-03-05","min":0,"name":"원씽 모이스쳐 플러스크림","note":"","ord":69,"qty":1,"size":"50","sub":"크림","id":"i069"},{"approx":false,"cat":"얼굴 바를거리","exp":"2027-05-08","min":0,"name":"잇퓨 리바이탈 시카윤크림","note":"","ord":70,"qty":1,"size":"","sub":"크림","id":"i070"},{"approx":false,"cat":"얼굴 바를거리","exp":"2027-06-09","min":0,"name":"티르티르 도자기크림","note":"","ord":71,"qty":1,"size":"100","sub":"크림","id":"i071"},{"approx":false,"cat":"얼굴 바를거리","exp":"2027-07-21","min":0,"name":"파넬 시카마누 젤크림","note":"","ord":72,"qty":1,"size":"75","sub":"크림","id":"i072"},{"approx":false,"cat":"얼굴 바를거리","exp":"2027-09-29","min":0,"name":"그린티 씨드 히알루론산 크림","note":"","ord":73,"qty":1,"size":"","sub":"크림","id":"i073"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-02-20","min":0,"name":"구달 어성초 수딩크림","note":"","ord":74,"qty":1,"size":"","sub":"크림","id":"i074"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-02-23","min":0,"name":"시크릿키 아쿠아 수딩크림","note":"","ord":75,"qty":1,"size":"","sub":"크림","id":"i075"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-03-22","min":0,"name":"톤28 시카하이드레이터 크림","note":"","ord":76,"qty":1,"size":"","sub":"크림","id":"i076"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-06-09","min":0,"name":"마일드랩 리페어크림","note":"","ord":77,"qty":1,"size":"","sub":"크림","id":"i077"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-08-20","min":0,"name":"센텔라 마데카크림","note":"","ord":78,"qty":1,"size":"50","sub":"크림","id":"i078"},{"approx":false,"cat":"얼굴 바를거리","exp":"2028-09-16","min":0,"name":"프리메라 워터리크림","note":"","ord":79,"qty":1,"size":"75","sub":"크림","id":"i079"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-05-15","min":0,"name":"에이비앤씨 케어시카수딩크림","note":"","ord":80,"qty":1,"size":"","sub":"크림","id":"i080"},{"approx":false,"cat":"얼굴 바를거리","exp":"2029-05-18","min":0,"name":"닥터엘시아 크림작은거","note":"","ord":81,"qty":1,"size":"50","sub":"크림","id":"i081"},{"approx":false,"cat":"바디 바를거리","exp":"2027-10-21","min":0,"name":"바세린 바디로션 태국","note":"","ord":82,"qty":1,"size":"290","sub":"바디로션","id":"i082","corner":"바디"},{"approx":false,"cat":"바디 바를거리","exp":"2027-12-04","min":0,"name":"메리미 바디로션","note":"","ord":83,"qty":1,"size":"","sub":"바디로션","id":"i083"},{"approx":true,"cat":"바디 바를거리","exp":"2028-09-30","min":0,"name":"올리브 바디로션","note":"","ord":84,"qty":1,"size":"","sub":"바디로션","id":"i084"},{"approx":false,"cat":"바디 바를거리","exp":"2028-03-06","min":0,"name":"뷰카 딥퍼퓸 바디로션","note":"","ord":85,"qty":1,"size":"1050","sub":"바디로션","id":"i085"},{"approx":true,"cat":"바디 바를거리","exp":"2028-06-30","min":0,"name":"지아자 산양유 바디로션","note":"","ord":86,"qty":2,"size":"400","sub":"바디로션","id":"i086"},{"approx":false,"cat":"바디 바를거리","exp":"2029-03-05","min":0,"name":"더마팩토리 비제로 바디로션","note":"","ord":87,"qty":1,"size":"","sub":"바디로션","id":"i087"},{"approx":false,"cat":"바디 씻을거리","exp":"2029-01-06","min":0,"name":"하라즈 퍼퓸바디워시","note":"","ord":88,"qty":1,"size":"1000","sub":"바디워시","id":"i088"},{"approx":false,"cat":"바디 씻을거리","exp":"2029-06-24","min":0,"name":"샤워메이트","note":"","ord":89,"qty":1,"size":"900","sub":"바디워시","id":"i089"},{"approx":true,"cat":"헤어","exp":"2028-01-31","min":0,"name":"헤드앤숄더","note":"","ord":90,"qty":1,"size":"","sub":"샴푸","id":"i090"},{"approx":true,"cat":"헤어","exp":"2028-10-31","min":0,"name":"보타닉가든","note":"","ord":91,"qty":1,"size":"","sub":"샴푸","id":"i091"},{"approx":false,"cat":"헤어","exp":"2027-11-12","min":0,"name":"미국 트리트먼트","note":"2024-11-12 제조 · 3년","ord":92,"qty":1,"size":"","sub":"트리트먼트","id":"i092","uses":[{"s":"2026-11-14","e":""}]},{"approx":false,"cat":"헤어","exp":"2030-02-14","min":0,"name":"피노 헤어팩","note":"개당 2,052원 · 당근 4개 판매","ord":93,"qty":3,"size":"","sub":"트리트먼트","id":"i093"},{"approx":false,"cat":"헤어","exp":"2027-08-22","min":0,"name":"시티르","note":"","ord":94,"qty":3,"size":"","sub":"헤어오일","id":"i094"},{"approx":false,"cat":"헤어","exp":"2028-03-15","min":0,"name":"모로칸 오일","note":"","ord":95,"qty":1,"size":"","sub":"헤어오일","id":"i095"},{"approx":false,"cat":"헤어","exp":"2028-12-28","min":0,"name":"케라시스세럼","note":"","ord":96,"qty":2,"size":"70","sub":"헤어오일","id":"i096"},{"approx":false,"cat":"헤어","exp":"2028-10-13","min":0,"name":"컬크림","note":"","ord":97,"qty":2,"size":"","sub":"헤어오일","id":"i097"},{"approx":false,"cat":"치약","exp":"","min":0,"name":"유시몰","note":"","ord":98,"qty":0,"size":"","sub":"치약","id":"i098"},{"approx":false,"cat":"생필품","exp":"","min":0,"name":"화장솜","note":"","ord":99,"qty":1,"size":"","sub":"생필품","id":"i099"},{"approx":false,"cat":"생필품","exp":"","min":0,"name":"화장지","note":"","ord":100,"qty":1,"size":"","sub":"생필품","id":"i100"},{"approx":false,"cat":"세탁세제","exp":"","min":0,"name":"퍼울 세탁세제 컬러","note":"제조 2024-10-01","ord":101,"qty":0,"size":"1900","sub":"세탁세제","id":"i101"},{"approx":false,"cat":"세탁세제","exp":"","min":0,"name":"슈퍼큐 실내건조 캡슐","note":"적어둔 날짜 24.11.15 (제조일인지 확인 필요) · 용량 42개입","ord":102,"qty":1,"size":"","sub":"세탁세제","id":"i102"},{"approx":false,"cat":"세탁세제","exp":"","min":0,"name":"수뜰리에 캡슐","note":"제조 2025-12-12 · 용량 40개입","ord":103,"qty":3,"size":"","sub":"세탁세제","id":"i103"},{"id":"xmwhte0hwaw9f","name":"온살 하이퍼 나이아신 세험","cat":"얼굴 바를거리","sub":"세럼","qty":1,"size":"30","exp":"2029-09-27","approx":false,"note":"","min":0,"ord":104,"corner":"스킨케어","price":"100"},{"id":"xmwigwg79f7r9","name":"가히 한겹톤업선크림","cat":"얼굴 화장","sub":"선크림","qty":1,"size":"40","exp":"2028-02-10","approx":false,"note":"","min":0,"ord":105,"corner":"베이스","price":""}],"shop":[],"goods":[],"sales":[]}</script>
+<script type="application/json" id="seed">{"notice":"","items":[],"shop":[],"goods":[],"sales":[]}</script>
 <script id="app">
 (function () {
   var SRC = (function () {
@@ -347,7 +382,7 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function uid() { return 'x' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
-  var db = true, ro = true, failed = false, stale = false, dirty = false, saving = false, artifactNS = null, dlNS = null;
+  var db = true, ro = false, failed = false, stale = false, dirty = false, saving = false;
   var ready = { items: true, shop: true, goods: true, sales: true };
   var items = new Map(), shop = new Map(), goods = new Map(), sales = new Map();
   var notice = '';
@@ -396,97 +431,570 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
   function nextOrd() { return allItems().reduce(function (m, i) { return Math.max(m, i.ord || 0); }, 0) + 1; }
   function canWrite() { return !!db && !ro; }
 
-  /* ---------- 저장: 데이터는 페이지 안에 들어 있고, 편집 권한이 있는 사람이 고치면 페이지를 다시 게시한다 ---------- */
-  var SKEL_HEAD = "<!doctype html><html><head><meta charset=utf8><meta name=viewport content=\"width=device-width,initial-scale=1,viewport-fit=cover\"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>";
-  var SKEL_TAIL = '</body></html>';
-  var PAGE_HEAD = '<title>우리 살림칸 공유</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500;700&display=swap">\n';
-  var saveTimer = null;
+  /* ---------- 저장: 이 기기(localStorage) + 클라우드(MantleDB) · 전용 동기화 코드(?k=) ---------- */
+  var LS_DATA = 'salimkan-data-v1';
+  var LS_CFG = 'salimkan-sync-v1';
+  var SYNC_BASE = 'https://mantledb.sh/v2/';
+  var SYNC_PART_MAX = 58000;                      /* MantleDB 항목당 64KB 제한 → 이스케이프 후 58,000바이트 */
+  var SYNC_TOUCH_MS = 14 * 24 * 60 * 60 * 1000;   /* 마지막 업로드 14일 → 만료(30일) 자동 연장 */
+  var SYNC_POLL_MS = 25000;
+  var COLS = ['items', 'shop', 'goods', 'sales'];
+  var syncCfg = null;
+  var syncTimer = null, syncPoll = null, syncBusy = false, syncApplying = false, loadingRemote = false;
+  var tomb = { items: {}, shop: {}, goods: {}, sales: {} };
+  var metaTs = 0;
 
-  function setSync() {
-    var t;
-    if (ro) t = '보기 전용이에요';
-    else if (saving) t = '저장하는 중…';
-    else if (dirty) t = '저장하지 않은 변경이 있어요';
-    else t = '저장됨 · 고친 내용은 같은 링크로 보는 모두에게 보여요';
-    $('#sync').textContent = t;
-    var sb = $('#saveBar');
-    if (sb) { sb.hidden = ro || !(dirty || saving); $('#saveMsg').textContent = saving ? '저장하는 중…' : '저장하지 않은 변경이 있어요'; }
-  }
-  function markDirty() {
-    if (ro) return;
-    dirty = true; setSync();
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(autoSave, 8000);
-  }
-  function queue() { markDirty(); }
-  function patchItem(it, patch) { if ('qty' in patch && patch.qty !== it.qty) patch.bought = false; Object.assign(it, patch); markDirty(); }
-  function patchShop(x, patch) { Object.assign(x, patch); markDirty(); }
-  function createDoc(col, map, o) {
-    var id = uid(), copy = Object.assign({ id: id }, o);
-    map.set(id, copy); markDirty();
-    return copy;
-  }
-  function removeDoc(col, map, id) { map.delete(id); markDirty(); }
-  function addItem(o) {
-    return createDoc('items', items, Object.assign({ name: '', cat: '생필품', sub: '', qty: 1, size: '', exp: '', approx: false, note: '', min: 0, ord: nextOrd() }, o));
-  }
-  function isTyping() {
-    var a = document.activeElement;
-    return a && a.closest && a.closest('#view') && (a.tagName === 'INPUT' || a.tagName === 'SELECT');
-  }
+  function collMap(name) { return name === 'items' ? items : name === 'shop' ? shop : name === 'goods' ? goods : sales; }
+  function uid2() { return 'x' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
-  function buildDoc() {
-    var seed = JSON.stringify({ notice: notice, items: allItems(), shop: allShop(), goods: allGoods(), sales: allSales() })
-      .replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
-    return SKEL_HEAD + PAGE_HEAD + '<style id="pagecss">' + SRC.style + '</style>\n\n' + SRC.markup +
-      '\n\n<script type="application/json" id="seed">' + seed + '<\/script>\n<script id="app">' + SRC.script + '<\/script>\n' + SKEL_TAIL;
+  /* ---------- 이 기기 저장 ---------- */
+  function snapshotDoc() {
+    return {
+      v: 1, app: 'salimkan', notice: notice, metaTs: metaTs,
+      items: allItems(), shop: allShop(), goods: allGoods(), sales: allSales(), del: tomb
+    };
   }
-
-  function autoSave() {
-    if (!dirty || saving) return;
-    if (isTyping()) { saveTimer = setTimeout(autoSave, 4000); return; }
-    save();
+  function docCounts() {
+    return { items: items.size, shop: shop.size, goods: goods.size, sales: sales.size };
   }
-  function save() {
-    clearTimeout(saveTimer);
-    if (ro || saving || !dirty || !artifactNS) return;
-    var html;
-    try { html = buildDoc(); } catch (e) { toast('저장하지 못했어요'); return; }
-    saving = true; setSync();
-    try {
-      sessionStorage.setItem('salimkan-ui', JSON.stringify({ tab: ui.tab, gtab: ui.gtab, cat: ui.cat, ggroup: ui.ggroup, gbrand: ui.gbrand, y: window.scrollY || 0, saved: 1 }));
-    } catch (e) {}
-    artifactNS.publish(html).then(function () {
-      /* 저장되면 화면이 새 버전으로 다시 열린다 */
-    }, function (err) {
-      saving = false;
-      var c = err && err.code;
-      try { var s = JSON.parse(sessionStorage.getItem('salimkan-ui') || '{}'); delete s.saved; sessionStorage.setItem('salimkan-ui', JSON.stringify(s)); } catch (e) {}
-      if (c === 'conflict') return;
-      if (c === 'not_writer' || c === 'not_granted' || c === 'consent_required' || c === 'capability_disabled' || c === 'not_declared') {
-        ro = true; render(); toast('이 계정으로는 저장할 수 없어요. 보기 전용이에요');
-      } else if (c === 'rate_limited') {
-        toast('저장이 너무 잦아요. 잠시 뒤 ‘지금 저장’을 눌러 주세요');
-      } else {
-        toast('저장하지 못했어요. ‘지금 저장’을 다시 눌러 주세요');
-      }
-      setSync();
-    });
+  function storeSave() {
+    try { localStorage.setItem(LS_DATA, JSON.stringify(snapshotDoc())); return true; } catch (e) { return false; }
   }
-
-  function init() {
-    var seed = {};
-    try { seed = JSON.parse(document.getElementById('seed').textContent) || {}; } catch (e) {}
-    function fill(map, arr) { (arr || []).forEach(function (o) { if (o && o.id) map.set(o.id, o); }); }
-    notice = typeof seed.notice === 'string' ? seed.notice : '';
-    fill(items, seed.items);
+  function normalizeItems() {
     items.forEach(function (it) {
       var sz = String(it.size == null ? '' : it.size).trim();
       if (!sz || /^\d+(?:\.\d+)?$/.test(sz)) return;
       var mm = sz.match(/^(\d+(?:[.,]\d+)?)\s*(ml|mL|ML|L|l)$/);
       if (mm) it.size = sizeNum(parseFloat(mm[1].replace(',', '.')) * (mm[2] === 'L' || mm[2] === 'l' ? 1000 : 1));
       else { it.note = (it.note ? it.note + ' · ' : '') + '용량 ' + sz; it.size = ''; }
-    }); fill(shop, seed.shop); fill(goods, seed.goods); fill(sales, seed.sales);
+    });
+  }
+  function applyDoc(doc) {
+    doc = doc || {};
+    notice = typeof doc.notice === 'string' ? doc.notice : '';
+    metaTs = Number(doc.metaTs || 0) || 0;
+    COLS.forEach(function (name) {
+      var map = collMap(name);
+      map.clear();
+      var arr = Array.isArray(doc[name]) ? doc[name] : [];
+      arr.forEach(function (o) { if (o && o.id != null) map.set(String(o.id), o); });
+    });
+    tomb = { items: {}, shop: {}, goods: {}, sales: {} };
+    var d = (doc.del && typeof doc.del === 'object') ? doc.del : {};
+    COLS.forEach(function (name) {
+      var src = (d[name] && typeof d[name] === 'object') ? d[name] : {};
+      Object.keys(src).forEach(function (id) { var t = Number(src[id] || 0); if (t > 0) tomb[name][id] = t; });
+    });
+    normalizeItems();
+  }
+  function storeLoad() {
+    var doc = null;
+    try { var raw = localStorage.getItem(LS_DATA); if (raw) doc = JSON.parse(raw); } catch (e) { doc = null; }
+    if (!doc || typeof doc !== 'object') {
+      /* 공개 HTML의 <script id="seed">에는 빈 틀만 들어 있다 — 실제 목록은 클라우드에서 받는다 */
+      try { doc = JSON.parse(document.getElementById('seed').textContent); } catch (e) { doc = null; }
+    }
+    applyDoc(doc);
+  }
+
+  /* ---------- 변경 → 저장 → 업로드 ---------- */
+  function markDirty() {
+    if (!canWrite()) return;
+    dirty = true;
+    if (syncCfg) syncCfg.dirty = true;
+    storeSave();
+    setSync();
+    schedulePush();
+  }
+  function schedulePush() {
+    if (!syncConnected() || !syncCfg.auto || syncApplying) return;
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(function () { syncNow({ silent: true }); }, 2500);
+  }
+  function queue() { markDirty(); }
+  function patchItem(it, patch) { if ('qty' in patch && patch.qty !== it.qty) patch.bought = false; Object.assign(it, patch); it.updatedAt = Date.now(); markDirty(); }
+  function patchShop(x, patch) { Object.assign(x, patch); x.updatedAt = Date.now(); markDirty(); }
+  function createDoc(col, map, o) {
+    var id = o && o.id ? String(o.id) : uid2();
+    var copy = Object.assign({ id: id, updatedAt: Date.now() }, o);
+    map.set(id, copy); markDirty();
+    return copy;
+  }
+  function removeDoc(col, map, id) {
+    map.delete(id);
+    if (tomb[col]) tomb[col][String(id)] = Date.now();
+    markDirty();
+  }
+  function addItem(o) {
+    return createDoc('items', items, Object.assign({ name: '', cat: '생필품', sub: '', qty: 1, size: '', exp: '', approx: false, note: '', min: 0, ord: nextOrd() }, o));
+  }
+  function save() { syncNow({ silent: false }); }
+
+  /* ---------- 동기화 설정 ---------- */
+  function syncLoadCfg() {
+    var o = null;
+    try { var raw = localStorage.getItem(LS_CFG); if (raw) o = JSON.parse(raw); } catch (e) { o = null; }
+    syncCfg = (o && typeof o === 'object') ? o : {};
+    if (!syncCfg.deviceId) syncCfg.deviceId = 'dev-' + Math.random().toString(36).slice(2, 8);
+    if (typeof syncCfg.ns !== 'string') syncCfg.ns = '';
+    if (typeof syncCfg.rev !== 'number') syncCfg.rev = 0;
+    if (typeof syncCfg.lastRemoteRev !== 'number') syncCfg.lastRemoteRev = 0;
+    if (typeof syncCfg.lastSync !== 'number') syncCfg.lastSync = 0;
+    if (typeof syncCfg.lastPushTs !== 'number') syncCfg.lastPushTs = 0;
+    if (typeof syncCfg.lastError !== 'string') syncCfg.lastError = '';
+    if (typeof syncCfg.auto !== 'boolean') syncCfg.auto = true;
+    return syncCfg;
+  }
+  function syncSaveCfg() { try { localStorage.setItem(LS_CFG, JSON.stringify(syncCfg || {})); } catch (e) {} }
+  function syncConnected() { return !!(syncCfg && syncCfg.ns); }
+  function syncErrMsg(e) {
+    var m = String((e && e.message) ? e.message : (e || ''));
+    if (!m || m === 'HTTP 0' || /Failed to fetch|NetworkError|Load failed|aborted|AbortError/i.test(m)) return '네트워크에 연결할 수 없어요 (인터넷 상태 확인)';
+    return m;
+  }
+  function newNs() {
+    var abc = 'abcdefghijkmnpqrstuvwxyz23456789', s = '';
+    for (var i = 0; i < 10; i++) s += abc.charAt(Math.floor(Math.random() * abc.length));
+    return 'salimkan-' + s;
+  }
+
+  /* ---------- MantleDB 통신 ---------- */
+  function apiFetch(url, opts) {
+    var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 20000) : null;
+    var o = Object.assign({ cache: 'no-store' }, opts || {});
+    if (ctrl) o.signal = ctrl.signal;
+    return fetch(url, o).then(function (res) { if (timer) clearTimeout(timer); return res; }, function (err) { if (timer) clearTimeout(timer); throw err; });
+  }
+  function apiPost(path, obj) {
+    return apiFetch(SYNC_BASE + path, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(obj)
+    }).then(function (res) {
+      if (res.ok) return true;
+      return res.text().then(function (t) {
+        var msg = 'HTTP ' + res.status;
+        try { var j = JSON.parse(t); if (j && j.error) msg += ' (' + j.error + ')'; } catch (e) {}
+        throw new Error(msg);
+      });
+    });
+  }
+  function apiGet(path) {
+    return apiFetch(SYNC_BASE + path, { method: 'GET' }).then(function (res) {
+      if (res.status === 404) return null;
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.text().then(function (t) {
+        if (!t) return null;
+        try { return JSON.parse(t); } catch (e) { return null; }
+      });
+    });
+  }
+
+  function escLen(ch) {
+    var cc = ch.charCodeAt(0);
+    if (ch === '"' || ch === '\\') return 2;
+    if (cc < 0x20) return 6;
+    if (cc < 0x80) return 1;
+    if (cc < 0x800) return 2;
+    if (cc >= 0xD800 && cc <= 0xDBFF) return 4;
+    if (cc >= 0xDC00 && cc <= 0xDFFF) return 0;
+    return 3;
+  }
+  function chunkDoc(doc, max) {
+    var parts = [], cur = '', len = 0;
+    for (var i = 0; i < doc.length; i++) {
+      var ch = doc.charAt(i), b = escLen(ch);
+      if (len + b > max) { parts.push(cur); cur = ch; len = b; }
+      else { cur += ch; len += b; }
+    }
+    if (cur) parts.push(cur);
+    return parts;
+  }
+
+  function syncReadManifest() {
+    if (!syncConnected()) return Promise.resolve(null);
+    return apiGet(syncCfg.ns + '/v1/manifest').then(function (m) {
+      if (!m || !m.parts || !m.parts.length) return null;
+      return m;
+    });
+  }
+  function syncReadRemote(manifest) {
+    var list = manifest.parts || [], out = new Array(list.length), next = 0;
+    function worker() {
+      var i = next++;
+      if (i >= list.length) return Promise.resolve();
+      var p = list[i];
+      var key = p && p.k ? p.k : ('v1/p' + i);
+      return apiGet(syncCfg.ns + '/' + key).then(function (part) {
+        if (!part || typeof part.c !== 'string') throw new Error('클라우드 사본이 만료됐어요');
+        out[i] = part.c;
+        return worker();
+      });
+    }
+    var n = Math.max(1, Math.min(3, list.length)), ws = [];
+    for (var k = 0; k < n; k++) ws.push(worker());
+    return Promise.all(ws).then(function () {
+      var buf = out.join('');
+      var doc = null;
+      try { doc = JSON.parse(buf); } catch (e) { doc = null; }
+      if (!doc || !Array.isArray(doc.items)) throw new Error('클라우드 데이터 형식이 올바르지 않아요');
+      return doc;
+    });
+  }
+
+  function syncPush(manifestHint) {
+    if (!syncConnected()) return Promise.reject(new Error('동기화 코드가 없어요'));
+    var doc = snapshotDoc();
+    doc.ts = Date.now();
+    doc.device = syncCfg.deviceId;
+    var json = JSON.stringify(doc);
+    var parts = chunkDoc(json, SYNC_PART_MAX);
+    var chain = Promise.resolve();
+    parts.forEach(function (p, i) {
+      chain = chain.then(function () { return apiPost(syncCfg.ns + '/v1/p' + i, { c: p }); });
+    });
+    var rev = Math.max(syncCfg.rev || 0, syncCfg.lastRemoteRev || 0, (manifestHint && manifestHint.rev) || 0) + 1;
+    var ts = Date.now();
+    var manifest = {
+      t: 1, app: 'salimkan', rev: rev, ts: ts, device: syncCfg.deviceId,
+      parts: parts.map(function (p, i) { return { k: 'v1/p' + i }; }),
+      counts: docCounts(), bytes: json.length
+    };
+    return chain.then(function () { return apiPost(syncCfg.ns + '/v1/manifest', manifest); }).then(function () {
+      syncCfg.rev = rev;
+      syncCfg.lastRemoteRev = rev;
+      syncCfg.lastPushTs = ts;
+      syncCfg.lastSync = ts;
+      syncCfg.lastCount = manifest.counts;
+      syncCfg.lastError = '';
+      syncCfg.dirty = false;
+      syncSaveCfg();
+      return manifest;
+    });
+  }
+
+  /* ---------- 병합: 클라우드(remote) + 이 기기(local) → 합친 문서 ---------- */
+  function mergeRemote(remote) {
+    var before = JSON.stringify(snapshotDoc());
+    var del = { items: {}, shop: {}, goods: {}, sales: {} };
+    COLS.forEach(function (name) {
+      var a = tomb[name] || {}, b = (remote.del && remote.del[name]) || {};
+      Object.keys(a).forEach(function (id) { del[name][id] = Math.max(del[name][id] || 0, Number(a[id]) || 0); });
+      Object.keys(b).forEach(function (id) { del[name][id] = Math.max(del[name][id] || 0, Number(b[id]) || 0); });
+    });
+    var localAhead = false;
+    var out = { v: 1, app: 'salimkan', notice: notice, metaTs: metaTs, del: del };
+    if (Number(remote.metaTs || 0) > Number(metaTs || 0)) {
+      out.notice = typeof remote.notice === 'string' ? remote.notice : notice;
+      out.metaTs = Number(remote.metaTs || 0);
+    } else if (metaTs > 0) {
+      localAhead = localAhead || (Number(remote.metaTs || 0) < metaTs);
+    }
+    COLS.forEach(function (name) {
+      var base = collMap(name), merged = new Map();
+      base.forEach(function (rec, id) { merged.set(String(id), rec); });
+      var rarr = Array.isArray(remote[name]) ? remote[name] : [];
+      rarr.forEach(function (r) {
+        if (!r || r.id == null) return;
+        var id = String(r.id), l = merged.get(id);
+        if (!l) { merged.set(id, r); return; }
+        var lt = Number(l.updatedAt || 0), rt = Number(r.updatedAt || 0);
+        if (rt > lt) merged.set(id, r);
+        else if (lt > rt && !syncApplying) localAhead = true;
+      });
+      var kept = [];
+      merged.forEach(function (rec, id) {
+        var dts = del[name][id] || 0;
+        var rt2 = Number(rec.updatedAt || 0);
+        if (dts && dts >= rt2) return;      /* 지운 항목은 되살리지 않는다 */
+        kept.push(rec);
+      });
+      out[name] = kept;
+      /* 이 기기에만 있는 항목(클라우드에 없는 id)이 있으면 올려야 한다 */
+      if (!syncApplying) {
+        var rids = {};
+        rarr.forEach(function (r) { if (r && r.id != null) rids[String(r.id)] = 1; });
+        base.forEach(function (rec, id) {
+          if (!rids[String(id)] && !(del[name][id] >= Number(rec.updatedAt || 0))) localAhead = true;
+        });
+        Object.keys(tomb[name] || {}).forEach(function (id) {
+          var rt3 = 0;
+          rarr.forEach(function (r) { if (r && String(r.id) === id) rt3 = Number(r.updatedAt || 0); });
+          if (tomb[name][id] >= rt3) localAhead = true;
+        });
+      }
+    });
+    var json = JSON.stringify(out);
+    var changed = (json !== before);
+    return { doc: out, changed: changed, localAhead: localAhead };
+  }
+
+  /* ---------- 지금 동기화 ---------- */
+  function syncNow(opts) {
+    var silent = !opts || opts.silent !== false;
+    if (!syncConnected()) { if (!silent) toast('먼저 동기화 코드로 연결해 주세요'); return Promise.resolve(null); }
+    if (syncBusy) return Promise.resolve(null);
+    syncBusy = true; saving = true; setSync();
+    var started = Date.now();
+    return syncReadManifest().then(function (manifest) {
+      if (!manifest) {
+        /* 클라우드 사본이 없다 = 처음 연결이거나 30일 만료 → 이 기기 원본을 올려 복구한다 */
+        if (items.size || shop.size || goods.size || sales.size) return syncPush(null).then(function () { return { recovered: true }; });
+        syncCfg.lastSync = Date.now(); syncCfg.lastError = ''; syncSaveCfg();
+        return {};
+      }
+      syncCfg.lastRemoteRev = manifest.rev;
+      var upToDate = (manifest.rev === syncCfg.rev) && !syncCfg.dirty && (Number(syncCfg.lastPushTs || 0) >= Number(manifest.ts || 0));
+      if (upToDate) {
+        /* 변경은 없어도 마지막 업로드가 14일을 넘겼으면 다시 올려 30일 만료를 미룬다 */
+        var lastUp0 = Number(syncCfg.lastPushTs || 0) || Number(manifest.ts || 0);
+        if (lastUp0 && (Date.now() - lastUp0) >= SYNC_TOUCH_MS) {
+          return syncPush(manifest).then(function () { return { touched: true }; });
+        }
+        syncCfg.lastSync = Date.now(); syncCfg.lastError = ''; syncCfg.lastCount = manifest.counts || syncCfg.lastCount; syncSaveCfg();
+        return { unchanged: true };
+      }
+      return syncReadRemote(manifest).then(function (remote) {
+        syncApplying = true;
+        var m = mergeRemote(remote);
+        syncApplying = false;
+        var res = { manifest: manifest };
+        if (m.changed) {
+          applyDoc(m.doc);
+          storeSave();
+          render();
+          res.applied = true;
+        }
+        var lastUp = Number(manifest.ts || 0) || Number(syncCfg.lastPushTs || 0);
+        var due = lastUp && (Date.now() - lastUp) >= SYNC_TOUCH_MS;
+        if (m.localAhead || syncCfg.dirty || due) {
+          return syncPush(manifest).then(function () { res.pushed = true; if (due && !m.localAhead) res.touched = true; return res; });
+        }
+        syncCfg.rev = manifest.rev;
+        syncCfg.lastSync = Date.now();
+        syncCfg.lastError = '';
+        syncCfg.lastCount = manifest.counts || syncCfg.lastCount;
+        syncSaveCfg();
+        return res;
+      });
+    }).then(function (res) {
+      syncBusy = false; saving = false; dirty = false;
+      setSync(); renderSyncPanel();
+      if (!silent && res) {
+        if (res.recovered) toast('☁️ 이 기기 목록을 클라우드에 올렸어요 · ' + items.size + '건');
+        else if (res.touched) toast('⏳ 클라우드 만료를 자동으로 연장했어요');
+        else if (res.applied) toast('☁️ 최신 내용을 받았어요 · ' + items.size + '건');
+        else toast('동기화 완료 · ' + items.size + '건');
+      }
+      return res;
+    }).catch(function (err) {
+      syncBusy = false; saving = false;
+      syncCfg.lastError = syncErrMsg(err);
+      syncSaveCfg();
+      setSync(); renderSyncPanel();
+      if (!silent) toast('동기화 실패: ' + syncCfg.lastError);
+      return null;
+    });
+  }
+
+  /* ---------- 코드 연결 ---------- */
+  function parseCode(raw) {
+    var s = String(raw == null ? '' : raw).trim();
+    if (!s) return '';
+    var q = s.match(/[?&](?:k|key|code|sync)=([^&]+)/i);
+    if (q) { try { s = decodeURIComponent(q[1]); } catch (e) { s = q[1]; } }
+    s = s.replace(/^https?:\/\/[^\/]+\//i, '').replace(/^v2\//i, '').replace(/[?#].*$/, '').replace(/\/+$/, '').trim();
+    var m = s.match(/(salimkan-[a-z0-9]+)/i);
+    if (m) return m[1].toLowerCase();
+    return s.toLowerCase();
+  }
+  function syncCodeFromUrl() {
+    try {
+      var q = (location.search || '').match(/[?&](?:k|key|code|sync)=([^&]+)/i);
+      if (q) return parseCode(decodeURIComponent(q[1].replace(/\+/g, ' ')));
+    } catch (e) {}
+    return '';
+  }
+
+  function connectCode(raw, opts) {
+    var o = opts || {};
+    var code = parseCode(raw);
+    if (!/^salimkan-[a-z0-9]{4,}$/.test(code)) { if (!o.quiet) toast('코드 형식이 맞지 않아요 (예: salimkan-ab12cd34ef)'); return Promise.resolve(false); }
+    if (code === syncCfg.ns && o.keepIfSame !== false) { renderSyncPanel(); return Promise.resolve(true); }
+    var prev = syncCfg.ns || '';
+    syncCfg.ns = code; syncCfg.rev = 0; syncCfg.lastRemoteRev = 0; syncCfg.lastSync = 0;
+    syncCfg.lastError = ''; syncCfg.dirty = false; syncCfg.auto = true;
+    syncSaveCfg();
+    loadingRemote = !items.size; setSync(); renderSyncPanel(); render();
+    return syncReadManifest().then(function (manifest) {
+      if (!manifest && !(items.size || shop.size)) {
+        syncCfg.ns = prev; syncSaveCfg(); loadingRemote = false; setSync(); renderSyncPanel(); render();
+        if (!o.quiet) toast('이 코드에는 저장된 목록이 아직 없어요');
+        return false;
+      }
+      return syncNow({ silent: true }).then(function (res) {
+        loadingRemote = false; setSync(); renderSyncPanel(); render();
+        if (syncCfg.lastError) { if (!o.quiet) toast('동기화 실패: ' + syncCfg.lastError); return false; }
+        if (!o.quiet) toast('☁️ 연결 완료 · ' + items.size + '건을 함께 씁니다');
+        return true;
+      });
+    }).catch(function (err) {
+      syncCfg.ns = prev; syncSaveCfg(); loadingRemote = false; setSync(); renderSyncPanel(); render();
+      if (!o.quiet) toast('코드를 확인하지 못했어요: ' + syncErrMsg(err));
+      return false;
+    });
+  }
+
+  function createCode() {
+    if (!items.size && !shop.size) { toast('이 기기에 아직 목록이 없어요'); return; }
+    var code = newNs();
+    syncCfg.ns = code; syncCfg.rev = 0; syncCfg.lastRemoteRev = 0; syncCfg.lastError = ''; syncCfg.auto = true;
+    syncSaveCfg();
+    setSync(); renderSyncPanel();
+    toast('클라우드에 올리는 중…');
+    syncPush(null).then(function () {
+      setSync(); renderSyncPanel();
+      toast('☁️ 새 동기화 코드가 만들어졌어요');
+    }, function (err) {
+      syncCfg.lastError = syncErrMsg(err); syncSaveCfg(); setSync(); renderSyncPanel();
+      toast('업로드 실패: ' + syncCfg.lastError);
+    });
+  }
+
+  function disconnectSync() {
+    if (!confirm('이 기기에서 동기화를 끊을까요?\n목록은 이 기기에 그대로 남아 있어요.')) return;
+    syncCfg.ns = ''; syncCfg.rev = 0; syncCfg.lastRemoteRev = 0; syncCfg.lastSync = 0; syncCfg.lastError = ''; syncCfg.dirty = false;
+    syncSaveCfg(); setSync(); renderSyncPanel(); render();
+    toast('동기화 연결을 끊었어요');
+  }
+
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { toast('복사했어요'); }, function () { toast('복사 실패 — 길게 눌러 직접 복사해 주세요'); });
+    } else {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+        toast('복사했어요');
+      } catch (e) { toast('복사 실패 — 길게 눌러 직접 복사해 주세요'); }
+    }
+  }
+  function syncLink() { return syncConnected() ? (location.origin + location.pathname + '?k=' + syncCfg.ns) : ''; }
+
+  /* ---------- 상태 표시 ---------- */
+  function syncAgo(ts) {
+    if (!ts) return '아직 없음';
+    var diff = Date.now() - ts, mm = Math.floor(diff / 60000);
+    if (mm < 1) return '방금';
+    if (mm < 60) return mm + '분 전';
+    var hh = Math.floor(mm / 60);
+    if (hh < 24) return hh + '시간 전';
+    var d = new Date(ts);
+    return (d.getMonth() + 1) + '월 ' + d.getDate() + '일 ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  }
+
+  function setSync() {
+    var chip = $('#syncBtnText'), dot = $('#syncDot'), t, cls = '';
+    if (!syncConnected()) { t = '동기화 코드로 연결하기'; cls = 'off'; }
+    else if (syncBusy || saving) { t = '클라우드와 맞추는 중…'; cls = 'busy'; }
+    else if (syncCfg.lastError) { t = '동기화 오류 · 다시 시도'; cls = 'err'; }
+    else if (dirty) { t = '저장 중… (이 기기에 먼저 저장됨)'; cls = 'busy'; }
+    else { t = '연결됨 · ' + syncAgo(syncCfg.lastSync) + ' 동기화'; cls = 'on'; }
+    if (chip) chip.textContent = t;
+    var btn = $('#syncBtn');
+    if (btn) btn.setAttribute('data-state', cls);
+    if (dot) dot.setAttribute('data-state', cls);
+    var foot = $('#sync');
+    if (foot) {
+      if (!syncConnected()) foot.textContent = '같은 코드를 넣은 기기끼리 이 목록을 함께 써요';
+      else if (syncCfg.lastError) foot.textContent = '동기화 오류: ' + syncCfg.lastError;
+      else foot.textContent = '☁️ 연결됨 · ' + syncAgo(syncCfg.lastSync) + ' 동기화 · 다른 기기의 수정도 자동으로 받아요';
+    }
+    var sb = $('#saveBar');
+    if (sb) {
+      /* 이 기기에는 늘 즉시 저장되므로, 클라우드 저장이 막혔을 때만 띄운다 */
+      sb.hidden = !(syncConnected() && syncCfg.lastError);
+      var sm = $('#saveMsg');
+      if (sm) sm.textContent = '이 기기에는 저장됐어요 · 클라우드 저장이 막혔어요';
+    }
+  }
+
+  function toggleSyncPanel(force) {
+    var box = $('#syncBox');
+    if (!box) return;
+    var open = (typeof force === 'boolean') ? force : box.hidden;
+    box.hidden = !open;
+    var btn = $('#syncBtn');
+    if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) { renderSyncPanel(); var inp = $('#syncJoinInput'); if (inp && !syncConnected()) setTimeout(function () { try { inp.focus(); } catch (e) {} }, 60); }
+  }
+
+  function renderSyncPanel() {
+    var box = $('#syncBoxIn');
+    if (!box) return;
+    if (!syncConnected()) {
+      box.innerHTML =
+        '<p class="sbp">동기화 코드를 넣으면 이 목록이 클라우드에 저장되고, 같은 코드를 넣은 다른 기기(배우자 휴대폰·PC)와 자동으로 맞춰져요.</p>' +
+        '<div class="sbrow"><input id="syncJoinInput" class="sbinput" type="text" inputmode="latin" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="예: salimkan-ab12cd34ef" aria-label="동기화 코드"></div>' +
+        '<div class="sbbtns"><button class="btn primary sm" type="button" data-sact="join">이 코드로 연결</button>' +
+        '<button class="btn sm" type="button" data-sact="create">새 코드 만들기</button></div>';
+      return;
+    }
+    var c = docCounts(), cc = (syncCfg.lastCount && syncCfg.lastCount.items != null) ? syncCfg.lastCount.items : null;
+    var err = syncCfg.lastError ? '<p class="sberr">⚠️ ' + esc(syncCfg.lastError) + '</p>' : '';
+    box.innerHTML =
+      '<div class="sbinfo"><span>이 기기 <b>' + c.items + '</b>건</span><span>클라우드 <b>' + (cc == null ? '-' : cc) + '</b>건</span></div>' +
+      '<div class="sbrow"><input class="sbinput sbcode" id="syncCodeView" type="text" readonly value="' + esc(syncCfg.ns) + '" aria-label="동기화 코드">' +
+      '<button class="btn sm" type="button" data-sact="copy-code">복사</button></div>' +
+      '<div class="sbrow"><input class="sbinput sbcode" id="syncLinkView" type="text" readonly value="' + esc(syncLink()) + '" aria-label="동기화 링크">' +
+      '<button class="btn sm" type="button" data-sact="copy-link">링크</button></div>' +
+      '<div class="sbbtns"><button class="btn primary sm" type="button" data-sact="now">지금 동기화</button>' +
+      '<button class="btn sm" type="button" data-sact="disconnect">연결 끊기</button></div>' + err;
+  }
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-sact]');
+    if (!b) return;
+    var a = b.dataset.sact;
+    if (a === 'open') { toggleSyncPanel(); return; }
+    if (a === 'close') { toggleSyncPanel(false); return; }
+    if (a === 'join') { var inp = $('#syncJoinInput'); connectCode(inp ? inp.value : ''); return; }
+    if (a === 'create') { createCode(); return; }
+    if (a === 'now') { save(); return; }
+    if (a === 'disconnect') { disconnectSync(); return; }
+    if (a === 'copy-code') { copyText(syncCfg.ns); return; }
+    if (a === 'copy-link') { copyText(syncLink()); return; }
+  });
+
+  function startSync() {
+    syncLoadCfg();
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible' && syncConnected() && syncCfg.auto && (Date.now() - (syncCfg.lastSync || 0) > 20000)) syncNow({ silent: true });
+    });
+    window.addEventListener('online', function () { if (syncConnected() && syncCfg.auto) syncNow({ silent: true }); });
+    clearInterval(syncPoll);
+    syncPoll = setInterval(function () {
+      if (document.visibilityState !== 'visible' || !syncConnected() || !syncCfg.auto) return;
+      if (syncBusy || isTyping()) return;
+      if (Date.now() - (syncCfg.lastSync || 0) < 12000) return;
+      syncNow({ silent: true });
+    }, SYNC_POLL_MS);
+
+    var urlCode = syncCodeFromUrl();
+    if (urlCode && urlCode !== syncCfg.ns) {
+      connectCode(urlCode, { keepIfSame: false });
+      return;
+    }
+    if (syncConnected()) { syncNow({ silent: true }); return; }
+  }
+
+  function isTyping() {
+    var a = document.activeElement;
+    return a && a.closest && a.closest('#view') && (a.tagName === 'INPUT' || a.tagName === 'SELECT');
+  }
+
+  function init() {
+    storeLoad();
     var back = null;
     try { back = JSON.parse(sessionStorage.getItem('salimkan-ui') || 'null'); } catch (e) {}
     if (back) {
@@ -496,21 +1004,25 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
       if (typeof back.ggroup === 'string') ui.ggroup = back.ggroup;
       if (typeof back.gbrand === 'string') ui.gbrand = back.gbrand;
     }
-    setSync(); render();
+    setSync(); renderSyncPanel(); render();
     if (back) {
       if (back.y) window.scrollTo(0, back.y);
-      if (back.saved) toast('저장했어요');
       try { sessionStorage.removeItem('salimkan-ui'); } catch (e) {}
     }
-    var cl = window.claude;
-    if (!cl || !cl.use) return;
-    Promise.all([cl.use('artifact'), cl.use('user'), cl.use('downloads').catch(function () { return null; })]).then(function (r) {
-      artifactNS = r[0]; dlNS = r[2];
-      var user = r[1];
-      var can = false;
-      try { can = !!artifactNS && !!user && (user.isOwner() || user.canEdit()); } catch (e) {}
-      ro = !can; setSync(); render();
-    }).catch(function () {});
+    startSync();
+    setSync();
+  }
+
+  function emptyOnboard() { return !syncConnected() || (loadingRemote && !items.size); }
+  function onboardHTML() {
+    if (loadingRemote) {
+      return '<div class="onboard"><div class="obicon">☁️</div><p class="obt">클라우드에서 목록을 불러오는 중…</p></div>';
+    }
+    return '<div class="onboard">' +
+      '<div class="obicon">🔑</div>' +
+      '<p class="obt">동기화 코드를 넣어 주세요</p>' +
+      '<p class="obp">이 주소에는 목록이 담겨 있지 않아요. 가족이 쓰는 동기화 코드를 넣으면 목록이 그대로 나타나고, 여기서 고친 내용이 같은 코드를 쓰는 기기에 함께 저장돼요.</p>' +
+      '<button class="btn primary" type="button" data-sact="open">동기화 코드 입력</button></div>';
   }
 
   var tt = null;
@@ -555,7 +1067,6 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
     $('#tools').hidden = ui.tab !== 'stock';
     $('#q').placeholder = '이름·브랜드로 찾기';
     var ab = $('#addBtn'); ab.hidden = ro || !db;
-    $('#dlBtn').hidden = !dlNS;
     ab.textContent = ui.add ? '닫기' : '+ 물건 추가';
     var subs = [];
     allItems().forEach(function (i) { if (i.sub && subs.indexOf(i.sub) < 0) subs.push(i.sub); });
@@ -1332,7 +1843,7 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
     renderHead();
     syncBarH();
     var oc = $('#view .chips'), sl = oc ? oc.scrollLeft : 0;
-    $('#view').innerHTML = viewHTML();
+    $('#view').innerHTML = emptyOnboard() ? onboardHTML() : viewHTML();
     var nc = $('#view .chips');
     if (nc) {
       nc.scrollLeft = sl;
@@ -1393,14 +1904,8 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
     if (goodsAct(act, b, w)) return;
     if (act === 'add-toggle') {
       ui.add = !ui.add; ui.sell = null; render(ui.add ? '.add input[name="name"]' : null);
-    } else if (act === 'dl-html') {
-      if (!dlNS) return;
-      var dd = new Date(), stamp = String(dd.getFullYear()).slice(2) + String(dd.getMonth() + 1).padStart(2, '0') + String(dd.getDate()).padStart(2, '0');
-      dlNS.save({ filename: 'salimkan-' + stamp + '.html', data: buildDoc() }).then(function () { toast('HTML을 저장했어요'); }).catch(function (er) {
-        var c = er && er.code;
-        if (c === 'declined') return;
-        toast(c === 'rate_limited' ? '잠시 뒤에 다시 눌러 주세요' : 'HTML 저장을 지원하지 않는 화면이에요');
-      });
+    } else if (act === 'sync-open') {
+      toggleSyncPanel();
     } else if (act === 'cat') {
       var yc = window.scrollY; ui.cat = b.dataset.cat; ui.sub = 'all'; render(); window.scrollTo(0, yc);
     } else if (act === 'sub') {
@@ -1523,7 +2028,7 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
   });
 
   document.addEventListener('input', function (e) {
-    if (e.target && e.target.id === 'noticeInput' && canWrite()) { notice = e.target.value; markDirty(); }
+    if (e.target && e.target.id === 'noticeInput' && canWrite()) { notice = e.target.value; metaTs = Date.now(); markDirty(); }
   });
   $('#q').addEventListener('input', function (e) { ui.q = e.target.value; if (ui.tab === 'stock') $('#view').innerHTML = viewHTML(); });
 
@@ -1532,5 +2037,4 @@ input::placeholder { color: var(--ink-2); opacity: .8; }
   init();
 })();
 </script>
-
 </body></html>
