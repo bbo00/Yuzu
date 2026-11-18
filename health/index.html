@@ -1,0 +1,1470 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>병원·건강 수첩</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="병원 방문 기록과 증상 메모, 병원비 요약을 한 곳에 모으는 개인용 수첩">
+<meta name="theme-color" content="#f7f6f2">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="건강 수첩">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f7f6f2;
+  --surface:#ffffff;
+  --surface-2:#fbfaf6;
+  --ink:#1d2422;
+  --ink-2:#6c7570;
+  --ink-3:#9aa29d;
+  --line:#e6e3da;
+  --line-2:#efece4;
+  --track:#f0eee7;
+  --accent:#31756a;
+  --accent-ink:#ffffff;
+  --accent-soft:#e7f1ed;
+  --accent-line:#cfe3dc;
+  --bad:#a9483b;
+  --bad-soft:#f8e6e2;
+  --warn:#9a6a1d;
+  --warn-soft:#f7edd6;
+  --radius:14px;
+  --font:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:var(--font);font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:calc(76px + env(safe-area-inset-bottom,0px));
+}
+body.lock{overflow:hidden}
+.wrap{max-width:480px;margin:0 auto;padding:10px 16px 4px}
+button{font:inherit;color:inherit}
+input,select,textarea{font:inherit;color:inherit}
+
+/* ---------- 헤더 ---------- */
+.app-head{display:flex;align-items:flex-start;gap:10px;justify-content:space-between;padding:2px 0 12px}
+h1{margin:0;font-size:19px;font-weight:700;letter-spacing:-.4px;line-height:1.3}
+.sub{margin:3px 0 0;font-size:12px;color:var(--ink-2);letter-spacing:-.1px}
+.sync-pill{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-size:12px;padding:7px 10px;border-radius:999px;cursor:pointer;white-space:nowrap;letter-spacing:-.2px}
+.sync-pill.on{color:var(--accent);border-color:var(--accent-line);background:var(--accent-soft)}
+.sync-pill.busy{opacity:.7}
+
+/* ---------- 카드 ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin:0 0 10px}
+.card-tight{padding:12px}
+.card-title{margin:0 0 10px;font-size:12px;font-weight:600;color:var(--ink-2);letter-spacing:.02em}
+.card-foot{margin:8px 0 0;font-size:11px;color:var(--ink-3)}
+
+/* ---------- 검색·필터 ---------- */
+.input{
+  width:100%;height:42px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);
+  font-size:14px;letter-spacing:-.1px;outline:none;-webkit-appearance:none;appearance:none;
+}
+textarea.input{height:auto;padding:10px 12px;line-height:1.55;resize:vertical}
+select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3) 50%),linear-gradient(135deg,var(--ink-3) 50%,transparent 50%);background-position:calc(100% - 16px) 18px,calc(100% - 11px) 18px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:30px}
+.input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.search-row{margin-bottom:10px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:0 0 8px;margin:0 -2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-size:12px;padding:6px 11px;border-radius:999px;cursor:pointer;letter-spacing:-.2px}
+.chip.on{background:var(--accent-soft);border-color:var(--accent-line);color:var(--accent);font-weight:600}
+.filters{display:flex;gap:6px;align-items:center}
+.filters .input{height:36px;font-size:12.5px;padding:0 28px 0 10px;flex:1 1 0;min-width:0}
+.row-sum{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 2px 10px;font-size:12px;color:var(--ink-2)}
+.row-sum b{color:var(--ink);font-weight:600}
+
+/* ---------- 버튼 ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:44px;padding:0 16px;border-radius:11px;border:1px solid var(--line);background:var(--surface);font-size:14px;font-weight:600;letter-spacing:-.2px;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:var(--surface-2)}
+.btn.danger{color:var(--bad);border-color:#eccfc9;background:var(--bad-soft)}
+.btn.block{display:flex;width:100%}
+.btn.sm{height:38px;font-size:13px;padding:0 13px}
+.btn:active{transform:translateY(.5px)}
+.link-btn{border:0;background:none;color:var(--accent);font-size:12.5px;text-decoration:underline;padding:4px;cursor:pointer}
+.link-btn.danger{color:var(--bad)}
+.add-row{margin:0 0 12px}
+
+/* ---------- 기록 카드 ---------- */
+.rec{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px 13px;margin:0 0 9px;cursor:pointer}
+.rec:active{background:var(--surface-2)}
+.rec-top{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-2);margin-bottom:3px}
+.dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto}
+.rec-date{letter-spacing:-.1px}
+.tag{font-size:11px;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line-2);padding:1px 7px;border-radius:999px}
+.rec-cost{margin-left:auto;font-size:12px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.rec-title{margin:0;font-size:15px;font-weight:650;letter-spacing:-.3px;line-height:1.35}
+.rec-line{margin:2px 0 0;font-size:12.5px;color:var(--ink-2);letter-spacing:-.1px}
+.rec-sub{margin:4px 0 0;font-size:12px;color:var(--ink-2)}
+.rec-sub em{font-style:normal;color:var(--ink-3)}
+.rec-memo{margin:6px 0 0;font-size:12.5px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* ---------- 증상 ---------- */
+.sev{font-size:11px;font-weight:600;padding:1px 8px;border-radius:999px;border:1px solid transparent}
+.sev-low{color:#3f7a54;background:#e9f4ec;border-color:#d3e7d9}
+.sev-mid{color:#8b6a12;background:#f8f0d8;border-color:#ecdfba}
+.sev-high{color:var(--bad);background:var(--bad-soft);border-color:#eccfc9}
+.group-head{display:flex;align-items:center;gap:6px;margin:14px 2px 8px;font-size:12px;font-weight:600;color:var(--ink-2)}
+.group-head:first-child{margin-top:2px}
+.group-head .cnt{font-weight:400;color:var(--ink-3)}
+.gdot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+/* ---------- 세그먼트 ---------- */
+.seg{display:flex;gap:3px;padding:3px;background:#efece4;border-radius:11px;margin:0 0 12px}
+.seg button{flex:1 1 0;height:34px;border:0;border-radius:9px;background:transparent;color:var(--ink-2);font-size:12.5px;font-weight:600;cursor:pointer;letter-spacing:-.2px}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(24,32,28,.07)}
+
+/* ---------- 요약 ---------- */
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 10px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:11px 10px}
+.kpi-label{display:block;font-size:11px;color:var(--ink-2);letter-spacing:-.1px}
+.kpi-value{display:block;margin-top:4px;font-size:16px;font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums;line-height:1.25}
+.kpi-value i{font-style:normal;font-size:11px;font-weight:500;color:var(--ink-2);margin-left:2px}
+.kpi-value.sm{font-size:13.5px;letter-spacing:-.4px}
+.bar-row{display:grid;grid-template-columns:44px 1fr 62px;align-items:center;gap:8px;margin:8px 0}
+.bar-row.dept{grid-template-columns:74px 1fr 62px}
+.bar-label{font-size:11px;color:var(--ink-2);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.2px}
+.bar-track{display:block;height:9px;background:var(--track);border-radius:6px;overflow:hidden}
+.bar-track.zero{height:6px;background:#f4f2ec}
+.bar-fill{display:block;height:9px;border-radius:6px;min-width:3px;transition:width .25s ease}
+.bar-val{display:block;font-size:11px;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;letter-spacing:-.2px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 10px;margin:8px 0 0;font-size:11px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+.legend i{width:7px;height:7px;border-radius:2px;display:inline-block}
+.tl{list-style:none;margin:0;padding:0}
+.tl li{display:flex;gap:9px;padding:7px 0;border-top:1px solid var(--line-2)}
+.tl li:first-child{border-top:0;padding-top:0}
+.tl .when{flex:0 0 44px;font-size:11px;color:var(--ink-3);padding-top:2px;font-variant-numeric:tabular-nums}
+.tl .what{flex:1 1 auto;min-width:0}
+.tl .what b{font-size:13px;font-weight:650;letter-spacing:-.2px}
+.tl .what p{margin:2px 0 0;font-size:12px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hosp-row{display:flex;align-items:baseline;gap:8px;padding:7px 0;border-top:1px solid var(--line-2);font-size:13px}
+.hosp-row:first-child{border-top:0;padding-top:0}
+.hosp-row .nm{flex:1 1 auto;font-weight:600;letter-spacing:-.2px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hosp-row .mt{flex:0 0 auto;font-size:11.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.rank{flex:0 0 auto;width:16px;font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+
+/* ---------- 빈 상태 ---------- */
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius);padding:22px 18px;text-align:center;margin:0 0 10px}
+.empty h3{margin:0 0 6px;font-size:14px;font-weight:650;letter-spacing:-.2px}
+.empty p{margin:0 0 14px;font-size:12.5px;color:var(--ink-2);line-height:1.6}
+.empty.small{padding:18px;font-size:12.5px;color:var(--ink-2)}
+.empty .big{font-size:22px;display:block;margin-bottom:8px}
+
+/* ---------- 하단 탭 ---------- */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(255,255,255,.94);-webkit-backdrop-filter:saturate(180%) blur(12px);backdrop-filter:saturate(180%) blur(12px);border-top:1px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));display:flex;gap:4px;max-width:480px;margin:0 auto}
+.tabbar button{flex:1 1 0;border:0;background:none;padding:5px 2px 4px;border-radius:10px;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--ink-3);cursor:pointer}
+.tabbar .ic{font-size:17px;line-height:1.2;filter:grayscale(.35);opacity:.8}
+.tabbar .lb{font-size:10.5px;letter-spacing:-.2px}
+.tabbar button.on{color:var(--accent)}
+.tabbar button.on .ic{filter:none;opacity:1}
+.tabbar button.on .lb{font-weight:700}
+
+/* ---------- 시트 ---------- */
+.sheet{position:fixed;inset:0;z-index:60;display:none;align-items:flex-end;justify-content:center}
+.sheet.open{display:flex}
+.sheet .veil{position:absolute;inset:0;background:rgba(20,26,23,.36)}
+.sheet .panel{position:relative;width:100%;max-width:480px;max-height:90vh;display:flex;flex-direction:column;background:var(--surface);border-radius:18px 18px 0 0;box-shadow:0 -8px 30px rgba(20,26,23,.12);animation:up .18s ease-out}
+@keyframes up{from{transform:translateY(14px);opacity:.7}to{transform:none;opacity:1}}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 16px 10px}
+.sheet-head h2{margin:0;font-size:16px;font-weight:700;letter-spacing:-.3px}
+.x{border:0;background:none;font-size:17px;color:var(--ink-3);padding:4px 6px;cursor:pointer;line-height:1}
+.sheet-body{padding:0 16px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1 1 auto}
+.sheet-actions{display:flex;gap:8px;padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line-2);background:var(--surface)}
+.sheet-actions .btn{flex:1 1 0}
+.sheet-actions .btn.primary{flex:1.6 1 0}
+.field{display:block;margin:0 0 12px}
+.field > span{display:block;font-size:11.5px;font-weight:600;color:var(--ink-2);margin:0 0 5px;letter-spacing:-.1px}
+.field .hint{display:block;margin:4px 2px 0;font-size:11px;color:var(--ink-3);font-style:normal}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dl{margin:0}
+.dl div{display:flex;gap:10px;padding:9px 0;border-top:1px solid var(--line-2)}
+.dl div:first-child{border-top:0;padding-top:0}
+.dl dt{flex:0 0 76px;font-size:12px;color:var(--ink-2)}
+.dl dd{flex:1 1 auto;margin:0;font-size:13.5px;letter-spacing:-.2px;word-break:break-word}
+.dl dd.money{font-weight:600;font-variant-numeric:tabular-nums}
+
+/* ---------- 동기화 ---------- */
+.sync-state{font-size:12.5px;margin:0 0 10px}
+.sync-state.on{color:var(--accent);font-weight:600}
+.sync-state.off{color:var(--ink-2)}
+.sync-help{font-size:12px;color:var(--ink-2);line-height:1.65;margin:0 0 12px}
+.copy-row{display:flex;gap:6px;align-items:center;margin:0 0 8px}
+.copy-row .input{height:36px;font-size:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;flex:1 1 auto;min-width:0;background:var(--surface-2)}
+.copy-row .btn{flex:0 0 auto;height:36px;font-size:12px;padding:0 11px}
+.sync-counts{font-size:12px;color:var(--ink-2);line-height:1.7;background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;padding:9px 11px;margin:0 0 10px}
+.sync-counts b{color:var(--ink)}
+.sync-err{font-size:11.5px;color:var(--bad);margin:8px 0 0}
+.switch{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-2);margin:2px 0 12px}
+.switch input{width:18px;height:18px;accent-color:var(--accent)}
+.warn-note{font-size:11.5px;color:var(--ink-3);line-height:1.6;margin:10px 0 0}
+
+/* ---------- 진료실 보기 ---------- */
+.clinic h3{margin:0 0 4px;font-size:13px;font-weight:700;color:var(--ink-2)}
+.clinic .item{padding:10px 0;border-top:1px solid var(--line-2)}
+.clinic .item:first-child{border-top:0}
+.clinic .d{font-size:12px;color:var(--ink-2);display:flex;gap:6px;align-items:center}
+.clinic .t{font-size:15px;font-weight:650;margin:3px 0 0;letter-spacing:-.3px}
+.clinic .m{font-size:13px;color:var(--ink);margin:4px 0 0;line-height:1.6}
+.clinic .m .k{color:var(--ink-2);font-size:12px}
+
+/* ---------- 토스트 ---------- */
+#toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));transform:translate(-50%,8px);z-index:90;background:rgba(29,36,34,.94);color:#fff;font-size:12.5px;padding:9px 14px;border-radius:999px;max-width:calc(100% - 40px);text-align:center;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;line-height:1.4}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="app-head">
+    <div>
+      <h1>병원·건강 수첩</h1>
+      <p class="sub" id="hdr-sub">아직 기록이 없어요</p>
+    </div>
+    <button class="sync-pill" id="btn-sync" type="button" data-act="open-sync">☁️ 미연결</button>
+  </header>
+
+  <!-- 탭 1. 병원 기록 -->
+  <section id="tab-visits">
+    <div class="card card-tight">
+      <div class="search-row"><input class="input" id="v-q" type="search" placeholder="병원명 · 증상 · 메모 검색" autocomplete="off"></div>
+      <div class="chips" id="v-depts"></div>
+      <div class="filters">
+        <select class="input" id="v-year" aria-label="연도"></select>
+        <select class="input" id="v-month" aria-label="월"></select>
+      </div>
+    </div>
+    <div class="row-sum" id="v-sum"></div>
+    <div class="add-row"><button class="btn primary block" type="button" data-act="add-visit">＋ 병원 기록 추가</button></div>
+    <div id="v-list"></div>
+  </section>
+
+  <!-- 탭 2. 증상·컨디션 -->
+  <section id="tab-symptoms" hidden>
+    <div class="seg" id="s-view">
+      <button type="button" data-act="sview" data-val="date">날짜순</button>
+      <button type="button" data-act="sview" data-val="area">증상별</button>
+    </div>
+    <div class="row-sum" id="s-sum"></div>
+    <div class="add-row"><button class="btn primary block" type="button" data-act="add-sym">＋ 증상 기록 추가</button></div>
+    <div id="s-list"></div>
+  </section>
+
+  <!-- 탭 3. 요약 -->
+  <section id="tab-stats" hidden>
+    <div class="seg" id="st-range">
+      <button type="button" data-act="srange" data-val="month">이번 달</button>
+      <button type="button" data-act="srange" data-val="year">올해</button>
+      <button type="button" data-act="srange" data-val="all">전체</button>
+    </div>
+    <div id="st-body"></div>
+  </section>
+</div>
+
+<nav class="tabbar" id="tabbar">
+  <button type="button" data-act="tab" data-val="visits"><span class="ic">🏥</span><span class="lb">병원 기록</span></button>
+  <button type="button" data-act="tab" data-val="symptoms"><span class="ic">🤒</span><span class="lb">증상 메모</span></button>
+  <button type="button" data-act="tab" data-val="stats"><span class="ic">📊</span><span class="lb">요약</span></button>
+</nav>
+
+<div class="sheet" id="modal-record"><div class="veil" data-act="close" data-target="modal-record"></div><div class="panel" id="rec-panel"></div></div>
+<div class="sheet" id="modal-detail"><div class="veil" data-act="close" data-target="modal-detail"></div><div class="panel" id="detail-panel"></div></div>
+<div class="sheet" id="modal-sync"><div class="veil" data-act="close" data-target="modal-sync"></div><div class="panel">
+  <div class="sheet-head"><h2>☁️ 기기 간 동기화</h2><button class="x" type="button" data-act="close" data-target="modal-sync">✕</button></div>
+  <div class="sheet-body" id="sync-body" style="padding-bottom:16px"></div>
+</div></div>
+<div class="sheet" id="modal-clinic"><div class="veil" data-act="close" data-target="modal-clinic"></div><div class="panel">
+  <div class="sheet-head"><h2>🩺 진료실에서 보여주기</h2><button class="x" type="button" data-act="close" data-target="modal-clinic">✕</button></div>
+  <div class="sheet-body clinic" id="clinic-body" style="padding-bottom:16px"></div>
+  <div class="sheet-actions"><button class="btn primary" type="button" data-act="close" data-target="modal-clinic">닫기</button></div>
+</div></div>
+<div id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ============================ 상수 ============================ */
+  var DEPTS = ['내과', '이비인후과', '피부과', '치과', '안과', '정형외과', '산부인과', '한의원', '기타'];
+  var DEPT_COLOR = {
+    '내과': '#3a7d6f', '이비인후과': '#5b8db8', '피부과': '#c98a6b', '치과': '#7a8ec9',
+    '안과': '#4fa3a8', '정형외과': '#a1866f', '산부인과': '#c07ba0', '한의원': '#8a9a5b', '기타': '#9a9a92'
+  };
+  var AREAS = ['두통', '목감기', '복통', '피부트러블', '피로', '기타'];
+  var SEVS = ['가벼움', '보통', '심함'];
+  var SEV_CLASS = { '가벼움': 'sev-low', '보통': 'sev-mid', '심함': 'sev-high' };
+  var DATA_KEY = 'health_notebook_v1';
+  var SYNC_CFG_KEY = 'health_sync_v1';
+  var UI_KEY = 'health_ui_v1';
+
+  /* ============================ 유틸 ============================ */
+  function $(s, r) { return (r || document).querySelector(s); }
+  function esc(v) {
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+    });
+  }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function todayStr() { var d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function won(n) {
+    n = Math.round(Number(n) || 0);
+    return n.toLocaleString('ko-KR') + '원';
+  }
+  function wonShort(n) {
+    n = Math.round(Number(n) || 0);
+    if (n >= 100000) return Math.round(n / 10000) + '만';
+    if (n >= 10000) return (n / 10000).toFixed(1).replace(/\.0$/, '') + '만';
+    return n.toLocaleString('ko-KR');
+  }
+  function fmtDate(s) {
+    var p = String(s || '').split('-');
+    if (p.length < 3) return s || '';
+    var dt = new Date(+p[0], +p[1] - 1, +p[2]);
+    if (isNaN(dt.getTime())) return s;
+    return (+p[1]) + '월 ' + (+p[2]) + '일 (' + '일월화수목금토'.charAt(dt.getDay()) + ')';
+  }
+  function shortDate(s) {
+    var p = String(s || '').split('-');
+    if (p.length < 3) return s || '';
+    return (+p[1]) + '.' + pad(+p[2]);
+  }
+  function monthKey(s) { return String(s || '').slice(0, 7); }
+  function daysAgo(s) {
+    var p = String(s || '').split('-');
+    if (p.length < 3) return 9999;
+    var t = new Date(+p[0], +p[1] - 1, +p[2]).getTime();
+    if (isNaN(t)) return 9999;
+    return Math.floor((Date.now() - t) / 86400000);
+  }
+  var toastTimer = null;
+  function toast(msg) {
+    var el = $('#toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2200);
+  }
+  function openSheet(id) { var el = document.getElementById(id); if (el) { el.classList.add('open'); document.body.classList.add('lock'); } }
+  function closeSheet(id) {
+    var el = document.getElementById(id);
+    if (el) el.classList.remove('open');
+    if (!document.querySelector('.sheet.open')) document.body.classList.remove('lock');
+  }
+
+  /* ============================ 데이터 ============================ */
+  function blankData() { return { v: 1, visits: [], symptoms: [], deletedVisitIds: [], deletedSymptomIds: [] }; }
+  function normalize(d) {
+    d = d || {};
+    d.v = 1;
+    if (!Array.isArray(d.visits)) d.visits = [];
+    if (!Array.isArray(d.symptoms)) d.symptoms = [];
+    if (!Array.isArray(d.deletedVisitIds)) d.deletedVisitIds = [];
+    if (!Array.isArray(d.deletedSymptomIds)) d.deletedSymptomIds = [];
+    d.visits = d.visits.filter(function (x) { return x && x.id; });
+    d.symptoms = d.symptoms.filter(function (x) { return x && x.id; });
+    return d;
+  }
+  function loadData() {
+    try {
+      var raw = localStorage.getItem(DATA_KEY);
+      if (!raw) return blankData();
+      return normalize(JSON.parse(raw));
+    } catch (e) { return blankData(); }
+  }
+  var appData = loadData();
+  function saveData() {
+    try { localStorage.setItem(DATA_KEY, JSON.stringify(appData)); }
+    catch (e) { toast('기기 저장 공간이 부족해 저장하지 못했어요'); }
+  }
+
+  var ui = { tab: 'visits', vq: '', vdept: '전체', vyear: 'all', vmonth: 'all', sview: 'date', srange: 'all' };
+  try {
+    var savedUi = JSON.parse(localStorage.getItem(UI_KEY) || '{}');
+    ['tab', 'sview', 'srange'].forEach(function (k) { if (savedUi && typeof savedUi[k] === 'string') ui[k] = savedUi[k]; });
+    if (['visits', 'symptoms', 'stats'].indexOf(ui.tab) < 0) ui.tab = 'visits';
+  } catch (e) {}
+  function saveUi() { try { localStorage.setItem(UI_KEY, JSON.stringify({ tab: ui.tab, sview: ui.sview, srange: ui.srange })); } catch (e) {} }
+
+  /* ============================ 렌더: 공통 ============================ */
+  function renderHeader() {
+    var nv = appData.visits.length, nsx = appData.symptoms.length;
+    var sub = $('#hdr-sub');
+    if (!nv && !nsx) sub.textContent = '아직 기록이 없어요 · 첫 기록을 남겨보세요';
+    else sub.textContent = '병원 ' + nv + '건 · 증상 ' + nsx + '건';
+    var pill = $('#btn-sync');
+    if (syncConnected()) {
+      pill.classList.add('on');
+      pill.textContent = syncBusy ? '☁️ 동기화 중…' : '☁️ 연결됨';
+      pill.classList.toggle('busy', !!syncBusy);
+    } else {
+      pill.classList.remove('on');
+      pill.textContent = '☁️ 미연결';
+      pill.classList.remove('busy');
+    }
+  }
+
+  function renderTabs() {
+    ['visits', 'symptoms', 'stats'].forEach(function (t) {
+      var sec = document.getElementById('tab-' + t);
+      if (sec) sec.hidden = (ui.tab !== t);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('#tabbar button'), function (b) {
+      b.classList.toggle('on', b.getAttribute('data-val') === ui.tab);
+    });
+  }
+
+  function emptyCard(icon, title, desc, btnLabel, act) {
+    return '<div class="empty"><span class="big">' + icon + '</span><h3>' + esc(title) + '</h3><p>' + desc + '</p>' +
+      (btnLabel ? '<button class="btn primary" type="button" data-act="' + act + '">' + btnLabel + '</button>' : '') + '</div>';
+  }
+
+  function render() {
+    renderHeader();
+    renderTabs();
+    renderVisits();
+    renderSymptoms();
+    renderStats();
+    renderSyncUI();
+  }
+
+  /* ============================ 렌더: 병원 기록 ============================ */
+  var DEPT_FILTER = ['전체'].concat(DEPTS);
+
+  function yearOptions() {
+    var set = {};
+    appData.visits.forEach(function (v) { var y = String(v.date || '').slice(0, 4); if (y) set[y] = 1; });
+    set[String(new Date().getFullYear())] = 1;
+    return Object.keys(set).sort().reverse();
+  }
+
+  function filteredVisits() {
+    var q = ui.vq.trim().toLowerCase();
+    return appData.visits.filter(function (v) {
+      if (ui.vdept !== '전체' && (v.dept || '기타') !== ui.vdept) return false;
+      var y = String(v.date || '').slice(0, 4), m = String(v.date || '').slice(5, 7);
+      if (ui.vyear !== 'all' && y !== ui.vyear) return false;
+      if (ui.vmonth !== 'all' && m !== ui.vmonth) return false;
+      if (!q) return true;
+      return [v.hospital, v.dx, v.memo, v.rx, v.dept].join(' ').toLowerCase().indexOf(q) >= 0;
+    }).sort(function (a, b) {
+      var c = String(b.date || '').localeCompare(String(a.date || ''));
+      if (c) return c;
+      return (b.createdAt || 0) - (a.createdAt || 0);
+    });
+  }
+
+  function visitCard(v) {
+    var dep = v.dept || '기타';
+    var col = DEPT_COLOR[dep] || DEPT_COLOR['기타'];
+    var h = '<article class="rec" data-act="open-visit" data-id="' + esc(v.id) + '">' +
+      '<div class="rec-top"><span class="dot" style="background:' + col + '"></span>' +
+      '<span class="rec-date">' + esc(fmtDate(v.date)) + '</span>' +
+      '<span class="tag">' + esc(dep) + '</span>' +
+      (Number(v.cost) > 0 ? '<span class="rec-cost">' + esc(won(v.cost)) + '</span>' : '') +
+      '</div>' +
+      '<h3 class="rec-title">' + esc(v.hospital || '병원명 없음') + '</h3>';
+    if (v.dx) h += '<p class="rec-line">' + esc(v.dx) + '</p>';
+    if (v.rx) h += '<p class="rec-sub"><em>처방·치료</em> ' + esc(v.rx) + '</p>';
+    if (v.memo) h += '<p class="rec-memo">' + esc(v.memo) + '</p>';
+    return h + '</article>';
+  }
+
+  function renderVisits() {
+    var chips = $('#v-depts');
+    chips.innerHTML = DEPT_FILTER.map(function (d) {
+      return '<button type="button" class="chip' + (ui.vdept === d ? ' on' : '') + '" data-act="vdept" data-val="' + esc(d) + '">' + esc(d) + '</button>';
+    }).join('');
+
+    var ys = yearOptions();
+    $('#v-year').innerHTML = '<option value="all">연도 전체</option>' + ys.map(function (y) {
+      return '<option value="' + y + '"' + (ui.vyear === y ? ' selected' : '') + '>' + y + '년</option>';
+    }).join('');
+    var mo = '<option value="all">월 전체</option>';
+    for (var m = 1; m <= 12; m++) {
+      var mv = pad(m);
+      mo += '<option value="' + mv + '"' + (ui.vmonth === mv ? ' selected' : '') + '>' + m + '월</option>';
+    }
+    $('#v-month').innerHTML = mo;
+
+    var list = filteredVisits();
+    var cost = list.reduce(function (s, v) { return s + (Number(v.cost) || 0); }, 0);
+    $('#v-sum').innerHTML = list.length
+      ? '<span>보이는 기록 <b>' + list.length + '</b>건</span><span>병원비 <b>' + esc(won(cost)) + '</b></span>'
+      : '';
+
+    if (!appData.visits.length) {
+      $('#v-list').innerHTML = emptyCard('🏥', '아직 병원 기록이 없어요',
+        '다녀온 병원과 진료과, 처방, 결제 금액을 남겨두면<br>나중에 병원비도 한 번에 볼 수 있어요.',
+        '＋ 첫 병원 기록 추가', 'add-visit');
+      return;
+    }
+    if (!list.length) {
+      $('#v-list').innerHTML = '<div class="empty small">조건에 맞는 기록이 없어요.<br><button class="link-btn" type="button" data-act="vreset">필터 초기화</button></div>';
+      return;
+    }
+    $('#v-list').innerHTML = list.map(visitCard).join('');
+  }
+
+  /* ============================ 렌더: 증상 ============================ */
+  function symptomCard(s) {
+    var sev = SEVS.indexOf(s.severity) >= 0 ? s.severity : '보통';
+    var h = '<article class="rec" data-act="open-sym" data-id="' + esc(s.id) + '">' +
+      '<div class="rec-top"><span class="sev ' + SEV_CLASS[sev] + '">' + esc(sev) + '</span>' +
+      '<span class="rec-date">' + esc(fmtDate(s.date)) + '</span>' +
+      (s.resolvedOn ? '<span class="rec-cost" style="color:var(--ink-3);font-weight:500">' + esc(shortDate(s.resolvedOn)) + ' 나음</span>' : '') +
+      '</div>' +
+      '<h3 class="rec-title">' + esc(s.area || '기타') + '</h3>';
+    if (s.memo) h += '<p class="rec-memo">' + esc(s.memo) + '</p>';
+    return h + '</article>';
+  }
+
+  function renderSymptoms() {
+    Array.prototype.forEach.call(document.querySelectorAll('#s-view button'), function (b) {
+      b.classList.toggle('on', b.getAttribute('data-val') === ui.sview);
+    });
+    var list = appData.symptoms.slice().sort(function (a, b) {
+      var c = String(b.date || '').localeCompare(String(a.date || ''));
+      if (c) return c;
+      return (b.createdAt || 0) - (a.createdAt || 0);
+    });
+    var sum = $('#s-sum');
+    if (!list.length) {
+      sum.innerHTML = '';
+    } else {
+      var last = list[0];
+      sum.innerHTML = '<span>기록 <b>' + list.length + '</b>건</span><span>마지막 <b>' + esc(shortDate(last.date)) + '</b> ' + esc(last.area || '') + '</span>';
+    }
+    if (!list.length) {
+      $('#s-list').innerHTML = emptyCard('🤒', '아직 증상 기록이 없어요',
+        '어디가 어떻게 아팠는지, 언제 나았는지 적어두면<br>병원에서 의사 선생님께 그대로 보여줄 수 있어요.',
+        '＋ 첫 증상 기록 추가', 'add-sym');
+      return;
+    }
+    if (ui.sview === 'date') {
+      $('#s-list').innerHTML = list.map(symptomCard).join('');
+      return;
+    }
+    var groups = {};
+    list.forEach(function (s) {
+      var k = AREAS.indexOf(s.area) >= 0 ? s.area : '기타';
+      (groups[k] = groups[k] || []).push(s);
+    });
+    var order = AREAS.filter(function (a) { return groups[a] && groups[a].length; });
+    if (groups['기타'] && order.indexOf('기타') < 0) order.push('기타');
+    $('#s-list').innerHTML = order.map(function (a) {
+      var g = groups[a];
+      return '<div class="group-head"><span class="gdot"></span>' + esc(a) +
+        '<span class="cnt">' + g.length + '건 · 최근 ' + esc(shortDate(g[0].date)) + '</span></div>' +
+        g.map(symptomCard).join('');
+    }).join('');
+  }
+
+  /* ============================ 렌더: 요약 ============================ */
+  function inRange(dateStr, range) {
+    if (range === 'all') return true;
+    var now = new Date();
+    var ym = now.getFullYear() + '-' + pad(now.getMonth() + 1);
+    if (range === 'month') return monthKey(dateStr) === ym;
+    return String(dateStr || '').slice(0, 4) === String(now.getFullYear());
+  }
+  function rangeLabel(r) {
+    var now = new Date();
+    if (r === 'month') return now.getMonth() + 1 + '월';
+    if (r === 'year') return now.getFullYear() + '년';
+    return '전체 기간';
+  }
+  function lastMonths(n) {
+    var out = [], now = new Date();
+    for (var i = n - 1; i >= 0; i--) {
+      var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      out.push(d.getFullYear() + '-' + pad(d.getMonth() + 1));
+    }
+    return out;
+  }
+
+  function renderStats() {
+    Array.prototype.forEach.call(document.querySelectorAll('#st-range button'), function (b) {
+      b.classList.toggle('on', b.getAttribute('data-val') === ui.srange);
+    });
+    var body = $('#st-body');
+    if (!appData.visits.length && !appData.symptoms.length) {
+      body.innerHTML = emptyCard('📊', '아직 요약할 기록이 없어요',
+        '병원 기록과 증상 메모를 남기면<br>월별 병원비와 자주 간 병원이 여기에 정리돼요.', null, null);
+      return;
+    }
+    var rl = rangeLabel(ui.srange);
+    var visits = appData.visits.filter(function (v) { return inRange(v.date, ui.srange); });
+    var syms = appData.symptoms.filter(function (s) { return inRange(s.date, ui.srange); });
+    var total = visits.reduce(function (s, v) { return s + (Number(v.cost) || 0); }, 0);
+    var avg = visits.length ? Math.round(total / visits.length) : 0;
+
+    var html = '<div class="row-sum" style="margin:0 2px 8px"><span>' + esc(rl) + ' 기준</span><span>병원 <b>' + visits.length + '</b>회 · 증상 <b>' + syms.length + '</b>건</span></div>' +
+      '<div class="kpi-grid">' +
+      '<div class="kpi"><span class="kpi-label">총 병원비</span><b class="' + (won(total).length > 9 ? 'kpi-value sm' : 'kpi-value') + '">' + esc(won(total)) + '</b></div>' +
+      '<div class="kpi"><span class="kpi-label">방문 횟수</span><b class="kpi-value">' + visits.length + '<i>회</i></b></div>' +
+      '<div class="kpi"><span class="kpi-label">1회 평균</span><b class="' + (won(avg).length > 9 ? 'kpi-value sm' : 'kpi-value') + '">' + esc(won(avg)) + '</b></div>' +
+      '</div>';
+
+    /* 월별 병원비 */
+    var perMonth = {};
+    appData.visits.forEach(function (v) {
+      var k = monthKey(v.date);
+      perMonth[k] = (perMonth[k] || 0) + (Number(v.cost) || 0);
+    });
+    var months = lastMonths(ui.srange === 'month' ? 6 : 12);
+    if (ui.srange !== 'month') {
+      var firstWith = -1;
+      for (var mi = 0; mi < months.length; mi++) { if (perMonth[months[mi]]) { firstWith = mi; break; } }
+      if (firstWith > 0) months = months.slice(Math.max(0, firstWith - 1));
+    }
+    var maxM = Math.max.apply(null, months.map(function (m) { return perMonth[m] || 0; }).concat([0]));
+    html += '<div class="card"><h2 class="card-title">월별 병원비</h2>' + months.map(function (m) {
+      var val = perMonth[m] || 0;
+      var w = maxM ? Math.max(0, Math.round(val / maxM * 100)) : 0;
+      var lbl = (+m.slice(5)) + '월';
+      return '<div class="bar-row"><span class="bar-label">' + lbl + '</span>' +
+        '<span class="bar-track' + (val ? '' : ' zero') + '"><span class="bar-fill" style="width:' + w + '%;background:' + (val ? 'var(--accent)' : 'transparent') + '"></span></span>' +
+        '<span class="bar-val">' + (val ? esc(wonShort(val)) + '원' : '-') + '</span></div>';
+    }).join('') + '<p class="card-foot">최근 ' + months.length + '개월 · 금액은 원 단위</p></div>';
+
+    /* 진료과 분포 */
+    var deptAgg = {};
+    visits.forEach(function (v) {
+      var d = DEPTS.indexOf(v.dept) >= 0 ? v.dept : '기타';
+      if (!deptAgg[d]) deptAgg[d] = { n: 0, cost: 0 };
+      deptAgg[d].n++;
+      deptAgg[d].cost += Number(v.cost) || 0;
+    });
+    var dlist = Object.keys(deptAgg).sort(function (a, b) {
+      return deptAgg[b].n - deptAgg[a].n || deptAgg[b].cost - deptAgg[a].cost;
+    });
+    if (!dlist.length) {
+      html += '<div class="card"><h2 class="card-title">진료과 분포</h2><p class="card-foot" style="margin:0">' + esc(rl) + '에는 병원 기록이 없어요.</p></div>';
+    } else {
+      var maxD = Math.max.apply(null, dlist.map(function (d) { return deptAgg[d].n; }));
+      html += '<div class="card"><h2 class="card-title">진료과 분포</h2>' + dlist.map(function (d) {
+        var a = deptAgg[d];
+        return '<div class="bar-row dept"><span class="bar-label">' + esc(d) + '</span>' +
+          '<span class="bar-track"><span class="bar-fill" style="width:' + Math.max(6, Math.round(a.n / maxD * 100)) + '%;background:' + (DEPT_COLOR[d] || '#9a9a92') + '"></span></span>' +
+          '<span class="bar-val">' + a.n + '회</span></div>';
+      }).join('') + '</div>';
+    }
+
+    /* 자주 간 병원 */
+    var hospAgg = {};
+    visits.forEach(function (v) {
+      var h = (v.hospital || '').trim() || '병원명 없음';
+      if (!hospAgg[h]) hospAgg[h] = { n: 0, cost: 0 };
+      hospAgg[h].n++;
+      hospAgg[h].cost += Number(v.cost) || 0;
+    });
+    var hlist = Object.keys(hospAgg).sort(function (a, b) {
+      return hospAgg[b].n - hospAgg[a].n || hospAgg[b].cost - hospAgg[a].cost;
+    }).slice(0, 5);
+    if (!hlist.length) {
+      html += '<div class="card"><h2 class="card-title">자주 간 병원</h2><p class="card-foot" style="margin:0">' + esc(rl) + '에는 병원 기록이 없어요.</p></div>';
+    } else {
+      html += '<div class="card"><h2 class="card-title">자주 간 병원 · ' + esc(rl) + '</h2>' + hlist.map(function (h, i) {
+        return '<div class="hosp-row"><span class="rank">' + (i + 1) + '</span><span class="nm">' + esc(h) + '</span>' +
+          '<span class="mt">' + hospAgg[h].n + '회 · ' + esc(wonShort(hospAgg[h].cost)) + '원</span></div>';
+      }).join('') + '</div>';
+    }
+
+    /* 최근 증상 타임라인 */
+    var recentSyms = syms.slice().sort(function (a, b) {
+      return String(b.date || '').localeCompare(String(a.date || ''));
+    }).slice(0, 5);
+    var goneCnt = syms.filter(function (s) { return !!s.resolvedOn; }).length;
+    html += '<div class="card"><h2 class="card-title">최근 증상 · ' + esc(rl) + '</h2>';
+    if (!recentSyms.length) {
+      html += '<p class="card-foot" style="margin:0">' + esc(rl) + '에는 증상 기록이 없어요.</p>';
+    } else {
+      html += '<ul class="tl">' + recentSyms.map(function (s) {
+        var sev = SEVS.indexOf(s.severity) >= 0 ? s.severity : '보통';
+        return '<li><span class="when">' + esc(shortDate(s.date)) + '</span><span class="what">' +
+          '<b>' + esc(s.area || '기타') + '</b> <span class="sev ' + SEV_CLASS[sev] + '">' + esc(sev) + '</span>' +
+          (s.memo ? '<p>' + esc(s.memo) + '</p>' : '') + '</span></li>';
+      }).join('') + '</ul>' +
+        '<p class="card-foot">증상 ' + syms.length + '건 중 ' + goneCnt + '건은 나은 날짜까지 기록됨</p>';
+    }
+    html += '</div>';
+    html += '<div class="add-row" style="margin-top:2px"><button class="btn ghost block" type="button" data-act="open-clinic">🩺 진료실에서 보여주기</button></div>';
+    body.innerHTML = html;
+  }
+
+  /* ============================ 폼 ============================ */
+  function openForm(kind, id) {
+    var isV = kind === 'visit';
+    var rec = null;
+    if (id) {
+      rec = (isV ? appData.visits : appData.symptoms).filter(function (x) { return x.id === id; })[0] || null;
+    }
+    var d = rec || { date: todayStr() };
+    var panel = $('#rec-panel');
+    var title = (isV ? '병원 기록' : '증상 기록') + (rec ? ' 수정' : ' 추가');
+    var bodyHTML;
+
+    if (isV) {
+      bodyHTML =
+        '<label class="field"><span>일자</span><input class="input" type="date" name="date" value="' + esc(d.date || todayStr()) + '" required></label>' +
+        '<label class="field"><span>병원명</span><input class="input" type="text" name="hospital" value="' + esc(d.hospital || '') + '" placeholder="예) 튼튼내과의원" required></label>' +
+        '<label class="field"><span>진료과</span><select class="input" name="dept">' + DEPTS.map(function (x) {
+          return '<option' + ((d.dept || '내과') === x ? ' selected' : '') + '>' + x + '</option>';
+        }).join('') + '</select></label>' +
+        '<label class="field"><span>증상 · 진단명</span><input class="input" type="text" name="dx" value="' + esc(d.dx || '') + '" placeholder="예) 급성 인후염"></label>' +
+        '<label class="field"><span>처방약 · 치료</span><textarea class="input" name="rx" rows="2" placeholder="예) 항생제 3일분, 흡입 치료">' + esc(d.rx || '') + '</textarea></label>' +
+        '<label class="field"><span>결제 금액 (원)</span><input class="input" type="number" inputmode="numeric" min="0" step="100" name="cost" value="' + (d.cost != null && d.cost !== '' ? Number(d.cost) : '') + '" placeholder="0"><em class="hint" id="cost-hint"></em></label>' +
+        '<label class="field"><span>후기 · 메모</span><textarea class="input" name="memo" rows="3" placeholder="대기 시간, 설명 들은 것, 다음 방문 계획 등">' + esc(d.memo || '') + '</textarea></label>';
+    } else {
+      bodyHTML =
+        '<label class="field"><span>일자</span><input class="input" type="date" name="date" value="' + esc(d.date || todayStr()) + '" required></label>' +
+        '<label class="field"><span>아픈 부위 · 증상</span><select class="input" name="area">' + AREAS.map(function (x) {
+          return '<option' + ((d.area || '두통') === x ? ' selected' : '') + '>' + x + '</option>';
+        }).join('') + '</select></label>' +
+        '<div class="field"><span>강도</span><div class="seg" style="margin:0">' + SEVS.map(function (s) {
+          return '<button type="button" class="' + (((d.severity || '보통') === s) ? 'on' : '') + '" data-act="sev-pick" data-val="' + s + '">' + s + '</button>';
+        }).join('') + '</div><input type="hidden" name="severity" value="' + esc(d.severity || '보통') + '"></div>' +
+        '<label class="field"><span>상세 메모 · 경과</span><textarea class="input" name="memo" rows="4" placeholder="언제 어떻게 아팠는지, 어떤 약을 먹었는지, 어떻게 나았는지">' + esc(d.memo || '') + '</textarea></label>' +
+        '<label class="field"><span>나은 날 (선택)</span><input class="input" type="date" name="resolvedOn" value="' + esc(d.resolvedOn || '') + '"><em class="hint">다 나았을 때 날짜를 적어두면 경과를 볼 수 있어요.</em></label>';
+    }
+
+    panel.innerHTML = '<form id="rec-form" data-kind="' + (isV ? 'visit' : 'sym') + '" data-id="' + esc(rec ? rec.id : '') + '">' +
+      '<div class="sheet-head"><h2>' + esc(title) + '</h2><button class="x" type="button" data-act="close" data-target="modal-record">✕</button></div>' +
+      '<div class="sheet-body">' + bodyHTML + '</div>' +
+      '<div class="sheet-actions"><button type="button" class="btn ghost" data-act="close" data-target="modal-record">취소</button>' +
+      '<button type="submit" class="btn primary">저장</button></div></form>';
+
+    openSheet('modal-record');
+    var costEl = panel.querySelector('input[name="cost"]');
+    if (costEl) {
+      var hint = $('#cost-hint');
+      var upd = function () {
+        var n = Number(costEl.value) || 0;
+        hint.textContent = n > 0 ? won(n) : '';
+      };
+      costEl.addEventListener('input', upd);
+      upd();
+    }
+    var first = panel.querySelector('input[type="text"],input[type="date"]');
+    if (first && !rec) { try { first.focus({ preventScroll: true }); } catch (e) {} }
+  }
+
+  function submitForm(e) {
+    e.preventDefault();
+    var f = e.target;
+    var kind = f.getAttribute('data-kind');
+    var id = f.getAttribute('data-id');
+    var fd = new FormData(f);
+    var date = String(fd.get('date') || '').trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { toast('날짜를 선택해 주세요'); return; }
+    var now = Date.now();
+
+    if (kind === 'visit') {
+      var hospital = String(fd.get('hospital') || '').trim();
+      if (!hospital) { toast('병원명을 입력해 주세요'); return; }
+      var rec = {
+        date: date,
+        hospital: hospital,
+        dept: String(fd.get('dept') || '기타'),
+        dx: String(fd.get('dx') || '').trim(),
+        rx: String(fd.get('rx') || '').trim(),
+        cost: Math.max(0, Math.round(Number(fd.get('cost')) || 0)),
+        memo: String(fd.get('memo') || '').trim(),
+        updatedAt: now
+      };
+      if (id) {
+        var i = appData.visits.findIndex(function (x) { return x.id === id; });
+        if (i >= 0) appData.visits[i] = Object.assign({}, appData.visits[i], rec);
+      } else {
+        rec.id = uid(); rec.createdAt = now; appData.visits.push(rec);
+      }
+    } else {
+      var sev = String(fd.get('severity') || '보통');
+      if (SEVS.indexOf(sev) < 0) sev = '보통';
+      var rec2 = {
+        date: date,
+        area: String(fd.get('area') || '기타'),
+        severity: sev,
+        memo: String(fd.get('memo') || '').trim(),
+        resolvedOn: String(fd.get('resolvedOn') || ''),
+        updatedAt: now
+      };
+      if (id) {
+        var j = appData.symptoms.findIndex(function (x) { return x.id === id; });
+        if (j >= 0) appData.symptoms[j] = Object.assign({}, appData.symptoms[j], rec2);
+      } else {
+        rec2.id = uid(); rec2.createdAt = now; appData.symptoms.push(rec2);
+      }
+    }
+    saveData();
+    closeSheet('modal-record');
+    render();
+    scheduleSyncPush();
+    toast('저장했어요');
+  }
+
+  /* ============================ 상세 ============================ */
+  function detailRow(label, val, money) {
+    if (val == null || String(val).trim() === '') return '';
+    return '<div><dt>' + esc(label) + '</dt><dd' + (money ? ' class="money"' : '') + '>' + esc(val) + '</dd></div>';
+  }
+
+  function openDetail(kind, id) {
+    var isV = kind === 'visit';
+    var rec = (isV ? appData.visits : appData.symptoms).filter(function (x) { return x.id === id; })[0];
+    if (!rec) return;
+    var rows;
+    if (isV) {
+      rows = detailRow('일자', fmtDate(rec.date) + ' · ' + rec.date) +
+        detailRow('병원', rec.hospital) +
+        detailRow('진료과', rec.dept) +
+        detailRow('증상·진단', rec.dx) +
+        detailRow('처방·치료', rec.rx) +
+        detailRow('결제 금액', Number(rec.cost) > 0 ? won(rec.cost) : '', true) +
+        detailRow('후기·메모', rec.memo);
+    } else {
+      rows = detailRow('일자', fmtDate(rec.date) + ' · ' + rec.date) +
+        detailRow('증상', rec.area) +
+        detailRow('강도', rec.severity) +
+        detailRow('나은 날', rec.resolvedOn ? fmtDate(rec.resolvedOn) : '') +
+        detailRow('메모·경과', rec.memo);
+    }
+    $('#detail-panel').innerHTML =
+      '<div class="sheet-head"><h2>' + (isV ? '🏥 병원 기록' : '🤒 증상 기록') + '</h2>' +
+      '<button class="x" type="button" data-act="close" data-target="modal-detail">✕</button></div>' +
+      '<div class="sheet-body"><dl class="dl">' + rows + '</dl>' +
+      '<p class="warn-note">수정하거나 삭제하려면 아래 버튼을 눌러 주세요.</p></div>' +
+      '<div class="sheet-actions">' +
+      '<button class="btn danger" type="button" data-act="del" data-kind="' + (isV ? 'visit' : 'sym') + '" data-id="' + esc(rec.id) + '">삭제</button>' +
+      '<button class="btn ghost" type="button" data-act="edit" data-kind="' + (isV ? 'visit' : 'sym') + '" data-id="' + esc(rec.id) + '">수정</button>' +
+      '<button class="btn primary" type="button" data-act="close" data-target="modal-detail">닫기</button>' +
+      '</div>';
+    openSheet('modal-detail');
+  }
+
+  function deleteRecord(kind, id) {
+    if (!confirm('이 기록을 삭제할까요?\n삭제하면 다른 기기에서도 사라집니다.')) return;
+    if (kind === 'visit') {
+      appData.visits = appData.visits.filter(function (x) { return x.id !== id; });
+      if (appData.deletedVisitIds.indexOf(String(id)) < 0) appData.deletedVisitIds.push(String(id));
+    } else {
+      appData.symptoms = appData.symptoms.filter(function (x) { return x.id !== id; });
+      if (appData.deletedSymptomIds.indexOf(String(id)) < 0) appData.deletedSymptomIds.push(String(id));
+    }
+    saveData();
+    closeSheet('modal-detail');
+    render();
+    scheduleSyncPush();
+    toast('삭제했어요');
+  }
+
+  /* ============================ 진료실 보기 ============================ */
+  function openClinic() {
+    var syms = appData.symptoms.filter(function (s) { return daysAgo(s.date) <= 90; })
+      .sort(function (a, b) { return String(b.date || '').localeCompare(String(a.date || '')); });
+    var visits = appData.visits.filter(function (v) { return daysAgo(v.date) <= 90; })
+      .sort(function (a, b) { return String(b.date || '').localeCompare(String(a.date || '')); }).slice(0, 4);
+    var html = '';
+    html += '<h3>최근 90일 증상 · ' + syms.length + '건</h3>';
+    if (!syms.length) html += '<p class="sync-help">최근 90일 안에 적어둔 증상이 없어요.</p>';
+    else {
+      html += syms.map(function (s) {
+        var sev = SEVS.indexOf(s.severity) >= 0 ? s.severity : '보통';
+        return '<div class="item"><div class="d">' + esc(fmtDate(s.date)) + ' <span class="sev ' + SEV_CLASS[sev] + '">' + esc(sev) + '</span>' +
+          (s.resolvedOn ? ' <span style="color:var(--ink-3)">· ' + esc(shortDate(s.resolvedOn)) + ' 나음</span>' : '') + '</div>' +
+          '<p class="t">' + esc(s.area || '기타') + '</p>' +
+          (s.memo ? '<p class="m">' + esc(s.memo) + '</p>' : '') + '</div>';
+      }).join('');
+    }
+    html += '<h3 style="margin-top:16px">최근 병원 방문 · ' + visits.length + '건</h3>';
+    if (!visits.length) html += '<p class="sync-help">최근 90일 안에 적어둔 병원 방문이 없어요.</p>';
+    else {
+      html += visits.map(function (v) {
+        return '<div class="item"><div class="d">' + esc(fmtDate(v.date)) + ' · ' + esc(v.dept || '') + '</div>' +
+          '<p class="t">' + esc(v.hospital || '') + '</p>' +
+          (v.dx ? '<p class="m"><span class="k">진단</span> ' + esc(v.dx) + '</p>' : '') +
+          (v.rx ? '<p class="m"><span class="k">처방</span> ' + esc(v.rx) + '</p>' : '') + '</div>';
+      }).join('');
+    }
+    $('#clinic-body').innerHTML = html;
+    openSheet('modal-clinic');
+  }
+
+  /* ============================ 동기화 ============================ */
+  var SYNC_BASE = 'https://mantledb.sh/v2/';
+  var SYNC_PART_MAX = 58000;
+  var SYNC_PARTS_PER_NS = 88;
+  var syncCfg = null, syncBusy = false, syncApplying = false, syncTimer = null;
+
+  function syncLoadCfg() {
+    try {
+      var raw = localStorage.getItem(SYNC_CFG_KEY);
+      syncCfg = raw ? JSON.parse(raw) : null;
+    } catch (e) { syncCfg = null; }
+    if (!syncCfg || typeof syncCfg !== 'object') syncCfg = {};
+    if (typeof syncCfg.ns !== 'string') syncCfg.ns = '';
+    syncCfg.rev = Number(syncCfg.rev) || 0;
+    syncCfg.lastSync = Number(syncCfg.lastSync) || 0;
+    syncCfg.lastPushTs = Number(syncCfg.lastPushTs) || 0;
+    syncCfg.lastRemoteRev = Number(syncCfg.lastRemoteRev) || 0;
+    if (typeof syncCfg.auto !== 'boolean') syncCfg.auto = true;
+    if (!syncCfg.deviceId) syncCfg.deviceId = 'dev-' + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4);
+    return syncCfg;
+  }
+  function syncSaveCfg() {
+    try { localStorage.setItem(SYNC_CFG_KEY, JSON.stringify(syncCfg)); } catch (e) {}
+  }
+  function syncConnected() { return !!(syncCfg && syncCfg.ns); }
+  function syncErrMsg(e) {
+    var m = String((e && e.message) ? e.message : e || '');
+    if (!m || m === 'HTTP 0' || /Failed to fetch|NetworkError|Load failed|aborted|AbortError|Network request failed/i.test(m)) {
+      return '네트워크에 연결할 수 없습니다 (인터넷 상태를 확인해 주세요)';
+    }
+    return m;
+  }
+  function syncNewNs() {
+    var abc = 'abcdefghijkmnpqrstuvwxyz23456789', s = '';
+    for (var i = 0; i < 10; i++) s += abc.charAt(Math.floor(Math.random() * abc.length));
+    return 'health-' + s;
+  }
+  function syncNsForPart(i) {
+    var bucket = Math.floor(i / SYNC_PARTS_PER_NS);
+    return bucket === 0 ? syncCfg.ns : syncCfg.ns + '-p' + bucket;
+  }
+  function escByteLenOfChar(ch) {
+    var cc = ch.charCodeAt(0);
+    if (ch === '"' || ch === '\\') return 2;
+    if (cc < 0x20) return 6;
+    if (cc < 0x80) return 1;
+    if (cc < 0x800) return 2;
+    if (cc >= 0xD800 && cc <= 0xDBFF) return 4;
+    if (cc >= 0xDC00 && cc <= 0xDFFF) return 0;
+    return 3;
+  }
+  function chunkByEscapedBytes(doc, maxBytes) {
+    var parts = [], cur = '', curLen = 0;
+    for (var i = 0; i < doc.length; i++) {
+      var ch = doc.charAt(i), b = escByteLenOfChar(ch);
+      if (curLen + b > maxBytes) { parts.push(cur); cur = ch; curLen = b; }
+      else { cur += ch; curLen += b; }
+    }
+    if (cur) parts.push(cur);
+    return parts;
+  }
+  function syncFetch(url, opts) {
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 20000);
+    return fetch(url, Object.assign({ signal: ctrl.signal, cache: 'no-store' }, opts || {})).then(function (res) {
+      clearTimeout(timer);
+      return res;
+    }, function (err) { clearTimeout(timer); throw err; });
+  }
+  function syncPost(path, obj) {
+    return syncFetch(SYNC_BASE + path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(obj)
+    }).then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return true;
+    });
+  }
+  function syncGet(path) {
+    return syncFetch(SYNC_BASE + path, { method: 'GET' }).then(function (res) {
+      if (res.status === 404) return null;
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.text().then(function (txt) {
+        if (!txt) return null;
+        try { return JSON.parse(txt); } catch (e) { return null; }
+      });
+    });
+  }
+
+  function syncDocCounts() {
+    var cost = appData.visits.reduce(function (s, v) { return s + (Number(v.cost) || 0); }, 0);
+    return { visits: appData.visits.length, symptoms: appData.symptoms.length, cost: cost };
+  }
+
+  function syncPush() {
+    if (!syncConnected()) return Promise.reject(new Error('동기화 코드가 없습니다'));
+    var doc = JSON.stringify({ v: 1, app: 'healthnotebook', ts: Date.now(), device: syncCfg.deviceId, data: appData });
+    var parts = chunkByEscapedBytes(doc, SYNC_PART_MAX);
+    if (parts.length > SYNC_PARTS_PER_NS * 6) return Promise.reject(new Error('데이터가 너무 큽니다'));
+    var chain = Promise.resolve();
+    parts.forEach(function (p, i) {
+      chain = chain.then(function () { return syncPost(syncNsForPart(i) + '/v1/p' + i, { c: p }); });
+    });
+    return chain.then(function () {
+      var rev = Math.max(syncCfg.rev || 0, syncCfg.lastRemoteRev || 0) + 1;
+      var pushTs = Date.now();
+      var manifest = {
+        t: 1, app: 'healthnotebook', rev: rev, ts: pushTs, device: syncCfg.deviceId,
+        parts: parts.map(function (p, i) { return { ns: syncNsForPart(i), k: 'v1/p' + i }; }),
+        counts: syncDocCounts(), bytes: doc.length
+      };
+      return syncPost(syncCfg.ns + '/v1/manifest', manifest).then(function () {
+        syncCfg.rev = rev;
+        syncCfg.lastRemoteRev = rev;
+        syncCfg.lastSync = pushTs;
+        syncCfg.lastPushTs = pushTs;
+        syncCfg.lastCount = manifest.counts;
+        syncCfg.lastError = '';
+        syncCfg.dirty = false;
+        syncSaveCfg();
+        return manifest;
+      });
+    });
+  }
+
+  function syncReadManifest() {
+    if (!syncConnected()) return Promise.resolve(null);
+    return syncGet(syncCfg.ns + '/v1/manifest').then(function (m) {
+      if (!m || !m.parts || !m.parts.length) return null;
+      return m;
+    });
+  }
+
+  function syncReadRemoteData(manifest) {
+    var buf = '';
+    var chain = Promise.resolve();
+    manifest.parts.forEach(function (p) {
+      chain = chain.then(function () {
+        return syncGet(p.ns + '/' + p.k).then(function (part) {
+          if (!part || typeof part.c !== 'string') throw new Error('조각을 읽지 못했습니다');
+          buf += part.c;
+        });
+      });
+    });
+    return chain.then(function () {
+      var doc;
+      try { doc = JSON.parse(buf); } catch (e) { throw new Error('원격 데이터 형식이 올바르지 않습니다'); }
+      if (!doc || !doc.data) throw new Error('원격 데이터 형식이 올바르지 않습니다');
+      return doc;
+    });
+  }
+
+  /* 병합: 로컬을 지우지 않고 합집합. 같은 id는 updatedAt이 최신인 쪽, 삭제된 id는 양쪽 합집합으로 제외 */
+  function mergeCollection(L, R, key, delKey, stats) {
+    var byId = {};
+    (R[key] || []).forEach(function (x) { byId[String(x.id)] = x; });
+    var remoteIds = Object.keys(byId), localIds = {};
+    (L[key] || []).forEach(function (x) {
+      var k = String(x.id);
+      localIds[k] = 1;
+      var r = byId[k];
+      if (!r) { byId[k] = x; return; }
+      var lt = Number(x.updatedAt || 0), rt = Number(r.updatedAt || 0);
+      if (rt > lt) { byId[k] = r; stats.updated++; }
+      else byId[k] = x;
+    });
+    remoteIds.forEach(function (id) { if (!localIds[id]) stats.added++; });
+    var del = {};
+    [].concat(L[delKey] || [], R[delKey] || []).forEach(function (id) { del[String(id)] = 1; });
+    var out = [];
+    Object.keys(byId).forEach(function (id) {
+      if (!del[id]) out.push(byId[id]);
+    });
+    L[key] = out;
+    L[delKey] = Object.keys(del);
+    return out.length;
+  }
+
+  function mergeRemoteData(local, remoteDoc) {
+    var R = (remoteDoc && remoteDoc.data) ? remoteDoc.data : null;
+    if (!R) return { data: local, stats: { changed: false, added: 0, updated: 0 } };
+    var L = JSON.parse(JSON.stringify(local));
+    var stats = { added: 0, updated: 0, changed: false };
+    mergeCollection(L, R, 'visits', 'deletedVisitIds', stats);
+    mergeCollection(L, R, 'symptoms', 'deletedSymptomIds', stats);
+    try { stats.changed = JSON.stringify(L) !== JSON.stringify(local); } catch (e) { stats.changed = !!(stats.added || stats.updated); }
+    return { data: L, stats: stats };
+  }
+
+  function syncNow(opts) {
+    var silent = opts && opts.silent;
+    if (!syncConnected()) {
+      if (!silent) toast('먼저 동기화 코드를 만들거나 입력해 주세요');
+      return Promise.resolve(null);
+    }
+    if (syncBusy) return Promise.resolve(null);
+    syncBusy = true;
+    syncApplying = true;
+    renderSyncUI();
+    var merged = null;
+    return syncReadManifest().then(function (manifest) {
+      var needPush = !manifest || !!syncCfg.dirty;
+      if (manifest) {
+        syncCfg.lastRemoteRev = Number(manifest.rev) || 0;
+        var upToDate = Number(manifest.rev) === Number(syncCfg.rev) && Number(manifest.ts || 0) <= syncCfg.lastPushTs;
+        if (!upToDate) {
+          return syncReadRemoteData(manifest).then(function (remoteDoc) {
+            merged = mergeRemoteData(appData, remoteDoc);
+            if (merged.stats.changed) {
+              appData = normalize(merged.data);
+              saveData();
+              render();
+              needPush = true;
+            }
+            return needPush;
+          });
+        }
+      }
+      return needPush;
+    }).then(function (needPush) {
+      if (needPush) return syncPush().then(function () { return true; });
+      var m2 = null;
+      return syncReadManifest().then(function (mm) {
+        if (mm) {
+          syncCfg.rev = Number(mm.rev) || syncCfg.rev;
+          syncCfg.lastRemoteRev = syncCfg.rev;
+          syncCfg.lastPushTs = Number(mm.ts) || syncCfg.lastPushTs;
+          syncCfg.lastCount = mm.counts || syncCfg.lastCount;
+        }
+        syncCfg.lastSync = Date.now();
+        syncCfg.lastError = '';
+        syncSaveCfg();
+        return false;
+      });
+    }).then(function () {
+      syncBusy = false;
+      syncApplying = false;
+      renderSyncUI();
+      if (!silent) {
+        var c = syncCfg.lastCount || {};
+        var detail = merged && (merged.stats.added || merged.stats.updated)
+          ? ' (클라우드에서 ' + merged.stats.added + '건 추가 · ' + merged.stats.updated + '건 갱신)' : '';
+        toast('동기화 완료' + detail + ' · 병원 ' + (c.visits || 0) + '건 · 증상 ' + (c.symptoms || 0) + '건');
+      }
+      return merged;
+    }).catch(function (err) {
+      syncBusy = false;
+      syncApplying = false;
+      syncCfg.lastError = syncErrMsg(err);
+      syncSaveCfg();
+      renderSyncUI();
+      if (!silent) toast('동기화 실패: ' + syncCfg.lastError);
+      return null;
+    });
+  }
+
+  function scheduleSyncPush() {
+    if (!syncConnected() || !syncCfg.auto || syncApplying) return;
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(function () { syncNow({ silent: true }); }, 1500);
+  }
+
+  function syncTimeText(ts) {
+    if (!ts) return '아직 없음';
+    var diff = Date.now() - ts, mm = Math.floor(diff / 60000);
+    if (mm < 1) return '방금 전';
+    if (mm < 60) return mm + '분 전';
+    var hh = Math.floor(mm / 60);
+    if (hh < 24) return hh + '시간 전';
+    var d = new Date(ts);
+    return (d.getMonth() + 1) + '월 ' + d.getDate() + '일 ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+
+  function syncLink() {
+    if (!syncConnected()) return '';
+    return location.origin + location.pathname + '?k=' + syncCfg.ns;
+  }
+
+  function renderSyncUI() {
+    var pill = $('#btn-sync');
+    if (pill) {
+      if (syncConnected()) {
+        pill.classList.add('on');
+        pill.textContent = syncBusy ? '☁️ 동기화 중…' : '☁️ 연결됨';
+        pill.classList.toggle('busy', !!syncBusy);
+      } else {
+        pill.classList.remove('on');
+        pill.classList.remove('busy');
+        pill.textContent = '☁️ 미연결';
+      }
+    }
+    var box = $('#sync-body');
+    if (!box || !document.getElementById('modal-sync').classList.contains('open')) return;
+    var c = syncDocCounts();
+    if (!syncConnected()) {
+      box.innerHTML =
+        '<div class="sync-state off">🔌 이 기기에는 아직 동기화 코드가 없어요</div>' +
+        '<p class="sync-help">기록은 이 기기 브라우저에 저장됩니다. 다른 기기와 같이 보려면 동기화 코드를 만들거나,<br>이미 만든 코드를 입력해 주세요.</p>' +
+        '<button class="btn primary block" type="button" data-act="sync-new" style="margin-bottom:12px">새 동기화 코드 만들기</button>' +
+        '<label class="field"><span>이미 있는 코드 입력</span><input class="input" id="sync-join" type="text" placeholder="health-xxxxxxxxxx" autocomplete="off" autocapitalize="off" spellcheck="false"></label>' +
+        '<button class="btn ghost block" type="button" data-act="sync-join">이 코드로 연결</button>' +
+        '<p class="warn-note">공개 페이지라 기록 자체는 링크를 아는 사람만 볼 수 있는 전용 클라우드에 저장됩니다. 동기화 코드와 링크는 기기 저장소에만 남고, 페이지 소스에는 들어가지 않아요.</p>' +
+        (syncCfg.lastError ? '<div class="sync-err">⚠️ ' + esc(syncCfg.lastError) + '</div>' : '');
+      return;
+    }
+    var cnt = syncCfg.lastCount || {};
+    box.innerHTML =
+      '<div class="sync-state on">✅ 연결됨 · 마지막 동기화 ' + esc(syncTimeText(syncCfg.lastSync)) + '</div>' +
+      '<label class="field" style="margin-bottom:8px"><span>동기화 코드</span></label>' +
+      '<div class="copy-row"><input class="input" id="sync-code-view" type="text" readonly value="' + esc(syncCfg.ns) + '">' +
+      '<button class="btn ghost" type="button" data-act="copy-code">복사</button></div>' +
+      '<label class="field" style="margin-bottom:8px"><span>전용 링크</span></label>' +
+      '<div class="copy-row"><input class="input" id="sync-link-view" type="text" readonly value="' + esc(syncLink()) + '">' +
+      '<button class="btn ghost" type="button" data-act="copy-link">복사</button></div>' +
+      '<div class="sync-counts">📱 이 기기 · 병원 <b>' + c.visits + '</b>건 · 증상 <b>' + c.symptoms + '</b>건<br>' +
+      '☁️ 클라우드 · 병원 <b>' + (cnt.visits != null ? cnt.visits : '-') + '</b>건 · 증상 <b>' + (cnt.symptoms != null ? cnt.symptoms : '-') + '</b>건</div>' +
+      '<label class="switch"><input type="checkbox" id="sync-auto"' + (syncCfg.auto ? ' checked' : '') + '> 자동 동기화 (기록을 고치면 몇 초 뒤 올리고, 열 때 내려받기)</label>' +
+      '<div class="sheet-actions" style="padding:0;border-top:0;margin:0 0 10px"><button class="btn ghost" type="button" data-act="sync-now"' + (syncBusy ? ' disabled' : '') + '>지금 동기화</button>' +
+      '<button class="btn ghost" type="button" data-act="sync-new">새 코드 만들기</button></div>' +
+      '<button class="link-btn danger" type="button" data-act="sync-off">이 기기에서 연결 해제</button>' +
+      '<p class="warn-note">이 링크를 아는 사람은 기록을 볼 수 있어요. 링크는 기기 저장소와 별도로 보관해 두세요 — 휴대폰 브라우저 기록을 지워도 앱 안에서 다시 복사할 수 있습니다.</p>' +
+      (syncCfg.lastError ? '<div class="sync-err">⚠️ 마지막 오류: ' + esc(syncCfg.lastError) + '</div>' : '');
+  }
+
+  function copyText(text, okMsg, elId) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { toast(okMsg); }, function () {
+        var el = elId ? document.getElementById(elId) : null;
+        if (el) { el.select(); try { document.execCommand('copy'); toast(okMsg); } catch (e) { toast('복사 실패 — 길게 눌러 직접 복사해 주세요'); } }
+        else toast('복사 실패 — 길게 눌러 직접 복사해 주세요');
+      });
+    } else {
+      var el = elId ? document.getElementById(elId) : null;
+      if (el) { el.select(); try { document.execCommand('copy'); toast(okMsg); } catch (e) { toast('복사에 실패했어요'); } }
+      else toast('복사에 실패했어요');
+    }
+  }
+
+  function createSyncCode() {
+    if (syncConnected() && !confirm('이 기기 기록을 새 클라우드에 올려 새 코드를 만들까요?\n지금 코드와는 연결이 끊깁니다. 기록은 이 기기에 그대로 남아요.')) return;
+    syncCfg.ns = syncNewNs();
+    syncCfg.rev = 0;
+    syncCfg.lastRemoteRev = 0;
+    syncCfg.lastSync = 0;
+    syncCfg.lastCount = 0;
+    syncCfg.lastPushTs = 0;
+    syncCfg.dirty = true;
+    syncCfg.auto = true;
+    syncCfg.lastError = '';
+    syncSaveCfg();
+    toast('클라우드에 올리는 중…');
+    syncPush().then(function () {
+      renderSyncUI();
+      renderHeader();
+      toast('동기화 코드를 만들었어요. 아래 링크를 다른 기기에서 열어 주세요.');
+    }).catch(function (e) {
+      syncCfg.lastError = syncErrMsg(e);
+      syncSaveCfg();
+      renderSyncUI();
+      toast('업로드 실패: ' + syncCfg.lastError);
+    });
+  }
+
+  function parseSyncCode(raw) {
+    var s = String(raw || '').trim();
+    if (!s) return '';
+    var mQ = s.match(/[?&]k=([A-Za-z0-9_-]+)/);
+    if (mQ) s = mQ[1];
+    s = s.replace(/^https?:\/\/[^\/]+\//i, '').replace(/^v2\//i, '').replace(/\/+$/, '');
+    var m = s.match(/(health-[a-z0-9]+)/i);
+    if (m) return m[1].toLowerCase();
+    return s.toLowerCase();
+  }
+
+  function joinSyncCode() {
+    var input = $('#sync-join');
+    var code = parseSyncCode(input ? input.value : '');
+    if (!code || code.indexOf('health-') !== 0 || code.length < 12) {
+      toast('코드 형식이 올바르지 않아요. (예: health-ab12cd34ef)');
+      return;
+    }
+    var prevNs = syncCfg.ns;
+    syncCfg.ns = code;
+    syncCfg.rev = 0;
+    syncCfg.lastSync = 0;
+    syncCfg.lastError = '';
+    syncCfg.dirty = false;
+    syncSaveCfg();
+    toast('클라우드 기록을 확인하는 중…');
+    syncReadManifest().then(function (manifest) {
+      if (!manifest) {
+        var hasLocal = appData.visits.length || appData.symptoms.length;
+        var q = hasLocal
+          ? '이 코드에는 아직 저장된 기록이 없어요.\n이 기기에 있는 기록을 이 코드로 올릴까요?'
+          : '이 코드에는 아직 저장된 기록이 없어요.\n빈 수첩으로 이 코드에 연결할까요?';
+        if (!confirm(q)) {
+          syncCfg.ns = prevNs;
+          syncSaveCfg();
+          renderSyncUI();
+          return null;
+        }
+        syncCfg.dirty = true;
+        syncSaveCfg();
+      }
+      return syncNow({ silent: true }).then(function (merged) {
+        renderSyncUI();
+        renderHeader();
+        if (merged) {
+          var st = merged.stats;
+          toast('연결 완료 · 클라우드에서 ' + st.added + '건 추가, ' + st.updated + '건 갱신');
+        } else {
+          toast('연결됨 · ' + (syncCfg.lastError ? '동기화 오류: ' + syncCfg.lastError : '동기화 대기'));
+        }
+        return merged;
+      });
+    }).catch(function (e) {
+      syncCfg.ns = prevNs;
+      syncSaveCfg();
+      renderSyncUI();
+      toast('코드를 확인할 수 없습니다: ' + syncErrMsg(e));
+    });
+  }
+
+  function disconnectSync() {
+    if (!confirm('이 기기에서 동기화를 끊을까요?\n기록은 이 기기에 그대로 남고, 클라우드 사본도 그대로 있어요.')) return;
+    syncCfg.ns = '';
+    syncCfg.rev = 0;
+    syncCfg.lastSync = 0;
+    syncCfg.lastCount = 0;
+    syncCfg.lastPushTs = 0;
+    syncCfg.lastError = '';
+    syncSaveCfg();
+    renderSyncUI();
+    renderHeader();
+    toast('동기화 연결을 해제했어요');
+  }
+
+  /* ============================ 이벤트 ============================ */
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest ? e.target.closest('[data-act]') : null;
+    if (!t) return;
+    var act = t.getAttribute('data-act');
+    var id = t.getAttribute('data-id');
+    var kind = t.getAttribute('data-kind');
+    var val = t.getAttribute('data-val');
+
+    switch (act) {
+      case 'tab': ui.tab = val; saveUi(); render(); window.scrollTo(0, 0); break;
+      case 'vdept': ui.vdept = val; renderVisits(); break;
+      case 'vreset':
+        ui.vq = ''; ui.vdept = '전체'; ui.vyear = 'all'; ui.vmonth = 'all';
+        var q = $('#v-q'); if (q) q.value = '';
+        renderVisits(); break;
+      case 'sview': ui.sview = val; saveUi(); renderSymptoms(); break;
+      case 'srange': ui.srange = val; saveUi(); renderStats(); break;
+      case 'add-visit': openForm('visit', null); break;
+      case 'add-sym': openForm('sym', null); break;
+      case 'open-visit': openDetail('visit', id); break;
+      case 'open-sym': openDetail('sym', id); break;
+      case 'edit': closeSheet('modal-detail'); openForm(kind === 'visit' ? 'visit' : 'sym', id); break;
+      case 'del': deleteRecord(kind, id); break;
+      case 'sev-pick':
+        var seg = t.parentNode;
+        Array.prototype.forEach.call(seg.querySelectorAll('button'), function (b) { b.classList.remove('on'); });
+        t.classList.add('on');
+        var hid = seg.parentNode.querySelector('input[name="severity"]');
+        if (hid) hid.value = val;
+        break;
+      case 'close': closeSheet(t.getAttribute('data-target')); break;
+      case 'open-sync': renderSyncUI(); openSheet('modal-sync'); renderSyncUI(); break;
+      case 'open-clinic': openClinic(); break;
+      case 'sync-now': syncNow({ silent: false }).then(renderSyncUI); break;
+      case 'sync-new': createSyncCode(); break;
+      case 'sync-join': joinSyncCode(); break;
+      case 'sync-off': disconnectSync(); break;
+      case 'copy-code': if (syncConnected()) copyText(syncCfg.ns, '동기화 코드를 복사했어요', 'sync-code-view'); break;
+      case 'copy-link': if (syncConnected()) copyText(syncLink(), '전용 링크를 복사했어요', 'sync-link-view'); break;
+    }
+  });
+
+  document.addEventListener('submit', function (e) {
+    if (e.target && e.target.id === 'rec-form') submitForm(e);
+  });
+
+  document.addEventListener('change', function (e) {
+    var el = e.target;
+    if (!el || !el.id) return;
+    if (el.id === 'sync-auto') {
+      syncCfg.auto = !!el.checked;
+      syncSaveCfg();
+      toast(syncCfg.auto ? '자동 동기화를 켰어요' : '자동 동기화를 껐어요');
+      if (syncCfg.auto && syncConnected()) syncNow({ silent: true });
+    }
+  });
+
+  var vqEl = $('#v-q');
+  if (vqEl) {
+    vqEl.addEventListener('input', function () {
+      ui.vq = vqEl.value;
+      renderVisits();
+    });
+  }
+  var yearEl = $('#v-year');
+  if (yearEl) yearEl.addEventListener('change', function () { ui.vyear = yearEl.value; renderVisits(); });
+  var monthEl = $('#v-month');
+  if (monthEl) monthEl.addEventListener('change', function () { ui.vmonth = monthEl.value; renderVisits(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      ['modal-record', 'modal-detail', 'modal-sync', 'modal-clinic'].forEach(function (id) { closeSheet(id); });
+    }
+  });
+
+  /* ============================ 시작 ============================ */
+  function initSync() {
+    syncLoadCfg();
+    var urlCode = '';
+    try {
+      var params = new URLSearchParams(location.search);
+      if (params.get('k')) urlCode = parseSyncCode(params.get('k'));
+      else {
+        var hm = String(location.hash || '').match(/[#&]k=([A-Za-z0-9_-]+)/);
+        if (hm) urlCode = parseSyncCode(hm[1]);
+      }
+    } catch (e) {}
+    if (urlCode && urlCode.indexOf('health-') === 0 && urlCode !== syncCfg.ns) {
+      syncCfg.ns = urlCode;
+      syncCfg.rev = 0;
+      syncCfg.lastSync = 0;
+      syncCfg.lastPushTs = 0;
+      syncCfg.lastError = '';
+      syncCfg.dirty = false;
+      syncSaveCfg();
+      /* 주소창에서 코드를 지워 화면 캡처·기록에 남지 않게 한다 */
+      try { history.replaceState(null, '', location.pathname); } catch (e2) {}
+    }
+    if (!syncConnected()) return;
+    if (syncCfg.auto) setTimeout(function () { syncNow({ silent: true }); }, 600);
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible' && syncCfg.auto && syncConnected() && (Date.now() - (syncCfg.lastSync || 0) > 60000)) {
+        syncNow({ silent: true });
+      }
+    });
+    window.addEventListener('online', function () {
+      if (syncCfg.auto && syncConnected()) syncNow({ silent: true });
+    });
+  }
+
+  render();
+  initSync();
+  renderSyncUI();
+  renderHeader();
+
+  /* 상태 확인용 (개인 데이터는 저장소에만 있고 페이지 소스에는 없음) */
+  window.__health = {
+    data: function () { return appData; },
+    cfg: function () { return syncCfg; },
+    sync: function () { return syncNow({ silent: true }); },
+    counts: syncDocCounts
+  };
+})();
+</script>
+</body>
+</html>
