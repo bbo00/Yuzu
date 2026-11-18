@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>마이 스마트 옷장 (My Closet 8.20)</title>
+  <title>마이 스마트 옷장 (My Closet 8.21)</title>
   <!-- ===== v8.18 : iOS 사파리 '홈 화면에 추가' 시 주소창 없는 앱 모드(standalone) ===== -->
   <meta name="theme-color" content="#f8fafc">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -239,6 +239,50 @@
       .st-legend { gap: 6px 8px; }
       .st-donut-wrap { max-width: 168px; }
     }
+
+
+    /* ===== v8.21 : 통계 카드 여백 · 컬러 통계 · 필터 접기 · 코디 폴더 ===== */
+    #tab-stats .stats-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 18px; box-shadow: 0 2px 8px rgba(15,23,42,0.05); }
+    #tab-stats .stats-card:last-child { margin-bottom: 4px; }
+    #tab-stats .st-summary { margin-bottom: 18px; }
+    .st-color-bars { display: flex; flex-direction: column; gap: 9px; }
+    .st-color-row { display: grid; grid-template-columns: 14px 74px minmax(0, 1fr) 66px; align-items: center; gap: 8px; }
+    .st-color-dot { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(15,23,42,0.14); flex: 0 0 auto; }
+    .st-color-name { font-size: 0.78rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .st-color-track { height: 9px; background: #f1f5f9; border-radius: 99px; overflow: hidden; }
+    .st-color-fill { height: 100%; border-radius: 99px; }
+    .st-color-val { font-size: 0.71rem; color: var(--text-sub); text-align: right; font-weight: 600; white-space: nowrap; }
+    .st-color-row.is-empty .st-color-name { color: #94a3b8; }
+
+    .filter-toggle-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .filter-toggle-btn { flex: 0 0 auto; background: #fff; border: 1px solid var(--border); color: var(--primary); border-radius: 20px; padding: 6px 12px; font-size: 0.78rem; font-weight: 800; cursor: pointer; }
+    .filter-toggle-btn:active { background: var(--primary-light); }
+    .filter-summary { flex: 1 1 auto; min-width: 0; font-size: 0.75rem; color: var(--text-sub); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
+    .filter-panel.collapsed { display: none; }
+
+    .lb-folder-grid { display: flex; flex-direction: column; gap: 10px; }
+    .lb-folder-card { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; cursor: pointer; position: relative; }
+    .lb-folder-card:active { background: #f8fafc; }
+    .lb-folder-ico { width: 42px; height: 42px; border-radius: 12px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex: 0 0 auto; }
+    .lb-folder-body { min-width: 0; flex: 1 1 auto; }
+    .lb-folder-name { font-size: 0.95rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lb-folder-meta { font-size: 0.72rem; color: var(--text-sub); font-weight: 600; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lb-folder-cnt { flex: 0 0 auto; font-size: 0.9rem; font-weight: 800; color: var(--primary); }
+    .lb-folder-new { border-style: dashed; background: #fbfcfe; }
+    .lb-folder-new .lb-folder-ico { background: #eef2ff; }
+    .lb-folder-del { position: absolute; top: 8px; right: 8px; background: none; border: none; color: #cbd5e1; font-size: 0.9rem; cursor: pointer; padding: 2px 6px; }
+    .lb-folder-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .lb-folder-back { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 6px 12px; font-size: 0.78rem; font-weight: 800; color: var(--primary); cursor: pointer; flex: 0 0 auto; }
+    .lb-folder-crumb { font-size: 0.82rem; font-weight: 800; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lb-new-folder-box { display: flex; gap: 8px; margin: 10px 0 2px; }
+    .lb-new-folder-box input { flex: 1 1 auto; min-width: 0; }
+    .lb-new-folder-box button { flex: 0 0 auto; }
+    .lb-move-list { display: flex; flex-direction: column; gap: 8px; max-height: 44vh; overflow-y: auto; margin: 4px 0 12px; }
+    .lb-move-btn { display: flex; align-items: center; gap: 8px; width: 100%; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 11px 12px; font-size: 0.86rem; font-weight: 700; color: var(--text-main); cursor: pointer; text-align: left; }
+    .lb-move-btn:active { background: #f1f5f9; }
+    .lb-move-btn b { margin-left: auto; font-size: 0.76rem; color: var(--text-sub); font-weight: 800; }
+    .lb-move-btn.is-current { background: var(--primary-light); border-color: #c7d2fe; }
+    .lb-move-current { font-size: 0.66rem; font-weight: 800; color: var(--primary); }
 
     /* Modals */
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.55); z-index: 200; display: none; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(3px); }
@@ -519,7 +563,7 @@
 
   <!-- Top Header -->
   <header>
-    <h1>👗 마이 스마트 옷장 <span style='font-size:0.75rem; background:#4f46e5; color:#fff; padding:2px 8px; border-radius:12px; font-weight:700; vertical-align:middle; margin-left:4px;'>v8.20</span></h1>
+    <h1>👗 마이 스마트 옷장 <span style='font-size:0.75rem; background:#4f46e5; color:#fff; padding:2px 8px; border-radius:12px; font-weight:700; vertical-align:middle; margin-left:4px;'>v8.21</span></h1>
     <div class="header-btns">
       <button class="icon-btn" onclick="exportBackup()" title="현재 옷장 상태를 JSON 파일로 다운로드합니다">📥 백업 저장</button>
       <button class="icon-btn" onclick="document.getElementById('backup-file-input').click()" title="모바일/PC 백업 파일을 불러와 동기화합니다">📤 백업 불러오기</button>
@@ -576,10 +620,17 @@
         </div>
       </div>
 
-      <!-- Status Segment: 보유 vs 반품/방출 vs 위시 vs 휴지통 -->
+      <!-- v8.21: 필터 접기/펼치기 -->
+      <div class="filter-toggle-bar">
+        <button type="button" class="filter-toggle-btn" id="btn-filter-toggle" onclick="toggleFilterPanel()" aria-expanded="false">🔍 필터 펼치기</button>
+        <span class="filter-summary" id="filter-summary">보유 · 전체</span>
+      </div>
+      <div class="filter-panel collapsed" id="closet-filter-panel">
+
+      <!-- Status Segment: 보유 vs 방출 vs 위시 vs 휴지통 -->
       <div class="status-segment">
         <button class="segment-btn active" id="seg-active" onclick="switchStatusView('보유중')">👗 보유 (<span id="seg-active-cnt">0</span>)</button>
-        <button class="segment-btn" id="seg-returned" onclick="switchStatusView('반품/환불')">📦 반품·방출 (<span id="seg-returned-cnt">0</span>)</button>
+        <button class="segment-btn" id="seg-returned" onclick="switchStatusView('반품/환불')">📦 방출 (<span id="seg-returned-cnt">0</span>)</button>
         <button class="segment-btn" id="seg-wish" onclick="switchStatusView('위시리스트')">💖 위시 (<span id="seg-wish-cnt">0</span>)</button>
         <button class="segment-btn" id="seg-trash" onclick="switchStatusView('휴지통')">🗑️ 휴지통 (<span id="seg-trash-cnt">0</span>)</button>
       </div>
@@ -652,6 +703,8 @@
         <button class="chip" onclick="filterColor('카키')">🟢 카키</button>
       </div>
 
+      </div><!-- /#closet-filter-panel -->
+
       <!-- Clothes Grid (Clickable Cards for Detail View) -->
       <div class="clothes-grid" id="clothes-grid"></div>
       </div><!-- /#closet-view-closet -->
@@ -718,6 +771,12 @@
         </div>
 
         <input type="text" id="lookbook-name" placeholder="코디 이름 (예: 가을 시크 출근룩, 주말 데이트룩)" class="form-input" style="margin-bottom: 8px;">
+        <!-- v8.21: 저장할 코디 폴더 선택 -->
+        <div class="form-group" style="margin-bottom: 8px;">
+          <label>📁 저장할 코디 폴더</label>
+          <select id="lookbook-folder-select" class="form-input" onchange="onLookbookFolderSelectChange()"></select>
+          <input type="text" id="lookbook-folder-new" class="form-input" placeholder="새 폴더 이름 (예: 일본여행)" maxlength="18" style="display:none; margin-top:6px;">
+        </div>
         <button class="btn-submit" style="margin-top: 0;" onclick="saveLookbook()">이 코디 세트 저장하기</button>
       </div>
 
@@ -725,7 +784,13 @@
         <div class="section-title">내 코디 룩북 <span id="lookbook-count" style="color: var(--primary); font-size: 0.9rem;">(0)</span></div>
       </div>
 
-      <div class="lookbook-grid" id="lookbook-list"></div>
+      <!-- v8.21: 폴더 카드 목록 → 폴더 안 코디 목록 -->
+      <div class="lb-folder-bar" id="lookbook-folder-bar" style="display:none;">
+        <button type="button" class="lb-folder-back" onclick="closeLookbookFolder()">← 폴더 목록으로</button>
+        <span class="lb-folder-crumb" id="lookbook-folder-crumb"></span>
+      </div>
+      <div class="lb-folder-grid" id="lookbook-folders"></div>
+      <div class="lookbook-grid" id="lookbook-list" style="display:none;"></div>
     </div>
 
     <!-- TAB 3: STATS (v8.20 개편) -->
@@ -787,6 +852,16 @@
           <span class="st-head-sub" id="st-brand-sub"></span>
         </div>
         <div class="st-brand-bars" id="st-brand-bars"></div>
+      </div>
+
+      <!-- v8.21: 컬러별 보유 분포 -->
+      <div class="stats-card">
+        <div class="st-card-head">
+          <span class="section-title">🎨 컬러별 보유 분포</span>
+          <span class="st-head-sub" id="st-color-sub"></span>
+        </div>
+        <div class="st-color-bars" id="st-color-bars"></div>
+        <div class="st-foot-note" id="st-color-note"></div>
       </div>
 
       <!-- 대표 아이템 (사진 썸네일) -->
@@ -920,8 +995,8 @@
             <select id="c-status" class="form-input">
               <option value="보유중" selected>👗 보유 중인 아이템</option>
               <option value="위시리스트">💖 위시리스트 (사고 싶은 아이템)</option>
-              <option value="반품/환불">📦 반품 / 환불 완료 (사이즈·핏 후기 보존)</option>
-              <option value="방출/당근">🏷️ 당근마켓 판매 / 방출 완료</option>
+              <option value="반품/환불">📦 방출 (사이즈·핏 후기 보존)</option>
+              <option value="방출/당근">🏷️ 방출 (당근마켓 판매 완료)</option>
               <option value="휴지통">🗑️ 휴지통 (삭제 보관함)</option>
             </select>
           </div>
@@ -1134,7 +1209,7 @@
       </div>
 
       <div class="form-group">
-        <label>사이즈 착화감 & 반품/착용 후기 메모</label>
+        <label>사이즈 착화감 & 방출/착용 후기 메모</label>
         <input type="text" id="c-notes" placeholder="예: 240 신으니 발볼 딱 맞음. 두꺼운 양말엔 245 반업 추천" class="form-input">
       </div>
         </div>
@@ -1367,6 +1442,23 @@
         <button class="btn-submit" id="btn-wear-lookbook-modal" style="margin-top:0;">👕 오늘 이 코디 입었어요 (+1회)</button>
         <button class="btn-cancel" style="margin-top:0;" onclick="closeModal('modal-lookbook-detail')">닫기</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal: v8.21 코디 폴더 이동 -->
+  <div class="modal-overlay" id="modal-lb-move">
+    <div class="modal-card" style="max-width: 420px;">
+      <div class="detail-header">
+        <div style="font-weight:800; font-size:1.05rem;">📁 코디 폴더 이동</div>
+        <button class="modal-close-icon" onclick="closeModal('modal-lb-move')">✕</button>
+      </div>
+      <div id="lb-move-title" style="font-size:0.84rem; color:var(--text-sub); font-weight:700; margin: 8px 0 2px;"></div>
+      <div class="lb-move-list" id="lb-move-folder-list"></div>
+      <div class="lb-new-folder-box">
+        <input type="text" id="lb-move-new-name" class="form-input" placeholder="새 폴더 이름 (예: 일본여행)" maxlength="18">
+        <button type="button" class="btn-submit" style="width:auto; margin:0; padding:0 14px;" onclick="moveLookbookToNewFolder()">만들기</button>
+      </div>
+      <button class="btn-cancel" style="margin-top: 10px;" onclick="closeModal('modal-lb-move')">닫기</button>
     </div>
   </div>
 
@@ -1808,6 +1900,9 @@
       });
 
       normalizeAppData();
+      /* v8.21: 접힘/펼침 상태 복원 (기본은 접힘) */
+      filterPanelCollapsed = filterPanelStored();
+      applyFilterPanelState();
       itemSigs = null;
       stampDirtyItems();
       await saveAppStorage(true);
@@ -1935,7 +2030,7 @@
       try { renderOutfitReco(); } catch (e) { console.warn('[reco]', e); }
     }
 
-    // --- Status Segment Switching (보유중 vs 반품·방출 vs 위시 vs 휴지통) ---
+    // --- Status Segment Switching (보유중 vs 방출 vs 위시 vs 휴지통) ---
     function switchStatusView(status) {
       currentStatusFilter = status;
       document.getElementById('seg-active').classList.toggle('active', status === '보유중');
@@ -1955,6 +2050,48 @@
     function changeSortOrder(val) {
       currentSortOrder = val;
       renderCloset();
+    }
+
+    /* ===== v8.21 : 내 옷장 필터 접기/펼치기 ===== */
+    const FILTER_PANEL_KEY = 'yujacloset_filter_collapsed_v1';
+    let filterPanelCollapsed = true;
+
+    function filterPanelStored() {
+      try {
+        const v = localStorage.getItem(FILTER_PANEL_KEY);
+        return v === null ? true : v === '1';
+      } catch (e) { return true; }
+    }
+
+    function applyFilterPanelState() {
+      const panel = document.getElementById('closet-filter-panel');
+      const btn = document.getElementById('btn-filter-toggle');
+      if (panel) panel.classList.toggle('collapsed', filterPanelCollapsed);
+      if (btn) {
+        btn.innerText = filterPanelCollapsed ? '🔍 필터 펼치기' : '▲ 필터 접기';
+        btn.setAttribute('aria-expanded', filterPanelCollapsed ? 'false' : 'true');
+      }
+    }
+
+    function toggleFilterPanel() {
+      filterPanelCollapsed = !filterPanelCollapsed;
+      try { localStorage.setItem(FILTER_PANEL_KEY, filterPanelCollapsed ? '1' : '0'); } catch (e) {}
+      applyFilterPanelState();
+    }
+
+    function updateFilterSummary(count) {
+      const el = document.getElementById('filter-summary');
+      if (!el) return;
+      const applied = [];
+      if (currentStatusFilter && currentStatusFilter !== '보유중') applied.push(statusLabelOf(currentStatusFilter));
+      if (currentBrandFilter && currentBrandFilter !== '전체브랜드') applied.push(currentBrandFilter);
+      if (currentSeasonFilter && currentSeasonFilter !== '전체계절') applied.push(currentSeasonFilter);
+      if (currentCategoryFilter && currentCategoryFilter !== '전체') applied.push(currentCategoryFilter);
+      if (currentColorFilter && currentColorFilter !== '전체색상') applied.push(currentColorFilter);
+      if (currentSearchKeyword) applied.push('🔍 ' + currentSearchKeyword);
+      const base = statusLabelOf(currentStatusFilter || '보유중') + (applied.length ? '' : ' · 전체');
+      el.innerText = `${base} · ${count}벌` + (applied.length ? ` · 필터 ${applied.length}개` : '');
+      el.title = applied.join(' · ');
     }
 
     function toggleBrandExpand() {
@@ -1989,7 +2126,7 @@
       const activeItems = (appData.clothes || []).filter(c => (c.status || '보유중') === '보유중');
       const counts = {};
       activeItems.forEach(c => {
-        const b = (c.brand || '').trim() || '노브랜드/미기재';
+        const b = brandDisplayOf(c);
         counts[b] = (counts[b] || 0) + 1;
       });
       const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
@@ -2069,7 +2206,7 @@
       renderBrandChips();
 
       if (currentBrandFilter !== '전체브랜드') {
-        list = list.filter(c => ((c.brand || '').trim() || '노브랜드/미기재') === currentBrandFilter);
+        list = list.filter(c => brandDisplayOf(c) === currentBrandFilter);
       }
       if (currentSeasonFilter !== '전체계절') {
         // v8.8: 계절 복수 선택 — seasons 배열(없으면 옛 temp 자동 변환)에 해당 계절이 있으면 매칭
@@ -2107,6 +2244,7 @@
 
       const cntEl = document.getElementById('clothes-count');
       if (cntEl) cntEl.innerText = `(${list.length}벌)`;
+      updateFilterSummary(list.length);
       // v8.11: 서브 탭 '👕 내 옷장 (N벌)' — 필터와 무관한 총 보유 수량
       const subCntEl = document.getElementById('subtab-closet-cnt');
       if (subCntEl) subCntEl.innerText = `(${ownedClothes().length})`;
@@ -2121,7 +2259,7 @@
         } else if (currentStatusFilter === '휴지통') {
           grid.innerHTML = `<div class="empty-state" style="grid-column: span 2;">휴지통이 비어 있어요.<br>삭제한 옷은 여기에 임시 보관되며 언제든 복구할 수 있습니다.</div>`;
         } else {
-          grid.innerHTML = `<div class="empty-state" style="grid-column: span 2;">반품·방출 기록이 없어요.<br>사이즈가 안 맞아 반품한 신발·옷 후기를 등록해두면 다음에 주문할 때 큰 도움이 됩니다!</div>`;
+          grid.innerHTML = `<div class="empty-state" style="grid-column: span 2;">방출 기록이 없어요.<br>사이즈가 안 맞아 방출한 신발·옷 후기를 등록해두면 다음에 주문할 때 큰 도움이 됩니다!</div>`;
         }
         return;
       }
@@ -2137,7 +2275,7 @@
       }
 
       grid.innerHTML = trashBanner + list.map(c => {
-        const brandStr = (c.brand && c.brand !== '미기재') ? c.brand : '브랜드 미기재';
+        const brandStr = brandDisplayOf(c);
         const periodStr = c.purchasePeriod || '-';
         const sizeStr = (c.size && c.size !== '미기재') ? c.size : '-';
 
@@ -2150,7 +2288,7 @@
           badges += `<span class="badge season">${seasonTxt}</span>`;
         }
         if (c.status && c.status !== '보유중') {
-          badges += `<span class="badge returned">${c.status}</span>`;
+          badges += `<span class="badge returned">${statusLabelOf(c.status)}</span>`;
         }
 
         let cardActionBtn = '';
@@ -2215,7 +2353,7 @@
         if (btnRestoreTrash) btnRestoreTrash.style.display = 'none';
         if (btnDel) { btnDel.innerText = '🗑️ 휴지통으로 이동'; btnDel.style.background = '#ef4444'; }
       } else if (item.status && item.status !== '보유중') {
-        if (statusBadge) { statusBadge.innerText = item.status; statusBadge.className = 'badge returned'; }
+        if (statusBadge) { statusBadge.innerText = statusLabelOf(item.status); statusBadge.className = 'badge returned'; }
         if (btnWear) btnWear.style.display = 'none';
         if (btnBuyWish) btnBuyWish.style.display = 'none';
         if (btnRestoreTrash) btnRestoreTrash.style.display = 'none';
@@ -2229,7 +2367,7 @@
       }
 
       setSafeText('dt-name', item.name);
-      setSafeText('dt-brand', (item.brand && item.brand !== '미기재') ? item.brand : '미기재');
+      setSafeText('dt-brand', brandDisplayOf(item));
       setSafeText('dt-price', priceShort(item));   // v8.14: 원화 + 외화 함께 표기
       setSafeText('dt-period', item.purchasePeriod || '미기재');
       setSafeText('dt-size', (item.size && item.size !== '미기재') ? item.size : '미기재');
@@ -3437,6 +3575,158 @@
       }
     }
 
+    /* ===== v8.21 : 코디 룩북 폴더(그룹) ===== */
+    const LB_BASE_FOLDER = '기본';
+    let currentLookbookFolder = null;   // null = 폴더 목록, 문자열 = 그 폴더 안
+    let movingLookbookId = null;
+
+    function lookbookFolderOf(lb) {
+      const f = String((lb && lb.folder) || '').trim();
+      return f || LB_BASE_FOLDER;
+    }
+
+    function lookbookFolderNames() {
+      const out = [LB_BASE_FOLDER];
+      const add = f => { const n = String(f || '').trim(); if (n && out.indexOf(n) < 0) out.push(n); };
+      (Array.isArray(appData.lookbookFolders) ? appData.lookbookFolders : []).forEach(add);
+      (appData.lookbooks || []).forEach(lb => add(lookbookFolderOf(lb)));
+      return out;
+    }
+
+    function lookbookFolderCount(name) {
+      return (appData.lookbooks || []).filter(lb => lookbookFolderOf(lb) === name).length;
+    }
+
+    function lookbookFolderEmoji(name) {
+      const n = String(name || '');
+      if (n === LB_BASE_FOLDER) return '📁';
+      if (/여행|일본|오사카|도쿄|해외|휴가|출장/.test(n)) return '✈️';
+      if (/출근|오피스|직장|비즈니스|미팅/.test(n)) return '💼';
+      if (/데이트|소개팅|기념일/.test(n)) return '💕';
+      if (/결혼|하객|웨딩|파티/.test(n)) return '🎀';
+      if (/운동|헬스|러닝|요가/.test(n)) return '🏃';
+      if (/겨울|패딩|방한/.test(n)) return '❄️';
+      if (/여름|휴양|바다/.test(n)) return '🏖️';
+      return '📁';
+    }
+
+    function ensureLookbookFolder(name) {
+      const n = String(name || '').trim();
+      if (!n || n === LB_BASE_FOLDER) return LB_BASE_FOLDER;
+      if (!Array.isArray(appData.lookbookFolders)) appData.lookbookFolders = [];
+      if (appData.lookbookFolders.indexOf(n) < 0) appData.lookbookFolders.push(n);
+      return n;
+    }
+
+    function openLookbookFolder(name) {
+      currentLookbookFolder = String(name || '').trim() || LB_BASE_FOLDER;
+      renderLookbooks();
+      const bar = document.getElementById('lookbook-folder-bar');
+      if (bar && bar.scrollIntoView) { try { bar.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {} }
+    }
+
+    function closeLookbookFolder() {
+      currentLookbookFolder = null;
+      renderLookbooks();
+    }
+
+    function toggleNewFolderBox() {
+      const box = document.getElementById('lb-new-folder-box');
+      if (!box) return;
+      const show = box.style.display === 'none';
+      box.style.display = show ? 'flex' : 'none';
+      if (show) {
+        const inp = document.getElementById('lb-new-folder-name');
+        if (inp) { inp.value = ''; try { inp.focus(); } catch (e) {} }
+      }
+    }
+
+    async function createLookbookFolder() {
+      const inp = document.getElementById('lb-new-folder-name');
+      const name = inp ? inp.value.trim() : '';
+      if (!name) { alert('폴더 이름을 입력해 주세요.'); return; }
+      if (name === LB_BASE_FOLDER) { alert('이미 있는 폴더예요.'); return; }
+      ensureLookbookFolder(name);
+      await saveAppStorage();
+      renderLookbooks();
+      showToast('📁 [' + name + '] 폴더를 만들었어요');
+    }
+
+    async function deleteLookbookFolder(name) {
+      if (!name || name === LB_BASE_FOLDER) return;
+      const n = lookbookFolderCount(name);
+      if (!confirm(`[${name}] 폴더를 삭제할까요?\n안에 있는 코디 ${n}개는 지워지지 않고 [기본] 폴더로 옮겨집니다.`)) return;
+      (appData.lookbooks || []).forEach(lb => {
+        if (lookbookFolderOf(lb) === name) { lb.folder = ''; lb.updatedAt = Date.now(); }
+      });
+      appData.lookbookFolders = (appData.lookbookFolders || []).filter(f => f !== name);
+      if (currentLookbookFolder === name) currentLookbookFolder = null;
+      await saveAppStorage();
+      renderLookbooks();
+    }
+
+    function renderLookbookFolderSelect() {
+      const sel = document.getElementById('lookbook-folder-select');
+      if (!sel) return;
+      const names = lookbookFolderNames();
+      const prev = sel.value;
+      sel.innerHTML = names.map(f => `<option value="${escHtml(f)}">${f === LB_BASE_FOLDER ? '📁 기본 (미분류)' : lookbookFolderEmoji(f) + ' ' + escHtml(f)}</option>`).join('')
+        + `<option value="__new__">➕ 새 폴더 만들기…</option>`;
+      if (prev && (names.indexOf(prev) >= 0 || prev === '__new__')) sel.value = prev;
+      else sel.value = names.indexOf(currentLookbookFolder) >= 0 ? currentLookbookFolder : LB_BASE_FOLDER;
+      onLookbookFolderSelectChange();
+    }
+
+    function onLookbookFolderSelectChange() {
+      const sel = document.getElementById('lookbook-folder-select');
+      const inp = document.getElementById('lookbook-folder-new');
+      if (!sel || !inp) return;
+      const isNew = sel.value === '__new__';
+      inp.style.display = isNew ? 'block' : 'none';
+      if (!isNew) inp.value = '';
+    }
+
+    function openMoveLookbook(id) {
+      const lb = (appData.lookbooks || []).find(l => String(l.id) === String(id));
+      if (!lb) return;
+      movingLookbookId = lb.id;
+      const title = document.getElementById('lb-move-title');
+      if (title) title.innerText = '[' + lb.name + '] 코디를 어느 폴더로 옮길까요?';
+      const box = document.getElementById('lb-move-folder-list');
+      if (box) {
+        const cur = lookbookFolderOf(lb);
+        box.innerHTML = lookbookFolderNames().map(f => {
+          const on = f === cur;
+          return `<button type="button" class="lb-move-btn${on ? ' is-current' : ''}" ${on ? 'disabled' : ''} onclick="moveLookbookToFolder(${lb.id}, '${jsAttr(f)}')">`
+            + `<span>${f === LB_BASE_FOLDER ? '📁 기본 (미분류)' : lookbookFolderEmoji(f) + ' ' + escHtml(f)}</span>`
+            + `<b>${lookbookFolderCount(f)}개</b>${on ? '<span class="lb-move-current">지금 여기</span>' : ''}</button>`;
+        }).join('');
+      }
+      const inp = document.getElementById('lb-move-new-name');
+      if (inp) inp.value = '';
+      document.getElementById('modal-lb-move').classList.add('active');
+    }
+
+    async function moveLookbookToFolder(id, folder) {
+      const lb = (appData.lookbooks || []).find(l => String(l.id) === String(id));
+      if (!lb) return;
+      const target = ensureLookbookFolder(folder);
+      lb.folder = target === LB_BASE_FOLDER ? '' : target;
+      lb.updatedAt = Date.now();
+      await saveAppStorage();
+      closeModal('modal-lb-move');
+      renderLookbooks();
+      showToast('📁 [' + lb.name + '] → ' + target + ' 폴더로 옮겼어요');
+    }
+
+    async function moveLookbookToNewFolder() {
+      const inp = document.getElementById('lb-move-new-name');
+      const name = inp ? inp.value.trim() : '';
+      if (!name) { alert('새 폴더 이름을 입력해 주세요.'); return; }
+      if (name === LB_BASE_FOLDER) { alert('이미 있는 폴더예요.'); return; }
+      await moveLookbookToFolder(movingLookbookId, name);
+    }
+
     async function saveLookbook() {
       const name = document.getElementById('lookbook-name').value.trim() || '나만의 데일리 코디';
       const items = [activeSlots.outer, activeSlots.top, activeSlots.bottom, activeSlots.shoes].filter(Boolean);
@@ -3444,6 +3734,15 @@
       if (items.length < 2) {
         return alert('최소 2개 이상의 아이템을 선택하여 코디를 완성해 주세요!');
       }
+
+      const folderSel = document.getElementById('lookbook-folder-select');
+      let folderName = folderSel ? folderSel.value : LB_BASE_FOLDER;
+      if (folderName === '__new__') {
+        const inp = document.getElementById('lookbook-folder-new');
+        folderName = inp ? inp.value.trim() : '';
+        if (!folderName) return alert('새 폴더 이름을 입력해 주세요!');
+      }
+      folderName = ensureLookbookFolder(folderName);
 
       const itemNames = items.map(id => {
         const found = appData.clothes.find(c => c.id === id);
@@ -3455,11 +3754,14 @@
         name,
         desc: itemNames.join(' + '),
         itemIds: items,
+        folder: folderName === LB_BASE_FOLDER ? '' : folderName,
         updatedAt: Date.now()
       });
 
       await saveAppStorage();
+      if (currentLookbookFolder) currentLookbookFolder = folderName;
       renderLookbooks();
+      showToast('👗 [' + name + '] 코디를 ' + folderName + ' 폴더에 저장했어요');
 
       // Reset Creator
       activeSlots = { outer: null, top: null, bottom: null, shoes: null };
@@ -3474,15 +3776,64 @@
 
     function renderLookbooks() {
       const list = appData.lookbooks || [];
-      document.getElementById('lookbook-count').innerText = `(${list.length})`;
-      const container = document.getElementById('lookbook-list');
+      const cntEl = document.getElementById('lookbook-count');
+      if (cntEl) cntEl.innerText = `(${list.length})`;
+      renderLookbookFolderSelect();
 
-      if (list.length === 0) {
-        container.innerHTML = `<div class="empty-state">저장된 코디가 없어요.<br>위에서 아우터/상의/하의/신발을 골라 첫 코디를 만들어보세요!</div>`;
+      const folderGrid = document.getElementById('lookbook-folders');
+      const container = document.getElementById('lookbook-list');
+      const bar = document.getElementById('lookbook-folder-bar');
+      const crumb = document.getElementById('lookbook-folder-crumb');
+      if (!folderGrid || !container) return;
+
+      /* ---------- 폴더 목록 ---------- */
+      if (!currentLookbookFolder) {
+        if (bar) bar.style.display = 'none';
+        container.style.display = 'none';
+        folderGrid.style.display = 'flex';
+        let html = `<div class="lb-folder-card lb-folder-new" onclick="toggleNewFolderBox()">
+            <div class="lb-folder-ico">➕</div>
+            <div class="lb-folder-body">
+              <div class="lb-folder-name">새 폴더 만들기</div>
+              <div class="lb-folder-meta">일본여행처럼 갈 곳·상황별로 코디를 모아두세요</div>
+            </div>
+          </div>
+          <div class="lb-new-folder-box" id="lb-new-folder-box" style="display:none;">
+            <input type="text" id="lb-new-folder-name" class="form-input" placeholder="폴더 이름 (예: 일본여행)" maxlength="18">
+            <button type="button" class="btn-submit" style="width:auto; margin:0; padding:0 14px;" onclick="createLookbookFolder()">만들기</button>
+          </div>`;
+        html += lookbookFolderNames().map(f => {
+          const n = lookbookFolderCount(f);
+          const icon = lookbookFolderEmoji(f);
+          const isBase = f === LB_BASE_FOLDER;
+          const del = isBase ? '' : `<button type="button" class="lb-folder-del" onclick="event.stopPropagation(); deleteLookbookFolder('${jsAttr(f)}')" title="폴더 삭제">✕</button>`;
+          return `<div class="lb-folder-card" onclick="openLookbookFolder('${jsAttr(f)}')">
+            ${del}
+            <div class="lb-folder-ico">${icon}</div>
+            <div class="lb-folder-body">
+              <div class="lb-folder-name">${escHtml(f)}${isBase ? ' <span style="font-weight:600;color:#94a3b8;font-size:0.75rem;">(미분류)</span>' : ''}</div>
+              <div class="lb-folder-meta">코디 ${n}개${n ? '' : ' · 비어 있음'}</div>
+            </div>
+            <div class="lb-folder-cnt">${n}</div>
+          </div>`;
+        }).join('');
+        folderGrid.innerHTML = html;
         return;
       }
 
-      container.innerHTML = list.map(lb => {
+      /* ---------- 폴더 안 코디 목록 ---------- */
+      if (bar) bar.style.display = 'flex';
+      folderGrid.style.display = 'none';
+      container.style.display = 'flex';
+      const inFolder = list.filter(lb => lookbookFolderOf(lb) === currentLookbookFolder);
+      if (crumb) crumb.innerText = `${lookbookFolderEmoji(currentLookbookFolder)} ${currentLookbookFolder} (${inFolder.length})`;
+
+      if (inFolder.length === 0) {
+        container.innerHTML = `<div class="empty-state">이 폴더에 담긴 코디가 없어요.<br>스마트 코디 조합기에서 저장할 때 폴더를 고르거나,<br>다른 폴더에서 [📁 폴더 이동]으로 가져올 수 있어요.</div>`;
+        return;
+      }
+
+      container.innerHTML = inFolder.map(lb => {
         const thumbs = (lb.itemIds || []).map(id => {
           const item = appData.clothes.find(c => c.id === id);
           if (!item) return '';
@@ -3498,6 +3849,10 @@
             <div style="margin-top: 10px; display: flex; gap: 8px;">
               <button class="btn-submit" style="margin-top:0; padding:8px 12px; font-size:0.8rem; flex:1;" onclick="openLookbookCollageModal(${lb.id})">👗 풀 착장 매칭 보기</button>
               <button class="btn-submit" style="margin-top:0; padding:8px 12px; font-size:0.8rem; background:var(--success); flex:1;" onclick="wearLookbookToday(${lb.id})">👕 오늘 착용</button>
+            </div>
+            <div style="margin-top: 8px; display: flex; gap: 8px; align-items: center;">
+              <span style="font-size:0.75rem; color:var(--text-sub); font-weight:700; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">📁 ${escHtml(lookbookFolderOf(lb))}</span>
+              <button class="btn-cancel" style="margin:0 0 0 auto; width:auto; padding:6px 12px; font-size:0.76rem; flex:0 0 auto;" onclick="openMoveLookbook(${lb.id})">폴더 이동</button>
             </div>
           </div>
         `;
@@ -3585,6 +3940,36 @@
     const ST_CAT_COLORS = { '아우터': '#6366f1', '상의': '#22c55e', '하의': '#0ea5e9', '원피스': '#ec4899', '신발': '#f59e0b', '잡화': '#8b5cf6' };
     const ST_SEASON_COLORS = { '봄': '#f472b6', '여름': '#fbbf24', '가을': '#fb923c', '겨울': '#38bdf8' };
     const ST_BRAND_COLORS = ['#4f46e5', '#0ea5e9', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6', '#f43f5e'];
+    /* ===== v8.21 : 컬러 통계 — 색상 이름 그대로 집계하고, 비어 있으면 '미입력' ===== */
+    const ST_COLOR_GROUPS = [
+      { name: '블랙', dot: '#111827', words: ['블랙', '검정', '검은'] },
+      { name: '화이트', dot: '#ffffff', words: ['화이트', '흰색', '하양', '아이보리', '오프화이트', '실버'] },
+      { name: '그레이', dot: '#94a3b8', words: ['그레이', '회색', '차콜'] },
+      { name: '네이비', dot: '#1e3a8a', words: ['네이비', '데님', '인디고', '남색'] },
+      { name: '베이지', dot: '#e7d5b5', words: ['베이지', '오트밀', '크림', '샌드'] },
+      { name: '브라운', dot: '#8b5e34', words: ['브라운', '카멜', '밤색', '초코'] },
+      { name: '카키', dot: '#6b7f4b', words: ['카키', '올리브'] },
+      { name: '블루', dot: '#3b82f6', words: ['블루', '하늘색', '하늘', '소라', '청색', '파랑'] },
+      { name: '그린', dot: '#22c55e', words: ['그린', '연두', '민트', '에메랄드', '초록'] },
+      { name: '핑크', dot: '#ec4899', words: ['핑크', '분홍', '로즈'] },
+      { name: '퍼플', dot: '#8b5cf6', words: ['퍼플', '보라', '라벤더'] },
+      { name: '레드', dot: '#ef4444', words: ['레드', '빨강', '버건디', '와인'] },
+      { name: '멀티', dot: '#a855f7', words: ['다채색', '멀티', '혼합'] }
+    ];
+
+    function stColorGroupOf(raw) {
+      const s = String(raw == null ? '' : raw).replace(/[^\uAC00-\uD7A3a-zA-Z0-9\/·]/g, '').trim();
+      if (!s) return { key: '미입력', name: '미입력', dot: '#cbd5e1', empty: true };
+      const low = s.toLowerCase();
+      for (let i = 0; i < ST_COLOR_GROUPS.length; i++) {
+        const g = ST_COLOR_GROUPS[i];
+        for (let j = 0; j < g.words.length; j++) {
+          if (low.indexOf(g.words[j].toLowerCase()) >= 0) return { key: g.name, name: g.name, dot: g.dot, empty: false };
+        }
+      }
+      /* 사전에 없는 색상명은 추측해서 바꾸지 않고 입력한 이름 그대로 보여준다 */
+      return { key: s, name: s, dot: '#cbd5e1', empty: false };
+    }
 
     function stNum(n) { return String(Math.round(Number(n) || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
     function stWon(n) { return '₩' + stNum(n); }
@@ -3669,7 +4054,7 @@
       /* ---------- 3-2. 브랜드 점유율 TOP 8 ---------- */
       const brandMap = {};
       active.forEach(c => {
-        const b = String(c.brand || '').trim() || '브랜드 미기재';
+        const b = brandDisplayOf(c);
         brandMap[b] = (brandMap[b] || 0) + 1;
       });
       const brandRows = Object.keys(brandMap).map(b => ({ b: b, n: brandMap[b] }))
@@ -3684,6 +4069,30 @@
           + `<span class="st-brand-val">${r.n}벌 · ${pct}%</span></div>`
           + `<div class="st-bar-track"><div class="st-bar-fill" style="width:${w}%;background:${ST_BRAND_COLORS[i % ST_BRAND_COLORS.length]}"></div></div></div>`;
       }).join('') || '<div class="empty-state">아직 브랜드 정보가 없어요.</div>');
+
+      /* ---------- 3-3. 컬러별 보유 분포 (v8.21) ---------- */
+      const colorMap = {};
+      active.forEach(c => {
+        const g = stColorGroupOf(c.color);
+        if (!colorMap[g.key]) colorMap[g.key] = { key: g.key, name: g.name, dot: g.dot, n: 0, empty: !!g.empty };
+        colorMap[g.key].n++;
+      });
+      const colorRows = Object.keys(colorMap).map(k => colorMap[k])
+        .sort((a, b) => (a.empty ? 1 : 0) - (b.empty ? 1 : 0) || b.n - a.n || a.name.localeCompare(b.name));
+      const colorMax = colorRows.length ? Math.max.apply(null, colorRows.map(r => r.n)) : 1;
+      const noColor = active.filter(c => !String(c.color || '').trim()).length;
+      setTxt('st-color-sub', colorRows.length ? colorRows.length + '가지 색상' : '');
+      setHtml('st-color-bars', colorRows.map(r => {
+        const w = Math.max(Math.round((r.n / colorMax) * 100), 4);
+        return `<div class="st-color-row${r.empty ? ' is-empty' : ''}">`
+          + `<i class="st-color-dot" style="background:${r.dot}"></i>`
+          + `<span class="st-color-name">${escHtml(r.name)}</span>`
+          + `<div class="st-color-track"><div class="st-color-fill" style="width:${w}%;background:${r.dot}"></div></div>`
+          + `<span class="st-color-val">${r.n}벌 · ${pctOf(r.n)}%</span></div>`;
+      }).join('') || '<div class="empty-state">보유한 옷이 없어 색상 분포를 계산할 수 없어요.</div>');
+      setTxt('st-color-note', noColor
+        ? `색상이 비어 있는 ${noColor}벌은 색을 추측하지 않고 '미입력'으로 따로 집계했어요.`
+        : '색상은 등록할 때 고른 값 그대로 집계했어요. 사전에 없는 색상명은 입력한 이름 그대로 보여줘요.');
 
       /* ---------- 4-1. 대표 아이템 (사진 썸네일) ---------- */
       const wornTop = active.filter(c => Number(c.wearCount || 0) > 0)
@@ -3853,6 +4262,23 @@
     function ownedClothes() {
       return (appData && appData.clothes ? appData.clothes : []).filter(c => (c.status || '보유중') === '보유중');
     }
+    /* ===== v8.21 : 표시용 브랜드/상태 라벨 =====
+       - 브랜드가 비어 있거나 '미기재'로 저장된 옷은 화면에서 '보세'로 보여준다.
+         (저장된 brand 값 자체는 건드리지 않는다)
+       - 상태 라벨은 '방출'로 통일하고, 저장 키(반품/환불·방출/당근)는 그대로 둔다. */
+    function brandDisplayOf(c) {
+      const b = String((c && c.brand) || '').trim();
+      if (!b || b === '미기재' || b === '노브랜드/미기재' || b === '브랜드 미기재' || b === '보세') return '보세';
+      return b;
+    }
+    function statusLabelOf(s) {
+      const v = String(s == null ? '' : s);
+      if (v === '반품/환불' || v === '방출/당근' || v === '반품' || v === '반품/방출' || v === '방출') return '방출';
+      return v || '보유중';
+    }
+    function jsAttr(s) {
+      return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    }
     function itemById(id) {
       return (appData && appData.clothes ? appData.clothes : []).find(c => String(c.id) === String(id)) || null;
     }
@@ -3990,10 +4416,10 @@
       let html = '';
       for (let i = 0; i < n; i++) {
         const c = hits[i].item;
-        html += `<div class="dupe-chip" onclick="openClothesDetail(${c.id})" title="${escHtml(c.name)} · ${escHtml(c.brand || '브랜드 미기재')}">
+        html += `<div class="dupe-chip" onclick="openClothesDetail(${c.id})" title="${escHtml(c.name)} · ${escHtml(brandDisplayOf(c))}">
           <div class="dupe-chip-thumb">${itemThumb(c)}</div>
           <div class="dupe-chip-name">${escHtml(c.name)}</div>
-          <div class="dupe-chip-sub">${escHtml((c.brand && c.brand !== '미기재') ? c.brand : '브랜드 미기재')}${c.size ? ' · ' + escHtml(c.size) : ''}</div>
+          <div class="dupe-chip-sub">${escHtml(brandDisplayOf(c))}${c.size ? ' · ' + escHtml(c.size) : ''}</div>
         </div>`;
       }
       if (hits.length > n) html += `<div class="dupe-chip dupe-chip-more" onclick="openDupeModal()">+${hits.length - n}벌<br>더 보기</div>`;
@@ -4094,7 +4520,7 @@
           <div class="dupe-compare-thumb">${itemThumb(c)}</div>
           <div class="dupe-compare-main">
             <div class="dupe-compare-name">${escHtml(c.name)}</div>
-            <div class="dupe-compare-meta">${escHtml((c.brand && c.brand !== '미기재') ? c.brand : '브랜드 미기재')} · ${escHtml(c.color || '-')}${c.size ? ' · ' + escHtml(c.size) : ''}${(c.price || foreignOf(c)) ? ' · ' + priceShort(c) : ''}</div>
+            <div class="dupe-compare-meta">${escHtml(brandDisplayOf(c))} · ${escHtml(c.color || '-')}${c.size ? ' · ' + escHtml(c.size) : ''}${(c.price || foreignOf(c)) ? ' · ' + priceShort(c) : ''}</div>
           </div>
           <div class="dupe-compare-side">
             <span class="dupe-badge">${h.why.join(' · ')}</span>
@@ -4741,6 +5167,13 @@
         if (Number(lb.updatedAt || 0) > Number(mine.updatedAt || 0)) lbMap.set(key, lb);
       });
       L.lookbooks = Array.from(lbMap.values()).filter(lb => !delLb.has(String(lb.id)));
+      /* v8.21: 코디 폴더 목록도 합집합으로 유지한다(빈 폴더가 동기화에서 사라지지 않게) */
+      const folderSet = [];
+      [].concat(L.lookbookFolders || [], R.lookbookFolders || []).forEach(f => {
+        const n = String(f || '').trim();
+        if (n && folderSet.indexOf(n) < 0) folderSet.push(n);
+      });
+      L.lookbookFolders = folderSet;
 
       // OOTD 병합 (날짜별, 더 최신 ts 우선)
       const cal = Object.assign({}, R.ootdCalendar || {}, L.ootdCalendar || {});
