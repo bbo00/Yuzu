@@ -1465,6 +1465,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     data: function () { return appData; },
     cfg: function () { return syncCfg; },
     sync: function () { return syncNow({ silent: true }); },
+    push: function () { return syncPush(); },
     counts: syncDocCounts
   };
 })();
