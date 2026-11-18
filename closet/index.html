@@ -4979,8 +4979,8 @@
       const merged = await syncNow({ silent: true });
       renderSyncStatus();
       if (merged) {
-        const st = merged.stats;
-        showToast(`연결 완료 · 클라우드에서 ${st.added}벌 추가, ${st.updated}벌 갱신 (현재 ${ownedClothes().length}벌)`);
+        /* v8.19: 숫자가 헷갈리지 않게 '지금 이 기기 옷장' 기준으로 알린다 */
+        showToast(`연결 완료 · 이 기기 옷장 보유 ${ownedClothes().length}벌 · 전체 ${appData.clothes.length}벌`);
       } else {
         showToast('동기화 실패: ' + (syncCfg.lastError || '네트워크 오류'));
       }
