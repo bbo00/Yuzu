@@ -376,6 +376,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .szchips{display:flex;flex-wrap:wrap;gap:4px;margin-top:1px}
 .szchip{font-size:11px;line-height:1;padding:4px 7px;border-radius:8px;background:var(--card3);border:1px solid var(--line2);color:#374151;letter-spacing:-.1px;white-space:nowrap;font-weight:600}
 .szchip b{color:var(--accent2);margin-left:3px;font-weight:800}
+.psize{font-size:10.5px;color:var(--muted);letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ptags{display:flex;flex-wrap:wrap;gap:4px;margin-top:1px}
 .tagwarn{font-size:10.5px;padding:2px 6px;border-radius:999px;color:#A85A00;border:1px solid #F7C48A;background:var(--accentSoft);letter-spacing:-.2px;white-space:nowrap}
 .tagrec{font-size:10.5px;padding:2px 6px;border-radius:999px;color:#1F4FA8;border:1px solid #C7D8F7;background:var(--infoSoft);letter-spacing:-.2px;white-space:nowrap}
@@ -1134,6 +1135,13 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     if (unk > 0 && q > 0) tags += '<span class="tagwarn">가격 미입력' + (unk < q ? ' ' + unk + '개' : '') + '</span>';
     if (q > 0 && q <= 2) tags += '<span class="taglow">품절 임박</span>';
     var multiSize = hasVar(it) && heldSizes(it).length > 1;
+    /* 사이즈별 단가가 서로 다르면 펼친 카드에서 바로 보여준다 */
+    var priceLine = '';
+    if (hasVar(it)) {
+      var prs = heldSizes(it).slice().sort(bySizeOrder).filter(function (v) { return v.cost != null && Number(v.cost) > 0; })
+        .map(function (v) { return esc(v.size) + ' ' + won(v.cost); });
+      if (prs.length > 1) priceLine = '<div class="psize">' + prs.join(' · ') + '</div>';
+    }
     var act = multiSize
       ? '<button class="mini" data-act="detail" data-id="' + esc(it.id) + '">사이즈</button>'
       : '<div class="stepper"><button data-act="minus" data-id="' + esc(it.id) + '" aria-label="수량 줄이기">−</button>' +
@@ -1147,6 +1155,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       '<span class="badge ' + st + '">' + st + '</span></div>' +
       '<div class="pmeta">' + esc(meta.join(' · ')) + '</div>' +
       (q > 0 && heldSizes(it).length ? '<div class="sizerow"><span class="szlab">보유 사이즈</span>' + sizeChips(it) + '</div>' : '') +
+      priceLine +
       '<div class="pmoney"><span>' + money + '</span>' + tags + '</div>' +
       (q > 0 ? '<div class="pfit' + (pr == null ? ' np' : '') + '">' +
         (pr == null
