@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>마이 스마트 옷장 (My Closet 8.23)</title>
+  <title>마이 스마트 옷장 (My Closet 8.24)</title>
   <!-- ===== v8.18 : iOS 사파리 '홈 화면에 추가' 시 주소창 없는 앱 모드(standalone) ===== -->
   <meta name="theme-color" content="#FFFFFF">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -820,6 +820,19 @@
       .icon-btn .ico { display: none; }
     }
 
+    /* ---------- v8.24 : 날씨 갱신 표시 · 코디(룩북) 순서 편집 ---------- */
+    .weather-mini-bar .wm-reload { flex-shrink: 0; width: 24px; height: 24px; padding: 0; border-radius: 8px; border: 1px solid #E2E2E6; background: #fff; color: #111111; font-size: 0.82rem; line-height: 1; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+    .weather-mini-bar .wm-reload:active { background: #F4F4F6; }
+    .weather-updated-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 0 10px; }
+    .weather-updated { flex: 1 1 auto; min-width: 0; font-size: 0.7rem; font-weight: 700; color: #94949B; }
+    .weather-reload-btn { flex-shrink: 0; border: 1px solid var(--hair); background: #fff; color: var(--ink); border-radius: 999px; padding: 4px 10px; font-size: 0.7rem; font-weight: 700; cursor: pointer; }
+    .weather-reload-btn:active { background: var(--tint); }
+    .lb-order-bar { display: flex; align-items: center; gap: 6px; margin: 0 2px 12px; flex-wrap: wrap; }
+    .lb-move-bar { display: none; align-items: center; justify-content: flex-end; gap: 6px; margin: -2px 0 10px; }
+    #tab-lookbook.lookbook-editing .lb-move-bar { display: flex; }
+    #tab-lookbook.lookbook-editing .lookbook-card { border-style: dashed; border-color: #D0D0D6; }
+    #tab-lookbook.lookbook-editing .lookbook-card .del-btn { display: none; }
+
     /* ---------- v8.22 : 통계 카드 순서 편집 ---------- */
     .st-order-bar { display: flex; align-items: center; gap: 6px; margin: 0 2px 12px; flex-wrap: wrap; }
     .st-order-btn { display: inline-flex; align-items: center; gap: 4px; background: #fff; border: 1px solid var(--hair); color: var(--ink); border-radius: 999px; padding: 6px 12px; font-size: 0.76rem; font-weight: 700; cursor: pointer; }
@@ -893,7 +906,7 @@
 
   <!-- Top Header -->
   <header>
-    <h1><svg class="brand-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.1 2.5h2l.9 2.4.9-2.4h2l-1.6 4.1 1.8 4.1 3 8.5c.28.8-.32 1.67-1.18 1.67H6.08c-.86 0-1.46-.87-1.18-1.67l3-8.5 1.8-4.1z"/></svg> 마이 스마트 옷장 <span class="ver-badge">v8.23</span></h1>
+    <h1><svg class="brand-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.1 2.5h2l.9 2.4.9-2.4h2l-1.6 4.1 1.8 4.1 3 8.5c.28.8-.32 1.67-1.18 1.67H6.08c-.86 0-1.46-.87-1.18-1.67l3-8.5 1.8-4.1z"/></svg> 마이 스마트 옷장 <span class="ver-badge">v8.24</span></h1>
     <div class="header-btns">
       <button class="icon-btn" onclick="exportBackup()" title="현재 옷장 상태를 JSON 파일로 다운로드합니다"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5v9.5"/><path d="M8.6 9.6 12 13l3.4-3.4"/><path d="M4.5 15v3.2A1.8 1.8 0 0 0 6.3 20h11.4a1.8 1.8 0 0 0 1.8-1.8V15"/></svg> 백업 저장</button>
       <button class="icon-btn" onclick="document.getElementById('backup-file-input').click()" title="모바일/PC 백업 파일을 불러와 동기화합니다"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 13.5V4"/><path d="M8.6 7.4 12 4l3.4 3.4"/><path d="M4.5 15v3.2A1.8 1.8 0 0 0 6.3 20h11.4a1.8 1.8 0 0 0 1.8-1.8V15"/></svg> 백업 불러오기</button>
@@ -918,8 +931,9 @@
       <div id="closet-view-closet">
         <div class="weather-mini-bar" id="weather-mini-bar">
           <span class="wm-loc" id="wm-loc">📍 내 옷장</span>
-          <span class="wm-temp" id="mini-temp">11℃</span>
-          <span class="wm-cond" id="mini-cond">☀️ 맑음 · 최저 4℃ / 최고 16℃</span>
+          <span class="wm-temp" id="mini-temp">—</span>
+          <span class="wm-cond" id="mini-cond">날씨 불러오는 중…</span>
+          <button type="button" class="wm-reload" id="mini-weather-reload" onclick="refreshWeather(true)" title="날씨 새로고침" aria-label="날씨 새로고침">↻</button>
           <button type="button" class="wm-more" onclick="switchClosetSubtab('weather')" title="날씨 · 오늘 코디 보기">코디 ›</button>
         </div>
 
@@ -1045,14 +1059,18 @@
           <div class="weather-header">
             <div class="weather-temp">
               <span id="weather-loc">📍 내 옷장</span>
-              <span id="current-temp-display">11℃</span>
+              <span id="current-temp-display">—</span>
             </div>
-            <div class="weather-badge" id="weather-minmax-display">☀️ 맑음 · 최저 4℃ / 최고 16℃</div>
+            <div class="weather-badge" id="weather-minmax-display">날씨 불러오는 중…</div>
+          </div>
+          <div class="weather-updated-row">
+            <span class="weather-updated" id="weather-updated">🕘 날씨 불러오는 중…</span>
+            <button type="button" class="weather-reload-btn" id="weather-reload-btn" onclick="refreshWeather(true)">↻ 새로고침</button>
           </div>
           <div class="coldfeel-row" id="coldfeel-row"></div>
           <div class="recommend-box">
             <div class="recommend-title">✨ 실시간 기온 맞춤 착장 추천</div>
-            <div class="recommend-text" id="recommend-text">실시간 기온(11℃)에 맞춘 옷장 추천 착장입니다.</div>
+            <div class="recommend-text" id="recommend-text">날씨를 불러오면 오늘 기온에 맞는 착장을 골라 드려요.</div>
           </div>
           <div class="reco-wrap" id="outfit-reco-box"></div>
         </div>
@@ -1113,6 +1131,12 @@
 
       <div class="section-header">
         <div class="section-title">내 코디 룩북 <span id="lookbook-count" style="color: var(--primary); font-size: 0.9rem;">(0)</span></div>
+      </div>
+
+      <!-- v8.24: 코디 순서 편집 (통계 탭 카드 순서 편집과 같은 방식) -->
+      <div class="lb-order-bar">
+        <button type="button" class="st-order-btn" id="btn-lb-order" onclick="toggleLookbookOrderEdit()">↕️ 순서 편집</button>
+        <span class="st-order-hint" id="lb-order-hint"></span>
       </div>
 
       <!-- v8.21: 폴더 카드 목록 → 폴더 안 코디 목록 -->
@@ -2315,6 +2339,8 @@
       renderAll();
       try { statOrderInit(); } catch (e) { console.warn('[stat order]', e); }
       try { startSyncOnBoot(); } catch (e) { console.warn('[sync boot]', e); }
+      /* v8.24: 부팅 직후 실시간 날씨 1회 갱신 (실패하면 폴백 값 유지) */
+      try { maybeRefreshWeather(true); } catch (e) { console.warn('[weather boot]', e); }
     }
 
     async function saveAppStorage(skipSync) {
@@ -2360,7 +2386,7 @@
       mark(document.getElementById('subtab-btn-closet'), !isWeather);
       mark(document.getElementById('subtab-btn-weather'), isWeather);
       try {
-        if (isWeather) { renderWeather(); } else { renderCloset(); }
+        if (isWeather) { renderWeather(); maybeRefreshWeather(); } else { renderCloset(); }
       } catch (e) { console.warn('[subtab]', e); }
       if (!isWeather && typeof window !== 'undefined' && typeof window.scrollTo === 'function') {
         try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { try { window.scrollTo(0, 0); } catch (e2) {} }
@@ -2368,30 +2394,106 @@
     }
 
     // --- Live Real-Time Weather Engine (Suwon Mangpo-dong 37.245, 127.055) ---
-    let liveTemp = 11;
+    /* v8.24: 정의만 되어 있고 한 번도 호출되지 않아 11℃로 고정되던 문제를 고쳐,
+       부팅 시 1회 · 날씨 뷰 전환 시(마지막 갱신 10분 경과) · 보고 있는 동안 10분 주기로 갱신한다. */
+    const WEATHER_LAT = 37.245;
+    const WEATHER_LON = 127.055;
+    const WEATHER_TTL_MS = 10 * 60 * 1000;   // 10분
+    let liveTemp = 11;                        // API 실패 시에만 쓰는 폴백값
     let liveMinTemp = 4;
     let liveMaxTemp = 16;
+    let liveApparentTemp = null;              // Open-Meteo 체감온도(참고 표시)
     let liveWeatherDesc = '☀️ 맑음';
+    let liveWeatherAt = 0;                    // 마지막 갱신 성공 시각 (0 = 아직 없음)
+    let liveWeatherFailed = false;
+    let weatherInFlight = false;
 
-    async function fetchLiveWeather() {
+    function weatherCodeToDesc(code) {
+      if (code == null) return liveWeatherDesc;
+      if (code === 0) return '☀️ 맑음';
+      if (code <= 2) return '⛅ 구름조금';
+      if (code === 3) return '☁️ 흐림';
+      if (code <= 48) return '🌫️ 안개';
+      if (code <= 57) return '🌦️ 이슬비';
+      if (code <= 65) return '🌧️ 비';
+      if (code <= 77) return '❄️ 눈';
+      if (code <= 82) return '🌦️ 소나기';
+      if (code <= 86) return '❄️ 눈';
+      return '⛈️ 뇌우';
+    }
+
+    async function fetchLiveWeather(force) {
+      if (weatherInFlight) return;
+      weatherInFlight = true;
+      let ok = false;
       try {
-        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=37.245&longitude=127.055&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul');
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.current) {
-            liveTemp = Math.round(data.current.temperature_2m);
-            if (data.daily && data.daily.temperature_2m_max && data.daily.temperature_2m_max[0]) {
-              liveMaxTemp = Math.round(data.daily.temperature_2m_max[0]);
-              liveMinTemp = Math.round(data.daily.temperature_2m_min[0]);
-            }
-            const code = data.current.weather_code;
-            liveWeatherDesc = (code === 0) ? '☀️ 맑음' : (code <= 3) ? '⛅ 구름조금' : (code <= 65) ? '🌧️ 비' : '❄️ 눈';
-          }
+        const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + WEATHER_LAT + '&longitude=' + WEATHER_LON
+          + '&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code'
+          + '&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul';
+        const ctrl = (typeof AbortController === 'function') ? new AbortController() : null;
+        const timer = ctrl ? setTimeout(function () { try { ctrl.abort(); } catch (e) {} }, 9000) : null;
+        let data = null;
+        try {
+          const res = await fetch(url, ctrl ? { signal: ctrl.signal, cache: 'no-store' } : { cache: 'no-store' });
+          if (res.ok) data = await res.json();
+        } finally {
+          if (timer) clearTimeout(timer);
         }
-      } catch(e) {
-        console.warn('Weather API fallback to local sensor:', e);
+        if (data && data.current && data.current.temperature_2m != null) {
+          liveTemp = Math.round(data.current.temperature_2m);
+          liveApparentTemp = (data.current.apparent_temperature != null) ? Math.round(data.current.apparent_temperature) : null;
+          /* v8.24: 0℃가 falsy로 무시되지 않도록 null 비교로 바꿈 */
+          const d = data.daily || {};
+          const mx = (d.temperature_2m_max && d.temperature_2m_max[0] != null) ? d.temperature_2m_max[0] : null;
+          const mn = (d.temperature_2m_min && d.temperature_2m_min[0] != null) ? d.temperature_2m_min[0] : null;
+          if (mx != null) liveMaxTemp = Math.round(mx);
+          if (mn != null) liveMinTemp = Math.round(mn);
+          liveWeatherDesc = weatherCodeToDesc(data.current.weather_code);
+          liveWeatherAt = Date.now();
+          liveWeatherFailed = false;
+          ok = true;
+        }
+      } catch (e) {
+        console.warn('[weather] Open-Meteo 호출 실패 → 이전 값 유지:', (e && e.message) ? e.message : e);
+      } finally {
+        if (!ok) liveWeatherFailed = true;
+        weatherInFlight = false;
       }
       renderWeather();
+    }
+
+    /* 마지막 성공 갱신이 없거나 10분을 넘겼을 때만 요청한다(불필요한 호출 방지) */
+    function maybeRefreshWeather(force) {
+      if (weatherInFlight) return;
+      const stale = !liveWeatherAt || (Date.now() - liveWeatherAt) > WEATHER_TTL_MS;
+      if (force || stale) fetchLiveWeather(!!force);
+    }
+
+    /* 수동 새로고침 버튼 (실패해도 기존 값은 그대로 둔다) */
+    async function refreshWeather(force) {
+      if (weatherInFlight) {
+        try { if (typeof showToast === 'function') showToast('날씨를 불러오는 중이에요'); } catch (e) {}
+        return;
+      }
+      const upd = document.getElementById('weather-updated');
+      if (upd) upd.innerText = '🔄 날씨 불러오는 중…';
+      await fetchLiveWeather(force !== false);
+      try {
+        if (typeof showToast === 'function') {
+          showToast(liveWeatherFailed ? '⚠️ 날씨를 불러오지 못했어요 · 이전 값 유지' : '🌤️ 날씨를 새로고침했어요');
+        }
+      } catch (e) {}
+    }
+
+    function weatherUpdatedText() {
+      const at = liveWeatherAt;
+      if (!at) return liveWeatherFailed ? '🕘 실시간 날씨 연결 실패 · 폴백 값 표시' : '🕘 날씨 불러오는 중…';
+      const mins = Math.floor((Date.now() - at) / 60000);
+      const d = new Date(at);
+      const hhmm = ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+      const ago = mins < 1 ? '방금 갱신' : (mins + '분 전 갱신');
+      const head = liveWeatherFailed ? '⚠️ 새로고침 실패 · 마지막 ' : '🕘 ';
+      return head + ago + ' · ' + hhmm + (liveApparentTemp != null ? ' · Open-Meteo 체감 ' + liveApparentTemp + '℃' : '');
     }
 
     function renderWeather() {
@@ -2404,7 +2506,11 @@
       const miniTempEl = document.getElementById('mini-temp');
       const miniCondEl = document.getElementById('mini-cond');
       if (miniTempEl) miniTempEl.innerText = `${liveTemp}℃`;
-      if (miniCondEl) miniCondEl.innerText = `${liveWeatherDesc} · 체감 ${feelsNow}℃`;
+      if (miniCondEl) miniCondEl.innerText = `${liveWeatherDesc} · ${liveMinTemp}℃/${liveMaxTemp}℃ · 체감 ${feelsNow}℃`;
+      /* v8.24: 마지막 갱신 시각(또는 실패 안내)과 추천 문구도 실제 기온으로 갱신 */
+      const updatedEl = document.getElementById('weather-updated');
+      if (updatedEl) updatedEl.innerText = weatherUpdatedText();
+
 
       /* v8.23: 실제 기온이 아니라 '체감 기온'으로 안내한다 (추위 많이 탐 -4℃ 기본) */
       let tempCategory = '선선';
@@ -2443,7 +2549,8 @@
       } else {
         matchText = `<br>💡 현재 이 기온대에 지정된 옷이 없어요. 새 옷을 등록해 보세요!`;
       }
-      document.getElementById('recommend-text').innerHTML = tip + matchText;
+      /* v8.24: 실제 기온·최저/최고를 추천 문구 맨 앞에 함께 보여준다 */
+      document.getElementById('recommend-text').innerHTML = `<b>실시간 ${liveTemp}℃</b> · ` + tip + matchText;
       try { renderOutfitReco(); } catch (e) { console.warn('[reco]', e); }
     }
 
@@ -4284,7 +4391,7 @@
         return;
       }
 
-      container.innerHTML = inFolder.map(lb => {
+      container.innerHTML = inFolder.map((lb, lbIdx) => {
         const thumbs = (lb.itemIds || []).map(id => {
           const item = appData.clothes.find(c => c.id === id);
           if (!item) return '';
@@ -4293,6 +4400,11 @@
 
         return `
           <div class="lookbook-card">
+            <div class="lb-move-bar">
+              <span class="st-move-label">순서 ${lbIdx + 1} / ${inFolder.length}</span>
+              <button type="button" class="st-move-btn" title="위로 이동" aria-label="위로 이동" onclick="moveLookbook(${lb.id}, -1)"${lbIdx === 0 ? ' disabled' : ''}>▲</button>
+              <button type="button" class="st-move-btn" title="아래로 이동" aria-label="아래로 이동" onclick="moveLookbook(${lb.id}, 1)"${lbIdx === inFolder.length - 1 ? ' disabled' : ''}>▼</button>
+            </div>
             <button class="del-btn" style="position:absolute; top:12px; right:12px;" onclick="deleteLookbook(${lb.id})">✕</button>
             <div class="lookbook-title">${lb.name}</div>
             <div class="lookbook-desc">${lb.desc}</div>
@@ -4308,6 +4420,51 @@
           </div>
         `;
       }).join('');
+    }
+
+    /* ===== v8.24 : 코디(룩북) 순서 편집 — appData.lookbooks 순서를 바꾸고 저장·동기화 ===== */
+    let lookbookOrderEditing = false;
+
+    function toggleLookbookOrderEdit(force) {
+      const tab = document.getElementById('tab-lookbook');
+      if (!tab) return;
+      if (!currentLookbookFolder) {
+        try { if (typeof showToast === 'function') showToast('📁 순서를 바꿀 폴더를 먼저 열어 주세요'); } catch (e) {}
+        return;
+      }
+      lookbookOrderEditing = (typeof force === 'boolean') ? force : !lookbookOrderEditing;
+      tab.classList.toggle('lookbook-editing', lookbookOrderEditing);
+      const btn = document.getElementById('btn-lb-order');
+      if (btn) {
+        btn.textContent = lookbookOrderEditing ? '✓ 편집 완료' : '↕️ 순서 편집';
+        btn.classList.toggle('active', lookbookOrderEditing);
+      }
+      const hint = document.getElementById('lb-order-hint');
+      if (hint) hint.textContent = lookbookOrderEditing ? '▲▼로 코디를 옮기면 바로 저장·동기화됩니다' : '';
+    }
+
+    function moveLookbook(id, dir) {
+      const arr = (appData && appData.lookbooks) ? appData.lookbooks : [];
+      const folder = currentLookbookFolder;
+      if (!folder || !arr.length) return;
+      const idx = arr.findIndex(lb => String(lb.id) === String(id));
+      if (idx < 0) return;
+      /* 폴더 필터가 켜져 있어도 전체 appData.lookbooks 안에서 '같은 폴더 코디끼리' 자리만 맞바꾼다.
+         다른 폴더 코디의 위치는 건드리지 않으므로 전체 순서가 자연스럽게 유지된다. */
+      const seq = [];
+      arr.forEach((lb, i) => { if (lookbookFolderOf(lb) === folder) seq.push(i); });
+      const pos = seq.indexOf(idx);
+      const next = pos + dir;
+      if (pos < 0 || next < 0 || next >= seq.length) return;
+      const other = seq[next];
+      const tmp = arr[idx]; arr[idx] = arr[other]; arr[other] = tmp;
+      try {
+        /* 로컬(IndexedDB) + 클라우드 동기화 경로 */
+        if (typeof saveAppStorage === 'function') saveAppStorage();
+      } catch (e) { console.warn('[lookbook order save]', e); }
+      const y = (typeof window !== 'undefined' && window.scrollY) || 0;
+      renderLookbooks();
+      try { window.scrollTo(0, y); } catch (e) {}
     }
 
     function openLookbookCollageModal(id) {
@@ -6281,6 +6438,15 @@
     }
 
     initApp();
+
+    /* v8.24: 날씨 표시 문구는 매분 갱신하고, 요청은 날씨 뷰를 보고 있을 때만 10분 간격으로 보낸다 */
+    setInterval(function () {
+      try {
+        if (closetSubtab === 'weather' && !document.hidden) maybeRefreshWeather();
+        const upd = document.getElementById('weather-updated');
+        if (upd && liveWeatherAt) upd.innerText = weatherUpdatedText();
+      } catch (e) {}
+    }, 60000);
   
     // --- Global Clipboard Paste (Ctrl + V) Engine ---
     let activePasteTarget = 'main';
