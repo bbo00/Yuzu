@@ -2156,6 +2156,7 @@
     if (!b || b.dataset.mode === state.mode) return;
     state.mode = b.dataset.mode;
     renderAll(); persistSoon();
+    if (state.slides.some(s=>(s.stickers || []).length)) toast('형식이 바뀌었어요 · 스티커 위치를 한 번 확인해 주세요');
   });
 
   // 요약표 배경
