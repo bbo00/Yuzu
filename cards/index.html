@@ -14,8 +14,20 @@
 <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://hangeul.pstatic.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap">
+<link rel="stylesheet" href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css">
+<link rel="stylesheet" href="https://hangeul.pstatic.net/hangeul_static/css/maru-buri.css">
 <style>
+  @font-face{font-family:'GmarketSans';font-style:normal;font-weight:300;font-display:swap;
+    src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansLight.woff) format('woff')}
+  @font-face{font-family:'GmarketSans';font-style:normal;font-weight:400 600;font-display:swap;
+    src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff) format('woff')}
+  @font-face{font-family:'GmarketSans';font-style:normal;font-weight:700 900;font-display:swap;
+    src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff) format('woff')}
+
   :root{
     --bg:#FFFFFF; --ink:#111110; --muted:#78766E; --line:#E7E4DC; --line2:#F1EEE7;
     --paper:#FBFAF6; --soft:#F4F2EB; --accent:#E4552B; --danger:#AE3B2E;
@@ -86,6 +98,10 @@
   .chip.on{background:#111; color:#fff; border-color:#111}
   .chip .n{font-weight:800; opacity:.55; font-size:10px; font-variant-numeric:tabular-nums}
   .chip .t{font-weight:600}
+  .chip .sw{width:15px; height:15px; border-radius:5px; flex:none; box-shadow:inset 0 0 0 1px rgba(0,0,0,.14)}
+  .chip.on .sw{box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+  .chip.theme{padding:5px 9px 5px 6px}
+  .chip.font .t{font-size:12.5px}
   .chipActions{display:flex; gap:5px}
   .mini{flex:1; height:33px; border-radius:9px; border:1px solid var(--line); background:#fff; font-size:12px; font-weight:600; color:#3E3C36; padding:0 2px}
   .mini.primary{background:#111; color:#fff; border-color:#111}
@@ -94,6 +110,9 @@
   .field{margin-top:10px}
   .field:first-child{margin-top:0}
   .field > label{display:block; font-size:10.5px; font-weight:700; color:var(--muted); margin-bottom:5px; letter-spacing:.2px}
+  .lblRow{display:flex; align-items:center; justify-content:space-between; gap:8px}
+  .autoTag{border:1px solid #DCD8CC; background:#fff; color:#77746B; border-radius:999px; padding:3px 8px; font-size:10px; font-weight:800; letter-spacing:-.1px; line-height:1.35}
+  .autoTag.on{background:#111; color:#fff; border-color:#111}
   input[type=text], textarea{
     width:100%; border:1px solid var(--line); border-radius:10px; padding:9px 11px; font-size:15px;
     font-family:inherit; color:var(--ink); background:#fff; -webkit-appearance:none; line-height:1.45; resize:none;
@@ -116,6 +135,7 @@
   input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:20px; height:20px; margin-top:-8.5px; border-radius:50%; background:#111; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,.25)}
   .nudge{display:flex; gap:5px; margin-top:8px}
   .nudge button{flex:1; height:30px; border:1px solid var(--line); background:#fff; border-radius:8px; font-size:11px; color:#4A4842; padding:0}
+  .nudge button.on{background:#111; color:#fff; border-color:#111}
   .hint{margin:7px 0 0; font-size:10.5px; color:#9C998F; line-height:1.4}
 
   .rows{border:1px solid var(--line); border-radius:10px; overflow:hidden}
@@ -232,6 +252,28 @@
   </div>
 
   <div class="card">
+    <div class="cardHead"><span class="label">컬러 배합</span><span class="count" id="themeName">웜 크림 &amp; 에스프레소</span></div>
+    <div class="chips" id="themeChips"></div>
+
+    <div class="cardHead" style="margin:11px 0 7px"><span class="label">글씨체</span><span class="count" id="fontName">Pretendard</span></div>
+    <div class="chips" id="fontChips"></div>
+
+    <div class="cardHead" style="margin:11px 0 7px"><span class="label">글씨 크기</span><span class="count" id="scaleVal">1.00×</span></div>
+    <div class="zoomRow" style="margin-top:0">
+      <span class="tiny">작게</span>
+      <input type="range" id="scale" min="0.85" max="1.35" step="0.01" value="1">
+      <span class="tiny">크게</span>
+    </div>
+    <div class="nudge" id="scalePresets">
+      <button data-scale="0.9">작게</button>
+      <button data-scale="1">보통</button>
+      <button data-scale="1.18">크게</button>
+      <button data-scale="1.32">아주 크게</button>
+    </div>
+    <p class="hint">표지·본문·요약표 캔버스에 바로 반영돼요</p>
+  </div>
+
+  <div class="card">
     <div class="cardHead"><span class="label">사진</span><button class="linkBtn" id="photoClear">빼기</button></div>
     <div class="drop" id="drop">
       <input type="file" id="file" accept="image/*" multiple hidden>
@@ -272,8 +314,8 @@
 
     <div class="bodyOnly">
       <div class="field">
-        <label>포인트 배지</label>
-        <input type="text" data-f="badge" placeholder="예: 추천 ① / 웨이팅 팁">
+        <label class="lblRow"><span>포인트 배지</span><button class="autoTag on" id="badgeAutoBtn">번호 자동</button></label>
+        <input type="text" data-f="badge" id="badgeInput" placeholder="예: 추천 01 / 웨이팅 팁">
       </div>
       <div class="field">
         <label>제목</label>
@@ -295,8 +337,8 @@
         <input type="text" data-f="title" placeholder="예: 다낭 목식당 요약표">
       </div>
       <div class="field">
-        <label>부제목</label>
-        <input type="text" data-f="subtitle" placeholder="예: 음식 10% 할인 전 / 후">
+        <label>부제목 · 할인 표시</label>
+        <input type="text" data-f="subtitle" placeholder="예: 음식 10% 할인 전 → 후">
       </div>
       <div class="field">
         <label>배경</label>
@@ -310,6 +352,7 @@
         <label>항목 · 금액 <span id="rowCount" style="color:#A6A399; font-weight:600"></span></label>
         <div class="rows" id="rows"></div>
         <button class="addRow" id="addRow">+ 행 추가 (최대 6줄)</button>
+        <p class="hint">금액은 <b>80,000 → 72,000동</b>처럼 쓰면 정가 취소선·할인가 강조·할인율 배지가 자동으로 붙어요</p>
       </div>
       <div class="field">
         <label>합계 줄</label>
@@ -320,8 +363,8 @@
         <input class="field" style="margin-top:6px" type="text" data-f="totalNote" placeholder="보조 금액 (예: 약 11만 원)">
       </div>
       <div class="field">
-        <label>댓글 유도 문구</label>
-        <input type="text" data-f="cta" placeholder="예: 예약 & 10% 할인 꿀팁은 댓글 👇">
+        <label>댓글 유도 문구 · CTA</label>
+        <input type="text" data-f="cta" placeholder="예: 예약 방법 &amp; 10% 할인 꿀팁 댓글 👇">
       </div>
     </div>
   </div>
@@ -364,34 +407,118 @@
   /* =========================================================
      0. 기본 설정
      ========================================================= */
-  const STORE_KEY = 'iming_cards_v1';
+  const STORE_KEY = 'iming_cards_v2';
   const PHOTO_MAX = 1600;
   const PHOTO_Q = 0.86;
   const MAX_ROWS = 6;
-  const FF = '"Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif';
-  const WEIGHTS = [400, 500, 550, 600, 700, 800];
 
   const FORMATS = {
     feed: { key:'feed', w:1080, h:1350, safeTop:0, safeBottom:0, pad:76,
             t:{ coverTitle:96, coverSub:34, badge:27, bodyTitle:78, bodyDesc:34,
-                sumTitle:62, sumSub:26, row:34, totalLabel:26, total:46, cta:30, footer:30 } },
+                sumTitle:68, sumSub:31, row:40, totalLabel:31, total:58, cta:42, footer:30 } },
     reel: { key:'reel', w:1080, h:1920, safeTop:180, safeBottom:340, pad:86,
-            t:{ coverTitle:106, coverSub:36, badge:28, bodyTitle:86, bodyDesc:36,
-                sumTitle:68, sumSub:27, row:35, totalLabel:27, total:48, cta:31, footer:30 } }
+            t:{ coverTitle:106, coverSub:36, badge:28, bodyTitle:88, bodyDesc:36,
+                sumTitle:76, sumSub:33, row:42, totalLabel:32, total:62, cta:44, footer:30 } }
   };
 
+  /* ---------- 컬러 배합 ---------- */
+  const THEMES = [
+    { id:'mono', name:'블랙 & 화이트', dark:false, photoAccent:'#FFFFFF', photoAccentFg:'#111111',
+      paper:{ bg:'#FFFFFF', fg:'#111111', sub:'rgba(17,17,17,.60)', line:'rgba(17,17,17,.13)',
+              accent:'#111111', accentFg:'#FFFFFF', accentSoft:'rgba(17,17,17,.10)',
+              badgeBg:'#111111', badgeFg:'#FFFFFF', totalBg:'#111111', totalFg:'#FFFFFF' },
+      ink:{ bg:'#0C0C0C', fg:'#FAFAF7', sub:'rgba(250,250,247,.66)', line:'rgba(250,250,247,.18)',
+            accent:'#FFFFFF', accentFg:'#111111', accentSoft:'rgba(255,255,255,.16)',
+            badgeBg:'#FFFFFF', badgeFg:'#111111', totalBg:'#FAFAF7', totalFg:'#111111' } },
+
+    { id:'cream', name:'웜 크림 & 에스프레소', dark:false, photoAccent:'#F0B978', photoAccentFg:'#241811',
+      paper:{ bg:'#F7F0E2', fg:'#2B1E15', sub:'rgba(43,30,21,.62)', line:'rgba(43,30,21,.15)',
+              accent:'#8A4A22', accentFg:'#FFF6E8', accentSoft:'rgba(138,74,34,.12)',
+              badgeBg:'#8A4A22', badgeFg:'#FFF6E8', totalBg:'#2B1E15', totalFg:'#FBF3E4' },
+      ink:{ bg:'#241811', fg:'#F8EEDC', sub:'rgba(248,238,220,.70)', line:'rgba(248,238,220,.20)',
+            accent:'#DD9A4E', accentFg:'#241811', accentSoft:'rgba(221,154,78,.20)',
+            badgeBg:'#DD9A4E', badgeFg:'#241811', totalBg:'#F8EEDC', totalFg:'#241811' } },
+
+    { id:'navy', name:'네이비 & 골드', dark:true, photoAccent:'#E8C877', photoAccentFg:'#1A1508',
+      paper:{ bg:'#F2EFE6', fg:'#14243C', sub:'rgba(20,36,60,.62)', line:'rgba(20,36,60,.16)',
+              accent:'#A67C1F', accentFg:'#FFF9EA', accentSoft:'rgba(166,124,31,.14)',
+              badgeBg:'#14243C', badgeFg:'#F6EFDC', totalBg:'#14243C', totalFg:'#F6EFDC' },
+      ink:{ bg:'#101F36', fg:'#F6EFDC', sub:'rgba(246,239,220,.72)', line:'rgba(246,239,220,.20)',
+            accent:'#D7B25A', accentFg:'#1A1508', accentSoft:'rgba(215,178,90,.20)',
+            badgeBg:'#D7B25A', badgeFg:'#1A1508', totalBg:'#F6EFDC', totalFg:'#14243C' } },
+
+    { id:'olive', name:'오프화이트 & 올리브', dark:false, photoAccent:'#C9D882', photoAccentFg:'#1E2119',
+      paper:{ bg:'#F3F2E9', fg:'#23261C', sub:'rgba(35,38,28,.62)', line:'rgba(35,38,28,.15)',
+              accent:'#5F6B33', accentFg:'#F7F8EE', accentSoft:'rgba(95,107,51,.14)',
+              badgeBg:'#5F6B33', badgeFg:'#F7F8EE', totalBg:'#23261C', totalFg:'#F3F2E9' },
+      ink:{ bg:'#1E2119', fg:'#F2F3E7', sub:'rgba(242,243,231,.70)', line:'rgba(242,243,231,.18)',
+            accent:'#B3C36B', accentFg:'#1E2119', accentSoft:'rgba(179,195,107,.20)',
+            badgeBg:'#B3C36B', badgeFg:'#1E2119', totalBg:'#F2F3E7', totalFg:'#1E2119' } },
+
+    { id:'butter', name:'차콜 & 버터옐로우', dark:true, photoAccent:'#F2CE4B', photoAccentFg:'#171614',
+      paper:{ bg:'#F7F5EE', fg:'#1B1A17', sub:'rgba(27,26,23,.62)', line:'rgba(27,26,23,.14)',
+              accent:'#A8861C', accentFg:'#FFFFFF', accentSoft:'rgba(168,134,28,.14)',
+              badgeBg:'#1B1A17', badgeFg:'#F9F4E2', totalBg:'#1B1A17', totalFg:'#F9F4E2' },
+      ink:{ bg:'#171614', fg:'#FBF6E4', sub:'rgba(251,246,228,.70)', line:'rgba(251,246,228,.18)',
+            accent:'#F2CE4B', accentFg:'#171614', accentSoft:'rgba(242,206,75,.20)',
+            badgeBg:'#F2CE4B', badgeFg:'#171614', totalBg:'#F2CE4B', totalFg:'#171614' } },
+
+    { id:'rose', name:'더스티 로즈 & 잉크', dark:false, photoAccent:'#EFA7B1', photoAccentFg:'#201A1C',
+      paper:{ bg:'#F9EEEB', fg:'#2A2023', sub:'rgba(42,32,35,.62)', line:'rgba(42,32,35,.14)',
+              accent:'#A8505C', accentFg:'#FFF6F4', accentSoft:'rgba(168,80,92,.13)',
+              badgeBg:'#A8505C', badgeFg:'#FFF6F4', totalBg:'#2A2023', totalFg:'#F9EEEB' },
+      ink:{ bg:'#201A1C', fg:'#FAF0EE', sub:'rgba(250,240,238,.70)', line:'rgba(250,240,238,.18)',
+            accent:'#E394A0', accentFg:'#201A1C', accentSoft:'rgba(227,148,160,.20)',
+            badgeBg:'#E394A0', badgeFg:'#201A1C', totalBg:'#FAF0EE', totalFg:'#201A1C' } }
+  ];
+
+  /* ---------- 글씨체 ---------- */
+  const FONTS = [
+    { id:'pretendard', label:'Pretendard', tail:'-apple-system, "Apple SD Gothic Neo", sans-serif',
+      resolve:function(w){ return { family:'Pretendard Variable', weight:w }; },
+      faces:[['Pretendard Variable',400],['Pretendard Variable',500],['Pretendard Variable',600],['Pretendard Variable',700],['Pretendard Variable',800]] },
+
+    { id:'nanum', label:'나눔스퀘어 네오', tail:'"NanumSquare", sans-serif',
+      resolve:function(w){
+        if (w >= 800) return { family:'NanumSquareNeoExtraBold', weight:400 };
+        if (w >= 600) return { family:'NanumSquareNeoBold', weight:400 };
+        return { family:'NanumSquareNeo', weight:400 };
+      },
+      faces:[['NanumSquareNeo',400],['NanumSquareNeoBold',400],['NanumSquareNeoExtraBold',400]] },
+
+    { id:'noto', label:'Noto Sans KR', tail:'"Apple SD Gothic Neo", sans-serif',
+      resolve:function(w){ return { family:'Noto Sans KR', weight:w }; },
+      faces:[['Noto Sans KR',400],['Noto Sans KR',500],['Noto Sans KR',700],['Noto Sans KR',800]] },
+
+    { id:'maruburi', label:'마루부리 명조', tail:'"Apple SD Gothic Neo", serif',
+      resolve:function(w){
+        if (w >= 800) return { family:'MaruBuriBold', weight:400 };
+        if (w >= 600) return { family:'MaruBuriSemiBold', weight:400 };
+        return { family:'MaruBuri', weight:400 };
+      },
+      faces:[['MaruBuri',400],['MaruBuriSemiBold',400],['MaruBuriBold',400]] },
+
+    { id:'gmarket', label:'G마켓 산스', tail:'"Apple SD Gothic Neo", sans-serif',
+      resolve:function(w){
+        if (w >= 700) return { family:'GmarketSans', weight:700 };
+        if (w >= 400) return { family:'GmarketSans', weight:500 };
+        return { family:'GmarketSans', weight:300 };
+      },
+      faces:[['GmarketSans',300],['GmarketSans',500],['GmarketSans',700]] }
+  ];
+
   const TYPE_NAME = { cover:'표지', body:'본문', summary:'요약표' };
-  const TYPE_MARK = { cover:'C', body:'B', summary:'S' };
 
   /* =========================================================
      1. 상태
      ========================================================= */
   function blankSlide(type){
+    const t = type || 'cover';
     return {
       id: 's' + Date.now() + Math.random().toString(36).slice(2,6),
-      type: type || 'cover',
+      type: t,
       photo: null, zoom: 1, offX: 0, offY: 0,
-      badge: '', title: '', subtitle: '', desc: '',
+      badge: '', badgeAuto: t === 'body', title: '', subtitle: '', desc: '',
       watermark: true,
       summaryStyle: 'photo',
       totalLabel: '총 합계', total: '', totalNote: '', cta: '',
@@ -400,13 +527,26 @@
   }
 
   function blankState(mode){
-    return { v:1, mode: mode || 'feed', current:0, guides:false, slides:[blankSlide('cover')] };
+    return { v:2, mode: mode || 'feed', current:0, guides:false,
+             theme:'cream', font:'pretendard', textScale:1,
+             slides:[blankSlide('cover')] };
   }
 
   const state = blankState('feed');
 
   function cur(){ return state.slides[state.current] || state.slides[0]; }
   function F(){ return FORMATS[state.mode]; }
+  function themeById(id){
+    for (let i=0;i<THEMES.length;i++) if (THEMES[i].id === id) return THEMES[i];
+    return THEMES[1];
+  }
+  function THEME(){ return themeById(state.theme); }
+  function fontById(id){
+    for (let i=0;i<FONTS.length;i++) if (FONTS[i].id === id) return FONTS[i];
+    return FONTS[0];
+  }
+  function FONT(){ return fontById(state.font); }
+  function textScale(){ return clamp(num(state.textScale, 1), 0.85, 1.35); }
 
   /* =========================================================
      2. 저장 / 복원
@@ -414,6 +554,9 @@
   function normalize(raw){
     const out = blankState(raw.mode === 'reel' ? 'reel' : 'feed');
     out.guides = !!raw.guides;
+    out.theme = themeById(raw.theme).id;
+    out.font = fontById(raw.font).id;
+    out.textScale = clamp(num(raw.textScale, 1), 0.85, 1.35);
     out.slides = (Array.isArray(raw.slides) && raw.slides.length ? raw.slides : [blankSlide('cover')]).map(r=>{
       const s = blankSlide(r.type);
       s.id = r.id || s.id;
@@ -423,6 +566,8 @@
       s.offX = clamp(num(r.offX, 0), -1, 1);
       s.offY = clamp(num(r.offY, 0), -1, 1);
       s.badge = str(r.badge); s.title = str(r.title); s.subtitle = str(r.subtitle);
+      s.badgeAuto = (r.badgeAuto === undefined) ? (s.type === 'body' && !s.badge) : !!r.badgeAuto;
+      if (s.badge) s.badgeAuto = false;
       s.desc = str(r.desc); s.watermark = r.watermark !== false;
       s.summaryStyle = ['photo','dark','light'].includes(r.summaryStyle) ? r.summaryStyle : 'photo';
       s.totalLabel = str(r.totalLabel) || '총 합계';
@@ -437,7 +582,7 @@
 
   function loadState(){
     try{
-      const raw = localStorage.getItem(STORE_KEY);
+      const raw = localStorage.getItem(STORE_KEY) || localStorage.getItem('iming_cards_v1');
       if (!raw) return null;
       const data = JSON.parse(raw);
       if (!data || !Array.isArray(data.slides) || !data.slides.length) return null;
@@ -451,12 +596,14 @@
     saveTimer = setTimeout(persistNow, 450);
   }
   function persistNow(){
-    const payload = { v:1, mode:state.mode, current:state.current, guides:state.guides, slides:state.slides };
+    const payload = { v:2, mode:state.mode, current:state.current, guides:state.guides,
+      theme:state.theme, font:state.font, textScale:state.textScale, slides:state.slides };
     try{
       localStorage.setItem(STORE_KEY, JSON.stringify(payload));
     }catch(err){
       try{
-        const slim = { v:1, mode:state.mode, current:state.current, guides:state.guides,
+        const slim = { v:2, mode:state.mode, current:state.current, guides:state.guides,
+          theme:state.theme, font:state.font, textScale:state.textScale,
           slides: state.slides.map(s=>Object.assign({}, s, { photo:null })) };
         localStorage.setItem(STORE_KEY, JSON.stringify(slim));
         if (!quotaWarned){ quotaWarned = true; toast('사진은 용량 때문에 저장하지 못했어요. 문구는 저장됨'); }
@@ -471,7 +618,11 @@
   function num(v, d){ const n = parseFloat(v); return isFinite(n) ? n : d; }
   function str(v){ return typeof v === 'string' ? v : (v == null ? '' : String(v)); }
   function esc(s){ return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
-  function font(size, weight){ return weight + ' ' + Math.round(size) + 'px ' + FF; }
+
+  function font(size, weight){
+    const r = FONT().resolve(weight);
+    return r.weight + ' ' + Math.round(size) + 'px "' + r.family + '", ' + FONT().tail;
+  }
 
   function roundRect(ctx, x, y, w, h, r){
     const rr = Math.min(r, w/2, h/2);
@@ -663,7 +814,58 @@
   }
 
   /* =========================================================
-     6. 카드 렌더러
+     6. 팔레트
+     ========================================================= */
+  function palPaper(){
+    const t = THEME().paper;
+    return { dark:false, bg:t.bg, fg:t.fg, sub:t.sub, line:t.line,
+      accent:t.accent, accentFg:t.accentFg, accentSoft:t.accentSoft,
+      pillBg:t.badgeBg, pillFg:t.badgeFg, totalBg:t.totalBg, totalFg:t.totalFg };
+  }
+  function palInk(){
+    const t = THEME().ink;
+    return { dark:true, bg:t.bg, fg:t.fg, sub:t.sub, line:t.line,
+      accent:t.accent, accentFg:t.accentFg, accentSoft:t.accentSoft,
+      pillBg:t.badgeBg, pillFg:t.badgeFg, totalBg:t.totalBg, totalFg:t.totalFg };
+  }
+  function palPhoto(){
+    const th = THEME();
+    return { dark:true, bg:'#000000', fg:'#FFFFFF', sub:'rgba(255,255,255,.86)', line:'rgba(255,255,255,.30)',
+      accent: th.photoAccent, accentFg: th.photoAccentFg, accentSoft:'rgba(255,255,255,.20)',
+      pillBg:'rgba(255,255,255,.96)', pillFg:'#151510', totalBg:'#FFFFFF', totalFg:'#14140F' };
+  }
+  function surfacePal(){ return THEME().dark ? palInk() : palPaper(); }
+
+  function drawSurface(ctx, w, h, pal, ghost){
+    ctx.fillStyle = pal.bg;
+    ctx.fillRect(0, 0, w, h);
+    if (ghost){
+      ctx.save();
+      ctx.globalAlpha = pal.dark ? 0.06 : 0.05;
+      ctx.fillStyle = pal.fg;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.font = font(148, 800);
+      ctx.fillText('@IMING', w / 2, h * 0.30);
+      ctx.restore();
+    }
+    const g = ctx.createRadialGradient(w * 0.5, h * 0.10, 0, w * 0.5, h * 0.10, h * 0.95);
+    g.addColorStop(0, pal.dark ? 'rgba(255,255,255,.07)' : 'rgba(255,255,255,.50)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+  }
+
+  function TS(){
+    const k = textScale(), t = F().t;
+    return { k: k,
+      coverTitle:t.coverTitle*k, coverSub:t.coverSub*k, badge:t.badge*k,
+      bodyTitle:t.bodyTitle*k, bodyDesc:t.bodyDesc*k,
+      sumTitle:t.sumTitle*k, sumSub:t.sumSub*k, row:t.row*k,
+      totalLabel:t.totalLabel*k, total:t.total*k, cta:t.cta*k };
+  }
+
+  /* =========================================================
+     7. 카드 렌더러
      ========================================================= */
   function drawPhoto(ctx, im, s, w, h){
     const zoom = clamp(num(s.zoom, 1), 1, 3);
@@ -676,7 +878,8 @@
     ctx.drawImage(im, w / 2 - dw / 2 + ox, h / 2 - dh / 2 + oy, dw, dh);
   }
 
-  function drawFooterMark(ctx, x, baseline, pal, align){
+  function drawFooterMark(ctx, x, baseline, pal, align, k){
+    const sc = k || 1;
     const a = '@IMING', b = ' · 여행의 한 끗 차이';
     ctx.font = font(30, 800);
     const aw = ctx.measureText(a).width;
@@ -691,40 +894,9 @@
     ctx.fillStyle = pal.sub; ctx.font = font(23, 500); ctx.fillText(b, sx + aw, baseline);
   }
 
-  function paperPalette(){
-    return { light:true, fg:'#14140F', sub:'rgba(20,20,15,.62)', faint:'rgba(20,20,15,.1)',
-             line:'rgba(20,20,15,.18)', pillBg:'#14140F', pillFg:'#F7F4EC', dot:'#E4552B',
-             totalBg:'#14140F', totalFg:'#F7F4EC', accent:'#E4552B' };
-  }
-  function photoPalette(){
-    return { light:false, fg:'#FFFFFF', sub:'rgba(255,255,255,.84)', faint:'rgba(255,255,255,.18)',
-             line:'rgba(255,255,255,.30)', pillBg:'rgba(255,255,255,.96)', pillFg:'#151510', dot:'#E4552B',
-             totalBg:'#FFFFFF', totalFg:'#14140F', accent:'#FF6A3D' };
-  }
-
-  function paperBackdrop(ctx, w, h, ghost){
-    ctx.fillStyle = '#F1EDE3';
-    ctx.fillRect(0, 0, w, h);
-    if (ghost){
-      ctx.save();
-      ctx.globalAlpha = 0.045;
-      ctx.fillStyle = '#14140F';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.font = font(148, 800);
-      ctx.fillText('@IMING', w / 2, h * 0.30);
-      ctx.restore();
-    }
-    // subtle warm vignette
-    const g = ctx.createRadialGradient(w * 0.5, h * 0.12, 0, w * 0.5, h * 0.12, h * 0.95);
-    g.addColorStop(0, 'rgba(255,255,255,.55)');
-    g.addColorStop(1, 'rgba(235,229,214,0)');
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, w, h);
-  }
-
   /* ---------- 표지 ---------- */
   function drawCover(ctx, s, f){
-    const w = f.w, h = f.h, pad = f.pad, T = f.t;
+    const w = f.w, h = f.h, pad = f.pad, T = TS();
     const im = imgFor(s);
     let pal;
     if (im){
@@ -737,10 +909,10 @@
       g.addColorStop(0.5, 'rgba(0,0,0,.34)');
       g.addColorStop(1, 'rgba(0,0,0,.87)');
       ctx.fillStyle = g; ctx.fillRect(0, h * 0.26, w, h * 0.74);
-      pal = photoPalette();
+      pal = palPhoto();
     } else {
-      paperBackdrop(ctx, w, h, true);
-      pal = paperPalette();
+      pal = surfacePal();
+      drawSurface(ctx, w, h, pal, true);
     }
 
     const topY = f.safeTop + pad;
@@ -750,7 +922,7 @@
     if (s.badge){
       drawPill(ctx, {
         text: s.badge, x: pad, y: topY, size: T.badge, weight: 600, height: T.badge * 2.3,
-        padX: T.badge * 0.95, bg: pal.pillBg, fg: pal.pillFg, dot: pal.dot, shadow: !!im
+        padX: T.badge * 0.95, bg: pal.pillBg, fg: pal.pillFg, dot: pal.accent, shadow: !!im
       });
     }
 
@@ -779,7 +951,7 @@
       }});
     }
     blocks.push({ h: 36, gap: 34, draw: y => {
-      drawFooterMark(ctx, pad, y + 30, pal, 'left');
+      drawFooterMark(ctx, pad, y + 30, pal, 'left', T.k);
     }});
 
     let totalH = 0;
@@ -793,8 +965,24 @@
   }
 
   /* ---------- 본문 ---------- */
+  function autoBadgeNo(slide){
+    const i = state.slides.indexOf(slide);
+    let n = 0;
+    for (let j = 0; j <= i && j < state.slides.length; j++){
+      if (state.slides[j].type === 'body') n++;
+    }
+    return Math.max(1, n);
+  }
+  function autoBadgeText(slide){
+    return '추천 ' + String(autoBadgeNo(slide)).padStart(2, '0');
+  }
+  function badgeTextOf(slide){
+    if (slide.type === 'body' && slide.badgeAuto) return autoBadgeText(slide);
+    return (slide.badge || '').trim();
+  }
+
   function drawBody(ctx, s, f){
-    const w = f.w, h = f.h, pad = f.pad, T = f.t;
+    const w = f.w, h = f.h, pad = f.pad, T = TS();
     const im = imgFor(s);
     let pal;
     if (im){
@@ -804,10 +992,10 @@
       g.addColorStop(0.55, 'rgba(0,0,0,.46)');
       g.addColorStop(1, 'rgba(0,0,0,.9)');
       ctx.fillStyle = g; ctx.fillRect(0, h * 0.18, w, h * 0.82);
-      pal = photoPalette();
+      pal = palPhoto();
     } else {
-      paperBackdrop(ctx, w, h, false);
-      pal = paperPalette();
+      pal = surfacePal();
+      drawSurface(ctx, w, h, pal, false);
     }
 
     const bottomY = h - f.safeBottom - pad;
@@ -815,23 +1003,24 @@
 
     const hasTitle = !!(s.title || '').trim();
     const title = hasTitle ? fitText(ctx, s.title, {
-      maxWidth: maxW, size: T.bodyTitle, weight: 800, maxLines: 2, lineHeight: 1.18, minSize: T.bodyTitle * 0.66
+      maxWidth: maxW, size: T.bodyTitle, weight: 800, maxLines: 2, lineHeight: 1.18, minSize: T.bodyTitle * 0.62
     }) : null;
     const desc = s.desc ? fitText(ctx, s.desc, {
-      maxWidth: maxW * 0.98, size: T.bodyDesc, weight: 500, maxLines: 3, lineHeight: 1.62, minSize: T.bodyDesc * 0.82
+      maxWidth: maxW * 0.98, size: T.bodyDesc, weight: 500, maxLines: 3, lineHeight: 1.62, minSize: T.bodyDesc * 0.78
     }) : null;
 
+    const badge = badgeTextOf(s);
     const blocks = [];
-    if (s.badge){
+    if (badge){
       blocks.push({ h: T.badge * 2.1, gap: 0, draw: y => {
         drawPill(ctx, {
-          text: s.badge, x: pad, y: y, size: T.badge, weight: 700, height: T.badge * 2.1,
-          padX: T.badge * 0.9, bg: pal.accent, fg: '#FFFFFF', shadow: !!im
+          text: badge, x: pad, y: y, size: T.badge, weight: 800, height: T.badge * 2.1,
+          padX: T.badge * 0.85, bg: pal.accent, fg: pal.accentFg, shadow: !!im
         });
       }});
     }
     if (title){
-      blocks.push({ h: title.lines.length * title.lh, gap: s.badge ? 22 : 0, draw: y => {
+      blocks.push({ h: title.lines.length * title.lh, gap: badge ? 22 : 0, draw: y => {
         drawLines(ctx, title.lines, pad, y, title.lh, title.size, 800, pal.fg, 'left');
       }});
     }
@@ -847,7 +1036,6 @@
     if (im){
       y = bottomY - 56 - totalH;
     } else {
-      // 사진이 없을 때는 여백을 살려 세로 가운데에 놓는다
       const topLimit = f.safeTop + pad;
       const room = (h - f.safeBottom - pad - 56) - topLimit;
       y = topLimit + Math.max(0, (room - totalH) * 0.5);
@@ -860,26 +1048,273 @@
 
     if (s.watermark !== false){
       ctx.save();
-      ctx.globalAlpha = pal.light ? 0.24 : 0.28;
+      ctx.globalAlpha = pal.dark ? 0.30 : 0.24;
       drawTracked(ctx, '@IMING', w - pad, bottomY - 2, 24, 700, 2, pal.fg, 'right');
       ctx.restore();
     }
   }
 
   /* ---------- 요약표 ---------- */
-  function summaryPalette(style){
-    if (style === 'light'){
-      return { light:true, bg:'#F4F1E9', fg:'#14140F', sub:'rgba(20,20,15,.66)',
-               line:'rgba(20,20,15,.14)', totalBg:'#14140F', totalFg:'#F7F4EC',
-               ctaBorder:'rgba(20,20,15,.26)', accent:'#E4552B' };
+  function pctOff(a, b){
+    const va = parseInt(String(a).replace(/[^\d]/g,''), 10);
+    const vb = parseInt(String(b).replace(/[^\d]/g,''), 10);
+    if (!isFinite(va) || !isFinite(vb) || va <= 0 || vb <= 0 || vb >= va) return 0;
+    const p = Math.round((1 - vb / va) * 100);
+    return (p > 0 && p < 100) ? p : 0;
+  }
+
+  function discountPhrase(s){
+    const re = /([가-힣]{1,5}\s+)?(\d{1,2}\s*%\s*(?:할인|DC|OFF|off))/;
+    const sub = String(s.subtitle || '');
+    const ms = sub.match(re);
+    if (ms){
+      return { text: ((ms[1] || '') + ms[2]).replace(/\s+/g,' ').trim(), inSub: true };
     }
-    return { light:false, bg:'#0E0E0D', fg:'#F6F3EC', sub:'rgba(246,243,236,.72)',
-             line:'rgba(246,243,236,.17)', totalBg:'#F6F3EC', totalFg:'#14140F',
-             ctaBorder:'rgba(246,243,236,.42)', accent:'#FF6A3D' };
+    const mt = String(s.title || '').match(re);
+    if (mt){
+      return { text: ((mt[1] || '') + mt[2]).replace(/\s+/g,' ').trim(), inSub: false };
+    }
+    return null;
+  }
+
+  function drawSubLineHi(ctx, line, phrase, x, yTop, size, pal, maxW){
+    const i = line.indexOf(phrase);
+    if (i < 0) return false;
+    const pre = line.slice(0, i), mid = phrase, suf = line.slice(i + phrase.length);
+    ctx.font = font(size, 500); const wp = ctx.measureText(pre).width;
+    ctx.font = font(size, 800); const wm = ctx.measureText(mid).width;
+    ctx.font = font(size, 500); const ws = suf ? ctx.measureText(suf).width : 0;
+    if (wp + wm + ws > maxW + 2) return false;
+    const base = yTop + size * 0.84;
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    roundRect(ctx, x + wp - size * 0.14, yTop + size * 0.04, wm + size * 0.28, size * 1.14, size * 0.16);
+    ctx.fillStyle = pal.accentSoft; ctx.fill();
+    if (pre){ ctx.font = font(size, 500); ctx.fillStyle = pal.sub; ctx.fillText(pre, x, base); }
+    ctx.font = font(size, 800); ctx.fillStyle = pal.accent; ctx.fillText(mid, x + wp, base);
+    if (suf){ ctx.font = font(size, 500); ctx.fillStyle = pal.sub; ctx.fillText(suf, x + wp + wm, base); }
+    return true;
+  }
+
+  function splitArrow(raw){
+    const parts = String(raw).split(/\s*(?:→|->|⇒)\s*/);
+    if (parts.length === 2 && parts[0].trim() && parts[1].trim()){
+      return { a: parts[0].trim(), b: parts[1].trim() };
+    }
+    return null;
+  }
+
+  function wrapItem(ctx, text, maxW, size, weight, softMax, minScale){
+    const min = size * (minScale || 0.78);
+    let s = size;
+    let lines = wrapLines(ctx, text, maxW, s, weight);
+    while (lines.length > softMax && s > min){
+      s = Math.max(min, s - Math.max(1, Math.round(size * 0.04)));
+      lines = wrapLines(ctx, text, maxW, s, weight);
+    }
+    if (lines.length > 5){
+      const kept = lines.slice(0, 5);
+      let last = kept[4];
+      ctx.font = font(s, weight);
+      while (last.length > 1 && ctx.measureText(last + '…').width > maxW) last = last.slice(0, -1);
+      kept[4] = last + '…';
+      lines = kept;
+    }
+    return { lines: lines, size: s, lh: s * 1.32 };
+  }
+
+  function layoutRow(ctx, r, maxW, size){
+    const amountRaw = (r.amount || '').trim();
+    const itemRaw = (r.item || '').trim();
+    let am = null;
+
+    if (amountRaw){
+      const split = splitArrow(amountRaw);
+      if (split){
+        const pct = pctOff(split.a, split.b);
+        let so = size * 0.84, sn = size * 1.04;
+        const chipS = size * 0.72, chipPadX = size * 0.30, chipH = chipS * 1.66;
+        const hlPad = size * 0.34;
+        const meas = ()=>{
+          ctx.font = font(so, 500); const wa = ctx.measureText(split.a).width;
+          ctx.font = font(sn, 800); const wb = ctx.measureText(split.b).width;
+          ctx.font = font(chipS, 800); const cw = pct ? ctx.measureText('-' + pct + '%').width + chipPadX * 2 : 0;
+          ctx.font = font(size * 0.8, 600); const arw = ctx.measureText('→').width;
+          const total = (cw ? cw + size * 0.42 : 0) + wa + size * 0.26 + arw + size * 0.26 + wb + hlPad * 2;
+          return { wa, wb, cw, arw, total };
+        };
+        let m = meas();
+        while (m.total > maxW * 0.70 && sn > size * 0.76){ so -= 1; sn -= 1; m = meas(); }
+        am = { kind:'sale', a:split.a, b:split.b, pct:pct, so:so, sn:sn, chipS:chipS, chipH:chipH, chipPadX:chipPadX,
+               hlPad:hlPad, wa:m.wa, wb:m.wb, cw:m.cw, arw:m.arw, total:m.total };
+      } else {
+        let sn = size * 1.02;
+        ctx.font = font(sn, 800);
+        let wAmt = ctx.measureText(amountRaw).width;
+        while (wAmt > maxW * 0.58 && sn > size * 0.72){
+          sn -= 1; ctx.font = font(sn, 800); wAmt = ctx.measureText(amountRaw).width;
+        }
+        am = { kind:'plain', b:amountRaw, sn:sn, wb:wAmt, total:wAmt + size * 0.2 };
+      }
+    }
+
+    const itemW = Math.max(90, maxW - (am ? am.total + size * 0.6 : 0));
+    const item = itemRaw ? wrapItem(ctx, itemRaw, itemW, size * 1.02, 700, 2, 0.72) : null;
+    const linesN = item ? item.lines.length : 0;
+    const lh = item ? item.lh : size * 1.3;
+    const minH = size * 2.05;
+    const h = Math.max(minH, linesN * lh + size * 0.66);
+    return { h: h, am: am, item: item, itemW: itemW, lh: lh, size: size };
+  }
+
+  function paintRow(ctx, L, x, y, maxW, pal){
+    const midY = y + L.h / 2;
+    const size = L.size;
+
+    if (L.item){
+      const blockH = L.item.lines.length * L.item.lh;
+      drawLines(ctx, L.item.lines, x, midY - blockH / 2, L.item.lh, L.item.size, 700, pal.fg, 'left');
+    }
+
+    const am = L.am;
+    if (!am) return;
+    const right = x + maxW;
+
+    if (am.kind === 'plain'){
+      ctx.font = font(am.sn, 800);
+      ctx.fillStyle = pal.fg;
+      ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic';
+      ctx.fillText(am.b, right, midY + am.sn * 0.34);
+      return;
+    }
+
+    // 할인가 하이라이트 배지
+    const hlPad = am.hlPad;
+    const hlH = am.sn * 1.62;
+    ctx.save();
+    roundRect(ctx, right - am.wb - hlPad * 2, midY - hlH / 2, am.wb + hlPad * 2, hlH, am.sn * 0.34);
+    ctx.fillStyle = pal.accentSoft;
+    ctx.fill();
+    ctx.restore();
+
+    ctx.font = font(am.sn, 800);
+    ctx.fillStyle = pal.accent;
+    ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic';
+    ctx.fillText(am.b, right - hlPad, midY + am.sn * 0.34);
+
+    let cursor = right - am.wb - hlPad * 2;
+
+    // 화살표
+    ctx.font = font(size * 0.8, 600);
+    ctx.fillStyle = pal.sub;
+    ctx.textAlign = 'right';
+    ctx.fillText('→', cursor - size * 0.16, midY + size * 0.26);
+    cursor = cursor - size * 0.16 - am.arw;
+
+    // 정가 취소선
+    ctx.font = font(am.so, 500);
+    ctx.fillStyle = pal.sub;
+    ctx.textAlign = 'right';
+    ctx.fillText(am.a, cursor - size * 0.14, midY + am.so * 0.34);
+    const aRight = cursor - size * 0.14;
+    const aLeft = aRight - am.wa;
+    ctx.fillStyle = pal.sub;
+    ctx.fillRect(aLeft, midY + am.so * 0.02, am.wa, Math.max(1.5, am.so * 0.06));
+
+    // 할인율 배지
+    if (am.pct){
+      const txt = '-' + am.pct + '%';
+      ctx.font = font(am.chipS, 800);
+      const tw = ctx.measureText(txt).width;
+      const cw = tw + am.chipPadX * 2;
+      const cx = aLeft - size * 0.34;
+      roundRect(ctx, cx - cw, midY - am.chipH / 2, cw, am.chipH, am.chipH / 2);
+      ctx.fillStyle = pal.accent;
+      ctx.fill();
+      ctx.fillStyle = pal.accentFg;
+      ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+      ctx.fillText(txt, cx - cw + am.chipPadX, midY + am.chipS * 0.36);
+    }
+  }
+
+  function measureSummary(ctx, s, f, k, rows, topY, footerTop, maxW, pad){
+    const T = { title:f.t.sumTitle*k, sub:f.t.sumSub*k, row:f.t.row*k,
+                tl:f.t.totalLabel*k, total:f.t.total*k, cta:f.t.cta*k, k:k };
+    let y = topY + 4 + 12*k;
+    const labelSize = 21 * Math.max(0.85, Math.min(k, 1.1));
+    const labelTrack = 5.5 * Math.max(0.85, Math.min(k, 1.1));
+    const labelBase = y + labelSize;
+    y += labelSize + 14*k;
+
+    const title = fitText(ctx, (s.title || '').trim() || '요약표 제목', {
+      maxWidth: maxW, size: T.title, weight: 800, maxLines: 2, lineHeight: 1.16, minSize: T.title * 0.74 });
+    const titleTop = y;
+    y += title.lines.length * title.lh;
+
+    let sub = null, subTop = 0;
+    if ((s.subtitle || '').trim()){
+      y += 14 * k;
+      subTop = y;
+      sub = fitText(ctx, s.subtitle, { maxWidth: maxW, size: T.sub, weight: 500, maxLines: 2, lineHeight: 1.42, minSize: T.sub * 0.92 });
+      y += sub.lines.length * sub.lh;
+    }
+
+    const phraseObj = discountPhrase(s);
+    let sale = null;
+    if (phraseObj && !phraseObj.inSub){
+      const phrase = phraseObj.text;
+      const ss = T.sub * 0.94;
+      const padX = ss * 0.62;
+      const tw = trackedWidth(ctx, phrase, ss, 800, 0.5);
+      y += 16 * k;
+      const hgt = ss * 1.94;
+      sale = { text: phrase, size: ss, padX: padX, h: hgt, w: Math.min(maxW, tw + padX * 2), y: y };
+      y += hgt;
+    }
+    const headerH = y - topY;
+    const subHi = (phraseObj && phraseObj.inSub && sub) ? phraseObj.text : '';
+
+    const rowLayouts = rows.map(r=>layoutRow(ctx, r, maxW, T.row));
+    let rowsH = rowLayouts.reduce((a, b)=>a + b.h, 0);
+    const gapRows = 24 * k;
+    const totalH = T.total * 2.3 + ((s.totalNote || '').trim() ? T.tl * 1.7 : 0);
+    const gapTotal = 26 * k;
+
+    let cta = null;
+    if ((s.cta || '').trim()){
+      const ctaSize = T.cta;
+      const fit = fitText(ctx, s.cta, { maxWidth: maxW - ctaSize * 2.2, size: ctaSize, weight: 800, maxLines: 2, lineHeight: 1.28, minSize: ctaSize * 0.82 });
+      const textH = fit.lines.length * fit.lh;
+      const ph = Math.max(ctaSize * 2.0, textH + ctaSize * 0.9);
+      const twMax = Math.max.apply(null, fit.lines.map(t=>{ ctx.font = font(fit.size, 800); return ctx.measureText(t).width; }).concat([0]));
+      cta = { fit: fit, h: ph, w: Math.min(maxW, twMax + ctaSize * 2.2) };
+    }
+
+    let blockH = rowsH + (rows.length ? gapTotal : 0) + totalH + (cta ? gapTotal + cta.h : 0);
+    const availTop = topY + headerH + 26 * k;
+    const avail = Math.max(80, footerTop - 10 - availTop);
+    let fits = blockH <= avail;
+
+    // 남는 공간은 행 간격에 나눠 넣어 빈 곳 없이 채운다
+    if (fits && rows.length){
+      const slack = avail - blockH;
+      const add = Math.min(slack * 0.9 / rowLayouts.length, T.row * 1.4);
+      if (add > 1){
+        rowLayouts.forEach(rl=>{ rl.h += add; });
+        rowsH += add * rowLayouts.length;
+        blockH = rowsH + (rows.length ? gapTotal : 0) + totalH + (cta ? gapTotal + cta.h : 0);
+      }
+    }
+
+    return { T: T, k: k, topY: topY, maxW: maxW, pad: pad,
+      labelSize: labelSize, labelTrack: labelTrack, labelBase: labelBase,
+      title: title, titleTop: titleTop, sub: sub, subTop: subTop, sale: sale, subHi: subHi,
+      headerH: headerH, rowLayouts: rowLayouts, rowsH: rowsH, gapRows: gapRows,
+      totalH: totalH, gapTotal: gapTotal, cta: cta, blockH: blockH,
+      blockTop: availTop + Math.max(0, (avail - blockH) / 2), fits: fits };
   }
 
   function drawSummary(ctx, s, f){
-    const w = f.w, h = f.h, pad = f.pad, T = f.t;
+    const w = f.w, h = f.h, pad = f.pad;
     const style = s.summaryStyle || 'photo';
     const im = imgFor(s);
     let pal;
@@ -893,185 +1328,176 @@
       g.addColorStop(0.45, 'rgba(0,0,0,0)');
       g.addColorStop(1, 'rgba(0,0,0,.55)');
       ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
-      pal = summaryPalette('dark');
+      pal = palInk();
     } else if (style === 'light'){
-      pal = summaryPalette('light');
-      ctx.fillStyle = pal.bg; ctx.fillRect(0, 0, w, h);
-      const g = ctx.createRadialGradient(w * 0.5, 0, 0, w * 0.5, 0, h * 0.85);
-      g.addColorStop(0, 'rgba(255,255,255,.55)');
-      g.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+      pal = palPaper();
+      drawSurface(ctx, w, h, pal, false);
     } else {
-      pal = summaryPalette('dark');
-      ctx.fillStyle = pal.bg; ctx.fillRect(0, 0, w, h);
-      const g = ctx.createRadialGradient(w * 0.5, -h * 0.05, 0, w * 0.5, -h * 0.05, h * 0.85);
-      g.addColorStop(0, 'rgba(255,255,255,.09)');
-      g.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+      pal = palInk();
+      drawSurface(ctx, w, h, pal, false);
     }
 
     const topY = f.safeTop + pad;
     const bottomY = h - f.safeBottom - pad;
     const maxW = w - pad * 2;
+    const footerTop = bottomY - 34;
+    const rows = (s.rows || []).filter(r => ((r.item || '').trim() || (r.amount || '').trim()));
 
-    /* --- 헤더 --- */
-    let hy = topY;
+    let k = textScale();
+    let L = null;
+    for (let guard = 0; guard < 26; guard++){
+      L = measureSummary(ctx, s, f, k, rows, topY, footerTop, maxW, pad);
+      if (L.fits || k <= 0.62) break;
+      k = Math.max(0.62, k - 0.04);
+    }
+
+    const T = L.T;
+
+    /* 헤더 */
     ctx.fillStyle = pal.accent;
-    roundRect(ctx, pad, hy + 2, 38, 4, 2); ctx.fill();
-    hy += 30;
-    drawTracked(ctx, 'SUMMARY', pad, hy + 16, 21, 700, 5.5, pal.sub, 'left');
-    hy += 30;
-
-    const title = fitText(ctx, s.title || '요약표 제목', { maxWidth: maxW, size: T.sumTitle, weight: 800, maxLines: 2, lineHeight: 1.16, minSize: T.sumTitle * 0.66 });
-    drawLines(ctx, title.lines, pad, hy, title.lh, title.size, 800, pal.fg, 'left');
-    hy += title.lines.length * title.lh;
-
-    if (s.subtitle){
-      const sub = fitText(ctx, s.subtitle, { maxWidth: maxW, size: T.sumSub, weight: 500, maxLines: 2, lineHeight: 1.45, minSize: T.sumSub * 0.85 });
-      hy += 14;
-      drawLines(ctx, sub.lines, pad, hy, sub.lh, sub.size, 500, pal.sub, 'left');
-      hy += sub.lines.length * sub.lh;
+    roundRect(ctx, pad, topY, 38, 4, 2); ctx.fill();
+    drawTracked(ctx, 'SUMMARY', pad, L.labelBase, L.labelSize, 700, L.labelTrack, pal.sub, 'left');
+    drawLines(ctx, L.title.lines, pad, L.titleTop, L.title.lh, L.title.size, 800, pal.fg, 'left');
+    if (L.sub){
+      L.sub.lines.forEach(function(line, i){
+        const yTop = L.subTop + L.sub.lh * i;
+        if (L.subHi && drawSubLineHi(ctx, line, L.subHi, pad, yTop, L.sub.size, pal, maxW)) return;
+        drawLines(ctx, [line], pad, yTop, L.sub.lh, L.sub.size, 500, pal.sub, 'left');
+      });
     }
-    const headerBottom = hy;
-
-    /* --- 행 준비 --- */
-    const rows = (s.rows || []).filter(r => (r.item && r.item.trim()) || (r.amount && r.amount.trim()));
-    const rowFont = T.row;
-
-    const totalLabel = s.totalLabel || '총 합계';
-    const totalText = s.total || '';
-    const noteText = s.totalNote || '';
-    const totalH = noteText ? 122 : 104;
-    const ctaText = s.cta || '';
-    const ctaLines = ctaText ? fitText(ctx, ctaText, { maxWidth: maxW * 0.94, size: T.cta, weight: 600, maxLines: 2, lineHeight: 1.4 }) : null;
-    const ctaH = ctaLines ? (ctaLines.lines.length > 1 ? ctaLines.lines.length * ctaLines.lh + 26 : 66) : 0;
-    const gapRowsTotal = 30;
-    const gapTotalCta = ctaLines ? 26 : 0;
-    const groupFixed = totalH + gapTotalCta + ctaH;
-    const footerBaseline = bottomY;
-    const footerTop = footerBaseline - 34;
-
-    const avail = footerTop - 24 - (headerBottom + 32);
-    let rowH = f.h > 1500 ? 84 : 78;
-    const rowCount = Math.max(rows.length, 1);
-    if (rows.length){
-      const fitH = Math.floor((avail - groupFixed - gapRowsTotal) / rowCount);
-      rowH = clamp(fitH, 52, 96);
-      while (rows.length * rowH + gapRowsTotal + groupFixed > avail && rowH > 52) rowH -= 1;
+    if (L.sale){
+      const sl = L.sale;
+      const bh = sl.h;
+      roundRect(ctx, pad, sl.y, sl.w, bh, bh / 2);
+      ctx.fillStyle = pal.accent; ctx.fill();
+      drawTracked(ctx, sl.text, pad + sl.padX, sl.y + bh / 2 + sl.size * 0.35, sl.size, 800, 0.5, pal.accentFg, 'left');
     }
-    const rowsH = rows.length * rowH;
-    const groupH = rowsH + (rows.length ? gapRowsTotal : 0) + groupFixed;
-    let blockTop = headerBottom + 32 + Math.max(0, Math.floor((avail - groupH) / 2));
 
-    /* --- 행 --- */
-    let ry = blockTop;
-    rows.forEach((r, i)=>{
-      const sep = i < rows.length - 1;
-      drawSummaryRow(ctx, r, pad, ry, maxW, rowH, rowFont, pal);
-      if (sep){
+    /* 행 */
+    let ry = L.blockTop;
+    L.rowLayouts.forEach((rl, i)=>{
+      paintRow(ctx, rl, pad, ry, maxW, pal);
+      if (i < L.rowLayouts.length - 1){
         ctx.strokeStyle = pal.line; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(pad, ry + rowH); ctx.lineTo(w - pad, ry + rowH); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(pad, ry + rl.h);
+        ctx.lineTo(w - pad, ry + rl.h);
+        ctx.stroke();
       }
-      ry += rowH;
+      ry += rl.h;
     });
 
-    /* --- 합계 --- */
-    if (rows.length) ry += gapRowsTotal;
-    ctx.save();
-    roundRect(ctx, pad, ry, maxW, totalH, 18);
-    ctx.fillStyle = pal.totalBg; ctx.fill();
-    ctx.restore();
-    ctx.font = font(T.totalLabel, 600);
-    ctx.fillStyle = pal.totalFg; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-    ctx.fillText(totalLabel, pad + 34, ry + totalH / 2 - (noteText ? 4 : 0));
-    const totalFit = fitOneLine(ctx, totalText, maxW * 0.62, T.total, 800, T.total * 0.6);
-    ctx.font = font(totalFit.size, 800);
-    ctx.fillStyle = pal.totalFg; ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic';
-    if (noteText){
-      ctx.fillText(totalFit.text, w - pad - 34, ry + 64);
-      const nf = fitOneLine(ctx, noteText, maxW * 0.5, 22, 500, 18);
-      ctx.globalAlpha = 0.66;
-      ctx.font = font(nf.size, 500);
-      ctx.textAlign = 'right';
-      ctx.fillText(nf.text, w - pad - 34, ry + 96);
-      ctx.globalAlpha = 1;
-    } else {
-      ctx.fillText(totalFit.text, w - pad - 34, ry + totalH / 2 + totalFit.size * 0.34);
-    }
-    ry += totalH;
+    /* 합계 */
+    if (rows.length) ry += L.gapTotal;
+    drawTotal(ctx, s, L, pal, ry, pad, maxW, w);
+    ry += L.totalH;
 
-    /* --- CTA --- */
-    if (ctaLines){
-      ry += gapTotalCta;
-      if (ctaLines.lines.length > 1){
-        drawLines(ctx, ctaLines.lines, w / 2, ry + 8, ctaLines.lh, ctaLines.size, 600, pal.fg, 'center');
-      } else {
-        const txt = ctaLines.lines[0];
-        ctx.font = font(ctaLines.size, 600);
-        const tw = ctx.measureText(txt).width;
-        const pw = Math.min(maxW, tw + 76), ph = 66;
-        ctx.save();
-        roundRect(ctx, w / 2 - pw / 2, ry, pw, ph, ph / 2);
-        ctx.strokeStyle = pal.ctaBorder; ctx.lineWidth = 1.6; ctx.stroke();
-        ctx.restore();
-        ctx.fillStyle = pal.fg; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-        ctx.font = font(ctaLines.size, 600);
-        ctx.fillText(txt, w / 2, ry + ph / 2 + ctaLines.size * 0.34);
-      }
-      ry += ctaH;
+    /* CTA */
+    if (L.cta){
+      ry += L.gapTotal;
+      drawCta(ctx, L, pal, ry, w, pad, maxW);
+      ry += L.cta.h;
     }
 
-    /* --- 푸터 --- */
-    drawFooterMark(ctx, w / 2, footerBaseline, pal, 'center');
+    drawFooterMark(ctx, w / 2, bottomY, pal, 'center', T.k);
   }
 
-  function drawSummaryRow(ctx, r, x, y, width, rowH, size, pal){
-    const baseline = y + rowH / 2 + size * 0.34;
-    const amountRaw = (r.amount || '').trim();
-    const itemRaw = (r.item || '').trim();
+  function drawTotal(ctx, s, L, pal, y, pad, maxW, w){
+    const T = L.T;
+    const note = (s.totalNote || '').trim();
+    ctx.save();
+    roundRect(ctx, pad, y, maxW, L.totalH, 18 * Math.min(1.4, Math.max(0.8, T.k)));
+    ctx.fillStyle = pal.totalBg; ctx.fill();
+    ctx.restore();
 
-    let amountW = 0;
-    if (amountRaw){
-      const parts = amountRaw.split('→');
-      if (parts.length === 2){
-        const a = parts[0].trim(), b = parts[1].trim();
-        let as = size * 0.86, bs = size;
-        const measure = ()=>{
-          ctx.font = font(as, 550); const wa = ctx.measureText(a).width;
-          ctx.font = font(bs, 700); const wb = ctx.measureText(b).width;
-          ctx.font = font(as, 550); const wr = ctx.measureText('→').width;
-          return wa + 8 + wr + 10 + wb;
-        };
-        let tw = measure();
-        while (tw > width * 0.62 && bs > size * 0.72){ as -= 1; bs -= 1; tw = measure(); }
-        amountW = tw;
-        const bsCalc = bs, asCalc = as;
-        ctx.font = font(bsCalc, 700); const wb = ctx.measureText(b).width;
-        const bx = x + width - wb;
-        ctx.fillStyle = pal.fg; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-        ctx.fillText(b, bx, baseline);
-        ctx.font = font(asCalc, 550);
-        const wr = ctx.measureText('→').width, wa = ctx.measureText(a).width;
-        ctx.fillStyle = pal.sub;
-        ctx.fillText('→', bx - 10 - wr, baseline);
-        ctx.fillText(a, bx - 10 - wr - 8 - wa, baseline - 1);
-      } else {
-        let bs = size;
-        ctx.font = font(bs, 700);
-        while (ctx.measureText(amountRaw).width > width * 0.55 && bs > size * 0.72){ bs -= 1; ctx.font = font(bs, 700); }
-        amountW = ctx.measureText(amountRaw).width;
-        ctx.fillStyle = pal.fg; ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic';
-        ctx.fillText(amountRaw, x + width, baseline);
+    const innerX = pad + 34 * Math.min(1.3, Math.max(0.85, T.k));
+    const rightX = w - pad - 34 * Math.min(1.3, Math.max(0.85, T.k));
+    const labelBaseline = note ? y + L.totalH * 0.42 + T.tl * 0.34 : y + L.totalH / 2 + T.total * 0.33;
+
+    ctx.font = font(T.tl, 600);
+    ctx.fillStyle = pal.totalFg;
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    ctx.fillText(s.totalLabel || '총 합계', innerX, labelBaseline);
+
+    const raw = (s.total || '').trim();
+    const split = splitArrow(raw);
+    const amountBaseline = note ? y + L.totalH * 0.42 + T.total * 0.34 : y + L.totalH / 2 + T.total * 0.33;
+
+    if (split){
+      const pct = pctOff(split.a, split.b);
+      let so = T.total * 0.5, sn = T.total;
+      const meas = ()=>{
+        ctx.font = font(so, 500); const wa = ctx.measureText(split.a).width;
+        ctx.font = font(sn, 800); const wb = ctx.measureText(split.b).width;
+        ctx.font = font(T.total * 0.5, 600); const arw = ctx.measureText('→').width;
+        return { wa: wa, wb: wb, arw: arw, total: wa + T.total * 0.28 + arw + T.total * 0.28 + wb };
+      };
+      let m = meas();
+      while (m.total > maxW * 0.68 && sn > T.total * 0.72){ so -= 1; sn -= 1; m = meas(); }
+
+      ctx.font = font(sn, 800);
+      ctx.fillStyle = pal.totalFg;
+      ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic';
+      ctx.fillText(split.b, rightX, amountBaseline);
+      let cursor = rightX - m.wb;
+
+      ctx.font = font(T.total * 0.5, 600);
+      ctx.fillStyle = pal.totalFg;
+      ctx.globalAlpha = 0.62;
+      ctx.textAlign = 'right';
+      ctx.fillText('→', cursor - T.total * 0.12, amountBaseline - T.total * 0.06);
+      cursor = cursor - T.total * 0.12 - m.arw;
+
+      ctx.font = font(so, 500);
+      ctx.fillText(split.a, cursor - T.total * 0.12, amountBaseline - T.total * 0.04);
+      const aRight = cursor - T.total * 0.12;
+      const aLeft = aRight - m.wa;
+      ctx.fillRect(aLeft, amountBaseline - T.total * 0.20, m.wa, Math.max(2, T.total * 0.028));
+      ctx.globalAlpha = 1;
+
+      if (pct){
+        const cs = T.total * 0.34;
+        ctx.font = font(cs, 800);
+        const txt = '-' + pct + '%';
+        const tw = ctx.measureText(txt).width;
+        const cw = tw + cs * 1.1, chh = cs * 1.8;
+        const cx = aLeft - T.total * 0.3;
+        roundRect(ctx, cx - cw, amountBaseline - chh * 0.62, cw, chh, chh / 2);
+        ctx.fillStyle = pal.totalFg; ctx.globalAlpha = 0.16; ctx.fill(); ctx.globalAlpha = 1;
+        ctx.fillStyle = pal.totalFg;
+        ctx.textAlign = 'left';
+        ctx.fillText(txt, cx - cw + cs * 0.55, amountBaseline + cs * 0.06);
       }
+    } else if (raw){
+      const fit = fitOneLine(ctx, raw, maxW * 0.64, T.total, 800, T.total * 0.6);
+      ctx.font = font(fit.size, 800);
+      ctx.fillStyle = pal.totalFg;
+      ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic';
+      ctx.fillText(fit.text, rightX, amountBaseline);
     }
 
-    if (itemRaw){
-      const avail = width - (amountW ? amountW + 26 : 0);
-      const fit = fitOneLine(ctx, itemRaw, avail, size, 600, size * 0.68);
-      ctx.font = font(fit.size, 600);
-      ctx.fillStyle = pal.fg; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-      ctx.fillText(fit.text, x, baseline);
+    if (note){
+      const nf = fitOneLine(ctx, note, maxW * 0.5, T.tl * 0.82, 500, T.tl * 0.6);
+      ctx.globalAlpha = 0.70;
+      ctx.font = font(nf.size, 500);
+      ctx.fillStyle = pal.totalFg;
+      ctx.textAlign = 'right';
+      ctx.fillText(nf.text, rightX, amountBaseline + T.tl * 1.5);
+      ctx.globalAlpha = 1;
     }
+  }
+
+  function drawCta(ctx, L, pal, y, w, pad, maxW){
+    const cta = L.cta, fit = cta.fit;
+    const x = w / 2 - cta.w / 2;
+    ctx.save();
+    roundRect(ctx, x, y, cta.w, cta.h, cta.h / 2);
+    ctx.fillStyle = pal.accent; ctx.fill();
+    ctx.restore();
+
+    const blockH = fit.lines.length * fit.lh;
+    const top = y + (cta.h - blockH) / 2;
+    drawLines(ctx, fit.lines, w / 2, top, fit.lh, fit.size, 800, pal.accentFg, 'center');
   }
 
   function drawGuides(ctx, f){
@@ -1103,7 +1529,7 @@
   }
 
   /* =========================================================
-     7. 미리보기 캔버스
+     8. 미리보기 캔버스
      ========================================================= */
   const preview = document.getElementById('preview');
   const stageInner = document.getElementById('stageInner');
@@ -1148,7 +1574,7 @@
   }
 
   /* =========================================================
-     8. 사진 드래그 / 확대
+     9. 사진 드래그 / 확대
      ========================================================= */
   const pointers = new Map();
   let gesture = null;
@@ -1211,11 +1637,35 @@
   preview.addEventListener('pointerleave', (e)=>{ if (pointers.has(e.pointerId)) endPointer(e); });
 
   /* =========================================================
-     9. UI 그리기
+     10. UI 그리기
      ========================================================= */
   const el = (id)=>document.getElementById(id);
   const chipsEl = el('chips');
   const rowsEl = el('rows');
+  const themeChipsEl = el('themeChips');
+  const fontChipsEl = el('fontChips');
+
+  function renderThemeChips(){
+    themeChipsEl.innerHTML = THEMES.map(t=>{
+      const on = t.id === state.theme ? ' on' : '';
+      const bg = t.paper.bg, ac = t.ink.accent, ink = t.ink.bg;
+      const sw = 'background:linear-gradient(135deg,' + ink + ' 0 50%,' + ac + ' 50% 100%)';
+      return '<button class="chip theme' + on + '" data-theme="' + t.id + '">' +
+             '<span class="sw" style="' + sw + '"></span><span class="t">' + esc(t.name) + '</span></button>';
+    }).join('');
+    el('themeName').textContent = THEME().name;
+  }
+
+  function renderFontChips(){
+    fontChipsEl.innerHTML = FONTS.map(fn=>{
+      const on = fn.id === state.font ? ' on' : '';
+      const r = fn.resolve(700);
+      const fam = '"' + r.family + '", ' + fn.tail;
+      return '<button class="chip font' + on + '" data-font="' + fn.id + '">' +
+             '<span class="t" style="font-family:' + fam + '">' + esc(fn.label) + '</span></button>';
+    }).join('');
+    el('fontName').textContent = FONT().label;
+  }
 
   function renderChips(){
     chipsEl.innerHTML = state.slides.map((s, i)=>{
@@ -1249,9 +1699,21 @@
     document.body.dataset.type = s.type;
     document.querySelectorAll('[data-f]').forEach(inp=>{
       const key = inp.dataset.f;
-      const v = s[key] == null ? '' : String(s[key]);
+      let v = s[key] == null ? '' : String(s[key]);
+      if (key === 'badge' && s.type === 'body' && s.badgeAuto) v = '';
       if (inp.value !== v) inp.value = v;
     });
+    const badgeInput = el('badgeInput');
+    if (badgeInput){
+      badgeInput.placeholder = s.badgeAuto
+        ? '자동: ' + autoBadgeText(s) + ' · 입력하면 고정'
+        : '예: 추천 01 / 웨이팅 팁';
+    }
+    const autoBtn = el('badgeAutoBtn');
+    if (autoBtn){
+      autoBtn.classList.toggle('on', s.badgeAuto !== false);
+      autoBtn.textContent = s.badgeAuto !== false ? ('번호 자동 · ' + String(autoBadgeNo(s)).padStart(2,'0')) : '번호 자동 꺼짐';
+    }
     document.querySelectorAll('#typeSeg button').forEach(b=>b.classList.toggle('on', b.dataset.type === s.type));
     document.querySelectorAll('#styleSeg button').forEach(b=>b.classList.toggle('on', b.dataset.style === s.summaryStyle));
     document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('on', b.dataset.mode === state.mode));
@@ -1265,6 +1727,7 @@
     else { thumb.hidden = true; thumb.removeAttribute('src'); el('drop').classList.remove('has'); el('dropEmpty').hidden = false; }
     el('photoClear').style.visibility = s.photo ? 'visible' : 'hidden';
     syncZoomUI();
+    syncStyleUI();
     el('saveAll').textContent = state.slides.length > 1 ? ('전체 저장 (' + state.slides.length + ')') : '전체 저장';
     el('saveTip').textContent = F().w + '×' + F().h + ' PNG · 아이폰은 공유 시트에서 \'이미지 저장\'';
   }
@@ -1276,8 +1739,21 @@
     el('zoomVal').textContent = z.toFixed(2) + '×';
   }
 
+  function syncStyleUI(){
+    const sc = textScale();
+    el('scale').value = sc;
+    el('scaleVal').textContent = sc.toFixed(2) + '×';
+    el('themeName').textContent = THEME().name;
+    el('fontName').textContent = FONT().label;
+    document.querySelectorAll('#scalePresets button').forEach(b=>{
+      b.classList.toggle('on', Math.abs(parseFloat(b.dataset.scale) - sc) < 0.02);
+    });
+  }
+
   function renderAll(){
     renderChips();
+    renderThemeChips();
+    renderFontChips();
     syncForm();
     renderRows();
     paintSoon();
@@ -1301,9 +1777,8 @@
   }
 
   /* =========================================================
-     10. 이벤트
+     11. 이벤트
      ========================================================= */
-  // 슬라이드 선택
   chipsEl.addEventListener('click', (e)=>{
     const b = e.target.closest('[data-slide]');
     if (!b) return;
@@ -1334,12 +1809,12 @@
         state.current = clamp(i, 0, state.slides.length - 1);
       } else if (act === 'up'){
         if (i <= 0) return;
-        const [x] = state.slides.splice(i, 1);
+        const x = state.slides.splice(i, 1)[0];
         state.slides.splice(i - 1, 0, x);
         state.current = i - 1;
       } else if (act === 'down'){
         if (i >= state.slides.length - 1) return;
-        const [x] = state.slides.splice(i, 1);
+        const x = state.slides.splice(i, 1)[0];
         state.slides.splice(i + 1, 0, x);
         state.current = i + 1;
       }
@@ -1354,6 +1829,7 @@
     const s = cur();
     if (s.type === b.dataset.type) return;
     s.type = b.dataset.type;
+    if (s.type === 'body' && !s.badge) s.badgeAuto = true;
     if (s.type === 'summary' && (!s.rows || !s.rows.length)) s.rows = [{ item:'', amount:'' }];
     if (s.type === 'summary' && !s.totalLabel) s.totalLabel = '총 합계';
     renderAll(); persistSoon();
@@ -1376,11 +1852,56 @@
     if (b.dataset.style === 'photo' && !cur().photo) toast('사진을 올리면 어둡게 깔아 배경으로 써요');
   });
 
+  // 컬러 / 폰트
+  themeChipsEl.addEventListener('click', (e)=>{
+    const b = e.target.closest('[data-theme]');
+    if (!b) return;
+    state.theme = b.dataset.theme;
+    renderAll(); persistSoon();
+  });
+  fontChipsEl.addEventListener('click', (e)=>{
+    const b = e.target.closest('[data-font]');
+    if (!b) return;
+    state.font = b.dataset.font;
+    renderAll(); persistSoon();
+    loadFontFor().then(()=>{ paint(); });
+  });
+
+  // 글씨 크기
+  el('scale').addEventListener('input', (e)=>{
+    state.textScale = clamp(num(e.target.value, 1), 0.85, 1.35);
+    syncStyleUI();
+    commit();
+  });
+  el('scalePresets').addEventListener('click', (e)=>{
+    const b = e.target.closest('[data-scale]');
+    if (!b) return;
+    state.textScale = clamp(num(b.dataset.scale, 1), 0.85, 1.35);
+    syncStyleUI();
+    commit();
+  });
+
+  // 배지 자동 번호
+  el('badgeAutoBtn').addEventListener('click', ()=>{
+    const s = cur();
+    if (s.badgeAuto){
+      s.badgeAuto = false;
+      if (!s.badge) s.badge = autoBadgeText(s);
+    } else {
+      s.badgeAuto = true;
+      s.badge = '';
+    }
+    syncForm(); commit();
+  });
+
   // 텍스트 입력
   document.addEventListener('input', (e)=>{
     const inp = e.target;
     if (inp.matches('[data-f]')){
-      cur()[inp.dataset.f] = inp.value;
+      const s = cur();
+      if (inp.dataset.f === 'badge' && s.type === 'body' && inp.value.trim()) s.badgeAuto = false;
+      s[inp.dataset.f] = inp.value;
+      if (inp.dataset.f === 'badge') syncForm();
       commit();
       ensureFonts(inp.value);
     } else if (inp.closest('[data-row]') && inp.matches('[data-k]')){
@@ -1524,8 +2045,9 @@
   el('sheetReload').addEventListener('click', ()=>{ openSheet(false); location.reload(); });
   el('sheetReset').addEventListener('click', ()=>{
     if (!confirm('저장된 카드와 사진을 모두 지울까요? 되돌릴 수 없어요.')) return;
-    try{ localStorage.removeItem(STORE_KEY); }catch(e){}
-    Object.assign(state, blankState(state.mode));
+    try{ localStorage.removeItem(STORE_KEY); localStorage.removeItem('iming_cards_v1'); }catch(e){}
+    const mode = state.mode;
+    Object.assign(state, blankState(mode));
     closeFull();
     renderAll();
     openSheet(false);
@@ -1554,13 +2076,13 @@
         subtitle: '다낭 목식당 솔직 후기 · 영수증 그대로 공개'
       }),
       Object.assign(blankSlide('body'), {
-        badge: '추천 ①',
+        badgeAuto: true,
         title: '파기름 가리비구이',
         desc: '80,000동. 파기름 향이 진하게 배어\n가리비 살이 통통해요. 첫 접시로 강추.',
         watermark: true
       }),
       Object.assign(blankSlide('body'), {
-        badge: '웨이팅 팁',
+        badgeAuto: false, badge: '웨이팅 팁',
         title: '점심 12시엔 2시간 대기',
         desc: '오픈 30분 전 전화 예약이 가장 빨라요.\n예약하면 음식값 10% 할인까지.',
         watermark: true
@@ -1572,14 +2094,14 @@
         rows: [
           { item:'파기름 가리비구이', amount:'80,000 → 72,000동' },
           { item:'공심채 + 맛조개', amount:'89,000 → 80,100동' },
-          { item:'마늘버터 새우 300g', amount:'207,000 → 186,300동' },
+          { item:'비추: 마늘버터 새우 (너무 달)', amount:'207,000 → 186,300동' },
           { item:'크레이피시 치즈구이 720g', amount:'1,800,000 → 1,620,000동' },
           { item:'공깃밥 · 라루 2 · 콜라', amount:'68,000동' }
         ],
         totalLabel: '총 합계',
         total: '2,026,400동',
         totalNote: '약 11만 원',
-        cta: '예약 & 10% 할인 꿀팁은 댓글 👇'
+        cta: '예약 방법 & 10% 할인 꿀팁 댓글 👇'
       })
     ];
     state.current = 0;
@@ -1590,7 +2112,7 @@
   el('exampleBtn').addEventListener('click', loadExample);
 
   /* =========================================================
-     11. 저장 / 공유
+     12. 저장 / 공유
      ========================================================= */
   function exportCanvas(slide){
     const f = F();
@@ -1632,11 +2154,12 @@
 
   let saving = false;
 
-  function saveCurrent(){
+  async function saveCurrent(){
     if (saving) return;
     saving = true;
     try{
       if (!state.slides.length) return;
+      await loadFontFor();
       const i = state.current;
       const canvas = exportCanvas(state.slides[i]);
       const name = fileName(i);
@@ -1657,10 +2180,11 @@
     }
   }
 
-  function saveAll(){
+  async function saveAll(){
     if (saving) return;
     saving = true;
     try{
+      await loadFontFor();
       const files = [];
       for (let i = 0; i < state.slides.length; i++){
         files.push(canvasToFile(exportCanvas(state.slides[i]), fileName(i)));
@@ -1686,32 +2210,37 @@
   el('saveAll').addEventListener('click', saveAll);
 
   /* =========================================================
-     12. 폰트 준비
+     13. 폰트 준비
      ========================================================= */
-  async function ensureFonts(text){
+  const SAMPLE_TEXT = '여행의 한 끗 차이 예약 방법 할인 꿀팁 댓글 0123456789 동 원 % → · 👇 가나다라마바사';
+
+  function loadFontFor(){
+    const fn = FONT();
+    if (!document.fonts || !document.fonts.load) return Promise.resolve();
+    const jobs = fn.faces.map(f=>document.fonts.load(f[1] + ' 40px "' + f[0] + '"', SAMPLE_TEXT).catch(()=>null));
+    return Promise.all(jobs).catch(()=>null);
+  }
+
+  function ensureFonts(text){
+    const fn = FONT();
     if (!document.fonts || !document.fonts.load) return;
-    const sample = String(text || '') + ' @IMING 여행의 한 끗 차이 0123456789동원%→·👇';
-    try{
-      await Promise.all(WEIGHTS.map(w => document.fonts.load(w + ' 40px "Pretendard Variable"', sample).catch(()=>null)));
-    }catch(e){}
-    paintSoon();
+    const sample = String(text || '') + ' ' + SAMPLE_TEXT;
+    const jobs = fn.faces.map(f=>document.fonts.load(f[1] + ' 40px "' + f[0] + '"', sample).catch(()=>null));
+    Promise.all(jobs).then(()=>{ paintSoon(); }).catch(()=>{});
   }
 
   /* =========================================================
-     13. 시작
+     14. 시작
      ========================================================= */
   function boot(){
     const saved = loadState();
     if (saved) Object.assign(state, saved);
 
-    // UI 이벤트 연결 후 첫 렌더
     renderAll();
     updateEmptyHint();
 
-    ensureFonts(
-      state.slides.map(s => [s.badge, s.title, s.subtitle, s.desc, s.totalLabel, s.total, s.totalNote, s.cta].join(' ')).join(' ')
-      + ' 제목을 입력하세요 요약표 제목 총 합계 예시'
-    );
+    const allText = state.slides.map(s => [s.badge, s.title, s.subtitle, s.desc, s.totalLabel, s.total, s.totalNote, s.cta].join(' ')).join(' ');
+    ensureFonts(allText);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(()=>paintSoon());
 
     if (window.ResizeObserver){
@@ -1725,9 +2254,30 @@
     window.__iming = {
       state: state,
       formats: FORMATS,
+      themes: THEMES,
+      fonts: FONTS,
+      autoBadgeText: autoBadgeText,
+      themesAvailable: function(){ return THEMES.map(t=>t.id); },
       exportCanvas: exportCanvas,
       exportSize: function(i){ const c = exportCanvas(state.slides[i == null ? state.current : i]); return { w:c.width, h:c.height }; },
       exportDataUrl: function(i){ return exportCanvas(state.slides[i == null ? state.current : i]).toDataURL('image/png'); },
+      setStyle: function(o){
+        if (o && o.theme) state.theme = themeById(o.theme).id;
+        if (o && o.font) state.font = fontById(o.font).id;
+        if (o && o.scale != null) state.textScale = clamp(num(o.scale, 1), 0.85, 1.35);
+        return loadFontFor().then(()=>{ renderAll(); persistSoon(); return true; });
+      },
+      fontReady: function(){
+        const fn = FONT();
+        return fn.faces.map(f=>{
+          try{ return document.fonts.check(f[1] + ' 40px "' + f[0] + '"', SAMPLE_TEXT); }catch(e){ return false; }
+        });
+      },
+      measure: function(text, size, weight){
+        const c = document.createElement('canvas').getContext('2d');
+        c.font = font(size, weight || 700);
+        return c.measureText(String(text)).width;
+      },
       paint: paint
     };
   }
