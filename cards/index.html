@@ -99,6 +99,10 @@
   .chip .n{font-weight:800; opacity:.55; font-size:10px; font-variant-numeric:tabular-nums}
   .chip .t{font-weight:600}
   .chip .sw{width:15px; height:15px; border-radius:5px; flex:none; box-shadow:inset 0 0 0 1px rgba(0,0,0,.14)}
+  .chip .sw img{width:100%; height:100%; object-fit:cover}
+  .stchip{padding:5px 8px 5px 5px}
+  .stchip img{width:24px; height:24px; object-fit:contain; border-radius:5px;
+    background:repeating-conic-gradient(#EDEAE2 0 25%, #FFF 0 50%) 0 0 / 8px 8px}
   .chip.on .sw{box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
   .chip.theme{padding:5px 9px 5px 6px}
   .chip.font .t{font-size:12.5px}
@@ -296,6 +300,23 @@
     <p class="hint summaryOnly" style="margin-top:3px">요약표는 배경 <b>‘사진 딤’</b>일 때만 사진을 써요</p>
   </div>
 
+  <div class="card" id="stickerCard">
+    <div class="cardHead"><span class="label">스티커 · 누끼</span><span class="count" id="stickerCount">0/3</span></div>
+    <div class="chips" id="stickerChips"></div>
+    <div class="chipActions">
+      <button class="mini primary" id="stickerAdd">+ 스티커 추가</button>
+      <button class="mini danger" id="stickerDel">선택 삭제</button>
+    </div>
+    <div id="stickerCtl" hidden>
+      <div class="zoomRow" style="margin-top:10px"><span class="tiny">크기</span><input type="range" id="stSize" min="0.06" max="0.9" step="0.01"><span class="tiny num" id="stSizeVal">28%</span></div>
+      <div class="zoomRow"><span class="tiny">회전</span><input type="range" id="stRot" min="-25" max="25" step="1"><span class="tiny num" id="stRotVal">0°</span></div>
+      <div class="zoomRow"><span class="tiny">가로</span><input type="range" id="stX" min="0" max="1" step="0.005"><span class="tiny num" id="stXVal">50%</span></div>
+      <div class="zoomRow"><span class="tiny">세로</span><input type="range" id="stY" min="0" max="1" step="0.005"><span class="tiny num" id="stYVal">50%</span></div>
+      <p class="hint">누끼 PNG는 투명한 채로 합성돼요 · 미리보기에서 스티커를 <b>끌어서</b> 옮길 수도 있어요</p>
+    </div>
+    <input type="file" id="stFile" accept="image/*" hidden>
+  </div>
+
   <div class="card" id="fieldsCard">
     <div class="coverOnly">
       <div class="field">
@@ -309,6 +330,14 @@
       <div class="field">
         <label>부제목</label>
         <input type="text" data-f="subtitle" placeholder="예: 다낭 목식당 솔직 후기 · 영수증 공개">
+      </div>
+      <div class="field">
+        <label>표지 스타일</label>
+        <div class="seg" id="coverSeg">
+          <button data-cover="classic">클래식</button>
+          <button data-cover="trend">트렌드 썸네일</button>
+        </div>
+        <p class="hint">트렌드 썸네일은 흰 제목 + 검은 테두리, 그 아래 검은 알약 부제목이에요</p>
       </div>
     </div>
 
@@ -411,6 +440,8 @@
   const PHOTO_MAX = 1600;
   const PHOTO_Q = 0.86;
   const MAX_ROWS = 6;
+  const MAX_STICKERS = 3;
+  const STICKER_MAX = 720;
 
   const FORMATS = {
     feed: { key:'feed', w:1080, h:1350, safeTop:0, safeBottom:0, pad:76,
@@ -520,6 +551,8 @@
       photo: null, zoom: 1, offX: 0, offY: 0,
       badge: '', badgeAuto: t === 'body', title: '', subtitle: '', desc: '',
       watermark: true,
+      coverStyle: 'classic',
+      stickers: [],
       summaryStyle: 'photo',
       totalLabel: '총 합계', total: '', totalNote: '', cta: '',
       rows: [{ item:'', amount:'' }, { item:'', amount:'' }, { item:'', amount:'' }]
@@ -569,6 +602,14 @@
       s.badgeAuto = (r.badgeAuto === undefined) ? (s.type === 'body' && !s.badge) : !!r.badgeAuto;
       if (s.badge) s.badgeAuto = false;
       s.desc = str(r.desc); s.watermark = r.watermark !== false;
+      s.coverStyle = r.coverStyle === 'trend' ? 'trend' : 'classic';
+      s.stickers = (Array.isArray(r.stickers) ? r.stickers : []).slice(0, MAX_STICKERS).map(x=>({
+        src: (x && typeof x.src === 'string' && x.src.indexOf('data:image') === 0) ? x.src : '',
+        x: clamp(num(x && x.x, 0.5), 0, 1),
+        y: clamp(num(x && x.y, 0.5), 0, 1),
+        w: clamp(num(x && x.w, 0.28), 0.04, 1.0),
+        rot: clamp(num(x && x.rot, 0), -25, 25)
+      })).filter(x=>x.src);
       s.summaryStyle = ['photo','dark','light'].includes(r.summaryStyle) ? r.summaryStyle : 'photo';
       s.totalLabel = str(r.totalLabel) || '총 합계';
       s.total = str(r.total); s.totalNote = str(r.totalNote); s.cta = str(r.cta);
@@ -604,7 +645,7 @@
       try{
         const slim = { v:2, mode:state.mode, current:state.current, guides:state.guides,
           theme:state.theme, font:state.font, textScale:state.textScale,
-          slides: state.slides.map(s=>Object.assign({}, s, { photo:null })) };
+          slides: state.slides.map(s=>Object.assign({}, s, { photo:null, stickers:[] })) };
         localStorage.setItem(STORE_KEY, JSON.stringify(slim));
         if (!quotaWarned){ quotaWarned = true; toast('사진은 용량 때문에 저장하지 못했어요. 문구는 저장됨'); }
       }catch(e2){ /* storage unavailable */ }
@@ -649,17 +690,93 @@
      ========================================================= */
   const imgCache = new Map();
 
-  function imgFor(slide){
-    if (!slide || !slide.photo) return null;
-    let im = imgCache.get(slide.photo);
+  function cachedImg(src){
+    if (!src) return null;
+    let im = imgCache.get(src);
     if (!im){
       im = new Image();
       im.decoding = 'async';
       im.onload = ()=>{ paintSoon(); };
-      im.src = slide.photo;
-      imgCache.set(slide.photo, im);
+      im.src = src;
+      imgCache.set(src, im);
     }
     return (im.complete && im.naturalWidth) ? im : null;
+  }
+
+  function imgFor(slide){
+    if (!slide || !slide.photo) return null;
+    return cachedImg(slide.photo);
+  }
+
+  function stickerImg(src){
+    return cachedImg(src);
+  }
+
+  function stickerRect(st, f, im){
+    const w = f.w * clamp(num(st.w, 0.28), 0.04, 1.0);
+    const ar = (im && im.naturalWidth) ? (im.naturalHeight / im.naturalWidth) : 1;
+    return { cx: f.w * clamp(num(st.x, 0.5), 0, 1), cy: f.h * clamp(num(st.y, 0.5), 0, 1),
+             w: w, h: w * ar, rot: clamp(num(st.rot, 0), -25, 25) };
+  }
+
+  function drawStickers(ctx, s, f){
+    const list = s.stickers || [];
+    for (let i = 0; i < list.length; i++){
+      const st = list[i];
+      const im = stickerImg(st.src);
+      if (!im) continue;
+      const r = stickerRect(st, f, im);
+      ctx.save();
+      ctx.translate(r.cx, r.cy);
+      ctx.rotate(r.rot * Math.PI / 180);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(im, -r.w / 2, -r.h / 2, r.w, r.h);
+      ctx.restore();
+    }
+  }
+
+  function stickerHit(s, f, cx, cy){
+    const list = s.stickers || [];
+    for (let i = list.length - 1; i >= 0; i--){
+      const st = list[i];
+      const im = stickerImg(st.src);
+      if (!im) continue;
+      const r = stickerRect(st, f, im);
+      const dx = cx - r.cx, dy = cy - r.cy;
+      const a = -r.rot * Math.PI / 180;
+      const rx = dx * Math.cos(a) - dy * Math.sin(a);
+      const ry = dx * Math.sin(a) + dy * Math.cos(a);
+      if (Math.abs(rx) <= r.w / 2 && Math.abs(ry) <= r.h / 2) return i;
+    }
+    return -1;
+  }
+
+  function compressSticker(file){
+    return new Promise((resolve, reject)=>{
+      const url = URL.createObjectURL(file);
+      const im = new Image();
+      im.onload = ()=>{
+        try{
+          const k = Math.min(1, STICKER_MAX / Math.max(im.naturalWidth, im.naturalHeight));
+          const c = document.createElement('canvas');
+          c.width = Math.max(1, Math.round(im.naturalWidth * k));
+          c.height = Math.max(1, Math.round(im.naturalHeight * k));
+          const cx = c.getContext('2d');
+          cx.imageSmoothingEnabled = true;
+          cx.imageSmoothingQuality = 'high';
+          cx.drawImage(im, 0, 0, c.width, c.height);
+          const data = c.toDataURL('image/png');
+          URL.revokeObjectURL(url);
+          resolve(data);
+        }catch(e){
+          URL.revokeObjectURL(url);
+          reject(e);
+        }
+      };
+      im.onerror = ()=>{ URL.revokeObjectURL(url); reject(new Error('스티커 이미지를 읽을 수 없어요')); };
+      im.src = url;
+    });
   }
 
   function compressImage(file){
@@ -895,9 +1012,74 @@
   }
 
   /* ---------- 표지 ---------- */
+  function drawCoverTrend(ctx, s, f, T, pal, im){
+    const w = f.w, h = f.h, pad = f.pad;
+    if (im){
+      const g = ctx.createLinearGradient(0, 0, 0, h * 0.62);
+      g.addColorStop(0, 'rgba(0,0,0,.68)');
+      g.addColorStop(0.55, 'rgba(0,0,0,.22)');
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h * 0.62);
+    }
+    const maxW = w - pad * 2;
+    let y = Math.max(f.safeTop + pad, h * 0.11);
+
+    if (s.badge){
+      const bs = T.badge * 0.92;
+      drawPill(ctx, { text: s.badge, x: pad, y: y, size: bs, weight: 800, height: bs * 2.15,
+        padX: bs * 0.8, bg: 'rgba(0,0,0,.55)', fg: '#FFFFFF', border: 'rgba(255,255,255,.30)' });
+      y += bs * 2.15 + 20;
+    }
+
+    const titleSize = T.coverTitle * 1.06;
+    const title = s.title ? fitText(ctx, s.title, { maxWidth: maxW, size: titleSize, weight: 900,
+      maxLines: 3, lineHeight: 1.15, minSize: titleSize * 0.52 }) : null;
+
+    if (title){
+      const lw = Math.max(5, Math.round(title.size * 0.135));
+      ctx.save();
+      ctx.lineJoin = 'round';
+      ctx.miterLimit = 2;
+      ctx.strokeStyle = '#0B0B0B';
+      ctx.lineWidth = lw;
+      ctx.font = font(title.size, 900);
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
+      title.lines.forEach(function(ln, i){
+        if (ln) ctx.strokeText(ln, pad, y + title.lh * i + title.size * 0.84);
+      });
+      ctx.fillStyle = '#FFFFFF';
+      title.lines.forEach(function(ln, i){
+        if (ln) ctx.fillText(ln, pad, y + title.lh * i + title.size * 0.84);
+      });
+      ctx.restore();
+      y += title.lines.length * title.lh + 22;
+    }
+
+    if (s.subtitle){
+      const ss = Math.max(22, T.coverSub * 0.88);
+      const sub = fitText(ctx, s.subtitle, { maxWidth: maxW * 0.92, size: ss, weight: 700,
+        maxLines: 2, lineHeight: 1.34, minSize: ss * 0.78 });
+      ctx.font = font(sub.size, 700);
+      let tw = 0;
+      sub.lines.forEach(function(t){ tw = Math.max(tw, ctx.measureText(t).width); });
+      const padX = sub.size * 0.78, padY = sub.size * 0.42;
+      const ph = sub.lines.length * sub.lh + padY * 2;
+      const pw = Math.min(maxW, tw + padX * 2);
+      roundRect(ctx, pad, y, pw, ph, sub.lines.length > 1 ? Math.min(ph / 4, 26) : ph / 2);
+      ctx.fillStyle = 'rgba(0,0,0,.68)';
+      ctx.fill();
+      drawLines(ctx, sub.lines, pad + padX, y + padY, sub.lh, sub.size, 700, '#FFFFFF', 'left');
+      y += ph;
+    }
+
+    drawFooterMark(ctx, pad, h - f.safeBottom - pad, pal, 'left', T.k);
+  }
+
   function drawCover(ctx, s, f){
     const w = f.w, h = f.h, pad = f.pad, T = TS();
     const im = imgFor(s);
+    const trend = s.coverStyle === 'trend';
     let pal;
     if (im){
       drawPhoto(ctx, im, s, w, h);
@@ -911,8 +1093,13 @@
       ctx.fillStyle = g; ctx.fillRect(0, h * 0.26, w, h * 0.74);
       pal = palPhoto();
     } else {
-      pal = surfacePal();
+      pal = trend ? palInk() : surfacePal();
       drawSurface(ctx, w, h, pal, true);
+    }
+
+    if (trend){
+      drawCoverTrend(ctx, s, f, T, pal, im);
+      return;
     }
 
     const topY = f.safeTop + pad;
@@ -1524,6 +1711,7 @@
     if (slide.type === 'body') drawBody(ctx, slide, f);
     else if (slide.type === 'summary') drawSummary(ctx, slide, f);
     else drawCover(ctx, slide, f);
+    drawStickers(ctx, slide, f);
     if (opts && opts.guides) drawGuides(ctx, f);
     ctx.restore();
   }
@@ -1587,6 +1775,21 @@
 
   preview.addEventListener('pointerdown', (e)=>{
     const s = cur();
+    const f = F();
+    const rect = preview.getBoundingClientRect();
+    if (!rect.width) return;
+    const cx = (e.clientX - rect.left) * f.w / rect.width;
+    const cy = (e.clientY - rect.top) * f.h / rect.height;
+    const hit = (s.stickers && s.stickers.length) ? stickerHit(s, f, cx, cy) : -1;
+    if (hit >= 0){
+      try{ preview.setPointerCapture(e.pointerId); }catch(err){}
+      pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
+      gesture = { mode:'sticker', idx:hit, dx: f.w * s.stickers[hit].x - cx, dy: f.h * s.stickers[hit].y - cy };
+      stickerSel = hit;
+      renderStickerChips();
+      e.preventDefault();
+      return;
+    }
     if (!s.photo) return;
     try{ preview.setPointerCapture(e.pointerId); }catch(err){}
     pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
@@ -1603,7 +1806,23 @@
     const rect = preview.getBoundingClientRect();
     pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
 
-    if (!s.photo || !rect.width) return;
+    if (!rect.width) return;
+
+    if (pointers.size === 1 && gesture && gesture.mode === 'sticker'){
+      const st = s.stickers && s.stickers[gesture.idx];
+      if (st){
+        const cx = (e.clientX - rect.left) * f.w / rect.width;
+        const cy = (e.clientY - rect.top) * f.h / rect.height;
+        st.x = clamp((cx + gesture.dx) / f.w, 0, 1);
+        st.y = clamp((cy + gesture.dy) / f.h, 0, 1);
+        syncStickerCtl();
+        paintSoon(); persistSoon();
+      }
+      e.preventDefault();
+      return;
+    }
+
+    if (!s.photo) return;
 
     if (pointers.size === 1 && gesture && gesture.mode === 'pan'){
       const dx = (e.clientX - prev.x) * (f.w / rect.width);
@@ -1694,6 +1913,38 @@
     el('addRow').textContent = list.length >= MAX_ROWS ? '최대 6줄까지' : '+ 행 추가 (최대 6줄)';
   }
 
+  let stickerSel = 0;
+
+  function renderStickerChips(){
+    const s = cur();
+    const list = s.stickers || [];
+    if (stickerSel >= list.length) stickerSel = Math.max(0, list.length - 1);
+    el('stickerChips').innerHTML = list.length
+      ? list.map((st, i)=>{
+          return '<button class="chip stchip ' + (i === stickerSel ? 'on' : '') + '" data-st="' + i + '">' +
+                 '<img src="' + st.src + '" alt=""><span class="t">' + (i + 1) + '</span></button>';
+        }).join('')
+      : '<span class="count" style="padding:6px 2px">아직 없어요 · 누끼 PNG를 올려보세요</span>';
+    el('stickerCount').textContent = list.length + '/' + MAX_STICKERS;
+    el('stickerAdd').textContent = list.length >= MAX_STICKERS ? '최대 3개' : '+ 스티커 추가';
+    el('stickerAdd').disabled = list.length >= MAX_STICKERS;
+    el('stickerDel').disabled = !list.length;
+    const on = list[stickerSel];
+    el('stickerCtl').hidden = !on;
+    if (on) syncStickerCtl();
+  }
+
+  function syncStickerCtl(){
+    const s = cur();
+    const list = s.stickers || [];
+    const on = list[stickerSel];
+    if (!on) return;
+    el('stSize').value = on.w;  el('stSizeVal').textContent = Math.round(on.w * 100) + '%';
+    el('stRot').value = on.rot;  el('stRotVal').textContent = Math.round(on.rot) + '°';
+    el('stX').value = on.x;      el('stXVal').textContent = Math.round(on.x * 100) + '%';
+    el('stY').value = on.y;      el('stYVal').textContent = Math.round(on.y * 100) + '%';
+  }
+
   function syncForm(){
     const s = cur();
     document.body.dataset.type = s.type;
@@ -1715,6 +1966,7 @@
       autoBtn.textContent = s.badgeAuto !== false ? ('번호 자동 · ' + String(autoBadgeNo(s)).padStart(2,'0')) : '번호 자동 꺼짐';
     }
     document.querySelectorAll('#typeSeg button').forEach(b=>b.classList.toggle('on', b.dataset.type === s.type));
+    document.querySelectorAll('#coverSeg button').forEach(b=>b.classList.toggle('on', b.dataset.cover === (s.coverStyle || 'classic')));
     document.querySelectorAll('#styleSeg button').forEach(b=>b.classList.toggle('on', b.dataset.style === s.summaryStyle));
     document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('on', b.dataset.mode === state.mode));
     const wm = el('wmToggle');
@@ -1756,6 +2008,7 @@
     renderFontChips();
     syncForm();
     renderRows();
+    renderStickerChips();
     paintSoon();
   }
 
@@ -1819,6 +2072,68 @@
         state.current = i + 1;
       }
       renderAll(); persistSoon();
+    });
+  });
+
+  // 표지 스타일
+  el('coverSeg').addEventListener('click', (e)=>{
+    const b = e.target.closest('button[data-cover]');
+    if (!b) return;
+    cur().coverStyle = b.dataset.cover;
+    renderAll(); persistSoon();
+  });
+
+  // 스티커
+  el('stickerChips').addEventListener('click', (e)=>{
+    const b = e.target.closest('[data-st]');
+    if (!b) return;
+    stickerSel = parseInt(b.dataset.st, 10) || 0;
+    renderStickerChips();
+  });
+  el('stickerAdd').addEventListener('click', ()=>{
+    const s = cur();
+    if ((s.stickers || []).length >= MAX_STICKERS){ toast('스티커는 3개까지예요'); return; }
+    el('stFile').click();
+  });
+  el('stFile').addEventListener('change', async ()=>{
+    const f = el('stFile').files && el('stFile').files[0];
+    el('stFile').value = '';
+    if (!f) return;
+    try{
+      const src = await compressSticker(f);
+      const s = cur();
+      s.stickers = s.stickers || [];
+      s.stickers.push({ src: src, x: 0.5, y: 0.5, w: 0.3, rot: 0 });
+      stickerSel = s.stickers.length - 1;
+      renderStickerChips();
+      commit();
+      toast('스티커를 넣었어요 · 끌어서 위치를 잡으세요');
+    }catch(err){
+      toast(err && err.message ? err.message : '스티커를 넣지 못했어요');
+    }
+  });
+  el('stickerDel').addEventListener('click', ()=>{
+    const s = cur();
+    if (!s.stickers || !s.stickers.length) return;
+    s.stickers.splice(stickerSel, 1);
+    if (stickerSel >= s.stickers.length) stickerSel = Math.max(0, s.stickers.length - 1);
+    renderStickerChips();
+    commit();
+  });
+  [['stSize','w'],['stRot','rot'],['stX','x'],['stY','y']].forEach(function(pair){
+    el(pair[0]).addEventListener('input', (e)=>{
+      const s = cur();
+      const st = s.stickers && s.stickers[stickerSel];
+      if (!st) return;
+      const v = num(e.target.value, 0);
+      if (pair[1] === 'w') st.w = clamp(v, 0.06, 0.9);
+      else if (pair[1] === 'rot') st.rot = clamp(v, -25, 25);
+      else st[pair[1]] = clamp(v, 0, 1);
+      const label = el(pair[0] + 'Val');
+      if (pair[1] === 'w') label.textContent = Math.round(st.w * 100) + '%';
+      else if (pair[1] === 'rot') label.textContent = Math.round(st.rot) + '°';
+      else label.textContent = Math.round(st[pair[1]] * 100) + '%';
+      commit();
     });
   });
 
@@ -2257,6 +2572,9 @@
       themes: THEMES,
       fonts: FONTS,
       autoBadgeText: autoBadgeText,
+      stickerRect: stickerRect,
+      compressSticker: compressSticker,
+      maxStickers: MAX_STICKERS,
       themesAvailable: function(){ return THEMES.map(t=>t.id); },
       exportCanvas: exportCanvas,
       exportSize: function(i){ const c = exportCanvas(state.slides[i == null ? state.current : i]); return { w:c.width, h:c.height }; },
