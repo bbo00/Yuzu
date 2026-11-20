@@ -4063,6 +4063,7 @@
     syncCfg.lastCount = manifest.counts;
     syncCfg.lastError = '';
     syncCfg.dirty = false;
+    syncCfg.fresh = false;
     syncSaveCfg();
     return manifest;
   }
@@ -4092,7 +4093,7 @@
     syncBusy = true;
     renderSyncBar();
     try{
-      const res = await syncPull();
+      const res = syncCfg.fresh ? null : await syncPull();
       if (!res){
         syncCfg.rev = 0;
         await syncPush();
@@ -4695,7 +4696,7 @@
     } else if (a === 'new'){
       if (!confirm('새 동기화 코드를 만들어 지금 저장함을 올릴까요? 기존 코드로 연결된 기기는 새 코드를 입력해야 해요.')) return;
       syncCfg.ns = syncNewNs();
-      syncCfg.rev = 0; syncCfg.lastRemoteRev = 0; syncCfg.lastPushTs = 0; syncCfg.lastError = ''; syncCfg.dirty = true;
+      syncCfg.rev = 0; syncCfg.lastRemoteRev = 0; syncCfg.lastPushTs = 0; syncCfg.lastError = ''; syncCfg.dirty = true; syncCfg.fresh = true;
       syncSaveCfg();
       setUrlKey(syncCfg.ns);
       openSyncSheet();
@@ -5544,8 +5545,9 @@
       syncCode: function(){ return syncCfg ? syncCfg.ns : ''; },
       syncState: function(){ return syncCfg ? { ns:syncCfg.ns, rev:syncCfg.rev, lastSync:syncCfg.lastSync, lastError:syncCfg.lastError, busy:syncBusy } : null; },
       syncNow: function(){ return syncNow({}); },
-      setSyncCode: function(k){
+      setSyncCode: function(k, opt){
         syncCfg.ns = k; syncCfg.rev = 0; syncCfg.lastRemoteRev = 0; syncCfg.lastPushTs = 0; syncCfg.lastError = ''; syncCfg.dirty = true;
+        syncCfg.fresh = !!(opt && opt.fresh);
         syncSaveCfg(); setUrlKey(k); return syncCfg.ns;
       },
       clearLib: function(){ lib = libDefault(); activeFolder = lib.activeFolder; libSave(); renderSlots(); return true; },
