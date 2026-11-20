@@ -4829,6 +4829,10 @@
       else if (writeTab === 'summary' && summaryIndex() < 0) writeTab = 'cover';
     }
     state.step = st;
+    if (st === 1){
+      const ci = coverIndex();
+      if (ci >= 0) state.current = ci;
+    }
     if (st === 2 && writeTab === 'cover'){
       const ci = coverIndex();
       if (ci >= 0) state.current = ci;
