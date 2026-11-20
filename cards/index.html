@@ -5751,7 +5751,10 @@
     const rows = (slide && slide.rows) || [];
     let sum = 0, unit = '';
     rows.forEach(function(r){
-      const a = amountInfo(r && r.amount);
+      const txt = String((r && r.amount) || '').trim();
+      /* 숫자로 시작하는 금액만 더해요 (설명 문장이 들어간 칸은 건너뜀) */
+      if (!/^[0-9]/.test(txt) || txt.length > 26) return;
+      const a = amountInfo(txt);
       if (!a) return;
       sum += a.val;
       if (!unit && a.unit) unit = a.unit;
