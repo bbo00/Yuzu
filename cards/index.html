@@ -424,6 +424,24 @@
   .tplRow > span{flex:0 0 84px; font-size:10.5px; color:var(--muted); font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
   .tplRow input{flex:1; min-width:0; height:34px; font-size:13.5px; border-radius:9px}
   #tplChips{flex-wrap:wrap; overflow:visible; padding-bottom:2px}
+
+  /* ---------- v5.2 ---------- */
+  .batchBgRow{display:flex; align-items:center; gap:8px; margin:0 0 10px}
+  .batchBgRow .bk{font-size:11px; font-weight:800; color:#4A4842; flex:none}
+  .batchBgRow .bgGrid{flex:1; min-width:0}
+  .batchBgRow .bgGrid .chip{padding:5px 7px 5px 6px; font-size:11px; gap:4px}
+  .batchBgRow .bgGrid .chip .sw{width:13px; height:13px; border-radius:4px}
+  #qboxEdit{margin-top:11px; border-top:1px solid var(--line); padding-top:10px}
+  .qboxField{display:flex; gap:7px; align-items:center; margin-top:6px}
+  .qboxField > span{flex:0 0 46px; font-size:10.5px; font-weight:800; color:var(--muted)}
+  .qboxField input{flex:1; min-width:0; height:38px; font-size:13.5px; border-radius:9px}
+  #totalAutoBtn.on{background:#111; color:#fff; border-color:#111}
+  #tplChips .chip.mytpl{border-color:#111; background:#111; color:#fff}
+  #tplChips .chip.mytpl .fdel{color:rgba(255,255,255,.72)}
+  #myTplRow{margin-top:7px}
+  .capArea{width:100%; min-height:190px; border:1px solid var(--line); border-radius:11px; padding:11px 12px;
+    font-size:13px; line-height:1.62; color:#22211D; background:#fff; resize:vertical; font-family:inherit;
+    -webkit-appearance:none}
 </style>
 </head>
 <body data-type="cover">
@@ -535,14 +553,14 @@
 
   <div class="card" id="typeCard" data-steps="4">
     <div class="cardHead"><span class="label">템플릿</span><span class="count" id="tplNow">카테고리 통일</span><button class="linkBtn" id="tplEditBtn">이름 수정</button></div>
-    <div class="label" style="margin-bottom:7px">카드 종류</div>
-    <div class="seg" id="typeSeg">
-      <button data-type="cover">표지</button>
-      <button data-type="body">본문</button>
-      <button data-type="summary">요약표</button>
-    </div>
-    <div class="label" style="margin:12px 0 7px">표지 템플릿</div>
     <div class="chips" id="tplChips"></div>
+    <div class="chipActions" style="margin-top:8px">
+      <button class="mini" id="myTplSaveBtn">+ 내 템플릿 저장</button>
+    </div>
+    <div class="slotSaveBar" id="myTplRow" hidden>
+      <input type="text" id="myTplName" maxlength="14" placeholder="내 템플릿 이름 (예: 다낭 감성)">
+      <button id="myTplConfirm">저장</button>
+    </div>
     <div id="tplNameEdit" hidden>
       <div id="tplEditRows"></div>
       <div class="chipActions" style="margin-top:9px">
@@ -550,7 +568,28 @@
         <button class="mini primary" id="tplNameSave">이름 저장</button>
       </div>
     </div>
-    <p class="hint">표지에 쓸 틀을 고르고, <b>이름 수정</b>으로 내 말로 바꿔 저장할 수 있어요 · 이 브라우저와 클라우드에 함께 저장돼요</p>
+    <div id="qboxEdit" hidden>
+      <div class="cardHead" style="margin:0 0 2px"><span class="label">질문 박스 문구</span><button class="linkBtn" id="qboxClear">비우기</button></div>
+      <div class="qboxField"><span>박스 1</span><input type="text" id="qbox1" data-qf="q1" placeholder="예: 혼자 여행, 밥은 어땠어?"></div>
+      <div class="qboxField"><span>박스 2</span><input type="text" id="qbox2" data-qf="q2" placeholder="예: 첫 혼여, 어디가 무난해?"></div>
+      <div class="qboxField" id="qbox3Row" hidden><span>박스 3</span><input type="text" id="qbox3" data-qf="q3" placeholder="예: 다음에 또 갈 거야?"></div>
+      <div class="chipActions" style="margin-top:8px">
+        <button class="mini" id="qboxAdd">+ 질문 박스 추가</button>
+      </div>
+      <div class="label" style="margin:10px 0 6px">질문 박스 위치</div>
+      <div class="seg" id="qboxPosSeg">
+        <button data-qpos="top">상단</button>
+        <button data-qpos="middle">중간</button>
+        <button data-qpos="bottom">하단</button>
+      </div>
+      <div class="seg" id="qboxAlignSeg" style="margin-top:6px">
+        <button data-qalign="alt">좌우 교차</button>
+        <button data-qalign="left">왼쪽</button>
+        <button data-qalign="right">오른쪽</button>
+      </div>
+      <p class="hint">질문 박스형 표지에 바로 반영돼요 · 비운 박스는 사라져요 · 제목 강조는 <b>**강조**</b></p>
+    </div>
+    <p class="hint">표지 디자인 틀 하나만 고르면 돼요 · <b>이름 수정</b>으로 내 말로 바꿔 저장할 수 있어요 · 이 브라우저와 클라우드에 함께 저장돼요</p>
   </div>
 
   <div class="card" id="designCard" data-steps="4">
@@ -590,6 +629,17 @@
       <span class="tiny num" id="sizeSmallVal">1.00×</span>
     </div>
     <p class="hint">제목 / 부제·강조 / 하단 설명·항목 글씨를 따로 키울 수 있어요</p>
+  </div>
+
+  <div class="card" id="captionCard" data-steps="4">
+    <div class="cardHead"><span class="label">인스타 캡션</span><span class="count" id="captionMeta">비어 있어요</span></div>
+    <p class="hint" style="margin-top:0">2단계에 적은 표지·본문·요약 금액으로 추천 문구를 만들어요 · 직접 고쳐도 돼요</p>
+    <textarea id="captionText" class="capArea" rows="9" placeholder="추천 문구 생성 을 누르면 여기에 채워져요"></textarea>
+    <div class="chipActions" style="margin-top:8px">
+      <button class="mini primary" id="captionGen">추천 문구 생성</button>
+      <button class="mini" id="captionCopy">전체 복사</button>
+      <button class="mini" id="captionClear">비우기</button>
+    </div>
   </div>
 
   <div class="card" id="photoCard" data-steps="1 3">
@@ -694,6 +744,10 @@
           <input class="ri" type="text" data-f="totalLabel" placeholder="총 합계">
           <input class="ra" type="text" data-f="total" placeholder="2,026,400동">
         </div>
+        <div class="chipActions" style="margin-top:7px">
+          <button class="mini on" id="totalAutoBtn">자동 계산 중</button>
+        </div>
+        <p class="hint">행 금액을 더해 <b>총 합계를 자동</b>으로 채워요 · 합계 칸을 직접 고치면 그 값으로 두고, <b>자동 계산</b>을 누르면 다시 더해요</p>
         <input class="field" style="margin-top:6px" type="text" data-f="totalNote" placeholder="보조 금액 (예: 약 11만 원)">
       </div>
       <div class="field">
@@ -724,6 +778,7 @@
         <label>질문 박스 1 · 2 (질문 박스형)</label>
         <input type="text" data-f="q1" placeholder="예: 혼자 여행, 밥은 어땠어?">
         <input type="text" data-f="q2" placeholder="예: 첫 혼여, 어디가 무난해?" style="margin-top:6px">
+        <input type="text" data-f="q3" placeholder="예: 다음에 또 갈 거야? (3번째 박스)" style="margin-top:6px">
         <p class="hint">비워두면 그 박스는 사라져요 · 제목 첫 줄에서 강조할 부분은 <b>**강조**</b>로 감싸면 정확해요</p>
       </div>
     </div>
@@ -868,6 +923,10 @@
   <div class="sheetBg" data-close="batch"></div>
   <div class="sheet tall">
     <h4>사진 <span id="batchCount">0</span>장 · 용도 고르기</h4>
+    <div class="batchBgRow">
+      <span class="bk">표지 배경</span>
+      <div class="bgGrid" id="batchBgChips"></div>
+    </div>
     <div class="batchList" id="batchList"></div>
     <div class="batchFoot">
       <button id="batchCancel">취소</button>
@@ -1087,13 +1146,14 @@
       id: 's' + Date.now() + Math.random().toString(36).slice(2,6),
       type: t,
       photo: null, zoom: 1, offX: 0, offY: 0,
-      badge: '', badgeNum: 0, title: '', subtitle: '', desc: '', q1: '', q2: '',
+      badge: '', badgeNum: 0, title: '', subtitle: '', desc: '', q1: '', q2: '', q3: '',
       watermark: true, grad: false,
       pos: 'bottom', align: 'left',
       coverStyle: 'classic',
       stickers: [],
       summaryStyle: 'photo',
       totalLabel: '총 합계', total: '', totalNote: '', cta: '',
+      totalAuto: true,
       rows: [{ item:'', amount:'' }, { item:'', amount:'' }, { item:'', amount:'' }]
     };
   }
@@ -1150,12 +1210,87 @@
     return true;
   }
 
+  /* ---------- v5.2: 내 템플릿 (디자인 프리셋 · 로컬 + 클라우드) ---------- */
+  const MYTPL_KEY = 'iming_cards_mytpl_v1';
+  function myTplNorm(r){
+    if (!r || !r.id || !r.name) return null;
+    const c = (r.cfg && typeof r.cfg === 'object') ? r.cfg : {};
+    const sz = (c.sizes && typeof c.sizes === 'object') ? c.sizes : {};
+    return {
+      id: str(r.id), name: str(r.name).slice(0, 14), ts: num(r.ts, 0),
+      cfg: {
+        base: ['cat','trend','question','classic'].indexOf(c.base) >= 0 ? c.base : 'classic',
+        theme: str(c.theme), font: str(c.font),
+        sizes: { title: clamp(num(sz.title, 1), 0.6, 1.8), sub: clamp(num(sz.sub, 1), 0.6, 1.8), small: clamp(num(sz.small, 1), 0.6, 1.8) },
+        pos: ['top','middle','bottom'].indexOf(c.pos) >= 0 ? c.pos : 'bottom',
+        align: ['left','center','right'].indexOf(c.align) >= 0 ? c.align : 'left',
+        qboxPos: ['top','middle','bottom'].indexOf(c.qboxPos) >= 0 ? c.qboxPos : 'top',
+        qboxAlign: ['alt','left','right'].indexOf(c.qboxAlign) >= 0 ? c.qboxAlign : 'alt'
+      }
+    };
+  }
+  function myTplLoad(){
+    try{
+      const j = JSON.parse(localStorage.getItem(MYTPL_KEY) || 'null');
+      if (j && Array.isArray(j.list)) return { list: j.list.map(myTplNorm).filter(Boolean).slice(0, 12), ts: num(j.ts, 0) };
+    }catch(e){}
+    return { list: [], ts: 0 };
+  }
+  let MY_TPLS = myTplLoad();
+  function myTplStore(list, ts){
+    MY_TPLS = { list: (list || []).slice(0, 12), ts: ts || Date.now() };
+    try{ localStorage.setItem(MYTPL_KEY, JSON.stringify(MY_TPLS)); }catch(e){}
+    return MY_TPLS;
+  }
+  function myTplSettings(){ return { list: MY_TPLS.list, ts: MY_TPLS.ts }; }
+  function myTplApplyRemote(st){
+    if (!st || !Array.isArray(st.list)) return false;
+    const ts = num(st.ts, 0);
+    if (ts <= MY_TPLS.ts) return false;
+    MY_TPLS = { list: st.list.map(myTplNorm).filter(Boolean).slice(0, 12), ts: ts };
+    try{ localStorage.setItem(MYTPL_KEY, JSON.stringify(MY_TPLS)); }catch(e){ return false; }
+    return true;
+  }
+  function captureDesign(){
+    const ci = coverIndex();
+    const cov = ci >= 0 ? state.slides[ci] : null;
+    const b = state.slides.filter(function(s){ return s.type === 'body'; })[0] || null;
+    const base = cur();
+    return {
+      base: cov ? (cov.coverStyle || 'classic') : 'classic',
+      theme: state.theme, font: state.font, sizes: SZ(),
+      pos: b ? (b.pos || 'bottom') : (base.pos || 'bottom'),
+      align: b ? (b.align || 'left') : (base.align || 'left'),
+      qboxPos: state.qboxPos || 'top',
+      qboxAlign: state.qboxAlign || 'alt'
+    };
+  }
+  function applyMyTpl(t){
+    if (!t || !t.cfg) return false;
+    const c = myTplNorm(t);
+    if (!c) return false;
+    compSnapshot('내 템플릿 적용 직전');
+    state.slides.forEach(function(s){ if (s.type === 'cover') s.coverStyle = c.cfg.base; });
+    if (c.cfg.theme) state.theme = themeById(c.cfg.theme).id;
+    if (c.cfg.font) state.font = fontById(c.cfg.font).id;
+    state.sizes = c.cfg.sizes;
+    state.slides.forEach(function(s){
+      if (s.type !== 'body') return;
+      s.pos = c.cfg.pos; s.align = c.cfg.align;
+    });
+    state.qboxPos = c.cfg.qboxPos;
+    state.qboxAlign = c.cfg.qboxAlign;
+    renderAll();
+    persistNow();
+    return loadFontFor().then(function(){ paint(); toast('내 템플릿 · ' + c.name + ' 적용했어요'); return true; });
+  }
+
   function blankState(mode){
     return { v:5, step:1, mode: mode || 'feed', current:0, guides:false, category:null, coverTitleColor:'cat',
              theme:'sky', font:'pretendard', fontOrder: FONTS.map(function(f){ return f.id; }),
-             sizes:{ title:1, sub:1, small:1 },
+             sizes:{ title:1, sub:1, small:1 }, qboxPos:'top', qboxAlign:'alt',
              previewSize:'normal', stageHide:false, coverBg:'photo', credit: DEFAULT_CREDIT, creditOn:true,
-             bodyDraft:'', deckId:'', deckName:'',
+             bodyDraft:'', caption:'', deckId:'', deckName:'',
              slides:[blankSlide('cover')] };
   }
 
@@ -1222,11 +1357,14 @@
     out.step = clamp(Math.round(num(raw.step, 1)), 1, 4);
     out.stageHide = !!raw.stageHide;
     out.bodyDraft = str(raw.bodyDraft);
+    out.caption = str(raw.caption);
     out.deckId = str(raw.deckId);
     out.deckName = str(raw.deckName);
     out.credit = typeof raw.credit === 'string' ? raw.credit : DEFAULT_CREDIT;
     out.creditOn = raw.creditOn !== false;
     out.coverBg = ['photo','ink','white','cream','cat'].indexOf(raw.coverBg) >= 0 ? raw.coverBg : 'photo';
+    out.qboxPos = ['top','middle','bottom'].indexOf(raw.qboxPos) >= 0 ? raw.qboxPos : 'top';
+    out.qboxAlign = ['alt','left','right'].indexOf(raw.qboxAlign) >= 0 ? raw.qboxAlign : 'alt';
     out.slides = (Array.isArray(raw.slides) && raw.slides.length ? raw.slides : [blankSlide('cover')]).map(r=>{
       const s = blankSlide(r.type);
       s.id = r.id || s.id;
@@ -1236,7 +1374,7 @@
       s.offX = clamp(num(r.offX, 0), -1, 1);
       s.offY = clamp(num(r.offY, 0), -1, 1);
       s.badge = str(r.badge);
-      s.q1 = str(r.q1); s.q2 = str(r.q2);
+      s.q1 = str(r.q1); s.q2 = str(r.q2); s.q3 = str(r.q3);
       s.badgeNum = clamp(Math.round(num(r.badgeNum, 0)), 0, 10);
       s.title = str(r.title); s.subtitle = str(r.subtitle);
       s.desc = str(r.desc); s.watermark = r.watermark !== false; s.grad = r.grad === true;
@@ -1261,11 +1399,14 @@
       s.summaryStyle = ['photo','dark','light'].includes(r.summaryStyle) ? r.summaryStyle : 'photo';
       s.totalLabel = str(r.totalLabel) || '총 합계';
       s.total = str(r.total); s.totalNote = str(r.totalNote); s.cta = str(r.cta);
+      /* 저장된 예전 작업은 손으로 적은 합계를 덮어쓰지 않도록 수동으로 시작 */
+      s.totalAuto = (r.totalAuto === true) ? true : (r.totalAuto === false ? false : !str(r.total).trim());
       s.rows = (Array.isArray(r.rows) ? r.rows : []).slice(0, MAX_ROWS).map(x=>({ item:str(x && x.item), amount:str(x && x.amount), auto:!!(x && x.auto) }));
       if (!s.rows.length) s.rows = [{ item:'', amount:'' }];
       return s;
     });
     out.current = clamp(Math.round(num(raw.current, 0)), 0, out.slides.length - 1);
+    out.slides.forEach(function(s){ if (s.type === 'summary') applyAutoTotal(s); });
     return out;
   }
   function loadState(){
@@ -1289,8 +1430,11 @@
     const x = st || state;
     return { v:5, step:clamp(Math.round(num(x.step, 1)), 1, 4), mode:x.mode, current:x.current, guides:x.guides,
       theme:x.theme, font:x.font, fontOrder:normFontOrder(x.fontOrder), sizes:x.sizes, previewSize:x.previewSize,
-      stageHide:!!x.stageHide, bodyDraft:str(x.bodyDraft), deckId:str(x.deckId), deckName:str(x.deckName),
-      credit:x.credit, creditOn:x.creditOn, coverBg:x.coverBg || 'photo', category:x.category, coverTitleColor:x.coverTitleColor, slides:x.slides };
+      stageHide:!!x.stageHide, bodyDraft:str(x.bodyDraft), caption:str(x.caption), deckId:str(x.deckId), deckName:str(x.deckName),
+      credit:x.credit, creditOn:x.creditOn, coverBg:x.coverBg || 'photo', category:x.category, coverTitleColor:x.coverTitleColor,
+      qboxPos:['top','middle','bottom'].indexOf(x.qboxPos) >= 0 ? x.qboxPos : 'top',
+      qboxAlign:['alt','left','right'].indexOf(x.qboxAlign) >= 0 ? x.qboxAlign : 'alt',
+      slides:x.slides };
   }
 
   function persistNow(){
@@ -2180,42 +2324,6 @@
       });
     }
 
-    /* 질문 박스 2개 — 계단식(좌/우 살짝 어긋나게) */
-    const qs = [(s.q1 || '').trim(), (s.q2 || '').trim()];
-    const boxSize = Math.max(20, Math.round(T.coverSub * 1.04));
-    const boxH = Math.round(boxSize * 2.05);
-    const boxPad = Math.round(boxSize * 0.9);
-    let by = Math.round(f.safeTop + h * (f.safeTop ? 0.12 : 0.325));
-    qs.forEach(function(q, i){
-      if (!q) return;
-      const indent = i === 0 ? 0 : Math.round(maxW * 0.085);
-      const maxBoxW = maxW - indent;
-      let size = boxSize;
-      ctx.font = font(size, 700);
-      let tw = ctx.measureText(q).width;
-      while (tw + boxPad * 2 > maxBoxW && size > boxSize * 0.62){
-        size -= 1;
-        ctx.font = font(size, 700);
-        tw = ctx.measureText(q).width;
-      }
-      const bw = Math.min(maxBoxW, Math.max(boxSize * 3.2, tw + boxPad * 2));
-      const bx = pad + indent;
-      ctx.save();
-      ctx.shadowColor = 'rgba(0,0,0,.26)';
-      ctx.shadowBlur = 22;
-      ctx.shadowOffsetY = 6;
-      ctx.fillStyle = '#FFFFFF';
-      roundRect(ctx, bx, by, bw, boxH, 5);
-      ctx.fill();
-      ctx.restore();
-      ctx.fillStyle = '#141412';
-      ctx.font = font(size, 700);
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(q, bx + boxPad, by + boxH / 2 + size * 0.03);
-      by += boxH + Math.round(boxSize * 0.52);
-    });
-
     /* 제목 · 부제 (하단 좌측 정렬) */
     const rawLines = String(s.title || '').replace(/\r/g, '').split('\n').map(function(t){ return t.trim(); }).filter(Boolean);
     const lineA = rawLines[0] || '';
@@ -2250,6 +2358,50 @@
     const subH = subTxt ? subSize * 1.5 : 0;
     const gapSub = subTxt ? size * 0.34 : 0;
     let top = creditBase - 44 - subH - gapSub - titleLines * lh;
+
+    /* v5.2: 질문 박스 1~3 — 위치(상단/중간/하단) · 정렬(좌우 교차/왼쪽/오른쪽) */
+    const qs = [(s.q1 || '').trim(), (s.q2 || '').trim(), (s.q3 || '').trim()].filter(function(q){ return !!q; });
+    const boxSize = Math.max(20, Math.round(T.coverSub * 1.04));
+    const boxH = Math.round(boxSize * 2.05);
+    const boxPad = Math.round(boxSize * 0.9);
+    const boxGap = Math.round(boxSize * 0.52);
+    const qTotal = qs.length ? (boxH * qs.length + boxGap * (qs.length - 1)) : 0;
+    const qPos = state.qboxPos || 'top';
+    const qAlign = state.qboxAlign || 'alt';
+    const qTopMin = f.safeTop + pad;
+    const qLimit = top - Math.round(boxSize * 1.1);
+    let by = qTopMin + Math.round(h * (f.safeTop ? 0.055 : 0.075));
+    if (qPos === 'middle') by = qTopMin + Math.round(Math.max(0, qLimit - qTopMin - qTotal) * 0.5);
+    else if (qPos === 'bottom') by = qLimit - qTotal;
+    by = clamp(by, qTopMin, Math.max(qTopMin, h - f.safeBottom - pad - qTotal - 16));
+    qs.forEach(function(q, i){
+      const indent = (qAlign === 'alt' && i % 2 === 1) ? Math.round(maxW * 0.085) : 0;
+      const maxBoxW = maxW - indent;
+      let size = boxSize;
+      ctx.font = font(size, 700);
+      let tw = ctx.measureText(q).width;
+      while (tw + boxPad * 2 > maxBoxW && size > boxSize * 0.62){
+        size -= 1;
+        ctx.font = font(size, 700);
+        tw = ctx.measureText(q).width;
+      }
+      const bw = Math.min(maxBoxW, Math.max(boxSize * 3.2, tw + boxPad * 2));
+      const bx = qAlign === 'right' ? pad + Math.max(0, maxW - bw) : pad + indent;
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,.26)';
+      ctx.shadowBlur = 22;
+      ctx.shadowOffsetY = 6;
+      ctx.fillStyle = '#FFFFFF';
+      roundRect(ctx, bx, by, bw, boxH, 5);
+      ctx.fill();
+      ctx.restore();
+      ctx.fillStyle = '#141412';
+      ctx.font = font(size, 700);
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(q, bx + boxPad, by + boxH / 2 + size * 0.03);
+      by += boxH + boxGap;
+    });
 
     if (rawLines.length){
       let base = top + size * 0.82;
@@ -3564,6 +3716,8 @@
     });
     document.querySelectorAll('#typeSeg button').forEach(b=>b.classList.toggle('on', b.dataset.type === s.type));
     renderTplChips();
+    syncQboxUI();
+    syncTotalField(s);
     if (el('coverQFields')) el('coverQFields').hidden = !(cur().type === 'cover' && cur().coverStyle === 'question');
     document.querySelectorAll('#catTitleSeg button').forEach(function(b){ b.classList.toggle('on', (state.coverTitleColor === 'white' ? 'white' : 'cat') === b.dataset.tcol); });
     document.querySelectorAll('#styleSeg button').forEach(b=>b.classList.toggle('on', b.dataset.style === s.summaryStyle));
@@ -3622,6 +3776,7 @@
     renderStickerChips();
     renderSlots();
     renderWrite();
+    renderCaption();
     applyStepUI();
     paintSoon();
   }
@@ -3692,6 +3847,25 @@
 
   // 템플릿(표지 틀) — 4단계
   if (el('tplChips')) el('tplChips').addEventListener('click', (e)=>{
+    const del = e.target.closest('[data-mytpldel]');
+    if (del){
+      e.preventDefault(); e.stopPropagation();
+      const id = del.dataset.mytpldel;
+      const t = MY_TPLS.list.filter(function(x){ return x.id === id; })[0];
+      if (!t) return;
+      if (!confirm('내 템플릿 "' + t.name + '"을 지울까요?')) return;
+      myTplStore(MY_TPLS.list.filter(function(x){ return x.id !== id; }));
+      renderTplChips();
+      if (syncOn()) scheduleSync();
+      toast('내 템플릿을 지웠어요');
+      return;
+    }
+    const my = e.target.closest('[data-mytpl]');
+    if (my){
+      const t = MY_TPLS.list.filter(function(x){ return x.id === my.dataset.mytpl; })[0];
+      if (t) applyMyTpl(t);
+      return;
+    }
     const b = e.target.closest('button[data-cstyle]');
     if (!b) return;
     const v = TPL_IDS.indexOf(b.dataset.cstyle) >= 0 ? b.dataset.cstyle : 'classic';
@@ -3737,6 +3911,35 @@
     setTimeout(paint, 30);
     toast('템플릿 이름을 저장했어요 · 클라우드에도 함께 저장돼요');
     if (syncOn()) scheduleSync();
+  });
+
+  /* v5.2: 현재 디자인을 내 템플릿으로 저장 */
+  function saveMyTpl(){
+    const inp = el('myTplName');
+    const name = String((inp && inp.value) || '').trim().slice(0, 14) || ('내 템플릿 ' + (MY_TPLS.list.length + 1));
+    const t = { id: 'mt' + Date.now().toString(36), name: name, ts: Date.now(), cfg: captureDesign() };
+    myTplStore([t].concat(MY_TPLS.list));
+    if (el('myTplRow')) el('myTplRow').hidden = true;
+    if (el('myTplSaveBtn')) el('myTplSaveBtn').textContent = '+ 내 템플릿 저장';
+    renderTplChips();
+    persistNow();
+    if (syncOn()) scheduleSync();
+    toast('내 템플릿 "' + name + '" 저장 · 칩을 누르면 바로 적용돼요');
+  }
+  if (el('myTplSaveBtn')) el('myTplSaveBtn').addEventListener('click', function(){
+    const row = el('myTplRow');
+    if (!row) return;
+    const open = row.hidden;
+    row.hidden = !open;
+    el('myTplSaveBtn').textContent = open ? '닫기' : '+ 내 템플릿 저장';
+    if (open){
+      const inp = el('myTplName');
+      if (inp){ inp.value = ''; inp.focus(); }
+    }
+  });
+  if (el('myTplConfirm')) el('myTplConfirm').addEventListener('click', saveMyTpl);
+  if (el('myTplName')) el('myTplName').addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){ e.preventDefault(); saveMyTpl(); }
   });
 
   // 스티커
@@ -3844,8 +4047,8 @@
     });
   });
 
-  // 카드 종류
-  el('typeSeg').addEventListener('click', (e)=>{
+  // 카드 종류(구분 제거 · v5.2) — 슬라이드 종류는 2단계 탭·3단계 추가에서 정해요
+  if (el('typeSeg')) el('typeSeg').addEventListener('click', (e)=>{
     const b = e.target.closest('button[data-type]');
     if (!b) return;
     const s = cur();
@@ -3957,6 +4160,7 @@
     if (inp.matches('[data-f]')){
       const s = cur();
       s[inp.dataset.f] = inp.value;
+      if (inp.dataset.f === 'total'){ s.totalAuto = false; syncTotalField(s); }
       if (inp.dataset.f === 'badge') syncForm();
       commit();
       ensureFonts(inp.value);
@@ -3965,6 +4169,8 @@
       const idx = parseInt(row.dataset.row, 10);
       const s = cur();
       if (s.rows[idx]){ s.rows[idx][inp.dataset.k] = inp.value; s.rows[idx].auto = false; }
+      applyAutoTotal(s);
+      syncTotalField(s);
       commit();
       ensureFonts(inp.value);
     }
@@ -3978,14 +4184,28 @@
     const s = cur();
     if (s.rows.length <= 1){ s.rows[0] = { item:'', amount:'' }; }
     else s.rows.splice(idx, 1);
-    renderRows(); commit();
+    applyAutoTotal(s);
+    renderRows(); syncTotalField(s); commit();
   });
 
   el('addRow').addEventListener('click', ()=>{
     const s = cur();
     if (s.rows.length >= MAX_ROWS){ toast('요약표는 ' + MAX_ROWS + '줄까지예요'); return; }
     s.rows.push({ item:'', amount:'' });
-    renderRows(); commit();
+    applyAutoTotal(s);
+    renderRows(); syncTotalField(s); commit();
+  });
+
+  /* v5.2: 총 합계 자동/수동 */
+  if (el('totalAutoBtn')) el('totalAutoBtn').addEventListener('click', ()=>{
+    const s = cur();
+    if (s.type !== 'summary'){ toast('요약표 카드에서 쓸 수 있어요'); return; }
+    s.totalAuto = true;
+    const t = autoTotalOf(s);
+    s.total = t;
+    syncForm();
+    commit();
+    toast(t ? '총 합계를 다시 더했어요 · ' + t : '더할 금액이 아직 없어요');
   });
 
   // 워터마크 / 가이드 토글
@@ -4452,7 +4672,9 @@
     });
     const rs = (remoteData.settings && remoteData.settings.tplNames) ? remoteData.settings.tplNames : null;
     if (rs && num(rs.ts, 0) > tplTs()) stats.settings = rs;
-    const changed = stats.folders > 0 || stats.decks > 0 || stats.updated > 0 || !!stats.settings;
+    const rc = (remoteData.settings && remoteData.settings.customTemplates) ? remoteData.settings.customTemplates : null;
+    if (rc && num(rc.ts, 0) > MY_TPLS.ts) stats.customTemplates = rc;
+    const changed = stats.folders > 0 || stats.decks > 0 || stats.updated > 0 || !!stats.settings || !!stats.customTemplates;
     return { folders:folders, decks:decks, changed:changed, stats:stats };
   }
 
@@ -4461,7 +4683,7 @@
     if (!lib) libLoad();
     const compact = await compactDecks(lib.decks, 1280, 0.68);
     const doc = JSON.stringify({ v:1, app:'imingcards', ts:Date.now(), device:syncCfg.deviceId,
-      data:{ folders:lib.folders, decks:compact, settings:{ tplNames: tplSettings() } } });
+      data:{ folders:lib.folders, decks:compact, settings:{ tplNames: tplSettings(), customTemplates: myTplSettings() } } });
     const parts = chunkBytes(doc, SYNC_PART_MAX);
     if (parts.length > SYNC_PARTS_PER_NS * 4) throw new Error('데이터가 너무 큽니다 (' + parts.length + '조각) · 오래된 덱을 정리해 주세요');
     for (let i = 0; i < parts.length; i++){
@@ -4526,6 +4748,7 @@
         const merged = syncMerge({ folders:lib.folders, decks:lib.decks }, res.doc.data);
         if (merged.changed){
           if (merged.stats.settings && tplApplyRemote(merged.stats.settings)){ renderTplChips(); }
+          if (merged.stats.customTemplates && myTplApplyRemote(merged.stats.customTemplates)){ renderTplChips(); }
           lib.folders = merged.folders;
           lib.decks = merged.decks;
           libSave();
@@ -4902,31 +5125,120 @@
     box.innerHTML = TPL_IDS.map(function(id){
       return '<button class="chip' + (id === csVal ? ' on' : '') + '" data-cstyle="' + id + '">' +
              '<span class="t">' + esc(tplName(id)) + '</span></button>';
+    }).join('') + MY_TPLS.list.map(function(t){
+      return '<button class="chip mytpl" data-mytpl="' + esc(t.id) + '" title="내 템플릿">' +
+             '<span class="t">' + esc(t.name) + '</span>' +
+             '<span class="fdel" data-mytpldel="' + esc(t.id) + '" role="button" aria-label="' + esc(t.name) + ' 삭제">✕</span></button>';
     }).join('');
     if (el('tplNow')) el('tplNow').textContent = tplName(csVal);
+    if (el('typeCard')) el('typeCard').dataset.cstyle = csVal;
   }
 
-  function renderBgChips(){
-    const box = el('bgChips');
+  /* v5.2: 질문 박스형 — 4단계에서 문구·위치 바로 고치기 */
+  function qboxTarget(){
+    if (cur().type === 'cover') return cur();
+    const ci = coverIndex();
+    return ci >= 0 ? state.slides[ci] : null;
+  }
+  function syncQboxUI(){
+    const box = el('qboxEdit');
     if (!box) return;
-    const c = CAT();
-    const on = state.coverBg || 'photo';
-    box.innerHTML = COVER_BGS.map(function(o){
-      let sw = '';
-      if (o.id === 'photo') sw = '<span class="sw" style="background:linear-gradient(135deg,#CEC8B9,#6E6A60)"></span>';
-      else if (o.id === 'cat') sw = '<span class="sw" style="background:' + (c ? c.soft : '#F5EFE4') + '"></span>';
-      else sw = '<span class="sw" style="background:' + o.hex + '"></span>';
-      return '<button class="chip' + (o.id === on ? ' on' : '') + '" data-bg="' + o.id + '">' + sw +
-             '<span class="t">' + o.name + '</span></button>';
-    }).join('');
-    if (el('coverBgName')) el('coverBgName').textContent = bgLabel(on) + (on === 'cat' && !c ? ' (크림)' : '');
+    const t = qboxTarget();
+    const show = !!(t && t.coverStyle === 'question');
+    box.hidden = !show;
+    if (!show) return;
+    [['qbox1','q1'],['qbox2','q2'],['qbox3','q3']].forEach(function(pair){
+      const inp = el(pair[0]);
+      const v = t[pair[1]] || '';
+      if (inp && document.activeElement !== inp && inp.value !== v) inp.value = v;
+    });
+    if (el('qbox3Row')) el('qbox3Row').hidden = !String(t.q3 || '').trim();
+    document.querySelectorAll('#qboxPosSeg button').forEach(function(b){ b.classList.toggle('on', (state.qboxPos || 'top') === b.dataset.qpos); });
+    document.querySelectorAll('#qboxAlignSeg button').forEach(function(b){ b.classList.toggle('on', (state.qboxAlign || 'alt') === b.dataset.qalign); });
+  }
+  if (el('qboxEdit')) el('qboxEdit').addEventListener('input', function(e){
+    const inp = e.target;
+    if (!inp || !inp.dataset || !inp.dataset.qf) return;
+    const key = inp.dataset.qf;
+    const covers = state.slides.filter(function(s){ return s.type === 'cover'; });
+    if (!covers.length) return;
+    covers.forEach(function(s){ s[key] = inp.value; });
+    if (key === 'q3' && el('qbox3Row')) el('qbox3Row').hidden = !inp.value.trim();
+    paintSoon(); persistSoon();
+  });
+  if (el('qboxAdd')) el('qboxAdd').addEventListener('click', function(){
+    const row = el('qbox3Row');
+    if (!row) return;
+    row.hidden = false;
+    const inp = el('qbox3');
+    if (inp) inp.focus();
+  });
+  if (el('qboxClear')) el('qboxClear').addEventListener('click', function(){
+    const covers = state.slides.filter(function(s){ return s.type === 'cover'; });
+    if (!covers.length) return;
+    compSnapshot('질문 박스 비우기 직전');
+    covers.forEach(function(s){ s.q1 = ''; s.q2 = ''; s.q3 = ''; });
+    if (el('qbox3Row')) el('qbox3Row').hidden = true;
+    renderAll(); persistNow();
+    toast('질문 박스를 비웠어요 · 되돌리기로 복구');
+  });
+  if (el('qboxPosSeg')) el('qboxPosSeg').addEventListener('click', function(e){
+    const b = e.target.closest('[data-qpos]');
+    if (!b) return;
+    state.qboxPos = ['top','middle','bottom'].indexOf(b.dataset.qpos) >= 0 ? b.dataset.qpos : 'top';
+    syncQboxUI(); paintSoon(); persistSoon();
+  });
+  if (el('qboxAlignSeg')) el('qboxAlignSeg').addEventListener('click', function(e){
+    const b = e.target.closest('[data-qalign]');
+    if (!b) return;
+    state.qboxAlign = ['alt','left','right'].indexOf(b.dataset.qalign) >= 0 ? b.dataset.qalign : 'alt';
+    syncQboxUI(); paintSoon(); persistSoon();
+  });
+
+  function renderBgChips(){
+    [[el('bgChips'), null], [el('batchBgChips'), null]].forEach(function(pair){
+      const box = pair[0];
+      if (!box) return;
+      const c = CAT();
+      const on = state.coverBg || 'photo';
+      box.innerHTML = COVER_BGS.map(function(o){
+        let sw = '';
+        if (o.id === 'photo') sw = '<span class="sw" style="background:linear-gradient(135deg,#CEC8B9,#6E6A60)"></span>';
+        else if (o.id === 'cat') sw = '<span class="sw" style="background:' + (c ? c.soft : '#F5EFE4') + '"></span>';
+        else sw = '<span class="sw" style="background:' + o.hex + '"></span>';
+        return '<button class="chip' + (o.id === on ? ' on' : '') + '" data-bg="' + o.id + '">' + sw +
+               '<span class="t">' + o.name + '</span></button>';
+      }).join('');
+    });
+    if (el('coverBgName')) el('coverBgName').textContent = bgLabel(state.coverBg || 'photo') + ((state.coverBg === 'cat' && !CAT()) ? ' (크림)' : '');
+  }
+  /* v5.2: 어떤 화면에서 눌러도 표지(첫 표지 슬라이드)에 바로 반영 */
+  function setCoverBg(id, opt){
+    const v = ['photo','ink','white','cream','cat'].indexOf(id) >= 0 ? id : 'photo';
+    state.coverBg = v;
+    let ci = coverIndex();
+    if (ci < 0){ state.slides.unshift(blankSlide('cover')); ci = 0; }
+    if (!(opt && opt.keepSlide)){
+      state.current = ci;
+      state.stageHide = false;
+      stageTouched = true;
+    }
+    renderAll(); persistNow();
+    setTimeout(paint, 30);
+    return v;
   }
   if (el('bgChips')) el('bgChips').addEventListener('click', function(e){
     const b = e.target.closest('[data-bg]');
     if (!b) return;
-    state.coverBg = b.dataset.bg;
-    renderAll(); persistNow(); setTimeout(paint, 30);
+    setCoverBg(b.dataset.bg);
+    applyStepUI();
     toast('표지 배경 · ' + bgLabel(state.coverBg));
+  });
+  if (el('batchBgChips')) el('batchBgChips').addEventListener('click', function(e){
+    const b = e.target.closest('[data-bg]');
+    if (!b) return;
+    setCoverBg(b.dataset.bg, { keepSlide:true });
+    renderBgChips();
   });
 
   /* =========================================================
@@ -5005,6 +5317,14 @@
     }).join('');
     el('bulkMeta').textContent = state.slides.length + '장' + (c ? ' · ' + c.name : '');
   }
+  function syncBulkTotal(i){
+    const sl = state.slides[i];
+    if (!sl || sl.type !== 'summary') return;
+    const box = el('bulkList');
+    if (!box) return;
+    const inp = box.querySelector('[data-bulk-i="' + i + '"][data-bulk-f="total"]');
+    if (inp && document.activeElement !== inp && inp.value !== (sl.total || '')) inp.value = sl.total || '';
+  }
   function bulkFollow(i){
     if (!isFinite(i) || !state.slides[i] || state.current === i) return;
     state.current = clamp(i, 0, state.slides.length - 1);
@@ -5022,9 +5342,12 @@
       const ri = parseInt(t.dataset.bulkRow, 10);
       if (!sl.rows[ri]) sl.rows[ri] = { item:'', amount:'' };
       sl.rows[ri][t.dataset.bulkRk] = t.value;
+      applyAutoTotal(sl);
+      syncBulkTotal(i);
     } else if (t.dataset.bulkF){
       if (t.dataset.bulkF === 'badgeNum') sl.badgeNum = clamp(parseInt(t.value, 10) || 0, 0, 10);
       else sl[t.dataset.bulkF] = t.value;
+      if (t.dataset.bulkF === 'total') sl.totalAuto = false;
     } else return;
     bulkFollow(i);
     paintSoon();
@@ -5223,8 +5546,11 @@
   const STEP_ORDER = {
     catCard:{1:10}, coverBgCard:{1:16}, photoCard:{1:24,3:40}, stickerCard:{1:32}, creditCard:{1:40}, guideCard:{1:50},
     writeCard:{2:10}, bodyWrite:{2:20}, fieldsCard:{2:30,3:50}, sumCard:{2:40,3:60},
-    slideCard:{3:10}, posCard:{3:20}, designCard:{4:20}, typeCard:{4:10}
+    slideCard:{3:20}, posCard:{3:30}, designCard:{4:20}, captionCard:{4:30}, typeCard:{4:10}
   };
+  /* v5.2: 3단계는 문구 칸이 맨 위, 사진(확대·위치)은 그 아래 */
+  STEP_ORDER.fieldsCard = {2:30, 3:10};
+  STEP_ORDER.sumCard = {2:40, 3:10};
   let stageTouched = false;
   let writeTab = 'cover';
 
@@ -5284,6 +5610,11 @@
     if (st === 1){
       const ci = coverIndex();
       if (ci >= 0) state.current = ci;
+    }
+    /* v5.2: 3단계는 누를 때마다 표지 1부터 */
+    if (st === 3){
+      const ci = coverIndex();
+      state.current = ci >= 0 ? ci : 0;
     }
     if (st === 2 && writeTab === 'cover'){
       const ci = coverIndex();
@@ -5401,6 +5732,53 @@
     return first;
   }
 
+  /* ---------- v5.2: 요약표 총 합계 자동 계산 ---------- */
+  const AMT_UNIT_RE = /(동|원|엔|위안|元|달러|VND|₫|฿|\$|¥|€|￦)/;
+  function amountInfo(text){
+    const raw = String(text == null ? '' : text).trim();
+    if (!raw) return null;
+    /* "89,000 → 80,100동"처럼 화살표(할인)가 있으면 뒤의 금액 기준 */
+    const parts = raw.split(/\s*(?:→|->|⟶|⇒|~|∼|〜|–|—)\s*/).filter(function(x){ return x; });
+    const seg = parts.length ? parts[parts.length - 1] : raw;
+    const digits = String(seg).replace(/[^\d]/g, '');
+    if (!digits) return null;
+    const val = parseInt(digits, 10);
+    if (!isFinite(val) || val <= 0) return null;
+    const m = String(seg).match(AMT_UNIT_RE) || raw.match(AMT_UNIT_RE);
+    return { val: val, unit: m ? m[1] : '' };
+  }
+  function autoTotalOf(slide){
+    const rows = (slide && slide.rows) || [];
+    let sum = 0, unit = '';
+    rows.forEach(function(r){
+      const a = amountInfo(r && r.amount);
+      if (!a) return;
+      sum += a.val;
+      if (!unit && a.unit) unit = a.unit;
+    });
+    if (!sum) return '';
+    return sum.toLocaleString('en-US') + unit;
+  }
+  function applyAutoTotal(slide){
+    if (!slide || slide.type !== 'summary') return false;
+    if (slide.totalAuto === false) return false;
+    const t = autoTotalOf(slide);
+    if (t === (slide.total || '')) return false;
+    slide.total = t;
+    return true;
+  }
+  function syncTotalField(s){
+    if (!s || s.type !== 'summary') return;
+    const inp = document.querySelector('#sumBody [data-f="total"]');
+    if (inp && document.activeElement !== inp && inp.value !== (s.total || '')) inp.value = s.total || '';
+    const btn = el('totalAutoBtn');
+    if (btn){
+      const on = s.totalAuto !== false;
+      btn.classList.toggle('on', on);
+      btn.textContent = on ? '자동 계산 중' : '자동 계산';
+    }
+  }
+
   /* 본문 카드 제목 → 요약 '항목', 설명 1번째 줄 → '금액' (직접 고친 칸은 보존) */
   function syncSummaryFromBodies(){
     const bodies = state.slides.filter(function(s){ return s.type === 'body'; });
@@ -5428,6 +5806,7 @@
       filled++;
     });
     sum.rows = rows;
+    applyAutoTotal(sum);
     return filled;
   }
 
@@ -5532,6 +5911,7 @@
       return { item: (b.title || '').replace(/\n/g, ' '), amount: priceFromDesc(b.desc), auto:true };
     });
     if (!s.rows.length) s.rows = [{ item:'', amount:'' }];
+    applyAutoTotal(s);
     state.slides.push(s);
     state.current = state.slides.length - 1;
     writeTab = 'summary';
@@ -5551,7 +5931,8 @@
     while (rows.length < want) rows.push({ item:'', amount:'' });
     if (rows.length > want) rows.length = want;
     s.rows = rows;
-    renderRows();
+    applyAutoTotal(s);
+    renderRows(); syncTotalField(s);
     commit();
   }
   if (el('rowPlus')) el('rowPlus').addEventListener('click', function(){
@@ -5741,6 +6122,124 @@
     const f = e.target.files && e.target.files[0];
     e.target.value = '';
     importFontFile(f);
+  });
+
+  /* ---------- v5.2: 인스타 캡션 추천 ---------- */
+  function cleanLine(v){
+    return String(v == null ? '' : v).replace(/\*\*/g, '').replace(/[ \t]+/g, ' ').replace(/\n+/g, ' ').trim();
+  }
+  const CAP_TAGS = {
+    food: ['맛집', '맛집추천', '여행맛집', '먹스타그램', '로컬맛집', '맛집리스트', '여행기록'],
+    course: ['여행코스', '여행일정', '여행루틴', '여행코스추천', '여행기록', '여행스타그램'],
+    hotplace: ['여행지추천', '핫플', '포토스팟', '여행지', '여행기록', '여행스타그램'],
+    tips: ['여행꿀팁', '여행준비', '여행정보', '여행팁', '여행기록', '여행스타그램'],
+    shopping: ['여행쇼핑', '쇼핑추천', '가성비템', '쇼핑리스트', '여행기록', '쇼핑스타그램']
+  };
+  function buildCaption(){
+    const cov = state.slides.filter(function(s){ return s.type === 'cover'; })[0] || null;
+    const bodies = state.slides.filter(function(s){ return s.type === 'body'; });
+    const sum = state.slides.filter(function(s){ return s.type === 'summary'; })[0] || null;
+    const cat = CAT();
+    const emoji = cat ? cat.emoji : '✈️';
+    const title = cleanLine(cov && cov.title);
+    const sub = cleanLine(cov && cov.subtitle);
+    const badge = cleanLine(cov && cov.badge);
+    const place = badge ? badge.split('·')[0].replace(/[0-9]/g, '').trim() : '';
+    const L = [];
+
+    /* 1) 첫 줄 훅 */
+    const hookTail = sub || (place ? place + ' 여행 기록' : '제대로 정리해봤어요');
+    const hookTitle = title || (place ? place + ' 여행 기록' : (cat ? cat.name + ' 기록' : '이번 여행 기록'));
+    L.push(emoji + ' ' + hookTitle);
+    L.push(hookTail);
+
+    /* 2) 핵심 포인트 */
+    const pts = bodies.slice(0, 4).map(function(b, i){
+      const t = cleanLine(b.title) || ('포인트 ' + (i + 1));
+      const raw = cleanLine(priceFromDesc(b.desc));
+      const p = /^[0-9]/.test(raw) ? raw : '';
+      return (i + 1) + '. ' + t + (p ? ' — ' + p : '');
+    });
+    if (pts.length){
+      L.push('');
+      L.push('📌 핵심만 정리하면');
+      pts.forEach(function(p){ L.push(p); });
+    }
+
+    /* 3) 총액 · 할인 팁 */
+    let money = '';
+    if (sum){
+      const tot = cleanLine(sum.total) || autoTotalOf(sum);
+      if (tot) money = '💰 ' + (cleanLine(sum.totalLabel) || '총 합계') + ' ' + tot;
+    }
+    const discRows = sum ? (sum.rows || []).filter(function(r){ return /→|->/.test(String((r && r.amount) || '')); }) : [];
+    const discNote = sum ? cleanLine(sum.subtitle) : '';
+    if (money || discRows.length || discNote){
+      L.push('');
+      if (money) L.push(money);
+      if (discRows.length) L.push('· 할인가 기준으로 합계를 넣었어요 (정가 → 할인가)');
+      if (discNote) L.push('· ' + discNote);
+    }
+
+    /* 4) 저장 · 댓글 유도 */
+    L.push('');
+    L.push('📎 저장해두고 다음에 그대로 따라가 보세요');
+    const cta = sum ? cleanLine(sum.cta) : '';
+    L.push('💬 ' + (cta || '궁금한 건 댓글로 남겨주세요'));
+
+    const credit = creditText();
+    if (credit) { L.push(''); L.push(cleanLine(credit)); }
+
+    /* 5) 해시태그 */
+    const tags = [];
+    (cat ? (CAP_TAGS[cat.id] || []) : ['여행', '여행기록', '여행스타그램', '카드뉴스']).forEach(function(t){
+      if (tags.indexOf(t) < 0) tags.push(t);
+    });
+    if (place){
+      const pt = place.replace(/\s+/g, '');
+      const tag = /여행$/.test(pt) ? pt : pt + '여행';
+      if (tags.indexOf(tag) < 0) tags.unshift(tag);
+    }
+    L.push('');
+    L.push(tags.slice(0, 10).map(function(t){ return '#' + t; }).join(' '));
+
+    return L.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  }
+  function renderCaption(){
+    const ta = el('captionText');
+    if (!ta) return;
+    if (document.activeElement !== ta && ta.value !== (state.caption || '')) ta.value = state.caption || '';
+    const meta = el('captionMeta');
+    if (meta){
+      const n = String(state.caption || '').trim().length;
+      meta.textContent = n ? n + '자' : '비어 있어요';
+    }
+  }
+  if (el('captionText')) el('captionText').addEventListener('input', function(e){
+    state.caption = e.target.value;
+    persistSoon();
+    renderCaption();
+  });
+  if (el('captionGen')) el('captionGen').addEventListener('click', function(){
+    const txt = buildCaption();
+    if (!txt){ toast('2단계에 문구를 먼저 적어주세요'); return; }
+    state.caption = txt;
+    renderCaption();
+    persistSoon();
+    toast('추천 캡션을 만들었어요 · 직접 고쳐도 돼요');
+  });
+  if (el('captionCopy')) el('captionCopy').addEventListener('click', function(){
+    let txt = String(state.caption || '').trim();
+    if (!txt){ txt = buildCaption(); state.caption = txt; renderCaption(); persistSoon(); }
+    copyText(txt).then(function(ok){
+      toast(ok ? '캡션을 복사했어요 · 인스타에 붙여넣어요' : '복사가 안 됐어요 · 길게 눌러 직접 복사해 주세요');
+    });
+  });
+  if (el('captionClear')) el('captionClear').addEventListener('click', function(){
+    state.caption = '';
+    renderCaption();
+    persistSoon();
+    toast('캡션을 비웠어요');
   });
 
   /* ---------- 크게 보기 ---------- */
@@ -6050,9 +6549,59 @@
       paint: paint,
       setStep: setStep,
       coverBgValue: function(){ return state.coverBg || 'photo'; },
-      setCoverBg: function(v){ state.coverBg = ['photo','ink','white','cream','cat'].indexOf(v) >= 0 ? v : 'photo'; renderAll(); persistNow(); setTimeout(paint, 30); return state.coverBg; },
+      setCoverBg: function(v){ return setCoverBg(v, { keepSlide:true }); },
+      qbox: function(){ return { pos: state.qboxPos || 'top', align: state.qboxAlign || 'alt' }; },
+      setQbox: function(pos, align){
+        if (['top','middle','bottom'].indexOf(pos) >= 0) state.qboxPos = pos;
+        if (['alt','left','right'].indexOf(align) >= 0) state.qboxAlign = align;
+        syncQboxUI(); renderAll(); persistNow(); return window.__iming.qbox();
+      },
+      setQboxText: function(a, b, c){
+        const covers = state.slides.filter(function(s){ return s.type === 'cover'; });
+        covers.forEach(function(s){ s.q1 = a == null ? '' : String(a); s.q2 = b == null ? '' : String(b); s.q3 = c == null ? '' : String(c); });
+        renderAll(); persistNow(); return covers.length;
+      },
+      amountInfo: amountInfo,
+      autoTotalOf: autoTotalOf,
+      applyAutoTotal: applyAutoTotal,
+      setTotalAuto: function(v){
+        const s = cur();
+        if (s.type !== 'summary') return false;
+        s.totalAuto = !!v;
+        if (s.totalAuto) applyAutoTotal(s);
+        syncForm(); commit();
+        return { auto: s.totalAuto !== false, total: s.total };
+      },
+      setRowAmount: function(i, text){
+        const s = cur();
+        if (s.type !== 'summary' || !s.rows[i]) return null;
+        s.rows[i].amount = String(text == null ? '' : text);
+        applyAutoTotal(s);
+        renderRows(); syncTotalField(s); commit();
+        return { total: s.total, auto: s.totalAuto !== false };
+      },
+      setTotal: function(text){
+        const s = cur();
+        if (s.type !== 'summary') return null;
+        s.total = String(text == null ? '' : text);
+        s.totalAuto = false;
+        syncForm(); commit();
+        return { total: s.total, auto: s.totalAuto !== false };
+      },
       tplNames: tplNames,
       setTplNames: function(o){ tplSaveNames(o); renderTplChips(); setTimeout(paint, 30); return tplNames(); },
+      myTpls: function(){ return MY_TPLS.list.map(function(t){ return { id:t.id, name:t.name, cfg:t.cfg }; }); },
+      captureDesign: captureDesign,
+      saveMyTpl: function(name){ if (name && el('myTplName')) el('myTplName').value = name; saveMyTpl(); return window.__iming.myTpls(); },
+      applyMyTplById: function(id){
+        const t = MY_TPLS.list.filter(function(x){ return x.id === id; })[0];
+        if (!t) return false;
+        applyMyTpl(t);
+        return true;
+      },
+      deleteMyTpl: function(id){ myTplStore(MY_TPLS.list.filter(function(t){ return t.id !== id; })); renderTplChips(); return window.__iming.myTpls(); },
+      captionBuild: buildCaption,
+      setCaption: function(t){ state.caption = String(t == null ? '' : t); renderCaption(); persistNow(); return state.caption; },
       syncSummary: function(){ const n = syncSummaryFromBodies(); renderAll(); return n; },
       priceOf: priceFromDesc,
       step: function(){ return state.step; },
