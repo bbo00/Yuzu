@@ -114,6 +114,19 @@
   .chip.on .sw{box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
   .chip.theme{padding:5px 9px 5px 6px}
   .chip.font .t{font-size:12.5px}
+  /* 글씨체 순서 편집 */
+  .fontTools{display:flex; align-items:center; gap:10px}
+  .fontTools .count{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:96px}
+  .linkBtn.on{color:#111; font-weight:800}
+  #fontChips.ordermode{flex-direction:column; gap:5px; overflow:visible; align-items:stretch; padding-bottom:3px}
+  #fontChips.ordermode .chip.font{width:100%; justify-content:flex-start; gap:7px; padding:4px 6px 4px 8px; cursor:default}
+  #fontChips.ordermode .chip.font .t{flex:1; text-align:center; font-size:13px; cursor:pointer}
+  #fontChips.ordermode .chip.font .n{width:12px; text-align:center; flex:none}
+  .chip.font .mv{flex:none; width:26px; height:26px; border-radius:7px; border:1px solid var(--line); background:#fff;
+    color:#3E3C36; font-size:9.5px; line-height:1; display:flex; align-items:center; justify-content:center; padding:0}
+  .chip.font .mv:active{background:#EFEEE9}
+  .chip.font .mv:disabled{opacity:.25}
+  .chip.on .mv{background:#2C2C2C; border-color:#3D3D3D; color:#fff}
   .chipActions{display:flex; gap:5px}
   .mini{flex:1; height:33px; border-radius:9px; border:1px solid var(--line); background:#fff; font-size:12px; font-weight:600; color:#3E3C36; padding:0 2px}
   .mini.primary{background:#111; color:#fff; border-color:#111}
@@ -393,8 +406,16 @@
     <div class="cardHead"><span class="label">컬러 배합</span><span class="count" id="themeName">웜 크림 &amp; 에스프레소</span></div>
     <div class="chips" id="themeChips"></div>
 
-    <div class="cardHead" style="margin:11px 0 7px"><span class="label">글씨체</span><span class="count" id="fontName">Pretendard</span></div>
+    <div class="cardHead" style="margin:11px 0 7px">
+      <span class="label">글씨체</span>
+      <span class="fontTools">
+        <span class="count" id="fontName">Pretendard</span>
+        <button class="linkBtn" id="fontOrderReset" hidden>↺ 기본</button>
+        <button class="linkBtn" id="fontOrderBtn" aria-pressed="false" title="글씨체 순서 바꾸기">↕️ 순서</button>
+      </span>
+    </div>
     <div class="chips" id="fontChips"></div>
+    <p class="hint" id="fontOrderHint" hidden>◀ ▶ 로 순서를 바꿔요 · 바뀐 순서는 이 브라우저에 저장돼 새로고침해도 그대로예요</p>
 
     <div class="cardHead" style="margin:11px 0 7px"><span class="label">글씨 크기 · 항목별</span><button class="linkBtn" id="sizeReset">기본값</button></div>
     <div class="zoomRow" style="margin-top:0">
@@ -855,7 +876,7 @@
 
   function blankState(mode){
     return { v:3, mode: mode || 'feed', current:0, guides:false, category:null, coverTitleColor:'cat',
-             theme:'sky', font:'pretendard',
+             theme:'sky', font:'pretendard', fontOrder: FONTS.map(function(f){ return f.id; }),
              sizes:{ title:1, sub:1, small:1 },
              previewSize:'normal', credit: DEFAULT_CREDIT, creditOn:true,
              slides:[blankSlide('cover')] };
@@ -875,10 +896,23 @@
     for (let i = 0; i < CATS.length; i++) if (CATS[i].id === state.category) return CATS[i];
     return null;
   }
+  const FONT_DEFAULT_ORDER = FONTS.map(function(f){ return f.id; });
+  function normFontOrder(list){
+    const ids = FONT_DEFAULT_ORDER, out = [];
+    (Array.isArray(list) ? list : []).forEach(function(id){
+      const k = str(id);
+      if (ids.indexOf(k) >= 0 && out.indexOf(k) < 0) out.push(k);
+    });
+    ids.forEach(function(id){ if (out.indexOf(id) < 0) out.push(id); });
+    return out;
+  }
   function fontById(id){
     for (let i=0;i<FONTS.length;i++) if (FONTS[i].id === id) return FONTS[i];
     return FONTS[0];
   }
+  /* 글씨체 칩 순서(사용자 지정) — 없으면 기본 순서 */
+  function fontOrder(){ return normFontOrder(state.fontOrder); }
+  function orderedFonts(){ return fontOrder().map(fontById); }
   function FONT(){ return fontById(state.font); }
   function SZ(){
     const s = state.sizes || {};
@@ -898,6 +932,7 @@
     out.coverTitleColor = raw.coverTitleColor === 'white' ? 'white' : 'cat';
     out.theme = themeById(raw.theme).id;
     out.font = fontById(raw.font).id;
+    out.fontOrder = normFontOrder(raw.fontOrder);
     const legacy = clamp(num(raw.textScale, 1), 0.6, 1.8);
     const sz = (raw.sizes && typeof raw.sizes === 'object') ? raw.sizes : {};
     out.sizes = {
@@ -968,7 +1003,7 @@
   function payloadOf(st){
     const x = st || state;
     return { v:3, mode:x.mode, current:x.current, guides:x.guides,
-      theme:x.theme, font:x.font, sizes:x.sizes, previewSize:x.previewSize,
+      theme:x.theme, font:x.font, fontOrder:normFontOrder(x.fontOrder), sizes:x.sizes, previewSize:x.previewSize,
       credit:x.credit, creditOn:x.creditOn, category:x.category, coverTitleColor:x.coverTitleColor, slides:x.slides };
   }
 
@@ -2786,15 +2821,67 @@
     el('themeName').textContent = THEME().name;
   }
 
+  let fontOrderMode = false;
+
+  function fontChipLabel(fn){
+    const r = fn.resolve(700);
+    return '"' + r.family + '", ' + fn.tail;
+  }
+
   function renderFontChips(){
-    fontChipsEl.innerHTML = FONTS.map(fn=>{
-      const on = fn.id === state.font ? ' on' : '';
-      const r = fn.resolve(700);
-      const fam = '"' + r.family + '", ' + fn.tail;
-      return '<button class="chip font' + on + '" data-font="' + fn.id + '">' +
-             '<span class="t" style="font-family:' + fam + '">' + esc(fn.label) + '</span></button>';
-    }).join('');
+    const list = orderedFonts();
+    const order = fontOrder();
+    fontChipsEl.classList.toggle('ordermode', fontOrderMode);
+    const hint = el('fontOrderHint');
+    if (hint) hint.hidden = !fontOrderMode;
+
+    if (fontOrderMode){
+      fontChipsEl.innerHTML = list.map(function(fn, i){
+        const on = fn.id === state.font ? ' on' : '';
+        const pos = order.indexOf(fn.id) + 1;
+        return '<div class="chip font' + on + '" data-font="' + fn.id + '">' +
+               '<span class="n">' + pos + '</span>' +
+               '<button class="mv" data-mv="-1" aria-label="' + esc(fn.label) + ' 앞으로"' + (i === 0 ? ' disabled' : '') + '>◀</button>' +
+               '<span class="t" style="font-family:' + fontChipLabel(fn) + '" data-pick="1">' + esc(fn.label) + '</span>' +
+               '<button class="mv" data-mv="1" aria-label="' + esc(fn.label) + ' 뒤로"' + (i === list.length - 1 ? ' disabled' : '') + '>▶</button>' +
+               '</div>';
+      }).join('');
+    } else {
+      fontChipsEl.innerHTML = list.map(function(fn){
+        const on = fn.id === state.font ? ' on' : '';
+        return '<button class="chip font' + on + '" data-font="' + fn.id + '">' +
+               '<span class="t" style="font-family:' + fontChipLabel(fn) + '">' + esc(fn.label) + '</span></button>';
+      }).join('');
+    }
     el('fontName').textContent = FONT().label;
+    el('fontName').hidden = !!fontOrderMode;
+    const btn = el('fontOrderBtn');
+    if (btn){
+      btn.classList.toggle('on', fontOrderMode);
+      btn.setAttribute('aria-pressed', fontOrderMode ? 'true' : 'false');
+      btn.textContent = fontOrderMode ? '✓ 완료' : '↕️ 순서';
+    }
+    const rst = el('fontOrderReset');
+    if (rst) rst.hidden = !fontOrderMode;
+  }
+
+  function moveFont(id, d){
+    const order = fontOrder();
+    const i = order.indexOf(id), j = i + (d || 0);
+    if (i < 0 || !d || j < 0 || j >= order.length) return false;
+    order.splice(i, 1);
+    order.splice(j, 0, id);
+    state.fontOrder = order;
+    renderFontChips();
+    persistSoon();
+    return true;
+  }
+
+  function resetFontOrder(silent){
+    state.fontOrder = FONT_DEFAULT_ORDER.slice();
+    renderFontChips();
+    persistSoon();
+    if (!silent) toast('글씨체 순서를 기본값으로 되돌렸어요');
   }
 
   function slideLabel(i){
@@ -3174,12 +3261,26 @@
     renderAll(); persistSoon();
   });
   fontChipsEl.addEventListener('click', (e)=>{
+    const mv = e.target.closest('[data-mv]');
+    if (mv){
+      const chip = mv.closest('[data-font]');
+      if (chip) moveFont(chip.dataset.font, parseInt(mv.dataset.mv, 10) || 0);
+      return;
+    }
     const b = e.target.closest('[data-font]');
     if (!b) return;
-    state.font = b.dataset.font;
-    renderAll(); persistSoon();
+    if (fontOrderMode && !e.target.closest('[data-pick]')) return;
+    state.font = fontById(b.dataset.font).id;
+    renderFontChips();
+    persistSoon();
     loadFontFor().then(()=>{ paint(); });
   });
+  el('fontOrderBtn').addEventListener('click', ()=>{
+    fontOrderMode = !fontOrderMode;
+    renderFontChips();
+    toast(fontOrderMode ? '◀ ▶ 로 글씨체 순서를 바꿔보세요' : '글씨체 순서를 저장했어요');
+  });
+  el('fontOrderReset').addEventListener('click', ()=>resetFontOrder());
 
   // 글씨 크기 (항목별)
   [['sizeTitle','title'],['sizeSub','sub'],['sizeSmall','small']].forEach(function(pair){
@@ -4080,6 +4181,16 @@
       formats: FORMATS,
       themes: THEMES,
       fonts: FONTS,
+      fontOrder: function(){ return fontOrder(); },
+      moveFont: moveFont,
+      resetFontOrder: function(){ resetFontOrder(true); return fontOrder(); },
+      setFontOrder: function(list){
+        state.fontOrder = normFontOrder(list);
+        renderFontChips();
+        persistNow();
+        return fontOrder();
+      },
+      fontOrderMode: function(){ return fontOrderMode; },
       stickerRect: stickerRect,
       prepareSticker: prepareSticker,
       cutoutCanvas: cutoutCanvas,
