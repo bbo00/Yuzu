@@ -27,6 +27,14 @@
     src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff) format('woff')}
   @font-face{font-family:'GmarketSans';font-style:normal;font-weight:700 900;font-display:swap;
     src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff) format('woff')}
+  /* 꾸불림체 — 우아한형제들, OFL 1.1, 웹 임베딩 허용 */
+  @font-face{font-family:'Kkubulim';font-style:normal;font-weight:400;font-display:swap;
+    src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/2410-1@1.0/BMkkubulimTTF-Regular.woff2) format('woff2')}
+  /* HS집토끼체 라운드·블랙 — 토끼네활자공장, 개인·상업 전면 무료(웹 임베딩 허용) */
+  @font-face{font-family:'HSJiptokkiRound';font-style:normal;font-weight:400;font-display:swap;
+    src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/HSJiptokki-Round.woff2) format('woff2')}
+  @font-face{font-family:'HSJiptokkiBlack';font-style:normal;font-weight:400;font-display:swap;
+    src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/HSJiptokki-Black.woff2) format('woff2')}
 
   :root{
     --bg:#FFFFFF; --ink:#111110; --muted:#78766E; --line:#E7E4DC; --line2:#F1EEE7;
@@ -806,7 +814,19 @@
 
     { id:'jua', label:'주아 (둥근 굵은)', tail:'"Apple SD Gothic Neo", sans-serif',
       resolve:function(w){ return { family:'Jua', weight:400 }; },
-      faces:[['Jua',400]] }
+      faces:[['Jua',400]] },
+
+    { id:'kkubulim', label:'꾸불림체', tail:'"Apple SD Gothic Neo", sans-serif',
+      resolve:function(w){ return { family:'Kkubulim', weight:400 }; },
+      faces:[['Kkubulim',400]] },
+
+    { id:'jiptokki', label:'HS집토끼체 라운드', tail:'"Apple SD Gothic Neo", sans-serif',
+      resolve:function(w){ return { family:'HSJiptokkiRound', weight:400 }; },
+      faces:[['HSJiptokkiRound',400]] },
+
+    { id:'jiptokkiblack', label:'HS집토끼체 블랙', tail:'"Apple SD Gothic Neo", sans-serif',
+      resolve:function(w){ return { family:'HSJiptokkiBlack', weight:400 }; },
+      faces:[['HSJiptokkiBlack',400]] }
   ];
 
   const TYPE_NAME = { cover:'표지', body:'본문', summary:'요약표' };
