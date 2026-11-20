@@ -480,6 +480,7 @@
     <div class="seg" id="coverStyleSeg">
       <button data-cstyle="cat">카테고리 통일</button>
       <button data-cstyle="trend">트렌드</button>
+      <button data-cstyle="question">질문 박스</button>
     </div>
     <div class="chipActions catClearRow">
       <button class="mini" id="catClear">카테고리 해제 · 기본 배합 색</button>
@@ -690,12 +691,19 @@
         <label>부제목</label>
         <input type="text" data-f="subtitle" placeholder="예: 다낭 목식당 솔직 후기 · 영수증 공개">
       </div>
+      <div class="field" id="coverQFields" hidden>
+        <label>질문 박스 1 · 2 (질문 박스형)</label>
+        <input type="text" data-f="q1" placeholder="예: 혼자 여행, 밥은 어땠어?">
+        <input type="text" data-f="q2" placeholder="예: 첫 혼여, 어디가 무난해?" style="margin-top:6px">
+        <p class="hint">비워두면 그 박스는 사라져요 · 제목 첫 줄에서 강조할 부분은 <b>**강조**</b>로 감싸면 정확해요</p>
+      </div>
       <div class="field">
         <label>표지 스타일</label>
         <div class="seg" id="coverSeg">
           <button data-cover="classic">클래식</button>
           <button data-cover="trend">트렌드</button>
           <button data-cover="cat">카테고리</button>
+          <button data-cover="question">질문 박스</button>
         </div>
         <p class="hint"><b>카테고리</b>는 5개 테마가 같은 표지 형식에 색만 달라요 · 트렌드는 흰 제목 + 검은 테두리</p>
       </div>
@@ -1053,7 +1061,7 @@
       id: 's' + Date.now() + Math.random().toString(36).slice(2,6),
       type: t,
       photo: null, zoom: 1, offX: 0, offY: 0,
-      badge: '', badgeNum: 0, title: '', subtitle: '', desc: '',
+      badge: '', badgeNum: 0, title: '', subtitle: '', desc: '', q1: '', q2: '',
       watermark: true,
       pos: 'bottom', align: 'left',
       coverStyle: 'classic',
@@ -1151,12 +1159,13 @@
       s.offX = clamp(num(r.offX, 0), -1, 1);
       s.offY = clamp(num(r.offY, 0), -1, 1);
       s.badge = str(r.badge);
+      s.q1 = str(r.q1); s.q2 = str(r.q2);
       s.badgeNum = clamp(Math.round(num(r.badgeNum, 0)), 0, 10);
       s.title = str(r.title); s.subtitle = str(r.subtitle);
       s.desc = str(r.desc); s.watermark = r.watermark !== false;
       s.pos = ['top','middle','bottom'].indexOf(r.pos) >= 0 ? r.pos : 'bottom';
       s.align = ['left','center','right'].indexOf(r.align) >= 0 ? r.align : 'left';
-      s.coverStyle = ['classic','trend','cat'].indexOf(r.coverStyle) >= 0 ? r.coverStyle : 'classic';
+      s.coverStyle = ['classic','trend','cat','question'].indexOf(r.coverStyle) >= 0 ? r.coverStyle : 'classic';
       s.stickers = (Array.isArray(r.stickers) ? r.stickers : []).slice(0, MAX_STICKERS).map(x=>{
         const srcOk = (x && typeof x.src === 'string' && x.src.indexOf('data:image') === 0) ? x.src : '';
         const origOk = (x && typeof x.orig === 'string' && x.orig.indexOf('data:image') === 0) ? x.orig : srcOk;
@@ -2043,12 +2052,212 @@
 
     drawCredit(ctx, pad, h - f.safeBottom - pad, cp, 'left', T.k);
   }
+
+  /* v5: 질문 박스형 표지 — 사진은 위쪽 밝게, 하단만 그라데이션 / 계단식 흰 박스 2개 / 강조 손글씨 제목 */
+  function handFontCSS(size){
+    return '400 ' + size + 'px "Jua", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", sans-serif';
+  }
+  function splitEmphasisLine(line){
+    const s2 = String(line || '');
+    const m = s2.match(/^\*\*(.+?)\*\*\s*(.*)$/);
+    if (m) return { em: m[1], rest: m[2] };
+    const sp = s2.indexOf(' ');
+    if (sp > 0) return { em: s2.slice(0, sp), rest: s2.slice(sp + 1) };
+    const n = s2.length <= 6 ? 1 : 2;
+    return { em: s2.slice(0, n), rest: s2.slice(n) };
+  }
+
+  function drawCoverQuestion(ctx, s, f, T, im){
+    const w = f.w, h = f.h, pad = f.pad, maxW = w - pad * 2;
+    const th = THEME();
+    const accent = im ? '#E3F45A' : th.paper.accent;
+    const white = '#FFFFFF';
+    const softWhite = 'rgba(255,255,255,.86)';
+
+    if (im){
+      drawPhoto(ctx, im, s, w, h);
+      const g = ctx.createLinearGradient(0, h * 0.30, 0, h);
+      g.addColorStop(0, 'rgba(9,8,7,0)');
+      g.addColorStop(0.40, 'rgba(9,8,7,.14)');
+      g.addColorStop(0.72, 'rgba(9,8,7,.55)');
+      g.addColorStop(1, 'rgba(9,8,7,.82)');
+      ctx.fillStyle = g; ctx.fillRect(0, h * 0.30, w, h * 0.70);
+    } else {
+      const bg = ctx.createLinearGradient(0, 0, w * 0.42, h);
+      bg.addColorStop(0, th.ink.bg);
+      bg.addColorStop(0.62, mixHex(th.ink.bg, th.ink.accent, 0.16));
+      bg.addColorStop(1, mixHex(th.ink.bg, '#000000', 0.35));
+      ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
+    }
+
+    /* 상단 배지(있을 때만) */
+    if ((s.badge || '').trim() || s.badgeNum){
+      drawPill(ctx, {
+        text: (s.badge || '').trim(), num: s.badgeNum || 0, x: pad, y: f.safeTop + pad * 0.72,
+        size: T.badge * 0.92, weight: 800, height: T.badge * 2.0, padX: T.badge * 0.8,
+        bg: '#FFFFFF', fg: '#141412', numBg: '#141412', numFg: '#FFFFFF', shadow: true
+      });
+    }
+
+    /* 질문 박스 2개 — 계단식(좌/우 살짝 어긋나게) */
+    const qs = [(s.q1 || '').trim(), (s.q2 || '').trim()];
+    const boxSize = Math.max(20, Math.round(T.coverSub * 1.04));
+    const boxH = Math.round(boxSize * 2.05);
+    const boxPad = Math.round(boxSize * 0.9);
+    let by = Math.round(f.safeTop + h * (f.safeTop ? 0.12 : 0.325));
+    qs.forEach(function(q, i){
+      if (!q) return;
+      const indent = i === 0 ? 0 : Math.round(maxW * 0.085);
+      const maxBoxW = maxW - indent;
+      let size = boxSize;
+      ctx.font = font(size, 700);
+      let tw = ctx.measureText(q).width;
+      while (tw + boxPad * 2 > maxBoxW && size > boxSize * 0.62){
+        size -= 1;
+        ctx.font = font(size, 700);
+        tw = ctx.measureText(q).width;
+      }
+      const bw = Math.min(maxBoxW, Math.max(boxSize * 3.2, tw + boxPad * 2));
+      const bx = pad + indent;
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,.26)';
+      ctx.shadowBlur = 22;
+      ctx.shadowOffsetY = 6;
+      ctx.fillStyle = '#FFFFFF';
+      roundRect(ctx, bx, by, bw, boxH, 5);
+      ctx.fill();
+      ctx.restore();
+      ctx.fillStyle = '#141412';
+      ctx.font = font(size, 700);
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(q, bx + boxPad, by + boxH / 2 + size * 0.03);
+      by += boxH + Math.round(boxSize * 0.52);
+    });
+
+    /* 제목 · 부제 (하단 좌측 정렬) */
+    const rawLines = String(s.title || '').replace(/\r/g, '').split('\n').map(function(t){ return t.trim(); }).filter(Boolean);
+    const lineA = rawLines[0] || '';
+    const lineB = rawLines.slice(1).join(' ');
+    const parts = lineA ? splitEmphasisLine(lineA) : { em:'', rest:'' };
+    const creditBase = h - f.safeBottom - pad;
+    const subTxt = (s.subtitle || '').trim();
+    const subSize = Math.max(21, T.coverSub * 0.92);
+
+    let size = T.coverTitle * (f.key === 'reel' ? 1.0 : 0.98);
+    const minSize = size * 0.62;
+
+    function emWidth(sz){
+      ctx.font = handFontCSS(sz * 0.94);
+      return parts.em ? ctx.measureText(parts.em).width : 0;
+    }
+    function restWidth(sz){
+      if (!parts.rest) return 0;
+      ctx.font = font(sz, 800);
+      return ctx.measureText(parts.rest).width;
+    }
+    const gapEm = size * 0.04;
+    for (let guard = 0; guard < 40; guard++){
+      const widest = Math.max(emWidth(size) + (parts.rest ? gapEm + restWidth(size) : 0),
+        lineB ? (function(){ ctx.font = font(size, 800); return ctx.measureText(lineB).width; })() : 0);
+      if (widest <= maxW || size <= minSize) break;
+      size = Math.max(minSize, size - Math.max(1, size * 0.02));
+    }
+
+    const lh = size * 1.15;
+    const titleLines = (lineA ? 1 : 0) + (lineB ? 1 : 0);
+    const subH = subTxt ? subSize * 1.5 : 0;
+    const gapSub = subTxt ? size * 0.34 : 0;
+    let top = creditBase - 44 - subH - gapSub - titleLines * lh;
+
+    if (rawLines.length){
+      let base = top + size * 0.82;
+      if (lineA){
+        const emW = parts.em ? emWidth(size) : 0;
+        ctx.save();
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'alphabetic';
+        if (parts.em){
+          const emSize = size * 0.94;
+          ctx.save();
+          ctx.translate(pad + size * 0.03, base - size * 0.02);
+          ctx.rotate(-3 * Math.PI / 180);
+          ctx.shadowColor = 'rgba(0,0,0,.35)';
+          ctx.shadowBlur = 14;
+          ctx.shadowOffsetY = 3;
+          ctx.fillStyle = accent;
+          ctx.font = handFontCSS(emSize);
+          ctx.fillText(parts.em, 0, 0);
+          ctx.restore();
+          /* 손글씨 밑줄 */
+          ctx.save();
+          ctx.strokeStyle = accent;
+          ctx.lineWidth = Math.max(3, size * 0.05);
+          ctx.lineCap = 'round';
+          ctx.globalAlpha = 0.92;
+          ctx.beginPath();
+          const uy = base + size * 0.06;
+          ctx.moveTo(pad + size * 0.03, uy);
+          ctx.quadraticCurveTo(pad + emW * 0.55, uy + size * 0.055, pad + emW * 0.99, uy - size * 0.005);
+          ctx.stroke();
+          ctx.restore();
+        }
+        if (parts.rest){
+          const rx = pad + (parts.em ? emW + gapEm : 0);
+          ctx.shadowColor = 'rgba(0,0,0,.34)';
+          ctx.shadowBlur = 24;
+          ctx.shadowOffsetY = 4;
+          ctx.fillStyle = white;
+          ctx.font = font(size, 800);
+          ctx.fillText(parts.rest, rx, base);
+        }
+        ctx.restore();
+        base += lh;
+      }
+      if (lineB){
+        ctx.save();
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'alphabetic';
+        ctx.shadowColor = 'rgba(0,0,0,.34)';
+        ctx.shadowBlur = 24;
+        ctx.shadowOffsetY = 4;
+        ctx.fillStyle = white;
+        ctx.font = font(size, 800);
+        ctx.fillText(lineB, pad, base);
+        ctx.restore();
+      }
+      top += titleLines * lh;
+    }
+
+    if (subTxt){
+      const fit = fitOneLine(ctx, subTxt, maxW * 0.94, subSize, 500, subSize * 0.8);
+      ctx.save();
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
+      ctx.shadowColor = 'rgba(0,0,0,.34)';
+      ctx.shadowBlur = 12;
+      ctx.shadowOffsetY = 2;
+      ctx.fillStyle = softWhite;
+      ctx.font = font(fit.size, 500);
+      ctx.fillText(fit.text, pad, top + gapSub + subSize * 0.92);
+      ctx.restore();
+    }
+
+    drawCredit(ctx, pad, creditBase, { fg:'rgba(255,255,255,.94)', sub:'rgba(255,255,255,.72)' }, 'left', T.k);
+  }
+
   function drawCover(ctx, s, f){
     const w = f.w, h = f.h, pad = f.pad, T = TS();
     const im = imgFor(s);
     const cat = CAT();
-    const style = s.coverStyle === 'trend' ? 'trend' : (s.coverStyle === 'cat' ? 'cat' : 'classic');
+    const style = s.coverStyle === 'trend' ? 'trend' : (s.coverStyle === 'question' ? 'question' : (s.coverStyle === 'cat' ? 'cat' : 'classic'));
     let pal;
+
+    /* v5: 질문 박스형 */
+    if (style === 'question'){
+      drawCoverQuestion(ctx, s, f, T, im);
+      return;
+    }
 
     /* v4: 카테고리 통일 표지 (5개 모두 같은 레이아웃·폰트·위치·배지 구조) */
     if (style === 'cat' && cat){
@@ -3201,9 +3410,11 @@
     const csVal = (cur().type === 'cover' ? (cur().coverStyle || 'classic') : ((state.slides[coverIndex() >= 0 ? coverIndex() : 0] || {}).coverStyle || 'classic'));
     document.querySelectorAll('#coverStyleSeg button').forEach(function(b){
       const v = b.dataset.cstyle;
-      b.classList.toggle('on', v === 'trend' ? csVal === 'trend' : (csVal === 'cat' || csVal === 'classic'));
+      b.classList.toggle('on', v === 'question' ? csVal === 'question' : (v === 'trend' ? csVal === 'trend' : (csVal === 'cat' || csVal === 'classic')));
     });
-    if (el('coverStyleName')) el('coverStyleName').textContent = csVal === 'trend' ? '트렌드' : (csVal === 'cat' ? '카테고리 통일' : '클래식');
+    if (el('coverStyleName')) el('coverStyleName').textContent =
+      csVal === 'question' ? '질문 박스형' : (csVal === 'trend' ? '트렌드' : (csVal === 'cat' ? '카테고리 통일' : '클래식'));
+    if (el('coverQFields')) el('coverQFields').hidden = !(cur().type === 'cover' && cur().coverStyle === 'question');
     document.querySelectorAll('#catTitleSeg button').forEach(function(b){ b.classList.toggle('on', (state.coverTitleColor === 'white' ? 'white' : 'cat') === b.dataset.tcol); });
     document.querySelectorAll('#styleSeg button').forEach(b=>b.classList.toggle('on', b.dataset.style === s.summaryStyle));
     document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('on', b.dataset.mode === state.mode));
@@ -4473,11 +4684,11 @@
   el('coverStyleSeg').addEventListener('click', function(e){
     const b = e.target.closest('[data-cstyle]');
     if (!b) return;
-    const v = b.dataset.cstyle === 'trend' ? 'trend' : 'cat';
+    const v = b.dataset.cstyle === 'question' ? 'question' : (b.dataset.cstyle === 'trend' ? 'trend' : 'cat');
     state.slides.forEach(function(sl){ if (sl.type === 'cover') sl.coverStyle = v; });
     renderAll();
     persistNow();
-    toast(v === 'cat' ? '표지 스타일 · 카테고리 통일' : '표지 스타일 · 트렌드');
+    toast('표지 스타일 · ' + (v === 'cat' ? '카테고리 통일' : (v === 'trend' ? '트렌드' : '질문 박스형')));
   });
 
   /* =========================================================
@@ -5428,7 +5639,10 @@
     }
 
     const allText = state.slides.map(s => [s.badge, s.title, s.subtitle, s.desc, s.totalLabel, s.total, s.totalNote, s.cta].join(' ')).join(' ');
-    ensureFonts(allText);
+    ensureFonts(allText + ' 강조 handwriting');
+    if (document.fonts && document.fonts.load){
+      document.fonts.load('400 60px "Jua"', '가나다라 혼여행').then(function(){ paintSoon(); }).catch(function(){});
+    }
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(()=>paintSoon());
 
     if (window.ResizeObserver){
