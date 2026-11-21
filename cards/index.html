@@ -672,17 +672,17 @@
     </div>
   </div>
 
-  <div class="card" id="typeCard" data-steps="3">
+  <div class="card" id="designHead" data-steps="3 4">
     <div class="wtabseg" id="designTargetSeg">
       <button data-dtab="cover">표지</button>
       <button data-dtab="body">본문</button>
       <button data-dtab="summary">요약</button>
     </div>
-    <div class="chipActions" id="designTools" style="margin-bottom:11px">
+    <div class="chipActions" id="designTools">
       <button class="mini" id="tplRoleBtn">🏷️ 디자인 분류 설정</button>
       <button class="mini" id="tplEditBtn">✏️ 이름 수정</button>
     </div>
-    <div id="tplNameEdit" hidden>
+    <div id="tplNameEdit" hidden style="margin-top:11px">
       <div class="cardHead" style="margin:0 0 2px"><span class="label">디자인 이름 수정</span><button class="linkBtn" id="tplNameCancel">닫기</button></div>
       <div id="tplEditRows"></div>
       <p class="hint">이름을 고치면 아래 칩에 <b>바로</b> 반영되고, 비우면 원래 이름으로 돌아가요 · 저장함·클라우드에도 함께 저장돼요</p>
@@ -690,6 +690,9 @@
         <button class="mini primary" id="tplNameSave">저장하고 닫기</button>
       </div>
     </div>
+  </div>
+
+  <div class="card" id="typeCard" data-steps="3">
     <div class="tplSec" id="coverSec">
       <div class="cardHead"><span class="secEm">🎨 표지 디자인</span><span class="count" id="tplNow">클래식</span></div>
       <div class="chips" id="tplChips"></div>
@@ -8288,6 +8291,7 @@
     photoCard:{1:10, 4:70}, stickerCard:{1:20}, creditCard:{1:30}, guideCard:{1:40},
     writeCard:{2:10}, bodyWrite:{2:20}, fieldsCard:{2:30, 4:40}, sumCard:{2:40, 4:35}, photoMapCard:{2:50, 4:65},
     typeCard:{3:10, 4:60}, coverBgCard:{3:12, 4:62}, sumBgCard:{3:14, 4:63}, designCard:{3:20}, roleSetCard:{3:11, 4:61},
+    designHead:{3:5, 4:58},
     slideCard:{4:10}, roleCard:{4:20}, posCard:{4:30}, captionCard:{4:80}
   };
   /* v5.2: 3단계는 문구 칸이 맨 위, 사진(확대·위치)은 그 아래 */
@@ -8328,7 +8332,7 @@
       else if (show && id === 'coverBgCard') show = (type === 'cover');
       else if (show && id === 'sumBgCard') show = (type === 'summary');
       else if (show && id === 'roleSetCard') show = !!roleSetOpen;
-      else if (show && id === 'typeCard') show = !(st === 4 && type === 'summary');
+      else if (show && id === 'typeCard') show = (type !== 'summary');
       node.hidden = !show;
       if (map[st] != null) node.style.order = String(map[st]);
     });
