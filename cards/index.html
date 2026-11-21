@@ -1367,7 +1367,7 @@
       photo: null, zoom: 1, offX: 0, offY: 0,
       badge: '', badgeNum: 0, title: '', subtitle: '', desc: '', q1: '', q2: '', q3: '',
       watermark: true, grad: false,
-      pos: 'bottom', align: 'left', dx: 0, dy: 0, posSet: false,
+      pos: 'bottom', align: 'left', dx: 0, dy: 0, posSet: false, alignSet: false,
       coverStyle: 'classic', bodyStyle: 'classic',
       stickers: [],
       summaryStyle: 'photo',
@@ -1413,6 +1413,9 @@
   const TPL_POS = { place_pin:'bottom', chat_bubble:'middle', big_title:'middle', word_highlight:'middle',
                     magazine_interview:'bottom', editorial:'bottom', classic:'bottom', trend:'top',
                     question:'middle', iming_yellow:'middle' };
+  /* 가운데 정렬이 기본인 디자인 (레퍼런스처럼) */
+  const TPL_ALIGN = { big_title:'center', word_highlight:'center', iming_yellow:'center',
+                      chat_bubble:'left', question:'left', trend:'left' };
 
   const TPL_KEY = 'iming_cards_tplnames_v1';
 
@@ -1771,6 +1774,7 @@
       s.dx = clamp(num(r.dx, 0), -1, 1);
       s.dy = clamp(num(r.dy, 0), -1, 1);
       s.posSet = (r.posSet === true) || (['top','middle'].indexOf(r.pos) >= 0);
+      s.alignSet = (r.alignSet === true) || (['center','right'].indexOf(r.align) >= 0);
       s.coverStyle = ['classic','trend','cat','question','iming_yellow','editorial','place_pin','chat_bubble','big_title','word_highlight','magazine_interview'].indexOf(r.coverStyle) >= 0 ? r.coverStyle : 'classic';
       s.bodyStyle = BODY_IDS.indexOf(r.bodyStyle) >= 0 ? r.bodyStyle : 'classic';
       s.stickers = (Array.isArray(r.stickers) ? r.stickers : []).slice(0, MAX_STICKERS).map(x=>{
@@ -3291,7 +3295,7 @@
   }
 
   /* 상단 중앙 서명 — 살짝 기울인 @IMING */
-  function drawSignature(ctx, cx, y, size, color){
+  function drawSignature(ctx, cx, y, size, color, plain){
     const full = creditText().trim();
     const i = full.indexOf('·');
     const head = full ? (i >= 0 ? full.slice(0, i).trim() : full) : '@IMING';
@@ -3302,9 +3306,11 @@
     ctx.font = fontOfId('pretendard', size, 700);
     ctx.textAlign = 'center';
     ctx.textBaseline = 'alphabetic';
-    ctx.shadowColor = 'rgba(0,0,0,.42)';
-    ctx.shadowBlur = size * 0.7;
-    ctx.shadowOffsetY = 2;
+    if (!plain){
+      ctx.shadowColor = 'rgba(0,0,0,.42)';
+      ctx.shadowBlur = size * 0.7;
+      ctx.shadowOffsetY = 2;
+    }
     ctx.fillStyle = color || 'rgba(255,255,255,.95)';
     ctx.fillText(head, 0, 0);
     ctx.restore();
@@ -3594,8 +3600,15 @@
      ========================================================= */
   function tPos(s){
     return { pos: effPosOf(s),
-             align: ['left','center','right'].indexOf(s.align) >= 0 ? s.align : 'left',
+             align: effAlignOf(s),
              dx: clamp(num(s.dx, 0), -1, 1), dy: clamp(num(s.dy, 0), -1, 1) };
+  }
+  function effAlignOf(s){
+    const valid = ['left','center','right'];
+    if (s.alignSet === true) return valid.indexOf(s.align) >= 0 ? s.align : 'left';
+    const st = s.type === 'body' ? (s.bodyStyle || 'classic') : (s.coverStyle || 'classic');
+    if (TPL_ALIGN[st]) return TPL_ALIGN[st];
+    return valid.indexOf(s.align) >= 0 ? s.align : 'left';
   }
   /* v5.7: 사용자가 위치를 직접 고른 적이 없으면 디자인별 기본 위치(가운데 계열) */
   function effPosOf(s){
@@ -3886,7 +3899,8 @@
     });
     if (isCover) styleCreditLine(ctx, f, dark);
     else if (s.watermark !== false){
-      drawSignature(ctx, w / 2, f.safeTop + Math.max(pad * 0.5, h * 0.036), Math.max(14, Math.round(w * 0.023)));
+      drawSignature(ctx, w / 2, f.safeTop + Math.max(pad * 0.5, h * 0.036), Math.max(14, Math.round(w * 0.023)),
+        dark ? 'rgba(255,255,255,.95)' : 'rgba(30,29,26,.55)', !dark);
     }
   }
 
@@ -4026,7 +4040,8 @@
     /* 5) 하단 바 그리기 (표지에서만) */
     if (!isCover){
       if (s.watermark !== false){
-        drawSignature(ctx, w / 2, f.safeTop + Math.max(pad * 0.5, h * 0.036), Math.max(14, Math.round(w * 0.023)));
+        drawSignature(ctx, w / 2, f.safeTop + Math.max(pad * 0.5, h * 0.036), Math.max(14, Math.round(w * 0.023)),
+        dark ? 'rgba(255,255,255,.95)' : 'rgba(30,29,26,.55)', !dark);
       }
       return;
     }
@@ -4173,7 +4188,8 @@
     }
     if (isCover) styleCreditLine(ctx, f, dark);
     else if (s.watermark !== false){
-      drawSignature(ctx, w / 2, f.safeTop + Math.max(pad * 0.5, h * 0.036), Math.max(14, Math.round(w * 0.023)));
+      drawSignature(ctx, w / 2, f.safeTop + Math.max(pad * 0.5, h * 0.036), Math.max(14, Math.round(w * 0.023)),
+        dark ? 'rgba(255,255,255,.95)' : 'rgba(30,29,26,.55)', !dark);
     }
   }
   /* fontStr 그대로 다시 쓰기 위한 통과 함수 */
@@ -4249,7 +4265,8 @@
     }
     if (isCover) styleCreditLine(ctx, f, dark);
     else if (s.watermark !== false){
-      drawSignature(ctx, w / 2, f.safeTop + Math.max(pad * 0.5, h * 0.036), Math.max(14, Math.round(w * 0.023)));
+      drawSignature(ctx, w / 2, f.safeTop + Math.max(pad * 0.5, h * 0.036), Math.max(14, Math.round(w * 0.023)),
+        dark ? 'rgba(255,255,255,.95)' : 'rgba(30,29,26,.55)', !dark);
     }
   }
 
@@ -4332,7 +4349,8 @@
     });
     if (isCover) styleCreditLine(ctx, f, dark);
     else if (s.watermark !== false){
-      drawSignature(ctx, w / 2, f.safeTop + Math.max(pad * 0.5, h * 0.036), Math.max(14, Math.round(w * 0.023)));
+      drawSignature(ctx, w / 2, f.safeTop + Math.max(pad * 0.5, h * 0.036), Math.max(14, Math.round(w * 0.023)),
+        dark ? 'rgba(255,255,255,.95)' : 'rgba(30,29,26,.55)', !dark);
     }
   }
 
@@ -5795,7 +5813,7 @@
     document.querySelectorAll('#styleSeg button').forEach(function(b){ b.classList.toggle('on', b.dataset.style === currentSumBg()); });
     document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('on', b.dataset.mode === state.mode));
     document.querySelectorAll('#posSeg button').forEach(function(b){ b.classList.toggle('on', b.dataset.pos === effPosOf(s)); });
-    document.querySelectorAll('#alignSeg button').forEach(b=>b.classList.toggle('on', b.dataset.align === (s.align || 'left')));
+    document.querySelectorAll('#alignSeg button').forEach(function(b){ b.classList.toggle('on', b.dataset.align === effAlignOf(s)); });
     if (el('posSlideName')) el('posSlideName').textContent = slideLabel(state.current);
     if (el('roleNow')) el('roleNow').textContent = slideLabel(state.current);
     document.querySelectorAll('#cardRoleSeg button').forEach(function(b){ b.classList.toggle('on', b.dataset.role === s.type); });
@@ -5962,7 +5980,8 @@
       if (sl.type !== 'cover') return;
       sl.coverStyle = v;
       if (TPL_POS[v]) sl.pos = TPL_POS[v];
-      sl.dx = 0; sl.dy = 0; sl.posSet = false;
+      sl.align = TPL_ALIGN[v] || 'left';
+      sl.dx = 0; sl.dy = 0; sl.posSet = false; sl.alignSet = false;
     });
     if (v === 'editorial'){
       state.theme = EDITORIAL_PRESET.theme;
@@ -5983,7 +6002,8 @@
       if (sl.type !== 'body') return;
       sl.bodyStyle = v;
       if (TPL_POS[v]) sl.pos = TPL_POS[v];
-      sl.dx = 0; sl.dy = 0; sl.posSet = false;
+      sl.align = TPL_ALIGN[v] || 'left';
+      sl.dx = 0; sl.dy = 0; sl.posSet = false; sl.alignSet = false;
     });
     renderAll(); persistNow(); setTimeout(paint, 30);
     syncBodyStyleSeg();
@@ -6366,6 +6386,7 @@
     const b = e.target.closest('button[data-align]');
     if (!b) return;
     cur().align = b.dataset.align;
+    cur().alignSet = true;
     renderAll(); persistSoon();
   });
 
@@ -8478,7 +8499,7 @@
     const alignName = { left:'왼쪽', center:'중앙', right:'오른쪽' }[s.align || 'left'];
     let n = 0;
     state.slides.forEach(function(x){
-      if (x.type !== 'summary'){ x.pos = s.pos; x.align = s.align; x.dx = s.dx || 0; x.dy = s.dy || 0; x.posSet = true; n++; }
+      if (x.type !== 'summary'){ x.pos = s.pos; x.align = s.align; x.dx = s.dx || 0; x.dy = s.dy || 0; x.posSet = true; x.alignSet = true; n++; }
     });
     renderAll(); persistNow();
     toast('표지·본문 ' + n + '장 모두 · ' + posName + ' ' + alignName + '로 맞췄어요');
@@ -8508,7 +8529,7 @@
     const s = cur();
     s.pos = ['top', 'middle', 'bottom'].indexOf(parts[0]) >= 0 ? parts[0] : 'bottom';
     s.align = ['left', 'center', 'right'].indexOf(parts[1]) >= 0 ? parts[1] : 'left';
-    s.dx = 0; s.dy = 0; s.posSet = true;
+    s.dx = 0; s.dy = 0; s.posSet = true; s.alignSet = true;
     renderAll();
     persistSoon();
   });
@@ -9280,7 +9301,7 @@
       bodyStyle: function(){ return bodyStylesOf(); },
       setBodyStyle: function(v){
         const id = BODY_IDS.indexOf(v) >= 0 ? v : 'classic';
-        state.slides.forEach(function(sl){ if (sl.type === 'body'){ sl.bodyStyle = id; if (TPL_POS[id]) sl.pos = TPL_POS[id]; sl.posSet = false; } });
+        state.slides.forEach(function(sl){ if (sl.type === 'body'){ sl.bodyStyle = id; if (TPL_POS[id]) sl.pos = TPL_POS[id]; sl.align = TPL_ALIGN[id] || 'left'; sl.posSet = false; sl.alignSet = false; } });
         renderAll(); persistNow(); setTimeout(paint, 30); return window.__iming.bodyStyle();
       },
       coverStyle: function(){
@@ -9290,7 +9311,7 @@
       setCoverStyle: function(v){
         const id = ['iming_yellow'].concat(TPL_IDS).indexOf(v) >= 0 ? v : 'classic';
         if (coverIndex() < 0) state.slides.unshift(blankSlide('cover'));
-        state.slides.forEach(function(sl){ if (sl.type === 'cover'){ sl.coverStyle = id; if (TPL_POS[id]) sl.pos = TPL_POS[id]; sl.posSet = false; } });
+        state.slides.forEach(function(sl){ if (sl.type === 'cover'){ sl.coverStyle = id; if (TPL_POS[id]) sl.pos = TPL_POS[id]; sl.align = TPL_ALIGN[id] || 'left'; sl.posSet = false; sl.alignSet = false; } });
         renderAll(); persistNow(); setTimeout(paint, 30); return window.__iming.coverStyle();
       },
       summaries: function(){ return summaryCount(); },
