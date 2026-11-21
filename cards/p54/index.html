@@ -2529,10 +2529,10 @@
       ctx.save();
       if (onPhoto){ ctx.shadowColor = 'rgba(0,0,0,.36)'; ctx.shadowBlur = 12; ctx.shadowOffsetY = 2; }
       ctx.fillStyle = AC.color;
-      roundRect(ctx, pad, y, Math.round(Math.min(maxW * 0.5, 88)), 8, 4);
+      roundRect(ctx, pad, y, Math.round(Math.min(maxW * 0.6, 120)), 9, 4.5);
       ctx.fill();
       ctx.restore();
-      y += 8 + 20;
+      y += 9 + 20;
     }
 
     if (s.subtitle){
