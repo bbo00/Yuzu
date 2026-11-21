@@ -51,7 +51,7 @@
   };
   window.XMLHttpRequest = function () { throw new Error('test-offline'); };
 
-  if (window.__MODE__ === 'nosr') {
+  if (__MODE__ === 'nosr') {
     try { delete window.SpeechRecognition; } catch (e) {}
     try { delete window.webkitSpeechRecognition; } catch (e) {}
     window.SpeechRecognition = undefined;
