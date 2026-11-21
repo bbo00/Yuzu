@@ -470,8 +470,7 @@
   .stCrop .nudge{margin-top:4px}
 
   /* v5.6 ---------- */
-  .tplSec{padding-top:2px}
-  .tplSec + .tplSec{margin-top:12px; padding-top:12px; border-top:1px solid var(--line2)}
+  .tplSec{padding-top:2px}  .tplSec + .tplSec{margin-top:12px; padding-top:12px; border-top:1px solid var(--line2)}
   .tplSec .cardHead{margin-bottom:7px}
   .tplSec .secEm{font-size:12.5px; font-weight:800; color:#211F1A; letter-spacing:-.2px}
   .tplSec .secHelp{margin:0; font-size:10.5px; color:var(--muted); line-height:1.5; letter-spacing:-.2px}
@@ -488,6 +487,51 @@
   .fontTarget{display:flex; gap:5px; margin:0 0 7px}
   .fontTarget .seg{flex:1}
   .fontTarget .mini{flex:0 0 108px; height:auto; font-size:11px; font-weight:800}
+  /* v5.7 ---------- */
+  .fontSelect{width:100%; display:flex; align-items:center; gap:9px; min-height:46px; padding:0 12px;
+    border:1px solid var(--line); border-radius:12px; background:#fff; text-align:left}
+  .fontSelect:active{background:#F7F5EF}
+  .fontSelect .fsSw{flex:none; width:28px; height:28px; border-radius:9px; display:grid; place-items:center;
+    background:#F3F1EA; color:#55524B; font-family:'NanumSquareNeo', sans-serif; font-weight:700; font-size:13px}
+  .fontSelect .fsName{flex:1; min-width:0; font-size:14px; font-weight:700; color:#211F1A;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:-.2px}
+  .fontSelect .fsChev{flex:none; font-size:12px; color:var(--muted)}
+  .fsList{display:flex; flex-direction:column; gap:5px; margin:2px 0 10px; max-height:56vh; overflow-y:auto;
+    -webkit-overflow-scrolling:touch}
+  .fsRow{display:flex; align-items:center; gap:8px; width:100%; min-height:46px; padding:0 11px;
+    border:1px solid var(--line); border-radius:11px; background:#fff; text-align:left}
+  .fsRow.on{border-color:#111; background:#111; color:#fff}
+  .fsRow .pin{flex:none; width:22px; height:22px; border-radius:50%; display:grid; place-items:center;
+    font-size:12px; line-height:1; color:#C9C5B8; background:transparent}
+  .fsRow .pin.on{color:#F2B01E}
+  .fsRow.on .pin{color:rgba(255,255,255,.45)}
+  .fsRow.on .pin.on{color:#FFD262}
+  .fsRow .nm{flex:1; min-width:0; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .fsRow .tag{flex:none; font-size:9px; font-weight:800; color:#8A5A20; background:#FFF0D8; border-radius:5px; padding:2px 4px}
+  .fsRow .mv{flex:none; width:30px; height:30px; border-radius:8px; border:1px solid var(--line); background:#fff;
+    color:#3E3C36; font-size:10px; display:grid; place-items:center; padding:0}
+  .fsRow.on .mv{background:#2C2C2C; border-color:#3D3D3D; color:#fff}
+  .fsRow .mv:disabled{opacity:.25}
+  .fsRow .fdel{flex:none; width:24px; height:24px; border-radius:50%; border:0; background:#EFEDE7; color:#8B8880;
+    font-size:10px; display:grid; place-items:center; padding:0}
+  .fsRow.on .fdel{background:rgba(255,255,255,.2); color:#fff}
+  .fsRow .ck{flex:none; width:18px; text-align:center; font-size:12px; font-weight:800; color:#111}
+  .fsRow.on .ck{color:#FFD262}
+  .photoMapList{display:flex; flex-direction:column; gap:5px}
+  .pmRow{display:flex; align-items:center; gap:9px; padding:5px; border:1px solid var(--line); border-radius:11px; background:#fff}
+  .pmRow.cur{border-color:#111; box-shadow:0 0 0 1px #111 inset}
+  .pmRow .th{flex:none; width:46px; height:56px; border-radius:8px; overflow:hidden; background:#EFECE3;
+    display:grid; place-items:center; font-size:15px; color:#B3AFA2}
+  .pmRow .th img{width:100%; height:100%; object-fit:cover; display:block}
+  .pmRow .meta{flex:1; min-width:0}
+  .pmRow .nm{font-size:12px; font-weight:800; color:#211F1A; letter-spacing:-.2px}
+  .pmRow .sub{font-size:10.5px; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .pmRow .act{flex:none; display:flex; gap:4px}
+  .pmRow .act button{height:30px; padding:0 9px; border-radius:8px; border:1px solid var(--line); background:#fff;
+    font-size:11px; font-weight:700; color:#3E3C36}
+  .pmRow .act button.pri{background:#111; color:#fff; border-color:#111}
+  .pmRow .act button.x{width:30px; padding:0; color:#8B8880}
+  #cardRoleSeg button{font-size:12px; padding:8px 4px}
   .feedGrid{display:grid; grid-template-columns:repeat(3, 1fr); gap:3px; margin:2px 0 10px}
   .feedCell{position:relative; aspect-ratio:4 / 5; border-radius:7px; overflow:hidden; border:1px solid var(--line);
     background:#EFECE3; padding:0; display:block; width:100%}
@@ -517,10 +561,10 @@
 </header>
 
 <nav class="stepbar" id="stepBar" aria-label="제작 단계">
-  <button data-stepbtn="1"><span class="n">1</span>세팅·사진</button>
-  <button data-stepbtn="2"><span class="n">2</span>글 쓰기</button>
-  <button data-stepbtn="3"><span class="n">3</span>사진+글</button>
-  <button data-stepbtn="4"><span class="n">4</span>디자인</button>
+  <button data-stepbtn="1"><span class="n">1</span>사진</button>
+  <button data-stepbtn="2"><span class="n">2</span>글쓰기</button>
+  <button data-stepbtn="3"><span class="n">3</span>디자인</button>
+  <button data-stepbtn="4"><span class="n">4</span>최종</button>
 </nav>
 
 <div class="modebar">
@@ -558,20 +602,17 @@
 
 <section class="editor" id="editor">
 
-  <div class="card" id="catCard" data-steps="1">
-    <div class="cardHead"><span class="label">카테고리 · 통일 표지</span><span class="count" id="catName">선택 안 함</span></div>
-    <div class="catGrid" id="catChips"></div>
-    <div class="seg" id="catTitleSeg" style="margin-top:9px">
-      <button data-tcol="cat">제목 = 카테고리 색</button>
-      <button data-tcol="white">제목 = 흰색</button>
+  <div class="card" id="roleCard" data-steps="2 4">
+    <div class="cardHead"><span class="label">이 카드</span><span class="count" id="roleNow">표지 1</span></div>
+    <div class="seg" id="cardRoleSeg">
+      <button data-role="cover">표지로</button>
+      <button data-role="body">본문으로</button>
+      <button data-role="summary">요약표로</button>
     </div>
-    <div class="chipActions catClearRow">
-      <button class="mini" id="catClear">카테고리 해제 · 기본 배합 색</button>
-    </div>
-    <p class="hint">5개 모두 <b>같은 표지 틀</b>에 <b>시그니처 색만</b> 달라요 · 표지 템플릿은 <b>4단계</b>에서 골라요</p>
+    <p class="hint">아래 수정 항목은 <b>고른 카드에 맞는 것만</b> 보여요 · 표지↔본문으로 바꿔도 글·사진은 그대로 남아요</p>
   </div>
 
-  <div class="card" id="coverBgCard" data-steps="1 4">
+  <div class="card" id="coverBgCard" data-steps="3">
     <div class="cardHead"><span class="label">표지 배경</span><span class="count" id="coverBgName">사진</span></div>
     <div class="bgGrid" id="bgChips"></div>
     <p class="hint">사진 없이 <b>단색</b>으로도 깔끔하게 · 1단계는 사진·누끼만 만지고 표지 배경은 여기 <b>4단계</b>에서 바꿔요 · 글씨 색은 배경 밝기에 맞춰 자동으로 바뀌어요</p>
@@ -601,7 +642,7 @@
     </div>
     <div class="parsedList" id="parsedList"></div>
   </div>
-  <div class="card" id="slideCard" data-steps="3">
+  <div class="card" id="slideCard" data-steps="4">
     <div class="cardHead"><span class="label">슬라이드</span><span class="count" id="slideCount">1장</span></div>
     <div class="chips" id="chips"></div>
     <div class="chipActions">
@@ -613,9 +654,9 @@
     </div>
   </div>
 
-  <div class="card" id="typeCard" data-steps="4">
+  <div class="card" id="typeCard" data-steps="3">
     <div class="tplSec" id="coverSec">
-      <div class="cardHead"><span class="secEm">🎨 표지 디자인</span><span class="count" id="tplNow">카테고리 통일</span><button class="linkBtn" id="tplEditBtn">이름 수정</button></div>
+      <div class="cardHead"><span class="secEm">🎨 표지 디자인</span><span class="count" id="tplNow">클래식</span><button class="linkBtn" id="tplEditBtn">이름 수정</button></div>
       <div class="chips" id="tplChips"></div>
       <p class="secHelp">표지 카드에만 적용돼요 · 본문은 아래에서 따로 골라요</p>
     </div>
@@ -623,6 +664,11 @@
       <div class="cardHead"><span class="secEm">📄 본문 디자인</span><span class="count" id="bodyNow">기본 깔끔형</span></div>
       <div class="chips" id="bodyChips"></div>
       <p class="secHelp" id="bodyHelp">본문 카드 전체에 적용돼요 · 표지 디자인은 그대로 남아요</p>
+    </div>
+    <div class="tplSec" id="sumSec">
+      <div class="cardHead"><span class="secEm">🧾 요약표 배경</span><span class="count" id="sumBgNow">다크</span></div>
+      <div class="chips" id="sumBgChips"></div>
+      <p class="secHelp">사진 · 그라데이션 · 단색 컬러에서 바로 고르면 요약 카드 배경이 바뀨요</p>
     </div>
     <div class="chipActions" style="margin-top:8px">
       <button class="mini" id="myTplSaveBtn">+ 내 템플릿 저장</button>
@@ -667,10 +713,10 @@
       </div>
       <p class="hint">질문 박스형 표지에 바로 반영돼요 · 비운 박스는 사라져요 · 제목 강조는 <b>**강조**</b></p>
     </div>
-    <p class="hint">🎨 표지와 📄 본문을 <b>따로</b> 골라 자유롭게 조합해요 · <b>이름 수정</b>으로 내 말로 바꿔 저장할 수 있어요 · 이 브라우저와 클라우드에 함께 저장돼요</p>
+    <p class="hint">🎨 표지와 📄 본문을 <b>따로</b> 골라 자유롭게 조합해요 · <b>모든 디자인을 표지·본문 양쪽에서</b> 고를 수 있어요 · <b>이름 수정</b>으로 내 말로 바꿔 저장할 수 있어요</p>
   </div>
 
-  <div class="card" id="designCard" data-steps="4">
+  <div class="card" id="designCard" data-steps="3">
     <div class="cardHead"><span class="label">컬러 배합</span><span class="count" id="themeName">웜 크림 &amp; 에스프레소</span></div>
     <div class="chips" id="themeChips"></div>
     <p class="themePrio" id="themePrioHint"></p>
@@ -678,7 +724,6 @@
     <div class="cardHead" style="margin:11px 0 7px">
       <span class="label">글씨체</span>
       <span class="fontTools">
-        <span class="count" id="fontName">Pretendard</span>
         <button class="linkBtn" id="fontOrderReset" hidden>↺ 기본</button>
         <button class="linkBtn" id="fontOrderBtn" aria-pressed="false" title="글씨체 순서 바꾸기">↕️ 순서</button>
       </span>
@@ -690,8 +735,12 @@
       </div>
       <button class="mini" id="fontUnify">같은 글씨체로 통일</button>
     </div>
-    <div class="chips" id="fontChips"></div>
-    <p class="hint">⭐를 누르면 그 글씨체가 목록 맨 앞에 고정돼요 · 위에서 <b>표지</b> / <b>본문·요약</b>을 골라 따로 지정해요</p>
+    <button class="fontSelect" id="fontSelectBtn" type="button" aria-haspopup="listbox">
+      <span class="fsSw" aria-hidden="true">Aa</span>
+      <span class="fsName" id="fontName">Pretendard</span>
+      <span class="fsChev" aria-hidden="true">▾</span>
+    </button>
+    <p class="hint">박스를 누르면 글씨체 목록이 열려요 · ⭐는 <b>3개까지 맨 위 고정</b> · 위에서 <b>표지</b> / <b>본문·요약</b>을 골라 따로 지정해요</p>
     <div class="chipActions" style="margin-top:7px">
       <button class="mini" id="fontImport">＋ 내 폰트 파일 불러오기</button>
     </div>
@@ -742,7 +791,7 @@
     </div>
   </div>
 
-  <div class="card" id="photoCard" data-steps="1 3">
+  <div class="card" id="photoCard" data-steps="1 4">
     <div class="cardHead"><span class="label">사진 · 일괄 업로드</span><button class="linkBtn st1only" id="photoClear">이 카드 사진 빼기</button></div>
     <div class="st1only">
       <div class="drop" id="drop">
@@ -832,7 +881,14 @@
   </div>
 
 
-  <div class="card" id="sumCard" data-steps="2 3">
+  <div class="card" id="photoMapCard" data-steps="2 4">
+    <div class="cardHead"><span class="label">카드별 사진</span><span class="count" id="photoMapCount">0/1장</span></div>
+    <div class="photoMapList" id="photoMapList"></div>
+    <p class="hint">카드마다 바로 <b>사진 넣기·교체</b> · 올린 사진은 그 카드에만 붙어요 · 확대는 <b>1·4단계</b>에서</p>
+    <input type="file" id="photoMapFile" accept="image/*" hidden>
+  </div>
+
+  <div class="card" id="sumCard" data-steps="2 4">
     <div class="cardHead"><span class="label">요약표</span><span class="count" id="sumHead">요약 1</span></div>
     <div class="emptyMini" id="sumEmpty" hidden>아직 요약 카드가 없어요<br>메뉴 개수만큼 행이 채워진 표를 바로 만들 수 있어요
       <br><button id="sumCreate">요약 카드 만들기</button></div>
@@ -849,6 +905,7 @@
         <label>배경</label>
         <div class="seg" id="styleSeg">
           <button data-style="photo">사진 딤</button>
+          <button data-style="grad">그라데이션</button>
           <button data-style="dark">다크</button>
           <button data-style="light">라이트</button>
         </div>
@@ -883,7 +940,7 @@
       </div>
     </div>
   </div>
-  <div class="card" id="fieldsCard" data-steps="2 3">
+  <div class="card" id="fieldsCard" data-steps="2 4">
     <div class="coverOnly">
       <div class="field">
         <label>상단 배지 문구</label>
@@ -896,6 +953,7 @@
       <div class="field">
         <label>제목 (두 줄까지 크게)</label>
         <textarea data-f="title" rows="2" placeholder="예: 예약 안 하면&#10;2시간 웨이팅"></textarea>
+        <p class="hint">**단어**로 감싸면 그 단어만 강조 (☁️ 한 단어 강조)</p>
       </div>
       <div class="field">
         <label>부제목</label>
@@ -922,6 +980,7 @@
       <div class="field">
         <label>제목</label>
         <input type="text" data-f="title" placeholder="예: 파기름 가리비구이">
+        <p class="hint">**단어**로 감싸면 그 단어만 강조 (☁️ 한 단어 강조)</p>
       </div>
       <div class="field">
         <label>설명 (2~3줄)</label>
@@ -946,8 +1005,8 @@
   </div>
 
 
-  <div class="card" id="posCard" data-steps="3">
-    <div class="cardHead"><span class="label">본문 글씨 위치</span><span class="count" id="posSlideName">본문 1</span></div>
+  <div class="card" id="posCard" data-steps="4">
+    <div class="cardHead"><span class="label">글씨 위치</span><span class="count" id="posSlideName">본문 1</span></div>
     <div class="seg" id="posSeg" style="margin-bottom:6px">
       <button data-pos="top">상단</button>
       <button data-pos="middle">중간</button>
@@ -957,6 +1016,14 @@
       <button data-align="left">왼쪽</button>
       <button data-align="center">중앙</button>
       <button data-align="right">오른쪽</button>
+    </div>
+    <div class="label" style="margin:10px 0 6px">미세 이동 <span style="font-weight:400; color:var(--muted)">사진 피사체를 피해서</span></div>
+    <div class="seg qnudge" id="posNudge">
+      <button data-tdx="-1" aria-label="왼쪽으로">◀</button>
+      <button data-tdy="-1" aria-label="위로">▲</button>
+      <button data-tdy="1" aria-label="아래로">▼</button>
+      <button data-tdx="1" aria-label="오른쪽으로">▶</button>
+      <button data-treset="1">↺</button>
     </div>
     <div class="field" style="margin-top:9px">
       <label>빠른 위치 (미리보기 카드 기준)</label>
@@ -971,13 +1038,13 @@
       </div>
     </div>
     <div class="chipActions" style="margin-top:9px">
-      <button class="mini primary" id="posApplyAll">모든 본문에 일괄 적용</button>
+      <button class="mini primary" id="posApplyAll">모든 카드에 일괄 적용</button>
     </div>
     <div class="switch">
       <div><span>배경 어둡게 (그라데이션)</span><small>기본은 꺼짐 · 사진 위 글씨가 안 보일 때만 켜요</small></div>
       <button class="tog" id="gradToggle" aria-label="그라데이션 토글"></button>
     </div>
-    <p class="hint">본문 카드에 적용돼요 · 슬라이드를 바꾸려면 상단 ‹ › 나 위 슬라이드 목록</p>
+    <p class="hint">표지·본문 글씨가 모두 움직여요 · 상/중/하 · 좌/중/우 · 미세 이동을 같이 쓰면 돼요</p>
   </div>
   <div class="card" id="guideCard" data-steps="1" style="padding:10px 12px">
     <div class="cardHead" style="margin:0"><span class="label">안전영역 가이드</span><span class="count">릴스 9:16 전용</span></div>
@@ -1096,6 +1163,18 @@
   </div>
 </div>
 
+<div class="sheetWrap" id="fontWrap">
+  <div class="sheetBg" data-close="font"></div>
+  <div class="sheet tall">
+    <h4>글씨체 <span style="font-weight:600; color:var(--muted); font-size:12px" id="fontSheetTarget">표지</span></h4>
+    <div class="fsList" id="fontList" role="listbox" aria-label="글씨체 고르기"></div>
+    <div class="chipActions" style="margin-bottom:8px">
+      <button class="mini" id="fontClose">닫기</button>
+    </div>
+    <p class="sheetNote">⭐는 3개까지 맨 위 고정 · ↕️ 순서를 켜면 ◀ ▶ 로 정렬 · 누르면 바로 적용되고 닫혀요</p>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1113,7 +1192,7 @@
   const PHOTO_MAX = 1500;
   const PHOTO_Q = 0.84;
   const MAX_ROWS = 12;
-  const STEP_NAMES = { 1:'세팅·사진', 2:'글 쓰기', 3:'사진+글', 4:'디자인' };
+  const STEP_NAMES = { 1:'사진', 2:'글쓰기', 3:'디자인', 4:'최종' };
   const MAX_STICKERS = 3;
   const STICKER_MAX = 1080;
   const STICKER_TOL = 40;
@@ -1288,7 +1367,7 @@
       photo: null, zoom: 1, offX: 0, offY: 0,
       badge: '', badgeNum: 0, title: '', subtitle: '', desc: '', q1: '', q2: '', q3: '',
       watermark: true, grad: false,
-      pos: 'bottom', align: 'left',
+      pos: 'bottom', align: 'left', dx: 0, dy: 0, posSet: false,
       coverStyle: 'classic', bodyStyle: 'classic',
       stickers: [],
       summaryStyle: 'photo',
@@ -1308,19 +1387,33 @@
     { id:'cream', name:'크림',   hex:'#F5EFE4' },
     { id:'cat',   name:'카테고리' }
   ];
-  const TPL_IDS = ['editorial', 'place_pin', 'chat_bubble', 'big_title', 'word_highlight', 'magazine_interview',
-                   'cat', 'trend', 'question', 'classic'];
+  const TPL_IDS = ['classic', 'place_pin', 'chat_bubble', 'big_title', 'word_highlight', 'magazine_interview',
+                   'editorial', 'trend', 'question'];
   const TPL_DEFAULT = { editorial:'✨ 감성 배지형', place_pin:'📍 여기 저장해 둬', chat_bubble:'💬 톡 말풍선형',
                         big_title:'🌊 빅 타이틀', word_highlight:'☁️ 한 단어 강조', magazine_interview:'🎙️ 매거진 인터뷰',
                         cat:'카테고리 통일', trend:'트렌드', question:'질문 박스형', classic:'클래식',
                         iming_yellow:'💛 IMING 옐로우' };
-  /* v5.6: 본문 카드 레이아웃은 표지와 따로 고른다 */
-  const BODY_IDS = ['classic', 'editorial', 'place_pin', 'magazine_interview'];
-  const BODY_DEFAULT = { classic:'기본 깔끔형', editorial:'✨ 에디토리얼', place_pin:'📍 장소 핀형', magazine_interview:'🎙️ 매거진형' };
+  /* v5.7: 표지·본문 양쪽에서 모든 디자인을 고를 수 있다 */
+  const BODY_IDS = ['classic', 'place_pin', 'chat_bubble', 'big_title', 'word_highlight', 'magazine_interview',
+                    'editorial', 'trend', 'question', 'iming_yellow'];
+  const BODY_DEFAULT = { classic:'기본 깔끔형', place_pin:'📍 여기 저장해 둬', chat_bubble:'💬 톡 말풍선형',
+                         big_title:'🌊 빅 타이틀', word_highlight:'☁️ 한 단어 강조', magazine_interview:'🎙️ 매거진 인터뷰',
+                         editorial:'✨ 에디토리얼', trend:'트렌드', question:'질문 박스형', iming_yellow:'💛 IMING 옐로우' };
   const BODY_HELP = { classic:'사진 위에 배지·제목·본문을 깔끔하게',
+                      place_pin:'핀 제목 + 오른쪽 위치 한 줄 · 아래 제목·설명',
+                      chat_bubble:'검색창 + 말풍선으로 제목·설명',
+                      big_title:'카드 폭을 채우는 큰 민트 제목 + 라벨',
+                      word_highlight:'**단어**만 하늘색으로 강조',
+                      magazine_interview:'매거진 인터뷰 배지 + 큰 제목',
                       editorial:'노란 라벨 + 흰 네모 박스',
-                      place_pin:'하단 3줄 · 오른쪽에 위치 한 줄',
-                      magazine_interview:'왼쪽 정렬 인터뷰 배지 + 큰 제목' };
+                      trend:'흰 굵은 제목 + 검은 테두리',
+                      question:'질문 박스 3개 나열',
+                      iming_yellow:'노란 알약 배지 + 2색 꾸불림체 제목' };
+  /* v5.7: 디자인마다 자연스러운 기본 글씨 위치 */
+  const TPL_POS = { place_pin:'bottom', chat_bubble:'middle', big_title:'middle', word_highlight:'middle',
+                    magazine_interview:'bottom', editorial:'bottom', classic:'bottom', trend:'top',
+                    question:'middle', iming_yellow:'middle' };
+
   const TPL_KEY = 'iming_cards_tplnames_v1';
 
   function tplCfgLoad(){
@@ -1387,6 +1480,9 @@
         sizes: { title: clamp(num(sz.title, 1), 0.6, 1.8), sub: clamp(num(sz.sub, 1), 0.6, 1.8), small: clamp(num(sz.small, 1), 0.6, 1.8) },
         pos: ['top','middle','bottom'].indexOf(c.pos) >= 0 ? c.pos : 'bottom',
         align: ['left','center','right'].indexOf(c.align) >= 0 ? c.align : 'left',
+        coverBg: ['photo','ink','white','cream','cat'].indexOf(c.coverBg) >= 0 ? c.coverBg : 'photo',
+        summaryStyle: ['photo','grad','dark','light','cream'].indexOf(c.summaryStyle) >= 0 ? c.summaryStyle : 'dark',
+        summaryBg: ['photo','grad','dark','light','cream'].indexOf(c.summaryBg) >= 0 ? c.summaryBg : 'dark',
         qboxPos: ['top','middle','bottom'].indexOf(c.qboxPos) >= 0 ? c.qboxPos : 'top',
         qboxAlign: ['alt','left','right'].indexOf(c.qboxAlign) >= 0 ? c.qboxAlign : 'alt'
       }
@@ -1418,12 +1514,16 @@
     const ci = coverIndex();
     const cov = ci >= 0 ? state.slides[ci] : null;
     const b = state.slides.filter(function(s){ return s.type === 'body'; })[0] || null;
+    const sm = state.slides.filter(function(s){ return s.type === 'summary'; })[0] || null;
     const base = cur();
     return {
       base: cov ? (cov.coverStyle || 'classic') : 'classic',
       body: (b && BODY_IDS.indexOf(b.bodyStyle) >= 0) ? b.bodyStyle : 'classic',
       theme: state.theme, font: state.font, fontCover: fontIdFor('cover'),
       textColor: textMode(), textOpacity: textAlpha(), sizes: SZ(),
+      coverBg: state.coverBg || 'photo',
+      summaryStyle: (sm && sm.summaryStyle) || (state.summaryBg || 'dark'),
+      summaryBg: state.summaryBg || 'dark',
       pos: b ? (b.pos || 'bottom') : (base.pos || 'bottom'),
       align: b ? (b.align || 'left') : (base.align || 'left'),
       qboxPos: state.qboxPos || 'top',
@@ -1434,12 +1534,17 @@
     if (!t || !t.cfg) return false;
     const c = myTplNorm(t);
     if (!c) return false;
-    compSnapshot('내 템플릿 적용 직전');
-    state.slides.forEach(function(s){ if (s.type === 'cover') s.coverStyle = c.cfg.base; });
-    state.slides.forEach(function(s){ if (s.type === 'body') s.bodyStyle = c.cfg.body || 'classic'; });
+    compSnapshot('내 템플릿 적용 직전', { undo:true });
+    state.slides.forEach(function(s){
+      if (s.type === 'cover') s.coverStyle = c.cfg.base;
+      if (s.type === 'body') s.bodyStyle = c.cfg.body || 'classic';
+      if (s.type === 'summary') s.summaryStyle = c.cfg.summaryStyle || 'dark';
+    });
     if (c.cfg.theme) state.theme = themeById(c.cfg.theme).id;
     if (c.cfg.font) state.font = fontById(c.cfg.font).id;
     if (c.cfg.fontCover) state.fontCover = fontById(c.cfg.fontCover).id;
+    if (c.cfg.coverBg) state.coverBg = c.cfg.coverBg;
+    if (c.cfg.summaryBg) state.summaryBg = c.cfg.summaryBg;
     state.textColor = c.cfg.textColor || 'auto';
     state.textOpacity = clamp(num(c.cfg.textOpacity, 1), 0.4, 1);
     state.sizes = c.cfg.sizes;
@@ -1451,7 +1556,8 @@
     state.qboxAlign = c.cfg.qboxAlign;
     renderAll();
     persistNow();
-    return loadFontFor().then(function(){ paint(); toast('내 템플릿 · ' + c.name + ' 적용했어요'); return true; });
+    syncBodyStyleSeg();
+    return loadFontFor().then(function(){ paint(); toast('내 템플릿 · ' + c.name + ' · 표지·본문·요약 디자인을 한 번에 적용했어요', { undo: restoreBackup, ms: 5000 }); return true; });
   }
 
   /* v5.4: IMING 시그니처 프리셋 — 트렌드형 · 꾸불림체 · 버터 옐로우 포인트 · 흰 글씨/검정 테두리 · Pretendard 본문 */
@@ -1622,7 +1728,7 @@
     out.fontPins = normPins(raw.fontPins);
     out.textColor = ['auto','white','accent','ink'].indexOf(raw.textColor) >= 0 ? raw.textColor : 'auto';
     out.textOpacity = clamp(num(raw.textOpacity, 1), 0.4, 1);
-    out.summaryBg = ['photo','dark','light','cream'].indexOf(raw.summaryBg) >= 0 ? raw.summaryBg : 'dark';
+    out.summaryBg = ['photo','grad','dark','light','cream'].indexOf(raw.summaryBg) >= 0 ? raw.summaryBg : 'dark';
     out.region = str(raw.region).slice(0, 14);
     out.slotView = raw.slotView === 'feed' ? 'feed' : 'list';
     out.fontOrder = normFontOrder(raw.fontOrder);
@@ -1662,6 +1768,9 @@
       s.desc = str(r.desc); s.watermark = r.watermark !== false; s.grad = r.grad === true;
       s.pos = ['top','middle','bottom'].indexOf(r.pos) >= 0 ? r.pos : 'bottom';
       s.align = ['left','center','right'].indexOf(r.align) >= 0 ? r.align : 'left';
+      s.dx = clamp(num(r.dx, 0), -1, 1);
+      s.dy = clamp(num(r.dy, 0), -1, 1);
+      s.posSet = (r.posSet === true) || (['top','middle'].indexOf(r.pos) >= 0);
       s.coverStyle = ['classic','trend','cat','question','iming_yellow','editorial','place_pin','chat_bubble','big_title','word_highlight','magazine_interview'].indexOf(r.coverStyle) >= 0 ? r.coverStyle : 'classic';
       s.bodyStyle = BODY_IDS.indexOf(r.bodyStyle) >= 0 ? r.bodyStyle : 'classic';
       s.stickers = (Array.isArray(r.stickers) ? r.stickers : []).slice(0, MAX_STICKERS).map(x=>{
@@ -1684,7 +1793,7 @@
           rot: clamp(num(x && x.rot, 0), -25, 25)
         };
       }).filter(x=>x.src);
-      s.summaryStyle = ['photo','dark','light','cream'].includes(r.summaryStyle) ? r.summaryStyle : 'photo';
+      s.summaryStyle = ['photo','grad','dark','light','cream'].includes(r.summaryStyle) ? r.summaryStyle : 'photo';
       s.totalLabel = str(r.totalLabel) || '총 합계';
       s.total = str(r.total); s.totalNote = str(r.totalNote); s.cta = str(r.cta);
       /* 저장된 예전 작업은 손으로 적은 합계를 덮어쓰지 않도록 수동으로 시작 */
@@ -2606,6 +2715,10 @@
     const num = s.badgeNum || 0;
     const onPhoto = solid ? solid.dark : !!im;
     const cp = onPhoto ? palPhoto() : palPaper();
+    const P = tPos(s);
+    const tDy = P.pos === 'top' ? 0 : P.pos === 'middle' ? Math.round(h * 0.20) : Math.round(h * 0.33);
+    ctx.save();
+    ctx.translate(P.dx * w * 0.16 + alignShiftC(P.align, maxW, w, pad), tDy + P.dy * h * 0.16);
     let y = Math.max(f.safeTop + pad, h * 0.115);
 
     if (badge || num){
@@ -2673,6 +2786,7 @@
       y += ph;
     }
 
+    ctx.restore();
     drawCredit(ctx, pad, h - f.safeBottom - pad, cp, 'left', T.k);
   }
 
@@ -2759,7 +2873,11 @@
     const titleLines = (lineA ? 1 : 0) + (lineB ? 1 : 0);
     const subH = subTxt ? subSize * 1.5 : 0;
     const gapSub = subTxt ? size * 0.34 : 0;
-    let top = creditBase - 44 - subH - gapSub - titleLines * lh;
+    const P = tPos(s);
+    const txtH = subH + gapSub + titleLines * lh;
+    let top = posAnchorY(P.pos, f.safeTop + pad, creditBase - 44, txtH) + P.dy * h * 0.16;
+    const qXo = posShiftX(P.align, Math.max(emWidth(size) + (parts.rest ? gapEm + restWidth(size) : 0),
+      lineB ? (function(){ ctx.font = font(size, 800); return ctx.measureText(lineB).width; })() : 0), maxW) + P.dx * w * 0.16;
 
     /* v5.2: 질문 박스 1~3 — 위치(상단/중간/하단) · 정렬(좌우 교차/왼쪽/오른쪽) */
     const qs = [(s.q1 || '').trim(), (s.q2 || '').trim(), (s.q3 || '').trim()].filter(function(q){ return !!q; });
@@ -2809,6 +2927,8 @@
       by += boxH + boxGap;
     });
 
+    ctx.save();
+    ctx.translate(qXo, 0);
     if (rawLines.length){
       let base = top + size * 0.82;
       if (lineA){
@@ -2872,6 +2992,9 @@
       top += titleLines * lh;
     }
 
+    ctx.restore();
+    ctx.save();
+    ctx.translate(qXo, 0);
     if (subTxt){
       const fit = fitOneLine(ctx, subTxt, maxW * 0.94, subSize, 500, subSize * 0.8);
       ctx.save();
@@ -2888,6 +3011,7 @@
       ctx.restore();
     }
 
+    ctx.restore();
     drawCredit(ctx, pad, creditBase,
       onDark ? { fg:'rgba(255,255,255,.94)', sub:'rgba(255,255,255,.72)' } : { fg:'rgba(28,26,21,.90)', sub:'rgba(28,26,21,.60)' },
       'left', T.k);
@@ -2900,6 +3024,10 @@
   /* =========================================================
      v5.5  💛 IMING 옐로우 전용 표지 · ✨ 감성 배지형(에디토리얼)
      v5.6  표지/본문 디자인 분리 · 새 표지 5종(📍💬🌊☁️🎙️) · 요약표 1장 고정
+     v5.7  1사진·2글쓰기·3디자인·4최종 단계 재편 · 카드 역할 전환 ·
+           5종 템플릿 레퍼런스 정밀화(표지·본문 공통) · 모든 레이아웃 글씨 위치 ·
+           배지 비우면 숨김 · 기본 표지 그라데이션 · 글씨체 선택 박스 ·
+           같은 글씨체 통일 기준 · 내 템플릿 전체 조합 · 요약 배경(사진/그라데이션/단색)
      ========================================================= */
   const IM_ACCENT = '#FFD84D';   /* 버터 옐로우 */
   const IM_INK = '#14161C';      /* 배지 글씨 · 외곽선 */
@@ -2967,6 +3095,15 @@
     ctx.font = fontStr;
     let sum = 0;
     for (let i = 0; i < segs.length; i++) if (segs[i].t) sum += ctx.measureText(segs[i].t).width;
+    return sum;
+  }
+  /* 글자 단위 폭 합 (균등 배치 그리기와 같은 기준) */
+  function charSumW(ctx, segs, size, weight){
+    ctx.font = font(size, weight);
+    let sum = 0;
+    segs.forEach(function(sg){
+      Array.from(String(sg.t || '')).forEach(function(ch){ sum += ctx.measureText(ch).width; });
+    });
     return sum;
   }
   /* 제목을 카드 폭에 꽉 차게 자동 스케일 (줄은 \n 또는 균등 분할) */
@@ -3179,7 +3316,7 @@
     const im = solid ? null : imgFor(s);
     if (!solid){
       if (im) drawPhoto(ctx, im, s, w, h);          /* 딤 없이 사진 그대로 풀블리드 */
-      else paintBrightBg(ctx, w, h, false);
+      else paintGradientBg(ctx, w, h, { ghost:false });
     }
     const maxW = w - pad * 1.45;
     const coverFont = fontIdFor('cover');
@@ -3193,6 +3330,10 @@
     /* 1) 상단 중앙 노란 알약 배지 */
     const bs = Math.max(20, Math.round(w * 0.042));
     const pillH = Math.round(bs * 2.0);
+    const P = tPos(s);
+    const iDy = P.pos === 'top' ? Math.round(-h * 0.10) : P.pos === 'middle' ? 0 : Math.round(h * 0.15);
+    ctx.save();
+    ctx.translate(P.dx * w * 0.16 + alignShiftC(P.align, maxW, w, pad), iDy + P.dy * h * 0.16);
     let y = Math.max(f.safeTop + pad * 0.5, h * 0.048);
     if (pillTxt){
       drawBadgeRect(ctx, {
@@ -3232,6 +3373,7 @@
       y += drawSmallLine(ctx, subTxt, w / 2, y + gap + ss * 1.3, ss, maxW);
     }
 
+    ctx.restore();
     /* 4) 하단 중앙 크레딧 알약 */
     drawCreditPill(ctx, w / 2, h - f.safeBottom - Math.max(pad * 1.0, h * 0.074), T.k,
       { bg: 'rgba(0,0,0,0.55)', fg: '#FFFFFF', sub: 'rgba(255,255,255,.86)' });
@@ -3243,13 +3385,15 @@
     const im = solid ? null : imgFor(s);
     if (!solid){
       if (im) drawPhoto(ctx, im, s, w, h);
-      else paintBrightBg(ctx, w, h, false);
+      else paintGradientBg(ctx, w, h, { ghost:false });
     }
     const maxW = w - pad * 1.6;
     const coverFont = fontIdFor('cover');
+    const P = tPos(s);
+    const cx = w / 2 + P.dx * w * 0.16 + posShiftCx(P.align, maxW * 0.82, w, pad);
 
     /* 상단 중앙 작은 기울임 서명 */
-    drawSignature(ctx, w / 2, f.safeTop + Math.max(pad * 0.55, h * 0.040), Math.max(15, Math.round(w * 0.025)));
+    drawSignature(ctx, cx,  f.safeTop + Math.max(pad * 0.55, h * 0.040), Math.max(15, Math.round(w * 0.025)));
 
     const num = s.badgeNum || 0;
     const badgeTxtRaw = (s.badge || '').trim();
@@ -3269,12 +3413,12 @@
     const gapBadge = title ? Math.round(h * 0.018) : 0;
     const blockH = (badgeTxt ? bH + gapBadge : 0) + (title ? title.rows.length * title.lh : 0) + (showSub ? subSize * 1.9 : 0);
     const topPad = f.safeTop + pad * 1.3;
-    let y = clamp(Math.round(h * 0.44 - blockH / 2), topPad,
-      Math.max(topPad, h - f.safeBottom - pad * 1.2 - blockH));
+    const botPad = h - f.safeBottom - pad * 1.2;
+    let y = posAnchorY(P.pos, topPad, botPad, blockH) + P.dy * h * 0.16;
 
     if (badgeTxt){
       drawBadgeRect(ctx, {
-        text: badgeTxt, cx: w / 2, y: y, size: bs, height: bH,
+        text: badgeTxt, cx: cx, y: y, size: bs, height: bH,
         bg: IM_ACCENT, fg: IM_INK, padX: Math.round(bs * 0.78), radius: 16,
         fontStr: bFont
       });
@@ -3292,24 +3436,24 @@
       title.rows.forEach(function(r, ri){
         const segs = charsSegs(r);
         widest = Math.max(widest, segsWidthAt(ctx, segs, fstr));
-        drawSegsCentered(ctx, segs, w / 2, y + title.lh * ri + title.size * 0.84, fstr,
+        drawSegsCentered(ctx, segs, cx, y + title.lh * ri + title.size * 0.84, fstr,
           function(){ return '#FFFFFF'; }, outline);
       });
       /* 별 장식 2~3개 */
       const sr = title.size * 0.19;
-      const rightEdge = clamp(w / 2 + widest / 2 + sr * 0.7, pad * 0.9, w - pad * 0.6);
-      const leftEdge = clamp(w / 2 - widest / 2 - sr * 0.7, pad * 0.9, w - pad);
+      const rightEdge = clamp(cx + widest / 2 + sr * 0.7, pad * 0.9, w - pad * 0.6);
+      const leftEdge = clamp(cx - widest / 2 - sr * 0.7, pad * 0.9, w - pad);
       drawStar(ctx, rightEdge, titleTop + title.size * 0.26, sr, IM_ACCENT, 4);
       drawStar(ctx, leftEdge, titleTop + title.lh * Math.max(0, title.rows.length - 1) + title.size * 0.78, sr * 0.62, '#FFFFFF', 4);
       if (title.rows.length >= 2){
-        drawStar(ctx, clamp(w / 2 + widest / 2 - sr * 0.1, pad, w - pad * 0.5),
+        drawStar(ctx, clamp(cx + widest / 2 - sr * 0.1, pad, w - pad * 0.5),
           titleTop + title.lh + title.size * 0.6, sr * 0.5, IM_ACCENT, 4);
       }
       y += title.rows.length * title.lh;
     }
     if (showSub){
       const gap = title ? Math.round(title.size * 0.16) : 0;
-      drawSmallLine(ctx, subTxt, w / 2, y + gap + subSize * 1.25, subSize, maxW);
+      drawSmallLine(ctx, subTxt, cx, y + gap + subSize * 1.25, subSize, maxW);
     }
   }
 
@@ -3321,9 +3465,11 @@
     else { ctx.fillStyle = IM_INK; ctx.fillRect(0, 0, w, h); }
     const maxW = w - pad * 1.35;
     const bodyFont = 'pretendard';
+    const P = tPos(s);
+    const cx = w / 2 + P.dx * w * 0.16 + posShiftCx(P.align, maxW * 0.82, w, pad);
 
     if (s.watermark !== false){
-      drawSignature(ctx, w / 2, f.safeTop + Math.max(pad * 0.5, h * 0.036), Math.max(14, Math.round(w * 0.023)));
+      drawSignature(ctx, cx, f.safeTop + Math.max(pad * 0.5, h * 0.036), Math.max(14, Math.round(w * 0.023)));
     }
 
     /* 상단 포인트 사각 배지 + 별 */
@@ -3338,10 +3484,10 @@
       ctx.font = bFont;
       const bw = Math.min(maxW, ctx.measureText(badgeTxt).width + bs * 1.55);
       drawBadgeRect(ctx, {
-        text: badgeTxt, cx: w / 2, y: topEnd, size: bs, height: bH,
+        text: badgeTxt, cx: cx, y: topEnd, size: bs, height: bH,
         bg: IM_ACCENT, fg: IM_INK, padX: Math.round(bs * 0.78), radius: 15, fontStr: bFont, minW: bw
       });
-      drawStar(ctx, w / 2 - bw / 2 - bs * 0.95, topEnd + bH * 0.22, bs * 0.6, IM_ACCENT, 4);
+      drawStar(ctx, cx - bw / 2 - bs * 0.95, topEnd + bH * 0.22, bs * 0.6, IM_ACCENT, 4);
       topEnd += bH;
     }
 
@@ -3388,7 +3534,8 @@
     const subH = subTxt ? subSize * 1.9 : 0;
     const areaTop = topEnd + Math.round(h * 0.030);
     const areaBottom = (label ? labelTop : boxTop) - Math.round(h * 0.035);
-    let ty = areaTop + Math.max(0, (areaBottom - areaTop - titleH - subH) * 0.44);
+    let ty = areaTop + Math.max(0, (areaBottom - areaTop - titleH - subH) *
+      (P.pos === 'top' ? 0 : P.pos === 'middle' ? 0.5 : 1)) + P.dy * h * 0.10;
     if (title){
       const outline = {
         width: Math.max(3, Math.round(title.size * 0.034)),
@@ -3397,20 +3544,20 @@
       };
       const fstr = fontOfId(bodyFont, title.size, 900);
       title.rows.forEach(function(r, ri){
-        drawSegsCentered(ctx, charsSegs(r), w / 2, ty + title.lh * ri + title.size * 0.84, fstr,
+        drawSegsCentered(ctx, charsSegs(r), cx, ty + title.lh * ri + title.size * 0.84, fstr,
           function(){ return '#FFFFFF'; }, outline);
       });
       ty += titleH;
     }
     if (subTxt){
       const gap = title ? Math.round(title.size * 0.14) : 0;
-      drawSmallLine(ctx, subTxt, w / 2, ty + gap + subSize * 1.25, subSize, maxW);
+      drawSmallLine(ctx, subTxt, cx, ty + gap + subSize * 1.25, subSize, maxW);
     }
 
     /* 노란 라벨 */
     if (label){
       drawBadgeRect(ctx, {
-        text: label, cx: w / 2, y: labelTop, size: labSize, height: labH,
+        text: label, cx: cx, y: labelTop, size: labSize, height: labH,
         bg: IM_ACCENT, fg: IM_INK, padX: Math.round(labSize * 0.85), radius: 14,
         fontStr: fontOfId(bodyFont, labSize, 800)
       });
@@ -3421,7 +3568,7 @@
       ctx.shadowColor = 'rgba(0,0,0,.28)';
       ctx.shadowBlur = 20;
       ctx.shadowOffsetY = 6;
-      roundRect(ctx, w / 2 - boxW / 2, boxTop, boxW, boxH, 18);
+      roundRect(ctx, cx - boxW / 2, boxTop, boxW, boxH, 18);
       ctx.fillStyle = '#FFFFFF';
       ctx.fill();
       ctx.restore();
@@ -3429,7 +3576,7 @@
         const base = boxTop + padBY + fit.lh * i + fit.size * 0.84;
         let tw = 0;
         ln.segs.forEach(function(sg){ if (sg.t){ ctx.font = segFont(sg, fit.size); tw += ctx.measureText(sg.t).width; } });
-        let x = w / 2 - tw / 2;
+        let x = cx - tw / 2;
         ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
         ln.segs.forEach(function(sg){
           if (!sg.t) return;
@@ -3443,9 +3590,95 @@
   }
 
   /* =========================================================
+     v5.7  글씨 위치(상/중/하 · 좌/중/우 · 미세 이동) 공통 유틸
+     ========================================================= */
+  function tPos(s){
+    return { pos: effPosOf(s),
+             align: ['left','center','right'].indexOf(s.align) >= 0 ? s.align : 'left',
+             dx: clamp(num(s.dx, 0), -1, 1), dy: clamp(num(s.dy, 0), -1, 1) };
+  }
+  /* v5.7: 사용자가 위치를 직접 고른 적이 없으면 디자인별 기본 위치(가운데 계열) */
+  function effPosOf(s){
+    const valid = ['top','middle','bottom'];
+    if (s.posSet === true) return valid.indexOf(s.pos) >= 0 ? s.pos : 'bottom';
+    const st = s.type === 'body' ? (s.bodyStyle || 'classic') : (s.coverStyle || 'classic');
+    const d = TPL_POS[st];
+    if (d) return d;
+    return valid.indexOf(s.pos) >= 0 ? s.pos : 'bottom';
+  }
+  function posAnchorY(pos, top, bottom, blockH){
+    if (pos === 'top') return top;
+    if (pos === 'middle') return top + Math.max(0, (bottom - top - blockH) * 0.5);
+    return Math.max(top, bottom - blockH);
+  }
+  function posShiftX(align, blockW, maxW){
+    if (align === 'center') return Math.max(0, (maxW - blockW) * 0.5);
+    if (align === 'right') return Math.max(0, maxW - blockW);
+    return 0;
+  }
+  /* 가운데 정렬 레이아웃은 남는 폭이 거의 없어, 좌/우를 골랐을 때 최소 이동 폭을 준다 */
+  function alignShiftC(align, blockW, w, pad){
+    const maxW = w - pad * 2;
+    const room = Math.max(0, (maxW - Math.min(maxW, blockW)) / 2);
+    const use = Math.max(room, w * 0.055);
+    if (align === 'center') return 0;
+    return align === 'left' ? -use : use;
+  }
+  function posShiftCx(align, blockW, w, pad){
+    if (align === 'center') return 0;
+    const room = Math.max(0, w / 2 - pad - blockW / 2);
+    return align === 'left' ? -room : room;
+  }
+  /* 줄 단위 최대 폭 */
+  function linesMaxW(ctx, lines, size, weight){
+    if (!lines || !lines.length) return 0;
+    ctx.font = font(size, weight);
+    let mx = 0;
+    for (let i = 0; i < lines.length; i++) mx = Math.max(mx, ctx.measureText(lines[i] || '').width);
+    return mx;
+  }
+  /* ---------- 기본 표지 배경 — 사진이 없으면 깔끔한 그라데이션 ---------- */
+  function paintGradientBg(ctx, w, h, opt){
+    const th = THEME();
+    const p = th.paper;
+    const g = ctx.createLinearGradient(0, 0, w * 0.72, h);
+    g.addColorStop(0, '#FFFFFF');
+    g.addColorStop(0.46, mixHex('#FFFFFF', p.bg, 0.55));
+    g.addColorStop(1, mixHex(p.bg, p.accent, 0.13));
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+    const gl = ctx.createRadialGradient(w * 0.86, h * 0.04, 0, w * 0.86, h * 0.04, h * 1.02);
+    gl.addColorStop(0, hexA(p.accent, 0.14));
+    gl.addColorStop(0.52, 'rgba(255,255,255,0)');
+    ctx.fillStyle = gl;
+    ctx.fillRect(0, 0, w, h);
+    const gl2 = ctx.createRadialGradient(w * 0.10, h * 1.02, 0, w * 0.10, h * 1.02, h * 0.86);
+    gl2.addColorStop(0, 'rgba(255,255,255,.92)');
+    gl2.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = gl2;
+    ctx.fillRect(0, 0, w, h);
+    if (opt && opt.ghost){
+      ctx.save();
+      ctx.globalAlpha = 0.045;
+      ctx.fillStyle = p.fg;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.font = font(140, 800);
+      ctx.fillText('@IMING', w / 2, h * 0.30);
+      ctx.restore();
+    }
+  }
+
+  /* =========================================================
      v5.6  새 표지 5종 — 📍 여기 저장해 둬 · 💬 톡 말풍선형 ·
            🌊 빅 타이틀 · ☁️ 한 단어 강조 · 🎙️ 매거진 인터뷰
      ========================================================= */
+  /* v5.7: 레퍼런스 기본 색감 (테마와 무관하게 템플릿 고유 색) */
+  const TPL_MINT = '#BDF2EE';
+  const TPL_SKY = '#7CC7F8';
+  const TPL_PIN = '#FF4D3D';
+  const TPL_BLUE = '#1C88FF';
+  const TPL_INK = '#152029';
+
   /* 사진(또는 단색) 바탕 — 표지·본문 공통 */
   function styleCanvas(ctx, s, f, solid, mode){
     const w = f.w, h = f.h;
@@ -3453,7 +3686,7 @@
     const im = imgFor(s);
     if (im){ drawPhoto(ctx, im, s, w, h); return im; }
     if (mode === 'body'){ drawSurface(ctx, w, h, surfacePal(), false); return null; }
-    paintBrightBg(ctx, w, h, false);
+    paintGradientBg(ctx, w, h, { ghost:false });
     return null;
   }
   /* 사진 위 포인트색 / 밝은 바탕 위 포인트색 */
@@ -3530,88 +3763,96 @@
     const im = styleCanvas(ctx, s, f, solid, mode);
     const dark = !!im || !!(solid && solid.dark);
     if (im){
-      const g = ctx.createLinearGradient(0, h * 0.40, 0, h);
+      const g = ctx.createLinearGradient(0, h * 0.34, 0, h);
       g.addColorStop(0, 'rgba(0,0,0,0)');
-      g.addColorStop(0.46, 'rgba(0,0,0,.30)');
-      g.addColorStop(1, 'rgba(0,0,0,.74)');
-      ctx.fillStyle = g; ctx.fillRect(0, h * 0.40, w, h * 0.60);
+      g.addColorStop(0.42, 'rgba(0,0,0,.26)');
+      g.addColorStop(1, 'rgba(0,0,0,.80)');
+      ctx.fillStyle = g; ctx.fillRect(0, h * 0.34, w, h * 0.66);
     }
+    const P = tPos(s);
     const fg = dark ? '#FFFFFF' : '#171614';
-    const fgSub = dark ? 'rgba(255,255,255,.95)' : 'rgba(23,22,20,.90)';
-    const fgDesc = dark ? 'rgba(255,255,255,.84)' : 'rgba(23,22,20,.70)';
+    const fgSub = dark ? 'rgba(255,255,255,.97)' : 'rgba(23,22,20,.92)';
+    const fgDesc = dark ? 'rgba(255,255,255,.88)' : 'rgba(23,22,20,.70)';
     const maxW = w - pad * 2;
-    const titleTxt = plainMarks(s.title).trim();
-    const subRaw = plainMarks(s.subtitle).trim();
+    const titleTxt = plainMarks(s.title).replace(/\n+/g, ' ').trim();
+    const subRaw = plainMarks(s.subtitle).replace(/\n+/g, ' ').trim();
     const badgeTxt = (s.badge || '').trim();
     const descLinesAll = plainMarks(s.desc).split('\n').map(function(t){ return t.trim(); }).filter(Boolean);
-    /* 오른쪽 작은 글씨는 위치·해시태그처럼 짧을 때만 (긴 부제는 둘째 줄로) */
-    const shortSub = subRaw && subRaw.length <= 20 && subRaw.indexOf('\n') < 0;
-    const rightLabel = badgeTxt || (shortSub ? subRaw : '');
+
+    /* v5.7: 오른쪽 한 줄은 배지(주소·위치)만 · 비우면 그리지 않는다 */
+    const rightLabel = badgeTxt;
     let subTxt = '', descTxt = '';
     if (badgeTxt){
       subTxt = subRaw || descLinesAll[0] || '';
       descTxt = subRaw ? descLinesAll.join('\n') : descLinesAll.slice(1).join('\n');
-    } else if (shortSub){
-      subTxt = descLinesAll[0] || '';
-      descTxt = descLinesAll.slice(1).join('\n');
     } else {
       subTxt = subRaw || descLinesAll[0] || '';
       descTxt = subRaw ? descLinesAll.join('\n') : descLinesAll.slice(1).join('\n');
     }
-    /* 오른쪽 작은 위치 글씨 */
-    const rlSize = Math.max(16, Math.round(w * 0.0245));
+
+    const rlSize = Math.max(15, Math.round(w * 0.0235));
     let rlText = '';
     if (rightLabel){
       let t = rightLabel;
       ctx.font = font(rlSize, 600);
-      while (ctx.measureText(t).width > maxW * 0.46 && t.length > 2) t = t.slice(0, -1);
+      while (ctx.measureText(t).width > maxW * 0.44 && t.length > 2) t = t.slice(0, -1);
       rlText = (t === rightLabel) ? t : (t.replace(/\s+$/, '') + '…');
     }
     ctx.font = font(rlSize, 600);
     const rlW = rlText ? ctx.measureText(rlText).width : 0;
 
-    const tBase = isCover ? T.coverTitle * 0.60 : Math.max(38, T.bodyTitle * 0.88);
-    const sBase = isCover ? Math.round(w * 0.0445) : Math.round(w * 0.040);
-    const dBase = isCover ? Math.round(w * 0.0315) : Math.round(w * 0.030);
+    /* v5.7: 레퍼런스 비율 */
+    const tBase = isCover ? Math.round(w * 0.0645) : Math.max(42, Math.round(T.bodyTitle * 0.98));
+    const sBase = isCover ? Math.round(w * 0.0525) : Math.round(w * 0.042);
+    const dBase = isCover ? Math.round(w * 0.0345) : Math.round(w * 0.031);
 
     let title = null;
     if (titleTxt){
-      const availOne = Math.max(maxW * 0.34, maxW - (rlW ? rlW + Math.round(w * 0.028) : 0));
-      const one = fitOneLine(ctx, titleTxt, availOne, tBase, 900, tBase * 0.62);
+      const availOne = Math.max(maxW * 0.30, maxW - (rlW ? rlW + Math.round(w * 0.030) : 0));
+      const one = fitOneLine(ctx, titleTxt, availOne, tBase, 900, tBase * 0.70);
       if (one.text === titleTxt){
-        title = { lines: [one.text], size: one.size, lh: one.size * 1.16 };
+        title = { lines: [one.text], size: one.size, lh: one.size * 1.14 };
       } else {
         title = fitText(ctx, titleTxt, { maxWidth: maxW, size: tBase, weight: 900,
-          maxLines: 2, lineHeight: 1.16, minSize: tBase * 0.64 });
+          maxLines: 2, lineHeight: 1.14, minSize: tBase * 0.70 });
       }
     }
-    const sub = styleWrapped(ctx, subTxt, maxW * 0.92, sBase, 700, 2, 1.26);
-    const desc = styleWrapped(ctx, descTxt, maxW * 0.94, dBase, 500, 3, 1.52);
+    const sub = styleWrapped(ctx, subTxt, maxW * 0.94, sBase, 700, 2, 1.28);
+    const desc = styleWrapped(ctx, descTxt, maxW * 0.96, dBase, 500, 3, 1.52);
 
     const blocks = [];
     if (title) blocks.push({ kind:'t', h: title.lines.length * title.lh });
-    if (sub) blocks.push({ kind:'s', h: sub.lines.length * sub.lh, gap: Math.round((title ? title.size : tBase) * 0.30) });
-    if (desc) blocks.push({ kind:'d', h: desc.lines.length * desc.lh, gap: Math.round(dBase * 0.62) });
+    if (sub) blocks.push({ kind:'s', h: sub.lines.length * sub.lh, gap: Math.round((title ? title.size : tBase) * 0.26) });
+    if (desc) blocks.push({ kind:'d', h: desc.lines.length * desc.lh, gap: Math.round(dBase * 0.72) });
     let total = 0;
     blocks.forEach(function(b, i){ total += b.h + (i ? b.gap : 0); });
-    const bottom = h - f.safeBottom - pad * (isCover ? 1.04 : 1.0);
-    let y = Math.max(f.safeTop + pad, bottom - total);
+
+    const top = f.safeTop + pad;
+    const bottom = h - f.safeBottom - pad * (isCover ? 1.02 : 1.0);
+    let y = posAnchorY(P.pos, top, bottom, total) + P.dy * h * 0.16;
+
+    let bw = 0;
+    if (title) bw = Math.max(bw, linesMaxW(ctx, title.lines, title.size, 900) + Math.round(title.size * 0.74));
+    if (sub) bw = Math.max(bw, linesMaxW(ctx, sub.lines, sub.size, 700));
+    if (desc) bw = Math.max(bw, linesMaxW(ctx, desc.lines, desc.size, 500));
+    const bx = pad + posShiftX(P.align, Math.min(maxW, bw), maxW) + P.dx * w * 0.16;
+
     blocks.forEach(function(b, i){
       if (i) y += b.gap;
       if (b.kind === 't'){
-        const pinH = Math.round(title.size * 0.72);
-        const pinW = drawPinMark(ctx, pad, y + title.size * 0.84, pinH);
-        const off = pinW + Math.round(title.size * 0.20);
-        styleLines(ctx, [title.lines[0]], pad + off, y, title.lh, title.size, 900, fg, !!im);
+        const pinH = Math.round(title.size * 0.66);
+        const pinW = drawPinMark(ctx, bx, y + title.size * 0.86, pinH, TPL_PIN);
+        const off = pinW + Math.round(title.size * 0.18);
+        styleLines(ctx, [title.lines[0]], bx + off, y, title.lh, title.size, 900, fg, !!im);
         if (title.lines.length > 1){
-          styleLines(ctx, title.lines.slice(1), pad, y + title.lh, title.lh, title.size, 900, fg, !!im);
+          styleLines(ctx, title.lines.slice(1), bx, y + title.lh, title.lh, title.size, 900, fg, !!im);
         }
         if (rlText){
           ctx.font = font(title.size, 900);
           const lastW = ctx.measureText(title.lines[title.lines.length - 1]).width +
-            (title.lines.length === 1 ? pinW + Math.round(title.size * 0.14) : 0);
+            (title.lines.length === 1 ? off : 0);
           const baseLine = y + title.lh * (title.lines.length - 1) + title.size * 0.84;
-          if (lastW + rlW + w * 0.035 <= maxW){
+          if (title.lines.length === 1 && bx + lastW + rlW + w * 0.030 <= w - pad + 1){
             ctx.save();
             ctx.font = font(rlSize, 600);
             ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic';
@@ -3624,15 +3865,22 @@
               ctx.strokeText(rlText, w - pad, baseLine);
               ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
             }
-            ctx.fillStyle = dark ? 'rgba(255,255,255,.74)' : 'rgba(23,22,20,.56)';
+            ctx.fillStyle = dark ? 'rgba(255,255,255,.76)' : 'rgba(23,22,20,.56)';
+            ctx.fillText(rlText, w - pad, baseLine);
+            ctx.restore();
+          } else if (title.lines.length > 1){
+            ctx.save();
+            ctx.font = font(rlSize, 600);
+            ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic';
+            ctx.fillStyle = dark ? 'rgba(255,255,255,.76)' : 'rgba(23,22,20,.56)';
             ctx.fillText(rlText, w - pad, baseLine);
             ctx.restore();
           }
         }
       } else if (b.kind === 's'){
-        styleLines(ctx, sub.lines, pad, y, sub.lh, sub.size, 700, fgSub, !!im);
+        styleLines(ctx, sub.lines, bx, y, sub.lh, sub.size, 700, fgSub, !!im);
       } else {
-        styleLines(ctx, desc.lines, pad, y, desc.lh, desc.size, 500, fgDesc, !!im);
+        styleLines(ctx, desc.lines, bx, y, desc.lh, desc.size, 500, fgDesc, !!im);
       }
       y += b.h;
     });
@@ -3643,70 +3891,90 @@
   }
 
   /* ---------- 💬 톡 말풍선형 ---------- */
-  function drawChatBubble(ctx, s, f, T, solid){
+  function drawChatBubble(ctx, s, f, T, solid, mode){
     const w = f.w, h = f.h, pad = f.pad;
-    const im = styleCanvas(ctx, s, f, solid, 'cover');
+    const isCover = mode !== 'body';
+    const im = styleCanvas(ctx, s, f, solid, mode);
     const dark = !!im || !!(solid && solid.dark);
-    const accent = '#1C88FF';
+    const accent = TPL_BLUE;
     const maxW = w - pad * 2;
+    const P = tPos(s);
 
-    /* 1) 상단 반투명 검색창 */
+    /* 1) 상단 반투명 검색창 — 배지 문구가 있을 때만 */
+    const badgeTxt = (s.badge || '').trim();
     const pillH = Math.round(w * 0.082);
     const pillY = f.safeTop + Math.round(pad * 0.85);
-    ctx.save();
-    roundRect(ctx, pad, pillY, maxW, pillH, pillH / 2);
-    ctx.fillStyle = dark ? 'rgba(255,255,255,.42)' : 'rgba(255,255,255,.90)';
-    ctx.fill();
-    const ir = pillH * 0.195;
-    const icx = pad + pillH * 0.58, icy = pillY + pillH / 2;
-    ctx.strokeStyle = dark ? 'rgba(255,255,255,.94)' : 'rgba(60,60,60,.60)';
-    ctx.lineWidth = Math.max(2, pillH * 0.05);
-    ctx.beginPath(); ctx.arc(icx, icy, ir, 0, Math.PI * 2); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(icx + ir * 0.72, icy + ir * 0.72); ctx.lineTo(icx + ir * 1.55, icy + ir * 1.55); ctx.stroke();
-    const searchRaw = (s.badge || '').trim() || '주말 사진';
-    const sSize = Math.round(w * 0.033);
-    const sAvail = maxW - (icx - pad) - ir * 2.4 - pillH * 0.42;
-    let st = searchRaw;
-    ctx.font = font(sSize, 600);
-    while (ctx.measureText(st).width > sAvail && st.length > 2) st = st.slice(0, -1);
-    if (st !== searchRaw) st = st.replace(/\s+$/, '') + '…';
-    ctx.font = font(sSize, 600);
-    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-    ctx.shadowColor = 'rgba(0,0,0,.30)';
-    ctx.shadowBlur = Math.round(sSize * 0.5);
-    ctx.fillStyle = dark ? 'rgba(255,255,255,.97)' : 'rgba(70,70,70,.86)';
-    ctx.fillText(st, icx + ir * 1.95, icy + 1);
-    ctx.restore();
+    if (badgeTxt){
+      ctx.save();
+      roundRect(ctx, pad, pillY, maxW, pillH, pillH / 2);
+      ctx.fillStyle = dark ? 'rgba(255,255,255,.46)' : 'rgba(255,255,255,.92)';
+      ctx.fill();
+      const ir = pillH * 0.195;
+      const icx = pad + pillH * 0.58, icy = pillY + pillH / 2;
+      ctx.strokeStyle = dark ? 'rgba(255,255,255,.94)' : 'rgba(60,60,60,.60)';
+      ctx.lineWidth = Math.max(2, pillH * 0.05);
+      ctx.beginPath(); ctx.arc(icx, icy, ir, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(icx + ir * 0.72, icy + ir * 0.72); ctx.lineTo(icx + ir * 1.55, icy + ir * 1.55); ctx.stroke();
+      const sSize = Math.round(w * 0.0335);
+      const sAvail = maxW - (icx - pad) - ir * 2.4 - pillH * 0.42;
+      let st = badgeTxt;
+      ctx.font = font(sSize, 600);
+      while (ctx.measureText(st).width > sAvail && st.length > 2) st = st.slice(0, -1);
+      if (st !== badgeTxt) st = st.replace(/\s+$/, '') + '…';
+      ctx.font = font(sSize, 600);
+      ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+      ctx.shadowColor = 'rgba(0,0,0,.30)';
+      ctx.shadowBlur = Math.round(sSize * 0.5);
+      ctx.fillStyle = dark ? 'rgba(255,255,255,.97)' : 'rgba(70,70,70,.86)';
+      ctx.fillText(st, icx + ir * 1.95, icy + 1);
+      ctx.restore();
+    }
 
-    /* 2) 말풍선 그리기 */
-    function bubbleBox(text, side, yPos, maxBubbleW, bg, fg, size){
-      const fit = fitText(ctx, text, { maxWidth: Math.max(60, maxBubbleW - size * 1.6), size: size,
-        weight: 600, maxLines: 3, lineHeight: 1.32, minSize: Math.max(14, Math.round(size * 0.80)) });
-      const padX = Math.round(size * 0.80), padY = Math.round(size * 0.55);
+    /* 2) 하단 좋아요 바 (표지에서만) */
+    const barH = Math.round(w * 0.072);
+    const barY = h - f.safeBottom - Math.round(pad * 0.95) - barH;
+
+    /* 3) 말풍선 */
+    const bSize = Math.round(w * 0.039);
+    const whiteSize = Math.round(w * 0.039);
+    let xShift = 0;
+    function bubbleFit(text, size, maxBubbleW){
+      return fitText(ctx, text, { maxWidth: Math.max(60, maxBubbleW - size * 1.6), size: size,
+        weight: 600, maxLines: 3, lineHeight: 1.34, minSize: Math.max(14, Math.round(size * 0.80)) });
+    }
+    function bubbleSizeOf(text, size, maxBubbleW){
+      const fit = bubbleFit(text, size, maxBubbleW);
+      const padX = Math.round(size * 0.82), padY = Math.round(size * 0.58);
       let tw = 0;
       ctx.font = font(fit.size, 600);
       fit.lines.forEach(function(ln){ tw = Math.max(tw, ctx.measureText(ln).width); });
       const bw = Math.min(maxBubbleW, tw + padX * 2);
       const bh = fit.lines.length * fit.lh + padY * 2;
-      const bx = side === 'right' ? (w - pad - bw) : pad;
+      return { bw: bw, bh: bh, fit: fit, padX: padX, padY: padY };
+    }
+    function bubbleBox(text, side, yPos, maxBubbleW, bg, fg, size){
+      const m = bubbleSizeOf(text, size, maxBubbleW);
+      const fit = m.fit, padX = m.padX, padY = m.padY;
+      const bw = m.bw, bh = m.bh;
+      const bx = (side === 'right' ? (w - pad - bw) : pad) + xShift;
       const r = Math.min(bh / 2, size * 0.95);
       ctx.save();
-      ctx.shadowColor = 'rgba(0,0,0,.20)';
-      ctx.shadowBlur = size * 0.7;
-      ctx.shadowOffsetY = size * 0.10;
+      ctx.shadowColor = 'rgba(0,0,0,.18)';
+      ctx.shadowBlur = size * 0.65;
+      ctx.shadowOffsetY = size * 0.09;
       roundRect(ctx, bx, yPos, bw, bh, r);
       ctx.fillStyle = bg; ctx.fill();
       ctx.restore();
       ctx.save();
       ctx.beginPath();
       if (side === 'right'){
-        ctx.moveTo(bx + bw - size * 2.30, yPos + bh - 5);
-        ctx.lineTo(bx + bw - size * 0.35, yPos + bh + size * 0.55);
-        ctx.lineTo(bx + bw - size * 1.00, yPos + bh - 5);
+        ctx.moveTo(bx + bw - size * 1.85, yPos + bh - 4);
+        ctx.lineTo(bx + bw - size * 0.55, yPos + bh + size * 0.40);
+        ctx.lineTo(bx + bw - size * 1.05, yPos + bh - 4);
       } else {
-        ctx.moveTo(bx + size * 2.30, yPos + bh - 5);
-        ctx.lineTo(bx + size * 0.35, yPos + bh + size * 0.55);
-        ctx.lineTo(bx + size * 1.00, yPos + bh - 5);
+        ctx.moveTo(bx + size * 1.85, yPos + bh - 4);
+        ctx.lineTo(bx + size * 0.55, yPos + bh + size * 0.40);
+        ctx.lineTo(bx + size * 1.05, yPos + bh - 4);
       }
       ctx.closePath();
       ctx.fillStyle = bg;
@@ -3721,17 +3989,47 @@
       return bh;
     }
 
-    const titleTxt = plainMarks(s.title).trim() || '오늘 찍은 사진 보내 줘';
-    const subTxt = plainMarks(s.subtitle).trim();
+    const titleTxt = plainMarks(s.title).replace(/\n+/g, ' ').trim();
+    const subTxt = plainMarks(s.subtitle).replace(/\n+/g, ' ').trim();
     const descLines = plainMarks(s.desc).split('\n').map(function(t){ return t.trim(); }).filter(Boolean);
-    const bSize = Math.round(w * 0.0335);
     const rightTexts = [];
     if (subTxt) rightTexts.push(subTxt);
     descLines.forEach(function(t){ if (rightTexts.length < 3) rightTexts.push(t); });
 
-    /* 3) 하단 좋아요 바 */
-    const barH = Math.round(w * 0.072);
-    const barY = h - f.safeBottom - Math.round(pad * 0.95) - barH;
+    const gapBubble = Math.round(w * 0.026);
+    const gapInline = Math.round(w * 0.016);
+    let total = 0;
+    if (titleTxt){ total += bubbleSizeOf(titleTxt, whiteSize, maxW * 0.80).bh + gapBubble; }
+    rightTexts.forEach(function(t, i){
+      total += bubbleSizeOf(t, bSize, maxW * 0.68).bh + (i < rightTexts.length - 1 ? gapInline : 0);
+    });
+    if (!titleTxt && !rightTexts.length) total = 0;
+
+    let bwMax = maxW * 0.68;
+    if (titleTxt) bwMax = Math.max(bwMax, bubbleSizeOf(titleTxt, whiteSize, maxW * 0.80).bw);
+    xShift = posShiftX(P.align, Math.min(maxW, bwMax), maxW) + P.dx * w * 0.16;
+
+    const topLimit = (badgeTxt ? pillY + pillH : f.safeTop + pad) + Math.round(w * 0.045);
+    const botLimit = isCover ? (barY - Math.round(w * 0.030)) : (h - f.safeBottom - pad * 0.96);
+    let yy = posAnchorY(P.pos, topLimit, botLimit, total) + P.dy * h * 0.16;
+
+    if (titleTxt){
+      const bh = bubbleBox(titleTxt, 'left', yy, maxW * 0.80,
+        dark ? 'rgba(255,255,255,.97)' : '#FFFFFF', '#16161A', whiteSize);
+      yy += bh + gapBubble;
+    }
+    rightTexts.forEach(function(t, i){
+      const bh = bubbleBox(t, 'right', yy, maxW * 0.68, accent, '#FFFFFF', bSize);
+      yy += bh + (i < rightTexts.length - 1 ? gapInline : 0);
+    });
+
+    /* 5) 하단 바 그리기 (표지에서만) */
+    if (!isCover){
+      if (s.watermark !== false){
+        drawSignature(ctx, w / 2, f.safeTop + Math.max(pad * 0.5, h * 0.036), Math.max(14, Math.round(w * 0.023)));
+      }
+      return;
+    }
     const labels = ['좋아요', '저장', '공유'];
     const labSize = Math.round(w * 0.028);
     const playW = Math.round(barH * 1.0);
@@ -3740,27 +4038,6 @@
     const barX = w / 2 - barW / 2;
     const unit = (barW - playW - sidePad * 2) / 3;
 
-    /* 4) 세로 배치 — 하단 바 위에서부터 */
-    const whiteSize = Math.round(w * 0.0355);
-    const usable = (barY - Math.round(w * 0.03)) - Math.round(h * 0.30);
-    let y = Math.round(h * 0.30);
-    const wbh = bubbleBox(titleTxt, 'left', y, maxW * 0.74,
-      dark ? 'rgba(255,255,255,.96)' : '#FFFFFF', '#16161A', whiteSize);
-    let need = wbh + Math.round(w * 0.030) + rightTexts.length * Math.round(w * 0.016);
-    if (need > usable && usable > 0){
-      y = Math.max(pillY + pillH + Math.round(w * 0.05), barY - Math.round(w * 0.03) - need);
-    }
-    y = Math.max(y, pillY + pillH + Math.round(w * 0.04));
-    let yy = y;
-    bubbleBox(titleTxt, 'left', yy, maxW * 0.74,
-      dark ? 'rgba(255,255,255,.96)' : '#FFFFFF', '#16161A', whiteSize);
-    yy += wbh + Math.round(w * 0.030);
-    rightTexts.forEach(function(t){
-      const bh = bubbleBox(t, 'right', yy, maxW * 0.64, accent, '#FFFFFF', bSize);
-      yy += bh + Math.round(w * 0.016);
-    });
-
-    /* 5) 하단 바 그리기 */
     ctx.save();
     roundRect(ctx, barX, barY, barW, barH, barH / 2);
     ctx.fillStyle = 'rgba(0,0,0,.44)';
@@ -3801,69 +4078,125 @@
     styleCreditLine(ctx, f, dark);
   }
 
-  /* ---------- 🌊 빅 타이틀 ---------- */
-  function drawBigTitle(ctx, s, f, T, solid){
-    const w = f.w, h = f.h, pad = f.pad;
-    const im = styleCanvas(ctx, s, f, solid, 'cover');
-    const dark = !!im || !!(solid && solid.dark);
-    const accent = styleAccent(dark);
-    const maxW = w - pad * 1.5;
-    const titleTxt = String(s.title == null ? '' : s.title);
-    const badgeTxt = plainMarks(s.subtitle).trim() || (s.badge || '').trim();
-    if (!titleTxt.trim() && !badgeTxt) return;
+  /* 글자를 줄 폭에 꽉 차게 균등 배치 (빅 타이틀 레퍼런스) */
+  function drawSegsJustified(ctx, segs, x, width, base, fontStr, colorOf, outline){
+    const chars = [];
+    segs.forEach(function(sg){
+      Array.from(String(sg.t || '')).forEach(function(ch){ chars.push({ ch: ch, em: sg.em }); });
+    });
+    if (!chars.length) return;
+    ctx.font = fontStr;
+    const ws = chars.map(function(c){ return ctx.measureText(c.ch).width; });
+    const total = ws.reduce(function(a, b){ return a + b; }, 0);
+    const gap = chars.length > 1 ? Math.max(0, (width - total) / (chars.length - 1)) : 0;
+    let cx = x + (chars.length > 1 ? 0 : Math.max(0, (width - total) / 2));
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    for (let i = 0; i < chars.length; i++){
+      if (outline && outline.width > 0 && chars[i].ch.trim()){
+        ctx.save();
+        ctx.lineJoin = 'round'; ctx.miterLimit = 2;
+        ctx.lineWidth = outline.width;
+        ctx.strokeStyle = outline.color;
+        if (outline.shadow){
+          ctx.shadowColor = outline.shadow;
+          ctx.shadowBlur = outline.blur || 0;
+          ctx.shadowOffsetY = outline.oy || 0;
+        }
+        ctx.strokeText(chars[i].ch, cx, base);
+        ctx.restore();
+      }
+      ctx.save();
+      ctx.fillStyle = colorOf(chars[i]);
+      ctx.fillText(chars[i].ch, cx, base);
+      ctx.restore();
+      cx += ws[i] + gap;
+    }
+  }
 
-    const bs = Math.max(19, Math.round(w * 0.0305));
-    const bH = Math.round(bs * 2.15);
-    const gapB = Math.round(h * 0.026);
+  /* ---------- 🌊 빅 타이틀 ---------- */
+  function drawBigTitle(ctx, s, f, T, solid, mode){
+    const w = f.w, h = f.h, pad = f.pad;
+    const isCover = mode !== 'body';
+    const im = styleCanvas(ctx, s, f, solid, mode);
+    const dark = !!im || !!(solid && solid.dark);
+    const maxW = Math.min(w - pad * 1.4, w * 0.80);
+    const titleTxt = String(s.title == null ? '' : s.title);
+    const labelTxt = plainMarks(s.subtitle).trim() || (s.badge || '').trim();
+    if (!titleTxt.trim() && !labelTxt) return;
+
+    const P = tPos(s);
+    const bs = Math.max(19, Math.round(w * 0.0295));
+    const bH = Math.round(bs * 2.05);
+    const gapB = Math.round(h * 0.028);
     const title = titleTxt.trim() ? fitBigTitle(ctx, titleTxt, {
-      maxWidth: maxW, cap: Math.min(w * 0.295, h * 0.235), minSize: w * 0.085, maxRows: 3,
-      lineHeight: 1.10, fontStr: function(sz){ return font(sz, 900); }
+      maxWidth: maxW, cap: Math.min(w * 0.300, h * 0.240), minSize: w * 0.085, maxRows: 3,
+      lineHeight: 1.08, fontStr: function(sz){ return font(sz, 900); }
     }) : null;
-    const blockH = (title ? title.rows.length * title.lh : 0) + (badgeTxt ? gapB + bH : 0);
-    const topMin = f.safeTop + pad;
-    const botMax = h - f.safeBottom - pad;
-    let y = clamp(Math.round(h * 0.485 - blockH / 2), topMin, Math.max(topMin, botMax - blockH));
+    /* 글자 단위로 재면 묶음 측정보다 조금 넓어요 → 카드 밖으로 나가지 않게 한 번 더 맞춘다 */
+    if (title){
+      let maxCharW = 0;
+      title.rows.forEach(function(r){ maxCharW = Math.max(maxCharW, charSumW(ctx, charsSegs(r), title.size, 900)); });
+      if (maxCharW > maxW){
+        const k2 = maxW / maxCharW;
+        title.size = Math.max(8, Math.round(title.size * k2));
+        title.lh = title.size * 1.08;
+      }
+    }
+    const blockH = (title ? title.rows.length * title.lh : 0) + (labelTxt ? gapB + bH : 0);
+    const top = f.safeTop + pad;
+    const bottom = h - f.safeBottom - pad;
+    let y = posAnchorY(P.pos, top, bottom, blockH) + P.dy * h * 0.16;
+    const cx = w / 2 + alignShiftC(P.align, maxW, w, pad) + P.dx * w * 0.16;
 
     if (title){
       const outline = {
-        width: Math.max(3, Math.round(title.size * 0.014)),
-        color: 'rgba(6,7,10,.88)',
-        shadow: 'rgba(0,0,0,.26)', blur: title.size * 0.09, oy: title.size * 0.02
+        width: Math.max(4, Math.round(title.size * 0.019)),
+        color: dark ? 'rgba(12,20,26,.94)' : TPL_INK,
+        shadow: 'rgba(0,0,0,.20)', blur: title.size * 0.05, oy: title.size * 0.012
       };
       const fstr = font(title.size, 900);
       title.rows.forEach(function(r, ri){
-        drawSegsCentered(ctx, charsSegs(r), w / 2, y + title.lh * ri + title.size * 0.84, fstr,
-          function(){ return accent; }, outline);
+        const rowW = Math.min(maxW, charSumW(ctx, charsSegs(r), title.size, 900));
+        const x0 = Math.max(pad * 0.5, cx - rowW / 2);
+        drawSegsJustified(ctx, charsSegs(r), x0, rowW, y + title.lh * ri + title.size * 0.86, fstr,
+          function(){ return TPL_MINT; }, outline);
       });
       y += title.rows.length * title.lh;
     }
-    if (badgeTxt){
+    if (labelTxt){
       drawBadgeRect(ctx, {
-        text: badgeTxt, cx: w / 2, y: y + gapB, size: bs, height: bH,
-        bg: accent, fg: IM_INK, padX: Math.round(bs * 0.92), radius: 12,
-        fontStr: font(bs, 800), shadow: false
+        text: labelTxt, cx: cx, y: y + gapB, size: bs, height: bH,
+        bg: TPL_MINT, fg: TPL_INK, padX: Math.round(bs * 0.86), radius: 3,
+        fontStr: font(bs, 700), shadow: false
       });
     }
-    styleCreditLine(ctx, f, dark);
+    if (isCover) styleCreditLine(ctx, f, dark);
+    else if (s.watermark !== false){
+      drawSignature(ctx, w / 2, f.safeTop + Math.max(pad * 0.5, h * 0.036), Math.max(14, Math.round(w * 0.023)));
+    }
   }
+  /* fontStr 그대로 다시 쓰기 위한 통과 함수 */
+  function fontStrOf(fstr){ return fstr; }
 
   /* ---------- ☁️ 한 단어 강조 ---------- */
-  function drawWordHighlight(ctx, s, f, T, solid){
+  function drawWordHighlight(ctx, s, f, T, solid, mode){
     const w = f.w, h = f.h, pad = f.pad;
-    const im = styleCanvas(ctx, s, f, solid, 'cover');
+    const isCover = mode !== 'body';
+    const im = styleCanvas(ctx, s, f, solid, mode);
     const dark = !!im || !!(solid && solid.dark);
-    const accent = styleAccent(dark);
-    const maxW = w - pad * 1.5;
+    const maxW = w - pad * 1.3;
     const titleTxt = String(s.title == null ? '' : s.title);
-    const badgeTxt = plainMarks(s.subtitle).trim() || (s.badge || '').trim();
-    if (!titleTxt.trim() && !badgeTxt) return;
+    const labelTxt = plainMarks(s.subtitle).trim() || (s.badge || '').trim();
+    if (!titleTxt.trim() && !labelTxt) return;
 
-    const bs = Math.max(18, Math.round(w * 0.0265));
-    const bH = Math.round(bs * 2.05);
-    const gapB = Math.round(h * 0.022);
+    const P = tPos(s);
+    const bs = Math.max(18, Math.round(w * 0.0275));
+    const bH = Math.round(bs * 1.95);
+    const gapB = Math.round(h * 0.016);
     const title = titleTxt.trim() ? fitBigTitle(ctx, titleTxt, {
-      maxWidth: maxW, cap: Math.min(w * 0.140, h * 0.122), minSize: w * 0.052, maxRows: 3,
-      lineHeight: 1.20, fontStr: function(sz){ return font(sz, 900); }
+      maxWidth: maxW, cap: Math.min(w * 0.082, h * 0.078), minSize: w * 0.044, maxRows: 3,
+      lineHeight: 1.36, fontStr: function(sz){ return font(sz, 800); }
     }) : null;
 
     if (title){
@@ -3881,32 +4214,43 @@
         }
       }
     }
-    const blockH = (title ? title.rows.length * title.lh : 0) + (badgeTxt ? gapB + bH : 0);
-    const topMin = f.safeTop + pad;
-    const botMax = h - f.safeBottom - pad;
-    let y = clamp(Math.round(h * 0.47 - blockH / 2), topMin, Math.max(topMin, botMax - blockH));
+    const blockH = (title ? title.rows.length * title.lh : 0) + (labelTxt ? gapB + bH : 0);
+    const top = f.safeTop + pad;
+    const bottom = h - f.safeBottom - pad;
+    let y = posAnchorY(P.pos, top, bottom, blockH) + P.dy * h * 0.16;
+
+    let bw = 0;
+    if (title){
+      title.rows.forEach(function(r){
+        bw = Math.max(bw, segsWidthAt(ctx, charsSegs(r), fontStrOf(font(title.size, 800))));
+      });
+    }
+    const cx = w / 2 + alignShiftC(P.align, bw, w, pad) + P.dx * w * 0.16;
 
     if (title){
-      const outline = {
-        width: Math.max(3, Math.round(title.size * 0.045)),
-        color: 'rgba(8,9,12,.42)',
-        shadow: 'rgba(0,0,0,.42)', blur: title.size * 0.18, oy: title.size * 0.03
-      };
-      const fstr = font(title.size, 900);
+      const outline = im ? {
+        width: Math.max(3, Math.round(title.size * 0.040)),
+        color: 'rgba(8,9,12,.36)',
+        shadow: 'rgba(0,0,0,.40)', blur: title.size * 0.16, oy: title.size * 0.03
+      } : { width: 0 };
+      const fstr = font(title.size, 800);
       title.rows.forEach(function(r, ri){
-        drawSegsCentered(ctx, charsSegs(r), w / 2, y + title.lh * ri + title.size * 0.84, fstr,
-          function(sg){ return sg.em ? accent : (dark ? '#FFFFFF' : '#151515'); }, outline);
+        drawSegsCentered(ctx, charsSegs(r), cx, y + title.lh * ri + title.size * 0.86, fstr,
+          function(sg){ return sg.em ? TPL_SKY : (dark ? '#FFFFFF' : '#151515'); }, outline);
       });
       y += title.rows.length * title.lh;
     }
-    if (badgeTxt){
+    if (labelTxt){
       drawBadgeRect(ctx, {
-        text: badgeTxt, cx: w / 2, y: y + gapB, size: bs, height: bH,
-        bg: accent, fg: IM_INK, padX: Math.round(bs * 0.82), radius: 10,
-        fontStr: font(bs, 800), shadow: false
+        text: labelTxt, cx: cx, y: y + gapB, size: bs, height: bH,
+        bg: TPL_SKY, fg: '#0E2438', padX: Math.round(bs * 0.72), radius: 3,
+        fontStr: font(bs, 700), shadow: false
       });
     }
-    styleCreditLine(ctx, f, dark);
+    if (isCover) styleCreditLine(ctx, f, dark);
+    else if (s.watermark !== false){
+      drawSignature(ctx, w / 2, f.safeTop + Math.max(pad * 0.5, h * 0.036), Math.max(14, Math.round(w * 0.023)));
+    }
   }
 
   /* ---------- 🎙️ 매거진 인터뷰 ---------- */
@@ -3916,60 +4260,73 @@
     const im = styleCanvas(ctx, s, f, solid, mode);
     const dark = !!im || !!(solid && solid.dark);
     if (im){
-      const g = ctx.createLinearGradient(0, h * 0.36, 0, h);
+      const g = ctx.createLinearGradient(0, h * 0.30, 0, h);
       g.addColorStop(0, 'rgba(0,0,0,0)');
-      g.addColorStop(0.55, 'rgba(0,0,0,.34)');
-      g.addColorStop(1, 'rgba(0,0,0,.80)');
-      ctx.fillStyle = g; ctx.fillRect(0, h * 0.36, w, h * 0.64);
+      g.addColorStop(0.52, 'rgba(0,0,0,.30)');
+      g.addColorStop(1, 'rgba(0,0,0,.82)');
+      ctx.fillStyle = g; ctx.fillRect(0, h * 0.30, w, h * 0.70);
     }
+    const P = tPos(s);
     const fg = dark ? '#FFFFFF' : '#171614';
-    const fgSub = dark ? 'rgba(255,255,255,.90)' : 'rgba(23,22,20,.86)';
-    const accent = styleAccent(dark);
+    const fgSub = dark ? 'rgba(255,255,255,.93)' : 'rgba(23,22,20,.86)';
     const maxW = w - pad * 2;
-    const badgeTxt = (s.badge || '').trim() || '인터뷰';
-    const bs = Math.max(16, Math.round(w * 0.0265));
-    const bH = Math.round(bs * 2.0);
-    const tBase = isCover ? T.coverTitle * 0.80 : Math.max(42, T.bodyTitle * 0.96);
+    /* v5.7: 배지 문구를 비우면 배지 박스 자체를 그리지 않는다 */
+    const badgeTxt = (s.badge || '').trim();
+    const bs = Math.max(16, Math.round(w * 0.0295));
+    const bH = Math.round(bs * 1.68);
+    const tBase = isCover ? Math.round(w * 0.079) : Math.max(46, Math.round(T.bodyTitle * 1.02));
 
-    const title = styleWrapped(ctx, plainMarks(s.title), maxW * 0.94, tBase, 900, 2, 1.20);
-    let sub = styleWrapped(ctx, plainMarks(s.subtitle), maxW * 0.90,
-      Math.round(w * 0.032), 500, 2, 1.42);
+    const title = styleWrapped(ctx, plainMarks(s.title), maxW * 0.96, tBase, 900, 2, 1.16);
+    let sub = styleWrapped(ctx, plainMarks(s.subtitle), maxW * 0.94, Math.round(w * 0.040), 500, 2, 1.40);
     if (!sub && isCover){
       const first = plainMarks(s.desc).split('\n')[0].trim();
-      if (first) sub = styleWrapped(ctx, first, maxW * 0.90, Math.round(w * 0.032), 500, 1, 1.42);
+      if (first) sub = styleWrapped(ctx, first, maxW * 0.94, Math.round(w * 0.040), 500, 1, 1.40);
     }
-    const desc = !isCover ? styleWrapped(ctx, plainMarks(s.desc), maxW * 0.92,
-      Math.round(w * 0.029), 500, 3, 1.50) : null;
+    const desc = !isCover ? styleWrapped(ctx, plainMarks(s.desc), maxW * 0.94,
+      Math.round(w * 0.032), 500, 3, 1.50) : null;
 
-    const blocks = [{ kind:'b', h: bH }];
-    if (title) blocks.push({ kind:'t', h: title.lines.length * title.lh, gap: Math.round(tBase * 0.24) });
-    if (sub) blocks.push({ kind:'s', h: sub.lines.length * sub.lh, gap: Math.round(w * 0.024) });
-    if (desc) blocks.push({ kind:'d', h: desc.lines.length * desc.lh, gap: Math.round(w * 0.022) });
+    const blocks = [];
+    if (badgeTxt) blocks.push({ kind:'b', h: bH });
+    if (title) blocks.push({ kind:'t', h: title.lines.length * title.lh, gap: Math.round(bH * (badgeTxt ? 0.46 : 0)) });
+    if (sub) blocks.push({ kind:'s', h: sub.lines.length * sub.lh, gap: Math.round(Math.max(18, w * 0.019)) });
+    if (desc) blocks.push({ kind:'d', h: desc.lines.length * desc.lh, gap: Math.round(w * 0.017) });
     let total = 0;
     blocks.forEach(function(b, i){ total += b.h + (i ? b.gap : 0); });
+
+    const top = f.safeTop + pad * 0.9;
     const bottom = h - f.safeBottom - pad * (isCover ? 1.02 : 1.0);
-    let y = Math.max(f.safeTop + pad, bottom - total);
+    let y = posAnchorY(P.pos, top, bottom, total) + P.dy * h * 0.16;
+
+    let bw = 0;
+    if (badgeTxt){
+      ctx.font = font(bs, 700);
+      bw = Math.max(bw, ctx.measureText(badgeTxt).width + bs * 1.1);
+    }
+    if (title) bw = Math.max(bw, linesMaxW(ctx, title.lines, title.size, 900));
+    if (sub) bw = Math.max(bw, linesMaxW(ctx, sub.lines, sub.size, 500));
+    if (desc) bw = Math.max(bw, linesMaxW(ctx, desc.lines, desc.size, 500));
+    const bx = pad + posShiftX(P.align, Math.min(maxW, bw), maxW) + P.dx * w * 0.16;
 
     blocks.forEach(function(b, i){
       if (i) y += b.gap;
       if (b.kind === 'b'){
         ctx.save();
-        ctx.font = font(bs, 800);
-        const bw = Math.min(maxW, ctx.measureText(badgeTxt).width + bs * 1.55);
-        roundRect(ctx, pad, y, bw, bH, 5);
-        ctx.fillStyle = dark ? 'rgba(0,0,0,.62)' : 'rgba(20,22,28,.92)';
+        ctx.font = font(bs, 700);
+        const bwd = Math.min(maxW, ctx.measureText(badgeTxt).width + bs * 1.1);
+        roundRect(ctx, bx, y, bwd, bH, 3);
+        ctx.fillStyle = dark ? 'rgba(16,18,22,.90)' : 'rgba(20,22,28,.94)';
         ctx.fill();
-        ctx.font = font(bs, 800);
-        ctx.fillStyle = dark ? accent : '#FFFFFF';
+        ctx.font = font(bs, 700);
+        ctx.fillStyle = TPL_MINT;
         ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-        ctx.fillText(badgeTxt, pad + bs * 0.78, y + bH / 2 + Math.round(bs * 0.04));
+        ctx.fillText(badgeTxt, bx + bs * 0.55, y + bH / 2 + Math.round(bs * 0.04));
         ctx.restore();
       } else if (b.kind === 't'){
-        styleLines(ctx, title.lines, pad, y, title.lh, title.size, 900, fg, !!im);
+        styleLines(ctx, title.lines, bx, y, title.lh, title.size, 900, fg, !!im);
       } else if (b.kind === 's'){
-        styleLines(ctx, sub.lines, pad, y, sub.lh, sub.size, 500, fgSub, !!im);
+        styleLines(ctx, sub.lines, bx, y, sub.lh, sub.size, 500, fgSub, !!im);
       } else {
-        styleLines(ctx, desc.lines, pad, y, desc.lh, desc.size, 500, fgSub, !!im);
+        styleLines(ctx, desc.lines, bx, y, desc.lh, desc.size, 500, fgSub, !!im);
       }
       y += b.h;
     });
@@ -4019,7 +4376,7 @@
         g.addColorStop(1, 'rgba(0,0,0,.16)');
         ctx.fillStyle = g; ctx.fillRect(0, h * 0.72, w, h * 0.28);
       } else {
-        paintBrightBg(ctx, w, h, true);
+        paintGradientBg(ctx, w, h, { ghost:true });
       }
       drawCoverTrend(ctx, s, f, T, im, solid);
       return;
@@ -4036,8 +4393,8 @@
       ctx.fillStyle = g; ctx.fillRect(0, h * 0.64, w, h * 0.36);
       pal = catPal(palPhoto());
     } else {
-      pal = catPal(surfacePal());
-      drawSurface(ctx, w, h, pal, true);
+      pal = catPal(palPaper());
+      paintGradientBg(ctx, w, h, { ghost:true });
     }
 
     const topY = f.safeTop + pad;
@@ -4102,12 +4459,16 @@
 
     let totalH = 0;
     blocks.forEach((b, i)=>{ totalH += b.h + (i ? b.gap : 0); });
-    let y = bottomY - totalH;
+    const P = tPos(s);
+    let y = posAnchorY(P.pos, topY, bottomY, totalH) + P.dy * h * 0.16;
+    ctx.save();
+    ctx.translate(posShiftX(P.align, Math.min(maxW, Math.max(title ? linesMaxW(ctx, title.lines, title.size, 800) : 0, sub ? linesMaxW(ctx, sub.lines, sub.size, 500) : 0)), maxW) + P.dx * w * 0.16, 0);
     blocks.forEach((b, i)=>{
       if (i) y += b.gap;
       b.draw(y);
       y += b.h;
     });
+    ctx.restore();
   }
 
   /* v4: 5대 카테고리 통일 표지 — 사진 디밋 없이 가운데 큰 시그니처 컬러 제목 */
@@ -4401,13 +4762,24 @@
 
   function drawBody(ctx, s, f){
     if (s.bodyStyle === 'editorial'){ drawBodyEditorial(ctx, s, f); return; }
-    /* v5.6: 본문에서도 고를 수 있는 표지 계열 레이아웃 */
+    /* v5.7: 표지 디자인을 본문에서도 그대로 고를 수 있다 */
     if (s.bodyStyle === 'place_pin'){ drawPlacePin(ctx, s, f, TS(), null, 'body'); return; }
     if (s.bodyStyle === 'magazine_interview'){ drawMagazine(ctx, s, f, TS(), null, 'body'); return; }
+    if (s.bodyStyle === 'chat_bubble'){ drawChatBubble(ctx, s, f, TS(), null, 'body'); return; }
+    if (s.bodyStyle === 'big_title'){ drawBigTitle(ctx, s, f, TS(), null, 'body'); return; }
+    if (s.bodyStyle === 'word_highlight'){ drawWordHighlight(ctx, s, f, TS(), null, 'body'); return; }
+    if (s.bodyStyle === 'trend'){
+      const imt = bodyScene(ctx, s, f);
+      drawCoverTrend(ctx, s, f, TS(), imt, null);
+      return;
+    }
+    if (s.bodyStyle === 'question'){ drawCoverQuestion(ctx, s, f, TS(), imgFor(s), null); return; }
+    if (s.bodyStyle === 'iming_yellow'){ drawCoverIming(ctx, s, f, TS(), null); return; }
     const w = f.w, h = f.h, pad = f.pad, T = TS();
     const im = imgFor(s);
-    const pos = s.pos || 'bottom';
-    const align = s.align || 'left';
+    const P = tPos(s);
+    const pos = P.pos;
+    const align = P.align;
     const vivid = !!im;
     let pal;
 
@@ -4445,7 +4817,7 @@
     const topLimit = f.safeTop + pad;
     const bottomY = h - f.safeBottom - pad;
     const maxW = w - pad * 2;
-    const anchorX = align === 'center' ? w / 2 : (align === 'right' ? w - pad : pad);
+    const anchorX = (align === 'center' ? w / 2 : (align === 'right' ? w - pad : pad)) + P.dx * w * 0.16;
 
     const hasTitle = !!plainMarks(s.title).trim();
     const title = hasTitle ? fitText(ctx, plainMarks(s.title), {
@@ -4492,6 +4864,7 @@
     } else {
       y = bottomY - totalH - wmSpace;
     }
+    y += P.dy * h * 0.16;
     blocks.forEach((b, i)=>{
       if (i) y += b.gap;
       b.draw(y);
@@ -4504,6 +4877,13 @@
       drawTracked(ctx, '@IMING', w - pad, bottomY - 2, Math.round(24 * T.k), 700, 2, pal.fg, 'right');
       ctx.restore();
     }
+  }
+  /* 본문 바탕 — 사진 또는 그라데이션 */
+  function bodyScene(ctx, s, f){
+    const im = imgFor(s);
+    if (im){ drawPhoto(ctx, im, s, f.w, f.h); return im; }
+    paintGradientBg(ctx, f.w, f.h, { ghost:false });
+    return null;
   }
   /* ---------- 요약표 ---------- */
   function pctOff(a, b){
@@ -4788,6 +5168,14 @@
     } else if (style === 'cream'){
       pal = palCream();
       drawSurface(ctx, w, h, pal, false);
+    } else if (style === 'grad'){
+      pal = palInk();
+      const th = THEME();
+      const g = ctx.createLinearGradient(0, 0, w * 0.5, h);
+      g.addColorStop(0, mixHex(th.ink.bg, '#FFFFFF', 0.04));
+      g.addColorStop(0.55, mixHex(th.ink.bg, th.ink.accent, 0.16));
+      g.addColorStop(1, mixHex(th.ink.bg, '#000000', 0.34));
+      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
     } else {
       pal = palInk();
       drawSurface(ctx, w, h, pal, false);
@@ -5138,7 +5526,7 @@
   const chipsEl = el('chips');
   const rowsEl = el('rows');
   const themeChipsEl = el('themeChips');
-  const fontChipsEl = el('fontChips');
+  const fontChipsEl = el('fontList');
 
   function renderThemeChips(){
     themeChipsEl.innerHTML = THEMES.map(t=>{
@@ -5206,47 +5594,48 @@
   }
 
   function renderFontChips(){
+    if (!fontChipsEl) return;
     const list = orderedFonts();
     const order = fontOrder();
     const pins = fontPins();
     const curId = targetFontId();
     fontChipsEl.classList.toggle('ordermode', fontOrderMode);
-    const hint = el('fontOrderHint');
-    if (hint) hint.hidden = !fontOrderMode;
 
     const pinSpan = function(fn){
       const on = pins.indexOf(fn.id) >= 0;
       return '<span class="pin' + (on ? ' on' : '') + '" data-fpin="' + fn.id + '" role="button" aria-label="' +
              esc(fn.label) + (on ? ' 즐겨찾기 해제' : ' 즐겨찾기') + '">' + (on ? '★' : '☆') + '</span>';
     };
+    const nameSpan = function(fn){
+      return '<span class="nm" data-pick="1" style="font-family:' + fontChipLabel(fn) + '; font-weight:' +
+             (fn.id === curId ? '800' : '500') + '">' + esc(fn.label) + '</span>';
+    };
 
-    if (fontOrderMode){
-      fontChipsEl.innerHTML = list.map(function(fn, i){
-        const on = fn.id === curId ? ' on' : '';
-        const pos = order.indexOf(fn.id) + 1;
-        return '<div class="chip font' + on + '" data-font="' + fn.id + '">' +
-               pinSpan(fn) +
-               '<span class="n">' + pos + '</span>' +
+    fontChipsEl.innerHTML = list.map(function(fn, i){
+      const on = fn.id === curId ? ' on' : '';
+      const pos = order.indexOf(fn.id) + 1;
+      if (fontOrderMode){
+        return '<div class="fsRow fsOrd' + on + '" data-font="' + fn.id + '">' +
+               '<span class="count" style="width:14px; text-align:center; flex:none">' + pos + '</span>' +
+               nameSpan(fn) +
                '<button class="mv" data-mv="-1" aria-label="' + esc(fn.label) + ' 앞으로"' + (i === 0 ? ' disabled' : '') + '>◀</button>' +
-               '<span class="t" style="font-family:' + fontChipLabel(fn) + '" data-pick="1">' + esc(fn.label) + '</span>' +
-               (fn.custom ? '<span class="fdel" data-fdel="' + fn.id + '" role="button" aria-label="' + esc(fn.label) + ' 삭제">✕</span>' : '') +
                '<button class="mv" data-mv="1" aria-label="' + esc(fn.label) + ' 뒤로"' + (i === list.length - 1 ? ' disabled' : '') + '>▶</button>' +
-               '</div>';
-      }).join('');
-    } else {
-      fontChipsEl.innerHTML = list.map(function(fn){
-        const on = fn.id === curId ? ' on' : '';
-        const pinned = pins.indexOf(fn.id) >= 0;
-        return '<button class="chip font' + on + (pinned ? ' pinned' : '') + '" data-font="' + fn.id + '">' +
+               (fn.custom ? '<button class="fdel" data-fdel="' + fn.id + '" aria-label="' + esc(fn.label) + ' 삭제">✕</button>' : '') +
                pinSpan(fn) +
-               (fn.custom ? '<span class="badgeMe">내 폰트</span>' : '') +
-               '<span class="t" style="font-family:' + fontChipLabel(fn) + '">' + esc(fn.label) + '</span>' +
-               (fn.custom ? '<span class="fdel" data-fdel="' + fn.id + '" role="button" aria-label="' + esc(fn.label) + ' 삭제">✕</span>' : '') +
-               '</button>';
-      }).join('');
-    }
-    el('fontName').textContent = fontFor(fontTarget).label;
-    el('fontName').hidden = !!fontOrderMode;
+               '</div>';
+      }
+      return '<div class="fsRow' + on + '" data-font="' + fn.id + '" role="option" aria-selected="' + (fn.id === curId ? 'true' : 'false') + '">' +
+             pinSpan(fn) +
+             nameSpan(fn) +
+             (fn.custom ? '<span class="tag">내 폰트</span>' : '') +
+             (fn.custom ? '<button class="fdel" data-fdel="' + fn.id + '" aria-label="' + esc(fn.label) + ' 삭제">✕</button>' : '') +
+             '<span class="ck">' + (fn.id === curId ? '✓' : '') + '</span>' +
+             '</div>';
+    }).join('');
+
+    if (el('fontName')) el('fontName').textContent = fontFor(fontTarget).label;
+    const st = el('fontSheetTarget');
+    if (st) st.textContent = fontTarget === 'cover' ? '표지' : '본문·요약';
     document.querySelectorAll('#fontTargetSeg button').forEach(function(b){
       b.classList.toggle('on', (b.dataset.ft === 'cover' ? 'cover' : 'main') === fontTarget);
     });
@@ -5403,10 +5792,13 @@
     syncTotalField(s);
     if (el('coverQFields')) el('coverQFields').hidden = !(cur().type === 'cover' && cur().coverStyle === 'question');
     document.querySelectorAll('#catTitleSeg button').forEach(function(b){ b.classList.toggle('on', (state.coverTitleColor === 'white' ? 'white' : 'cat') === b.dataset.tcol); });
-    document.querySelectorAll('#styleSeg button').forEach(b=>b.classList.toggle('on', b.dataset.style === s.summaryStyle));
+    document.querySelectorAll('#styleSeg button').forEach(function(b){ b.classList.toggle('on', b.dataset.style === currentSumBg()); });
     document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('on', b.dataset.mode === state.mode));
-    document.querySelectorAll('#posSeg button').forEach(b=>b.classList.toggle('on', b.dataset.pos === (s.pos || 'bottom')));
+    document.querySelectorAll('#posSeg button').forEach(function(b){ b.classList.toggle('on', b.dataset.pos === effPosOf(s)); });
     document.querySelectorAll('#alignSeg button').forEach(b=>b.classList.toggle('on', b.dataset.align === (s.align || 'left')));
+    if (el('posSlideName')) el('posSlideName').textContent = slideLabel(state.current);
+    if (el('roleNow')) el('roleNow').textContent = slideLabel(state.current);
+    document.querySelectorAll('#cardRoleSeg button').forEach(function(b){ b.classList.toggle('on', b.dataset.role === s.type); });
     const wm = el('wmToggle');
     if (wm) wm.classList.toggle('on', state.slides.every(function(x){ return x.watermark !== false; }));
     const gt = el('gradToggle');
@@ -5455,12 +5847,15 @@
     renderThemeChips();
     renderFontChips();
     renderNumChips();
+    renderSumBgChips();
     syncForm();
     renderRows();
     renderStickerChips();
     renderSlots();
     renderWrite();
     renderCaption();
+    renderPhotoMap();
+    syncRoleUI();
     applyStepUI();
     paintSoon();
   }
@@ -5563,7 +5958,12 @@
     if (ci < 0){ state.slides.unshift(blankSlide('cover')); }
     compSnapshot('표지 디자인 변경 직전', { undo:true });
     /* v5.6: 표지 디자인만 바꾼다 — 본문 디자인은 건드리지 않아요 */
-    state.slides.forEach(function(sl){ if (sl.type === 'cover') sl.coverStyle = v; });
+    state.slides.forEach(function(sl){
+      if (sl.type !== 'cover') return;
+      sl.coverStyle = v;
+      if (TPL_POS[v]) sl.pos = TPL_POS[v];
+      sl.dx = 0; sl.dy = 0; sl.posSet = false;
+    });
     if (v === 'editorial'){
       state.theme = EDITORIAL_PRESET.theme;
       state.font = EDITORIAL_PRESET.font;
@@ -5579,7 +5979,12 @@
     if (!b) return;
     const v = BODY_IDS.indexOf(b.dataset.bstyle) >= 0 ? b.dataset.bstyle : 'classic';
     compSnapshot('본문 디자인 변경 직전', { undo:true });
-    state.slides.forEach(function(sl){ if (sl.type === 'body') sl.bodyStyle = v; });
+    state.slides.forEach(function(sl){
+      if (sl.type !== 'body') return;
+      sl.bodyStyle = v;
+      if (TPL_POS[v]) sl.pos = TPL_POS[v];
+      sl.dx = 0; sl.dy = 0; sl.posSet = false;
+    });
     renderAll(); persistNow(); setTimeout(paint, 30);
     syncBodyStyleSeg();
     toast('📄 본문 디자인 · ' + (BODY_DEFAULT[v] || '기본 깔끔형') +
@@ -5849,10 +6254,10 @@
   });
 
   // 요약표 배경
-  el('styleSeg').addEventListener('click', (e)=>{
+  if (el('styleSeg')) el('styleSeg').addEventListener('click', (e)=>{
     const b = e.target.closest('button[data-style]');
     if (!b) return;
-    cur().summaryStyle = b.dataset.style;
+    setSumBg(b.dataset.style);
     renderAll(); persistSoon();
     if (b.dataset.style === 'photo' && !cur().photo) toast('사진을 올리면 어둡게 깔아 배경으로 써요');
   });
@@ -5883,18 +6288,27 @@
     if (!b) return;
     if (fontOrderMode && !e.target.closest('[data-pick]')) return;
     chooseFont(b.dataset.font);
+    openSheetName('font', false);
   });
+  if (el('fontClose')) el('fontClose').addEventListener('click', function(){ openSheetName('font', false); });
   if (el('fontTargetSeg')) el('fontTargetSeg').addEventListener('click', function(e){
     const b = e.target.closest('button[data-ft]');
     if (!b) return;
     setFontTarget(b.dataset.ft);
   });
   if (el('fontUnify')) el('fontUnify').addEventListener('click', function(){
-    state.fontCover = fontIdFor('main');
+    /* v5.7: 목록 첫 글씨체가 아니라 지금 고르고 있는 글씨체를 기준으로 통일 */
+    const id = targetFontId();
+    state.font = id;
+    state.fontCover = id;
     renderFontChips();
     persistSoon();
     loadFontFor().then(()=>{ paint(); });
-    toast('표지·본문·요약을 ' + fontFor('main').label + ' 한 가지로 통일했어요');
+    toast('표지·본문·요약을 ' + fontById(id).label + ' 한 가지로 통일했어요');
+  });
+  if (el('fontSelectBtn')) el('fontSelectBtn').addEventListener('click', function(){
+    renderFontChips();
+    openSheetName('font', true);
   });
   el('fontOrderBtn').addEventListener('click', ()=>{
     fontOrderMode = !fontOrderMode;
@@ -5945,6 +6359,7 @@
     const b = e.target.closest('button[data-pos]');
     if (!b) return;
     cur().pos = b.dataset.pos;
+    cur().posSet = true;
     renderAll(); persistSoon();
   });
   el('alignSeg').addEventListener('click', (e)=>{
@@ -6779,7 +7194,7 @@
   /* ---------- 시트 열고 닫기 ---------- */
   function sheetEl(name){
     return el(name === 'menu' ? 'sheetWrap' : name === 'slot' ? 'slotWrap' : name === 'batch' ? 'batchWrap'
-      : name === 'bulk' ? 'bulkWrap' : name === 'sync' ? 'syncWrap' : 'stModeWrap');
+      : name === 'bulk' ? 'bulkWrap' : name === 'sync' ? 'syncWrap' : name === 'font' ? 'fontWrap' : 'stModeWrap');
   }
   function openSheetName(name, open){
     const n = sheetEl(name);
@@ -6808,23 +7223,50 @@
   let batchItems = [];
   const SUM_BGS = [
     { id:'photo', name:'사진', sw:'linear-gradient(135deg,#6E6A60,#2A2824)' },
+    { id:'grad',  name:'그라데이션', sw:'linear-gradient(135deg,#101F36,#2C4A6E)' },
     { id:'dark',  name:'다크', sw:'#1A1A18' },
     { id:'light', name:'라이트', sw:'#F2EFE6' },
     { id:'cream', name:'크림',  sw:'#F5EFE4' }
   ];
+  const SUM_UI_IDS = ['photo','grad','dark','light'];
   function currentSumBg(){
     const si = summaryIndex();
     if (si >= 0) return (state.slides[si].summaryStyle || 'photo');
-    return ['photo','dark','light','cream'].indexOf(state.summaryBg) >= 0 ? state.summaryBg : 'dark';
+    return ['photo','grad','dark','light','cream'].indexOf(state.summaryBg) >= 0 ? state.summaryBg : 'dark';
   }
   function setSumBg(id){
-    const v = ['photo','dark','light','cream'].indexOf(id) >= 0 ? id : 'dark';
+    const v = ['photo','grad','dark','light','cream'].indexOf(id) >= 0 ? id : 'dark';
     state.summaryBg = v;
     const si = summaryIndex();
     if (si >= 0) state.slides[si].summaryStyle = v;
     if (si >= 0){ paintSoon(); persistSoon(); }
+    renderSumBgChips();
     return v;
   }
+  function renderSumBgChips(){
+    const box = el('sumBgChips');
+    if (!box) return;
+    const cur0 = currentSumBg();
+    box.innerHTML = SUM_BGS.filter(function(o){ return SUM_UI_IDS.indexOf(o.id) >= 0; }).map(function(o){
+      const on = o.id === cur0 ? ' on' : '';
+      return '<button class="chip' + on + '" data-sumbg="' + o.id + '">' +
+             '<span class="sw" style="background:' + o.sw + '"></span>' +
+             '<span class="t">' + o.name + '</span></button>';
+    }).join('');
+    const nm = (SUM_BGS.filter(function(o){ return o.id === cur0; })[0] || SUM_BGS[2]).name;
+    if (el('sumBgNow')) el('sumBgNow').textContent = nm;
+    document.querySelectorAll('#styleSeg button').forEach(function(b){
+      b.classList.toggle('on', b.dataset.style === cur0);
+    });
+  }
+  if (el('sumBgChips')) el('sumBgChips').addEventListener('click', function(e){
+    const b = e.target.closest('[data-sumbg]');
+    if (!b) return;
+    setSumBg(b.dataset.sumbg);
+    if (b.dataset.sumbg === 'photo' && summaryIndex() >= 0 && !state.slides[summaryIndex()].photo){
+      toast('요약표 사진을 올리면 그 사진을 어둡게 깔아 배경으로 써요');
+    }
+  });
   function openBatch(files){
     if (batchItems.length) batchItems.forEach(it=>{ if (it.url) URL.revokeObjectURL(it.url); });
     /* v5.4: 기본값은 모두 '본문' — 대부분 본문 사진이고 표지·요약만 따로 바꿔요 */
@@ -6839,7 +7281,7 @@
     if (summaryIndex() >= 0) return state.slides[summaryIndex()];
     const bodiesNow = state.slides.filter(function(x){ return x.type === 'body'; });
     const sum = blankSlide('summary');
-    sum.summaryStyle = ['photo','dark','light','cream'].indexOf(state.summaryBg) >= 0 ? state.summaryBg : 'dark';
+    sum.summaryStyle = ['photo','grad','dark','light','cream'].indexOf(state.summaryBg) >= 0 ? state.summaryBg : 'dark';
     sum.rows = bodiesNow.slice(0, MAX_ROWS).map(function(b){
       return { item: (b.title || '').replace(/\n/g, ' '), amount: priceFromDesc(b.desc), auto:true };
     });
@@ -7109,12 +7551,12 @@
     if (c) toast(c.emoji + ' ' + c.name + ' 통일 표지 적용 · 표지·포인트 색 ' + c.color);
     else toast('카테고리 해제 · 컬러 배합 색으로 돌아왔어요');
   }
-  el('catChips').addEventListener('click', function(e){
+  if (el('catChips')) el('catChips').addEventListener('click', function(e){
     const b = e.target.closest('[data-cat]');
     if (b) setCategory(b.dataset.cat);
   });
-  el('catClear').addEventListener('click', function(){ setCategory(null); });
-  el('catTitleSeg').addEventListener('click', function(e){
+  if (el('catClear')) el('catClear').addEventListener('click', function(){ setCategory(null); });
+  if (el('catTitleSeg')) el('catTitleSeg').addEventListener('click', function(e){
     const b = e.target.closest('[data-tcol]');
     if (!b) return;
     state.coverTitleColor = b.dataset.tcol === 'white' ? 'white' : 'cat';
@@ -7155,7 +7597,6 @@
     }
     syncBodyStyleSeg();
   }
-
   /* v5.2: 질문 박스형 — 4단계에서 문구·위치 바로 고치기 */
   function qboxTarget(){
     if (cur().type === 'cover') return cur();
@@ -7586,15 +8027,13 @@
      v5 · 4단계 대시보드
      ========================================================= */
   const STEP_ORDER = {
-    /* v5.4: 1단계는 사진·누끼·크레딧만 · 표지 배경·카테고리는 4단계로 */
-    photoCard:{1:10, 3:40}, stickerCard:{1:20}, creditCard:{1:30},
-    typeCard:{4:10}, coverBgCard:{4:12}, catCard:{4:14}, designCard:{4:20}, captionCard:{4:30}, guideCard:{4:44},
-    writeCard:{2:10}, bodyWrite:{2:20}, fieldsCard:{2:30,3:50}, sumCard:{2:40,3:60},
-    slideCard:{3:20}, posCard:{3:30}
+    /* v5.7: 1 사진 · 2 글쓰기 · 3 디자인 · 4 최종 */
+    photoCard:{1:10, 4:70}, stickerCard:{1:20}, creditCard:{1:30}, guideCard:{1:40},
+    writeCard:{2:10}, bodyWrite:{2:20}, fieldsCard:{2:30, 4:40}, sumCard:{2:40, 4:35}, photoMapCard:{2:50, 4:65},
+    typeCard:{3:10, 4:60}, coverBgCard:{3:12, 4:55}, designCard:{3:20},
+    slideCard:{4:10}, roleCard:{4:20}, posCard:{4:30}, captionCard:{4:80}
   };
   /* v5.2: 3단계는 문구 칸이 맨 위, 사진(확대·위치)은 그 아래 */
-  STEP_ORDER.fieldsCard = {2:30, 3:10};
-  STEP_ORDER.sumCard = {2:40, 3:10};
   let stageTouched = false;
   let writeTab = 'cover';
 
@@ -7625,25 +8064,32 @@
       if (!node) return;
       const map = STEP_ORDER[id];
       let show = map[st] != null;
-      if (show && id === 'fieldsCard') show = (st === 2) ? (writeTab === 'cover') : (type !== 'summary');
+      if (show && id === 'fieldsCard') show = (st === 2) ? (writeTab !== 'summary') : (type !== 'summary');
       else if (show && id === 'sumCard') show = (st === 2) ? (writeTab === 'summary') : (type === 'summary');
       else if (show && id === 'bodyWrite') show = (st === 2) && writeTab === 'body';
+      else if (show && id === 'posCard') show = (type !== 'summary');
+      else if (show && id === 'coverBgCard') show = (st === 3) || (type === 'cover');
+      else if (show && id === 'typeCard') show = true;
       node.hidden = !show;
       if (map[st] != null) node.style.order = String(map[st]);
     });
+    /* v5.7: 4단계는 고른 카드에 맞는 디자인 항목만 */
+    if (el('coverSec')) el('coverSec').hidden = (st === 4) && type !== 'cover';
+    if (el('bodySec')) el('bodySec').hidden = (st === 4) && type !== 'body';
+    if (el('sumSec')) el('sumSec').hidden = (st === 4) && type !== 'summary';
     const hasSum = summaryIndex() >= 0;
     if (el('sumEmpty')) el('sumEmpty').hidden = hasSum;
     if (el('sumBody')) el('sumBody').hidden = !hasSum;
     if (el('posSlideName')) el('posSlideName').textContent = slideLabel(state.current);
     if (el('stageToggle')) el('stageToggle').textContent = state.stageHide ? '펼치기' : '접기';
     if (el('sheetSyncVal')) el('sheetSyncVal').textContent = syncOn() ? '연결됨' : '꺼짐';
-    if (el('modeSeg')) el('modeSeg').dataset.hide = st === 4 ? '1' : '';
+    if (el('modeSeg')) el('modeSeg').dataset.hide = '';
   }
 
   let psStep3Picked = false;
   function setStep(n){
     const st = clamp(Math.round(num(n, 1)), 1, 4);
-    /* v5.1: 1단계는 미리보기 기본 접기 · 3·4단계는 펼쳐서 보며 수정 (사용자가 직접 접으면 유지) */
+    /* v5.7: 1단계는 미리보기 접기 · 2~4단계는 펼쳐서 보며 수정 (직접 접으면 유지) */
     if (!stageTouched) state.stageHide = (st === 1);
     if (st === 2){
       const t = cur().type;
@@ -7652,16 +8098,11 @@
       else if (writeTab === 'summary' && summaryIndex() < 0) writeTab = 'cover';
     }
     state.step = st;
-    /* v5.4: 3단계는 미리보기 '작게'가 기본 (3단계에서 직접 고르면 그 값을 지켜요) */
-    if (st === 3 && !psStep3Picked) state.previewSize = 'small';
+    /* v5.7: 3단계(디자인)는 미리보기를 보통 크기로 */
+    if (st === 3 && !psStep3Picked) state.previewSize = 'normal';
     if (st === 1){
       const ci = coverIndex();
       if (ci >= 0) state.current = ci;
-    }
-    /* v5.2: 3단계는 누를 때마다 표지 1부터 */
-    if (st === 3){
-      const ci = coverIndex();
-      state.current = ci >= 0 ? ci : 0;
     }
     if (st === 2 && writeTab === 'cover'){
       const ci = coverIndex();
@@ -7677,7 +8118,7 @@
     persistNow();
     const ed = el('editor');
     if (ed) ed.scrollTop = 0;
-    if (st === 3 || st === 4) setTimeout(paint, 40);
+    setTimeout(paint, 40);
   }
 
   el('stepBar').addEventListener('click', function(e){
@@ -8028,20 +8469,38 @@
     setRowCount((cur().rows || []).length - 1);
   });
 
-  /* ---------- 3단계: 본문 글씨 위치 일괄 적용 ---------- */
+  /* ---------- 글씨 위치 일괄 적용 ---------- */
   if (el('posApplyAll')) el('posApplyAll').addEventListener('click', function(){
     const s = cur();
-    if (s.type !== 'body'){ toast('먼저 본문 카드를 골라주세요'); return; }
-    compSnapshot('본문 글씨 위치 일괄 적용 직전');
+    if (s.type === 'summary'){ toast('표지·본문 카드에서 쓸 수 있어요'); return; }
+    compSnapshot('글씨 위치 일괄 적용 직전', { undo:true });
     const posName = { top:'상단', middle:'중간', bottom:'하단' }[s.pos || 'bottom'];
     const alignName = { left:'왼쪽', center:'중앙', right:'오른쪽' }[s.align || 'left'];
     let n = 0;
-    state.slides.forEach(function(x){ if (x.type === 'body'){ x.pos = s.pos; x.align = s.align; n++; } });
+    state.slides.forEach(function(x){
+      if (x.type !== 'summary'){ x.pos = s.pos; x.align = s.align; x.dx = s.dx || 0; x.dy = s.dy || 0; x.posSet = true; n++; }
+    });
     renderAll(); persistNow();
-    toast('본문 ' + n + '장 모두 · ' + posName + ' ' + alignName + '로 맞췄어요');
+    toast('표지·본문 ' + n + '장 모두 · ' + posName + ' ' + alignName + '로 맞췄어요');
   });
 
-  /* ---------- 3단계 빠른 글씨 위치 ---------- */
+  /* ---------- 미세 이동 (상/하 · 좌/우) ---------- */
+  if (el('posNudge')) el('posNudge').addEventListener('click', function(e){
+    const b = e.target.closest('button');
+    if (!b) return;
+    const s = cur();
+    if (s.type === 'summary'){ toast('요약표는 위치 조절이 없어요'); return; }
+    if (b.dataset.treset){
+      s.dx = 0; s.dy = 0;
+    } else {
+      const step = 0.12;
+      if (b.dataset.tdx) s.dx = clamp(num(s.dx, 0) + num(b.dataset.tdx, 0) * step, -1, 1);
+      if (b.dataset.tdy) s.dy = clamp(num(s.dy, 0) + num(b.dataset.tdy, 0) * step, -1, 1);
+    }
+    renderAll(); persistSoon();
+  });
+
+  /* ---------- 빠른 글씨 위치 ---------- */
   if (el('posGrid')) el('posGrid').addEventListener('click', function(e){
     const b = e.target.closest('[data-quickpos]');
     if (!b) return;
@@ -8049,8 +8508,123 @@
     const s = cur();
     s.pos = ['top', 'middle', 'bottom'].indexOf(parts[0]) >= 0 ? parts[0] : 'bottom';
     s.align = ['left', 'center', 'right'].indexOf(parts[1]) >= 0 ? parts[1] : 'left';
+    s.dx = 0; s.dy = 0; s.posSet = true;
     renderAll();
     persistSoon();
+  });
+
+
+  /* ---------- v5.7: 카드 역할 전환 [표지] [본문] [요약] ---------- */
+  function setCardRole(role){
+    const s = cur();
+    const want = ['cover','body','summary'].indexOf(role) >= 0 ? role : 'body';
+    if (s.type === want){ syncRoleUI(); return; }
+    compSnapshot('카드 역할 변경 직전', { undo:true });
+    if (want === 'summary'){
+      const si = summaryIndex();
+      if (si >= 0 && si !== state.current){
+        const old = state.slides[si];
+        old.type = 'body';
+        old.bodyStyle = (old.bodyStyle && BODY_IDS.indexOf(old.bodyStyle) >= 0) ? old.bodyStyle : 'classic';
+      }
+      s.type = 'summary';
+      s.summaryStyle = ['photo','grad','dark','light','cream'].indexOf(s.summaryStyle) >= 0 ? s.summaryStyle : (state.summaryBg || 'dark');
+      if (!s.rows || !s.rows.length) s.rows = [{ item:'', amount:'' }, { item:'', amount:'' }, { item:'', amount:'' }];
+      state.summaryBg = s.summaryStyle;
+    } else {
+      s.type = want;
+      if (want === 'cover' && TPL_IDS.indexOf(s.coverStyle) < 0 && s.coverStyle !== 'cat' && s.coverStyle !== 'iming_yellow') s.coverStyle = 'classic';
+      if (want === 'body' && BODY_IDS.indexOf(s.bodyStyle) < 0) s.bodyStyle = 'classic';
+    }
+    renderAll();
+    persistNow();
+    applyStepUI();
+    setTimeout(paint, 30);
+    toast(slideLabel(state.current) + ' 카드로 바꿨어요 · ' +
+      (want === 'summary' ? '요약 항목을 채워보세요' : (want === 'cover' ? '표지 수정 항목만 보여요' : '본문 수정 항목만 보여요')),
+      { undo: restoreBackup, ms: 5000 });
+  }
+  function syncRoleUI(){
+    const s = cur();
+    document.querySelectorAll('#cardRoleSeg button').forEach(function(b){
+      b.classList.toggle('on', b.dataset.role === s.type);
+    });
+    if (el('roleNow')) el('roleNow').textContent = slideLabel(state.current);
+  }
+  if (el('cardRoleSeg')) el('cardRoleSeg').addEventListener('click', function(e){
+    const b = e.target.closest('button[data-role]');
+    if (b) setCardRole(b.dataset.role);
+  });
+
+  /* ---------- v5.7: 카드별 사진 넣기/교체 ---------- */
+  let pmTarget = -1;
+  function renderPhotoMap(){
+    const box = el('photoMapList');
+    if (!box) return;
+    box.innerHTML = state.slides.map(function(s, i){
+      const cur2 = i === state.current ? ' cur' : '';
+      const thumb = s.photo
+        ? '<img src="' + s.photo + '" alt="">'
+        : (s.type === 'summary' ? '📊' : (s.type === 'cover' ? '🖼' : '▢'));
+      const kind = { cover:'표지', body:'본문', summary:'요약표' }[s.type] || '카드';
+      const nm = slideLabel(i);
+      const hasT = (s.title || '').trim();
+      const sub = hasT ? hasT.slice(0, 22) : (s.photo ? '사진 있음' : '사진 없음');
+      return '<div class="pmRow' + cur2 + '" data-pm="' + i + '">' +
+        '<div class="th" data-pm-pick="' + i + '">' + thumb + '</div>' +
+        '<div class="meta" data-pm-pick="' + i + '"><div class="nm">' + esc(nm) + ' <span style="font-weight:600; color:var(--muted); font-size:10px">' + kind + '</span></div>' +
+        '<div class="sub">' + esc(sub) + '</div></div>' +
+        '<div class="act">' +
+          (s.type === 'summary' ? '' : '<button data-pm-set="' + i + '">' + (s.photo ? '교체' : '사진 넣기') + '</button>') +
+          (s.photo ? '<button class="x" data-pm-clear="' + i + '" aria-label="사진 빼기">✕</button>' : '') +
+        '</div></div>';
+    }).join('');
+    const n = state.slides.filter(function(s){ return !!s.photo; }).length;
+    if (el('photoMapCount')) el('photoMapCount').textContent = n + '/' + state.slides.length + '장';
+  }
+  if (el('photoMapList')) el('photoMapList').addEventListener('click', function(e){
+    const set = e.target.closest('[data-pm-set]');
+    if (set){
+      pmTarget = parseInt(set.dataset.pmSet, 10) || 0;
+      state.current = pmTarget;
+      renderAll();
+      if (el('photoMapFile')) el('photoMapFile').click();
+      return;
+    }
+    const clr = e.target.closest('[data-pm-clear]');
+    if (clr){
+      const i = parseInt(clr.dataset.pmClear, 10) || 0;
+      const s = state.slides[i];
+      if (!s) return;
+      compSnapshot('카드 사진 빼기 직전', { undo:true });
+      s.photo = null; s.zoom = 1; s.offX = 0; s.offY = 0;
+      state.current = i;
+      renderAll(); persistNow();
+      toast(slideLabel(i) + ' 사진을 뺐어요', { undo: restoreBackup, ms: 5000 });
+      return;
+    }
+    const pick = e.target.closest('[data-pm-pick]') || e.target.closest('[data-pm]');
+    if (pick) setCurrent(parseInt(pick.dataset.pmPick || pick.dataset.pm, 10) || 0);
+  });
+  if (el('photoMapFile')) el('photoMapFile').addEventListener('change', async function(){
+    const f = el('photoMapFile');
+    if (!f.files || !f.files.length){ return; }
+    const file = f.files[0];
+    f.value = '';
+    const i = clamp(pmTarget, 0, state.slides.length - 1);
+    const s = state.slides[i];
+    if (!s) return;
+    try{
+      const data = await compressImage(file);
+      s.photo = data; s.zoom = 1; s.offX = 0; s.offY = 0;
+      const im = new Image(); im.src = data; imgCache.set(data, im);
+      state.current = i;
+      renderAll();
+      persistNow();
+      toast(slideLabel(i) + '에 사진을 넣었어요');
+    }catch(err){
+      toast(err && err.message ? err.message : '사진을 불러오지 못했어요');
+    }
   });
 
   document.addEventListener('keydown', function(e){
@@ -8706,7 +9280,7 @@
       bodyStyle: function(){ return bodyStylesOf(); },
       setBodyStyle: function(v){
         const id = BODY_IDS.indexOf(v) >= 0 ? v : 'classic';
-        state.slides.forEach(function(sl){ if (sl.type === 'body') sl.bodyStyle = id; });
+        state.slides.forEach(function(sl){ if (sl.type === 'body'){ sl.bodyStyle = id; if (TPL_POS[id]) sl.pos = TPL_POS[id]; sl.posSet = false; } });
         renderAll(); persistNow(); setTimeout(paint, 30); return window.__iming.bodyStyle();
       },
       coverStyle: function(){
@@ -8716,7 +9290,7 @@
       setCoverStyle: function(v){
         const id = ['iming_yellow'].concat(TPL_IDS).indexOf(v) >= 0 ? v : 'classic';
         if (coverIndex() < 0) state.slides.unshift(blankSlide('cover'));
-        state.slides.forEach(function(sl){ if (sl.type === 'cover') sl.coverStyle = id; });
+        state.slides.forEach(function(sl){ if (sl.type === 'cover'){ sl.coverStyle = id; if (TPL_POS[id]) sl.pos = TPL_POS[id]; sl.posSet = false; } });
         renderAll(); persistNow(); setTimeout(paint, 30); return window.__iming.coverStyle();
       },
       summaries: function(){ return summaryCount(); },
