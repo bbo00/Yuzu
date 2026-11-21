@@ -3,9 +3,9 @@
 <title>390×844 검증 하네스 (임시)</title>
 <style>
   html,body{margin:0;background:#e9e3da;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
-  .bar{display:flex;gap:8px;align-items:center;padding:8px 10px;font-size:12px;color:#4a3f35}
+  .bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 10px;font-size:12px;color:#4a3f35}
   .bar button{padding:8px 12px;border-radius:9px;border:1px solid #c9bfb3;background:#fffdfa;font-size:12px;font-weight:700;color:#8d5a45}
-  .bar .st{font-size:11px;color:#6b5c4d}
+  #st{flex:1 0 100%;font-size:11px;color:#3f342b;background:#fffdfa;border:1px dashed #c9bfb3;border-radius:8px;padding:6px 8px;word-break:break-all;line-height:1.45}
   .frame{width:390px;height:844px;overflow:hidden;background:#fff;box-shadow:0 8px 30px rgba(0,0,0,.18)}
   iframe{width:390px;height:844px;border:0;display:block;background:#fff}
 </style></head>
@@ -14,7 +14,8 @@
   <button id="b1">🎤 발화1(중간)</button>
   <button id="b2">🎤 발화2(확정)</button>
   <button id="b3">🎤 발화3(확정)</button>
-  <span class="st" id="st">mode …</span>
+  <button id="b4">🔎 저장상태</button>
+  <div id="st">mode …</div>
 </div>
 <div class="frame"><iframe id="f" title="blog notebook" width="390" height="844"></iframe></div>
 <script>
@@ -30,7 +31,7 @@ const prelude = [
 '  Object.defineProperty(fake,"length",{get:function(){return Object.keys(mem).length;}});',
 '  Object.defineProperty(window,"localStorage",{configurable:true,get:function(){return fake;}});',
 '  window.fetch=function(){ return Promise.reject(new Error("test-offline")); };',
-'  var XO=window.XMLHttpRequest; window.XMLHttpRequest=function(){ throw new Error("test-offline"); };',
+'  window.XMLHttpRequest=function(){ throw new Error("test-offline"); };',
 '  if (window.__MODE__ === "nosr") {',
 '    try { delete window.SpeechRecognition; } catch(e){}',
 '    try { delete window.webkitSpeechRecognition; } catch(e){}',
@@ -51,7 +52,7 @@ const st = document.getElementById('st');
 fetch('./index.html', { cache: 'no-store' }).then(r => r.text()).then(html => {
   const doc = html.replace(/<head([^>]*)>/i, '<head$1>' + prelude);
   frame.srcdoc = doc;
-  st.textContent = 'mode=' + MODE + ' · app=' + doc.length + 'B';
+  st.textContent = 'ready · mode=' + MODE + ' · app=' + doc.length + 'B';
 }).catch(e => { st.textContent = 'ERR ' + e; });
 
 const T1 = '건물 뒤편 15대 무료 주차,';
@@ -67,6 +68,25 @@ document.getElementById('b2').addEventListener('click', function () {
 });
 document.getElementById('b3').addEventListener('click', function () {
   emit([{ text: T1, final: true }, { text: T2, final: true }], 1);
+});
+document.getElementById('b4').addEventListener('click', function () {
+  try {
+    const w = frame.contentWindow, d = frame.contentDocument;
+    const s = JSON.parse(w.localStorage.getItem('yujareview_state_v2') || 'null');
+    const c = s && s.campaigns.filter(function (x) { return (x.sections && x.sections.loc) || x.manuscript; })[0];
+    const mic = d.querySelector('[data-act="voice"][data-voice="manuscript"]');
+    const secMic = d.querySelector('[data-act="voice"][data-voice="sec"]');
+    st.textContent = JSON.stringify({
+      loc: c ? c.sections.loc : null,
+      manuscript: c ? c.manuscript : null,
+      savedCampaign: c ? c.name : null,
+      micLabels: [secMic ? secMic.textContent : null, mic ? mic.textContent : null],
+      srState: w.__srState || null,
+      toast: (d.getElementById('toast') || {}).textContent || '',
+      testErrors: w.__testErr || [],
+      appErrors: w.__rvErr || []
+    });
+  } catch (e) { st.textContent = 'read err: ' + e; }
 });
 </script>
 </body></html>
