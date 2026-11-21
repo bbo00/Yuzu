@@ -948,7 +948,7 @@
           <button data-stnudge="down" aria-label="안쪽 사진 아래">▼</button>
           <button data-stnudge="right" aria-label="안쪽 사진 오른쪽">▶</button>
         </div>
-        <p class="hint" style="margin:2px 0 6px">올리면 <b>바로 원형</b>으로 붙고 이 칸이 열려요 · 슬라이더·화살표로 원 안에 들어갈 부분을 맞추세요</p>
+        <p class="hint" style="margin:2px 0 6px">올리면 <b>바로 원형</b>으로 붙고 이 칸이 열려요 · 슬라이더·화살표로 원 안에 들어갈 부분을 맞추세요<br>화살표는 <b>확대가 1.00이면 자동으로 살짝 확대</b>해 밀 공간을 만들어요</p>
       </div>
       <div class="zoomRow"><span class="lab">크기</span><input type="range" id="stSize" min="0.06" max="1" step="0.01"><span class="tiny num" id="stSizeVal">30%</span></div>
       <div class="zoomRow"><span class="lab">회전</span><input type="range" id="stRot" min="-25" max="25" step="1"><span class="tiny num" id="stRotVal">0°</span></div>
@@ -6840,6 +6840,8 @@
       if (!st) return;
       const k = b.dataset.stnudge;
       const step = 0.16;
+      /* v5.8: 확대 1.00에서는 밀 여백이 없어 화살표가 안 움직여 보인다 → 살짝 확대해 준다 */
+      if (k !== 'center' && clamp(num(st.iz, 1), 1, 2.5) <= 1.001) st.iz = 1.10;
       if (k === 'center'){ st.ixo = 0; st.iyo = 0; }
       if (k === 'left') st.ixo = clamp(num(st.ixo, 0) - step, -1, 1);
       if (k === 'right') st.ixo = clamp(num(st.ixo, 0) + step, -1, 1);
