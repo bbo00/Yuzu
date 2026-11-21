@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>@IMING 카드 제작</title>
+<!-- v5.8 · 26가지 UX·디자인 개편: 선크롭 누끼·미리보기 고정·60/30/10 컬러배합(민트·스카이) -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#FFFFFF">
@@ -41,10 +42,6 @@
   @font-face{font-family:'Freesentation';font-style:normal;font-weight:900;font-display:swap;
     src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/2404@1.0/Freesentation-9Black.woff2) format('woff2')}
   /* HS집토끼체 라운드·블랙 — 토끼네활자공장, 개인·상업 전면 무료(웹 임베딩 허용) */
-  @font-face{font-family:'HSJiptokkiRound';font-style:normal;font-weight:400;font-display:swap;
-    src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/HSJiptokki-Round.woff2) format('woff2')}
-  @font-face{font-family:'HSJiptokkiBlack';font-style:normal;font-weight:400;font-display:swap;
-    src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/HSJiptokki-Black.woff2) format('woff2')}
 
   :root{
     --bg:#FFFFFF; --ink:#111110; --muted:#78766E; --line:#E7E4DC; --line2:#F1EEE7;
@@ -464,6 +461,10 @@
   .chip.preset{background:#FFF7D3; border-color:#FFD84D; color:#5A4700}
   .chip.preset.on{background:#FFD84D; border-color:#111; color:#1F1A08}
   .chip.preset .em{font-size:13px; line-height:1}
+  /* v5.8: 누끼 선(先)자르기 */
+  .cropBox{display:flex; justify-content:center; margin:10px 0 2px}
+  #stCropCanvas{width:min(74vw, 306px); height:min(74vw, 306px); border-radius:16px;
+    background:#EFECE3; box-shadow:inset 0 0 0 1px rgba(0,0,0,.10), 0 4px 16px rgba(0,0,0,.10)}
   .stCrop{margin-top:9px; padding:9px 10px 3px; border:1px solid #F2E5B8; border-radius:12px; background:#FFFDF3}
   .stCrop .lab2{font-size:11px; font-weight:800; color:#8A6B1E; letter-spacing:-.2px}
   .stCrop .zoomRow .lab{min-width:40px}
@@ -559,8 +560,28 @@
   .slotViewSeg{display:flex; background:var(--soft); border-radius:9px; padding:2px; gap:2px; margin:0 0 9px}
   .slotViewSeg button{flex:1; border:0; background:transparent; padding:6px 4px; border-radius:7px; font-size:11.5px; font-weight:800; color:#6d6b63}
   .slotViewSeg button.on{background:#fff; color:#111; box-shadow:0 1px 2px rgba(0,0,0,.09)}
-  .themePrio{margin:6px 0 0; font-size:10.5px; color:#9C998F; line-height:1.4}
+  /* v5.8 ---------- */
+  /* 글씨 크기 라벨: 이름 + 괄호 설명 두 줄 */
+  .zoomRow .lab .labSub{display:block; font-style:normal; font-size:8.5px; color:#B3B0A5;
+    margin-top:1px; letter-spacing:-.3px; font-weight:600}
+  .zoomRow .lab{line-height:1.2}
+  /* 미리보기 크기 — 단계별 높이 규칙(1단계 32vh 등)보다 항상 우선한다 */
+  body.prev-small .stage, body[data-step="1"].prev-small .stage, body[data-step="2"].prev-small .stage{height:clamp(140px, 24vh, 220px)}
+  body.prev-normal .stage, body[data-step="1"].prev-normal .stage, body[data-step="2"].prev-normal .stage{height:clamp(240px, 42vh, 470px)}
+  body.prev-large .stage, body[data-step="1"].prev-large .stage, body[data-step="2"].prev-large .stage{height:clamp(330px, 64vh, 780px)}
+  /* 2단계(글쓰기)에서도 카드 사진·미리보기를 위에 고정으로 본다 */
+  body[data-step="2"] .stage{display:flex; height:clamp(160px, 28vh, 280px)}
+  body[data-step="2"] .stageInner{padding:6px 9px}
+  body[data-step="2"] .sizebar{display:flex}
+  body.stagehide .stage{display:none}
+  .themePrio{margin:6px 0 0; font-size:10.5px; color:#9C998F; line-height:1.6; white-space:pre-line}
   .themePrio b{color:#3E3C36}
+  .themePrio .cd{display:inline-block; width:9px; height:9px; border-radius:3px; vertical-align:-1px;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.16); margin:0 1px}
+  /* v5.8: 60/30/10 3색 견본 */
+  .chip .sw3{display:flex; gap:2px; align-items:center; flex:none}
+  .chip .sw3 i{display:block; width:9px; height:15px; border-radius:3px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.13)}
+  .chip.on .sw3 i{box-shadow:inset 0 0 0 1px rgba(255,255,255,.30)}
 </style>
 </head>
 <body data-type="cover">
@@ -784,21 +805,44 @@
 
     <div class="cardHead" style="margin:11px 0 7px"><span class="label">글씨 크기 · 항목별</span><button class="linkBtn" id="sizeReset">기본값</button></div>
     <div class="zoomRow" style="margin-top:0">
-      <span class="lab">제목</span>
+      <span class="lab">상단<em class="labSub">추천 메뉴, 상호명</em></span>
+      <input type="range" id="sizeSmall" min="0.6" max="1.8" step="0.01" value="1">
+      <span class="tiny num" id="sizeSmallVal">1.00×</span>
+    </div>
+    <div class="zoomRow">
+      <span class="lab">중앙<em class="labSub">제목, 메뉴 이름</em></span>
       <input type="range" id="sizeTitle" min="0.6" max="1.8" step="0.01" value="1">
       <span class="tiny num" id="sizeTitleVal">1.00×</span>
     </div>
     <div class="zoomRow">
-      <span class="lab">부제·강조</span>
+      <span class="lab">내용<em class="labSub">내용, 강조 내용</em></span>
       <input type="range" id="sizeSub" min="0.6" max="1.8" step="0.01" value="1">
       <span class="tiny num" id="sizeSubVal">1.00×</span>
     </div>
-    <div class="zoomRow">
-      <span class="lab">본문·작은 글씨</span>
-      <input type="range" id="sizeSmall" min="0.6" max="1.8" step="0.01" value="1">
-      <span class="tiny num" id="sizeSmallVal">1.00×</span>
+    <p class="hint">디자인 위→아래 순서대로 <b>상단 · 중앙 · 내용</b> 글씨를 따로 키울 수 있어요</p>
+
+    <div class="cardHead" style="margin:12px 0 7px"><span class="label">글씨 스타일 · 박스</span><span class="count" id="textBoxName">일반 글씨</span></div>
+    <div class="seg" id="textBoxSeg">
+      <button data-tbox="none">일반</button>
+      <button data-tbox="square">각진 박스</button>
+      <button data-tbox="round">둥근 박스</button>
     </div>
-    <p class="hint">제목 / 부제·강조 / 하단 설명·항목 글씨를 따로 키울 수 있어요</p>
+    <div id="textBoxMore" hidden>
+      <div class="label" style="margin:9px 0 5px">박스 위치</div>
+      <div class="seg" id="textBoxPosSeg">
+        <button data-tbpos="top">상단</button>
+        <button data-tbpos="middle">중간</button>
+        <button data-tbpos="bottom">하단</button>
+      </div>
+    </div>
+    <p class="hint">박스 색은 <b>포인트 컬러</b>를 따라가요 · 컬러 배합을 바꾸면 박스 색도 함께 바뀝니다</p>
+
+    <div class="cardHead" style="margin:12px 0 7px"><span class="label">숫자 위치</span><span class="count" id="numPlaceName">글씨 앞</span></div>
+    <div class="seg" id="numPlaceSeg">
+      <button data-numplace="front">글씨 앞 ①②</button>
+      <button data-numplace="back">글씨 뒤 ①②</button>
+    </div>
+    <p class="hint">동그라미 숫자는 <b>글씨와 같은 크기</b>로 그려요</p>
 
     <div class="cardHead" style="margin:12px 0 7px"><span class="label">글씨 색 · 투명도</span><span class="count" id="tcolName">자동</span></div>
     <div class="seg" id="tcolSeg">
@@ -925,6 +969,10 @@
 
   <div class="card" id="sumCard" data-steps="2 4">
     <div class="cardHead"><span class="label">요약표</span><span class="count" id="sumHead">요약 1</span></div>
+    <div class="chipActions" style="margin-bottom:8px">
+      <button class="mini primary" id="sumAddBtn">＋ 요약표 추가</button>
+      <button class="mini danger" id="sumDelBtn">🗑 요약표 삭제</button>
+    </div>
     <div class="emptyMini" id="sumEmpty" hidden>아직 요약 카드가 없어요<br>메뉴 개수만큼 행이 채워진 표를 바로 만들 수 있어요
       <br><button id="sumCreate">요약 카드 만들기</button></div>
     <div id="sumBody">
@@ -1180,6 +1228,23 @@
   </div>
 </div>
 
+<div class="sheetWrap" id="stCropWrap">
+  <div class="sheetBg" data-close="stcrop"></div>
+  <div class="sheet">
+    <h4>누끼 사진 · 먼저 자를 부분 고르기</h4>
+    <p class="sheetNote" style="margin-top:0">정사각형 안에 남길 부분을 맞춰 두면 <b>그 부분만</b> 누끼를 따요.</p>
+    <div class="cropBox"><canvas id="stCropCanvas" width="600" height="600"></canvas></div>
+    <div class="zoomRow" style="margin-top:4px"><span class="lab">확대</span><input type="range" id="stCropZoom" min="1" max="3" step="0.01" value="1"><span class="tiny num" id="stCropZoomVal">1.00×</span></div>
+    <div class="zoomRow"><span class="lab">좌우</span><input type="range" id="stCropX" min="-1" max="1" step="0.01" value="0"><span class="tiny num" id="stCropXVal">0%</span></div>
+    <div class="zoomRow"><span class="lab">상하</span><input type="range" id="stCropY" min="-1" max="1" step="0.01" value="0"><span class="tiny num" id="stCropYVal">0%</span></div>
+    <div class="batchFoot" style="margin-top:10px">
+      <button id="stCropSkip">자르지 않고 전체</button>
+      <button class="primary" id="stCropOk">이 부분만 누끼</button>
+    </div>
+    <button class="sheetRow" id="stCropCancel" style="justify-content:center; color:#8B887E">취소</button>
+  </div>
+</div>
+
 <div class="sheetWrap" id="bulkWrap">
   <div class="sheetBg" data-close="bulk"></div>
   <div class="sheet full">
@@ -1314,11 +1379,58 @@
               badgeBg:'#A8505C', badgeFg:'#FFF6F4', totalBg:'#2A2023', totalFg:'#F9EEEB' },
       ink:{ bg:'#201A1C', fg:'#FAF0EE', sub:'rgba(250,240,238,.70)', line:'rgba(250,240,238,.18)',
             accent:'#E394A0', accentFg:'#201A1C', accentSoft:'rgba(227,148,160,.20)',
-            badgeBg:'#E394A0', badgeFg:'#201A1C', totalBg:'#FAF0EE', totalFg:'#201A1C' } }
+            badgeBg:'#E394A0', badgeFg:'#201A1C', totalBg:'#FAF0EE', totalFg:'#201A1C' } },
+
+    /* v5.8: 레퍼런스 색 — 파스텔 민트 · 스카이 블루 (배경 크림 + 포인트 컬러) */
+    { id:'mint', name:'💠 파스텔 민트', dark:false, point:'#BFF5F2', pointInk:'#123B38',
+      photoAccent:'#BFF5F2', photoAccentFg:'#123B38',
+      paper:{ bg:'#FBF8F3', fg:'#1B2B29', sub:'rgba(27,43,41,.60)', line:'rgba(27,43,41,.13)',
+              accent:'#BFF5F2', accentFg:'#123B38', accentSoft:'rgba(191,245,242,.55)',
+              badgeBg:'#BFF5F2', badgeFg:'#123B38', totalBg:'#1B2B29', totalFg:'#FBF8F3' },
+      ink:{ bg:'#16221F', fg:'#F2FBF9', sub:'rgba(242,251,249,.74)', line:'rgba(242,251,249,.18)',
+            accent:'#BFF5F2', accentFg:'#123B38', accentSoft:'rgba(191,245,242,.24)',
+            badgeBg:'#BFF5F2', badgeFg:'#123B38', totalBg:'#BFF5F2', totalFg:'#123B38' } },
+
+    { id:'skyblue', name:'🩵 스카이 블루', dark:false, point:'#6EC1FF', pointInk:'#0B2A40',
+      photoAccent:'#6EC1FF', photoAccentFg:'#0B2A40',
+      paper:{ bg:'#FBF8F3', fg:'#152430', sub:'rgba(21,36,48,.60)', line:'rgba(21,36,48,.13)',
+              accent:'#6EC1FF', accentFg:'#0B2A40', accentSoft:'rgba(110,193,255,.28)',
+              badgeBg:'#6EC1FF', badgeFg:'#0B2A40', totalBg:'#152430', totalFg:'#FBF8F3' },
+      ink:{ bg:'#101D27', fg:'#F1F8FF', sub:'rgba(241,248,255,.74)', line:'rgba(241,248,255,.18)',
+            accent:'#6EC1FF', accentFg:'#0B2A40', accentSoft:'rgba(110,193,255,.24)',
+            badgeBg:'#6EC1FF', badgeFg:'#0B2A40', totalBg:'#6EC1FF', totalFg:'#0B2A40' } }
   ];
 
+  /* v5.8: 60% 배경 · 30% 메인 · 10% 포인트 컬러 배합 원칙
+     — 표지·본문 템플릿이 쓰는 포인트 색을 한 곳에서 정한다. */
+  const THEME_POINT = {
+    butter:'#FFD84D', sky:'#2C7FD6', peach:'#F0704A', sage:'#2E7A52', mono:'#111111',
+    cream:'#8A4A22', navy:'#A67C1F', olive:'#5F6B33', rose:'#A8505C', mint:'#BFF5F2', skyblue:'#6EC1FF'
+  };
+  const THEME_MAIN = {
+    butter:'#1C1E26', sky:'#10233A', peach:'#3B2019', sage:'#16301F', mono:'#111111',
+    cream:'#2B1E15', navy:'#14243C', olive:'#23261C', rose:'#2A2023', mint:'#1B2B29', skyblue:'#152430'
+  };
+  (function themeRoletize(){
+    THEMES.forEach(function(t){
+      t.point = t.point || THEME_POINT[t.id] || t.paper.accent;
+      t.pointInk = t.pointInk || t.paper.accentFg;
+      t.main = THEME_MAIN[t.id] || t.paper.fg;
+      /* 배경 60% · 메인 30% · 포인트 10% 를 팔레트에 그대로 반영 */
+      t.paper.accent = t.point;
+      t.paper.accentFg = t.pointInk;
+      t.paper.badgeBg = t.point;
+      t.paper.badgeFg = t.pointInk;
+      t.paper.fg = t.main;
+      t.ink.accent = t.point;
+      t.ink.accentFg = t.pointInk;
+      t.photoAccent = t.point;
+      t.photoAccentFg = t.pointInk;
+    });
+  })();
+
   /* 차콜/버터 등 사라진 테마 → 기본값 안전 폴백 */
-  const THEME_FALLBACK = { charcoal:'sky', charcoal_butter:'sky', yellow:'sky' };
+  const THEME_FALLBACK = { charcoal:'butter', charcoal_butter:'butter', yellow:'butter' };
 
   /* ---------- v4: 5대 카테고리 (통일 표지 + 카테고리별 색) ---------- */
   const CATS = [
@@ -1371,15 +1483,6 @@
       resolve:function(w){ return { family:'Kkubulim', weight:400 }; },
       faces:[['Kkubulim',400]] },
 
-    { id:'jiptokki', label:'HS집토끼체 라운드', tail:'"Apple SD Gothic Neo", sans-serif',
-      resolve:function(w){ return { family:'HSJiptokkiRound', weight:400 }; },
-      faces:[['HSJiptokkiRound',400]] },
-
-    { id:'jiptokkiblack', label:'HS집토끼체 블랙', tail:'"Apple SD Gothic Neo", sans-serif',
-      resolve:function(w){ return { family:'HSJiptokkiBlack', weight:400 }; },
-      faces:[['HSJiptokkiBlack',400]] },
-
-    /* v5 추가 — OFL 1.1 */
     { id:'jiugae', label:'학교안심 지우개', tail:'"Apple SD Gothic Neo", sans-serif',
       resolve:function(w){ return { family:'TTHakgyoansimJiugae', weight:400 }; },
       faces:[['TTHakgyoansimJiugae',400]] },
@@ -1424,16 +1527,18 @@
   ];
   const TPL_IDS = ['classic', 'place_pin', 'chat_bubble', 'big_title', 'word_highlight', 'magazine_interview',
                    'editorial', 'trend', 'question'];
+  /* v5.8: 꾸불림체(구 IMING 옐로우)도 이름을 바꿀 수 있게 이름 수정 목록에 넣는다 */
+  const TPL_EDIT_IDS = ['iming_yellow'].concat(TPL_IDS);
   const TPL_DEFAULT = { editorial:'✨ 감성 배지형', place_pin:'📍 여기 저장해 둬', chat_bubble:'💬 톡 말풍선형',
                         big_title:'🌊 빅 타이틀', word_highlight:'☁️ 한 단어 강조', magazine_interview:'🎙️ 매거진 인터뷰',
                         cat:'카테고리 통일', trend:'트렌드', question:'질문 박스형', classic:'클래식',
-                        iming_yellow:'💛 IMING 옐로우' };
+                        iming_yellow:'꾸불림체' };
   /* v5.7: 표지·본문 양쪽에서 모든 디자인을 고를 수 있다 */
   const BODY_IDS = ['classic', 'place_pin', 'chat_bubble', 'big_title', 'word_highlight', 'magazine_interview',
                     'editorial', 'trend', 'question', 'iming_yellow'];
   const BODY_DEFAULT = { classic:'기본 깔끔형', place_pin:'📍 여기 저장해 둬', chat_bubble:'💬 톡 말풍선형',
                          big_title:'🌊 빅 타이틀', word_highlight:'☁️ 한 단어 강조', magazine_interview:'🎙️ 매거진 인터뷰',
-                         editorial:'✨ 에디토리얼', trend:'트렌드', question:'질문 박스형', iming_yellow:'💛 IMING 옐로우' };
+                         editorial:'✨ 에디토리얼', trend:'트렌드', question:'질문 박스형', iming_yellow:'꾸불림체' };
   const BODY_HELP = { classic:'사진 위에 배지·제목·본문을 깔끔하게',
                       place_pin:'핀 제목 + 오른쪽 위치 한 줄 · 아래 제목·설명',
                       chat_bubble:'검색창 + 말풍선으로 제목·설명',
@@ -1450,6 +1555,7 @@
                     question:'middle', iming_yellow:'middle' };
   /* 가운데 정렬이 기본인 디자인 (레퍼런스처럼) */
   const TPL_ALIGN = { big_title:'center', word_highlight:'center', iming_yellow:'center',
+                      editorial:'center', place_pin:'left',
                       chat_bubble:'left', question:'left', trend:'left' };
 
   const TPL_KEY = 'iming_cards_tplnames_v1';
@@ -1464,7 +1570,7 @@
   function tplNames(){
     const cfg = tplCfgLoad();
     const out = {};
-    TPL_IDS.forEach(function(id){
+    TPL_EDIT_IDS.forEach(function(id){
       const v = String((cfg.names && cfg.names[id]) || '').trim();
       out[id] = v || TPL_DEFAULT[id];
     });
@@ -1473,16 +1579,15 @@
   function tplName(id){ return tplNames()[id] || TPL_DEFAULT[id] || '템플릿'; }
   /* v5.6: 표지/본문 레이아웃 이름 (사용자가 표지 이름을 바꿨어도 알아보게) */
   function coverStyleName(id){
-    if (id === 'iming_yellow') return '💛 IMING 옐로우';
     if (TPL_DEFAULT[id]) return tplName(id);
     return '클래식';
   }
-  function bodyStyleName(id){ return BODY_DEFAULT[BODY_IDS.indexOf(id) >= 0 ? id : 'classic']; }
+  function bodyStyleName(id){ return id === 'iming_yellow' ? tplName('iming_yellow') : BODY_DEFAULT[BODY_IDS.indexOf(id) >= 0 ? id : 'classic']; }
   function tplTs(){ return num(tplCfgLoad().ts, 0); }
   function tplSaveNames(names){
     const now = tplCfgLoad();
     const merged = {};
-    TPL_IDS.forEach(function(id){
+    TPL_EDIT_IDS.forEach(function(id){
       let v = String((names && names[id]) || '').trim().slice(0, 14);
       if (!v) v = String((now.names && now.names[id]) || '');
       merged[id] = (v === TPL_DEFAULT[id]) ? '' : v;
@@ -1643,7 +1748,6 @@
     renderAll();
     persistNow();
     syncBodyStyleSeg();
-    return loadFontFor().then(function(){ paint(); toast('내 템플릿 · ' + c.name + ' · 표지·본문·요약 디자인을 한 번에 적용했어요', { undo: restoreBackup, ms: 5000 }); return true; });
   }
 
   /* v5.4: IMING 시그니처 프리셋 — 트렌드형 · 꾸불림체 · 버터 옐로우 포인트 · 흰 글씨/검정 테두리 · Pretendard 본문 */
@@ -1653,33 +1757,26 @@
     const ci = coverIndex();
     const cov = ci >= 0 ? state.slides[ci] : null;
     return !!cov && (cov.coverStyle || 'classic') === IMING_PRESET.base &&
-      state.theme === IMING_PRESET.theme &&
-      fontIdFor('cover') === IMING_PRESET.fontCover &&
-      fontIdFor('main') === IMING_PRESET.font;
+      fontIdFor('cover') === IMING_PRESET.fontCover;
   }
   function applyImingYellow(){
-    compSnapshot('IMING 옐로우 적용 직전', { undo:true });
+    compSnapshot('꾸불림체 적용 직전');
     if (coverIndex() < 0) state.slides.unshift(blankSlide('cover'));
-    state.theme = IMING_PRESET.theme;
+    /* v5.8: 색은 컬러 배합이 정한다 — 템플릿은 글씨체·모양만 바꿈 */
     state.font = IMING_PRESET.font;
     state.fontCover = IMING_PRESET.fontCover;
     state.textColor = 'auto';
-    /* 카테고리 색이 켜져 있으면 포인트가 카테고리 색으로 덮여요 → 잠시 꺼요 */
-    const hadCat = !!CAT();
-    state.category = null;
     state.slides.forEach(function(s){ if (s.type === 'cover') s.coverStyle = IMING_PRESET.base; });
     const ci = coverIndex();
     if (ci >= 0) state.current = ci;
     renderAll(); persistNow();
     loadFontFor().then(function(){ paint(); });
     syncBodyStyleSeg();
-    toast('💛 IMING 옐로우 적용 · 노란 알약 배지 + 흰/노랑 2색 꾸불림체 제목 + 크레딧 알약' +
-      (hadCat ? ' (카테고리 색은 껐어요)' : ''), { undo: restoreBackup, ms: 5000 });
   }
 
   /* v5.5: ✨ 감성 배지형 — 표지는 에디토리얼, 본문도 에디토리얼로 짝지어 적용 */
   function applyEditorial(){
-    compSnapshot('감성 배지형 적용 직전', { undo:true });
+    compSnapshot('감성 배지형 적용 직전');
     if (coverIndex() < 0) state.slides.unshift(blankSlide('cover'));
     state.theme = EDITORIAL_PRESET.theme;
     state.font = EDITORIAL_PRESET.font;
@@ -1696,8 +1793,6 @@
     renderAll(); persistNow();
     loadFontFor().then(function(){ paint(); });
     syncBodyStyleSeg();
-    toast('✨ 감성 배지형 적용 · 표지(사각 배지·별·2줄 제목) + 본문(흰 박스) 짝지어 적용' +
-      (hadCat ? ' (카테고리 색은 껐어요)' : ''), { undo: restoreBackup, ms: 5000 });
   }
   /* v5.6: 본문 디자인 칩 — 지금 본문 카드에 적용된 스타일을 그대로 보여줘요 */
   function bodyStylesOf(){
@@ -1729,9 +1824,10 @@
 
   function blankState(mode){
     return { v:5, step:1, mode: mode || 'feed', current:0, guides:false, category:null, coverTitleColor:'cat',
-             theme:'sky', font:'pretendard', fontCover:'pretendard', fontPins:[], textColor:'auto', textOpacity:1,
+             theme:'butter', font:'pretendard', fontCover:'pretendard', fontPins:[], textColor:'auto', textOpacity:1,
              fontOrder: FONTS.map(function(f){ return f.id; }),
              sizes:{ title:1, sub:1, small:1 }, qboxPos:'top', qboxAlign:'alt', qboxDX:0, qboxDY:0,
+             numPlace:'front', textBox:'none', textBoxPos:'middle',
              previewSize:'normal', stageHide:false, coverBg:'photo', summaryBg:'dark', region:'', slotView:'list',
              credit: DEFAULT_CREDIT, creditOn:true,
              bodyDraft:'', caption:'', deckId:'', deckName:'',
@@ -1839,11 +1935,15 @@
     out.qboxAlign = ['alt','left','right'].indexOf(raw.qboxAlign) >= 0 ? raw.qboxAlign : 'alt';
     out.qboxDX = clamp(num(raw.qboxDX, 0), -1, 1);
     out.qboxDY = clamp(num(raw.qboxDY, 0), -1, 1);
+    out.numPlace = raw.numPlace === 'back' ? 'back' : 'front';
+    out.textBox = ['none','square','round'].indexOf(raw.textBox) >= 0 ? raw.textBox : 'none';
+    out.textBoxPos = ['top','middle','bottom'].indexOf(raw.textBoxPos) >= 0 ? raw.textBoxPos : 'middle';
     out.slides = (Array.isArray(raw.slides) && raw.slides.length ? raw.slides : [blankSlide('cover')]).map(r=>{
       const s = blankSlide(r.type);
       s.id = r.id || s.id;
       s.type = ['cover','body','summary'].includes(r.type) ? r.type : 'cover';
       s.photo = typeof r.photo === 'string' && r.photo.indexOf('data:image') === 0 ? r.photo : null;
+      if (!s.photo) s.photo = photoLoadFor(s) || null;
       s.zoom = clamp(num(r.zoom, 1), 1, 3);
       s.offX = clamp(num(r.offX, 0), -1, 1);
       s.offY = clamp(num(r.offY, 0), -1, 1);
@@ -1865,6 +1965,7 @@
         const origOk = (x && typeof x.orig === 'string' && x.orig.indexOf('data:image') === 0) ? x.orig : srcOk;
         return {
           src: srcOk,
+          base: (x && typeof x.base === 'string' && x.base.indexOf('data:image') === 0) ? x.base : srcOk,
           orig: origOk,
           mode: (x && ['auto','circle','raw'].indexOf(x.mode) >= 0) ? x.mode : 'raw',
           tol: clamp(Math.round(num(x && x.tol, STICKER_TOL)), 0, 100),
@@ -1916,9 +2017,40 @@
   }
 
   let saveTimer = null, quotaWarned = false;
+
+  /* v5.8: 사진은 슬라이드 id 별 키로 따로 보관한다
+     — 본문 저장이 용량에 걸려도 사진이 사라지지 않게 (사진 날아가는 문제) */
+  const PHOTO_PREFIX = 'iming_ph_';
+  function photoKeyOf(id){ return PHOTO_PREFIX + id; }
+  function photoStoreAll(){
+    if (!state || !Array.isArray(state.slides)) return;
+    state.slides.forEach(function(sl){
+      if (!sl || !sl.id || !sl.photo) return;
+      try{ localStorage.setItem(photoKeyOf(sl.id), sl.photo); }catch(e){}
+    });
+  }
+  function photoLoadFor(sl){
+    if (!sl || !sl.id) return '';
+    try{
+      const v = localStorage.getItem(photoKeyOf(sl.id));
+      return (v && v.indexOf('data:image') === 0) ? v : '';
+    }catch(e){ return ''; }
+  }
+  function photoKeysClean(keepIds){
+    try{
+      const keep = {};
+      (keepIds || []).forEach(function(id){ keep[photoKeyOf(id)] = 1; });
+      const del = [];
+      for (let i = 0; i < localStorage.length; i++){
+        const k = localStorage.key(i);
+        if (k && k.indexOf(PHOTO_PREFIX) === 0 && !keep[k]) del.push(k);
+      }
+      del.forEach(function(k){ try{ localStorage.removeItem(k); }catch(e){} });
+    }catch(e){}
+  }
   function persistSoon(){
     clearTimeout(saveTimer);
-    saveTimer = setTimeout(persistNow, 450);
+    saveTimer = setTimeout(persistNow, 700);
   }
   function payloadOf(st){
     const x = st || state;
@@ -1933,6 +2065,9 @@
       qboxPos:['top','middle','bottom'].indexOf(x.qboxPos) >= 0 ? x.qboxPos : 'top',
       qboxAlign:['alt','left','right'].indexOf(x.qboxAlign) >= 0 ? x.qboxAlign : 'alt',
       qboxDX:clamp(num(x.qboxDX, 0), -1, 1), qboxDY:clamp(num(x.qboxDY, 0), -1, 1),
+      numPlace:x.numPlace === 'back' ? 'back' : 'front',
+      textBox:['none','square','round'].indexOf(x.textBox) >= 0 ? x.textBox : 'none',
+      textBoxPos:['top','middle','bottom'].indexOf(x.textBoxPos) >= 0 ? x.textBoxPos : 'middle',
       slides:x.slides };
   }
 
@@ -1940,13 +2075,32 @@
     const payload = payloadOf(state);
     try{
       localStorage.setItem(STORE_KEY, JSON.stringify(payload));
+      /* 본문이 들어갔으면 사진 사본은 지워 공간을 아낀다 */
+      photoKeysClean([]);
     }catch(err){
+      /* 본문(문구·설정)은 반드시 남기고, 사진은 따로 키에 보관한다 */
+      let textSaved = false;
       try{
         const slim = payloadOf(state);
-        slim.slides = slim.slides.map(s=>Object.assign({}, s, { photo:null, stickers:[] }));
+        slim.slides = slim.slides.map(s=>Object.assign({}, s, { photo:null }));
         localStorage.setItem(STORE_KEY, JSON.stringify(slim));
-        if (!quotaWarned){ quotaWarned = true; toast('사진은 용량 때문에 저장하지 못했어요. 문구는 저장됨'); }
-      }catch(e2){ /* storage unavailable */ }
+        textSaved = true;
+      }catch(e2){
+        try{
+          const slim2 = payloadOf(state);
+          slim2.slides = slim2.slides.map(s=>Object.assign({}, s, { photo:null, stickers:[] }));
+          localStorage.setItem(STORE_KEY, JSON.stringify(slim2));
+          textSaved = true;
+        }catch(e3){ /* storage unavailable */ }
+      }
+      photoStoreAll();
+      photoKeysClean(state.slides.map(function(s){ return s.id; }));
+      if (!quotaWarned){
+        quotaWarned = true;
+        toast(textSaved
+          ? '사진이 많아 문구 위주로 저장했어요 · 이 화면에서는 사진 그대로예요'
+          : '저장 공간이 부족해요 · 저장함에서 오래된 덱을 지워주세요');
+      }
     }
   }
 
@@ -2060,11 +2214,29 @@
     Array.from(haloCache.keys()).forEach(function(k){ if (k.indexOf(src + '|') === 0) haloCache.delete(k); });
   }
 
+  /* v5.8: 안쪽 확대·이동을 즉시 반영하기 위한 캐시 (base + 값 → 캔버스) */
+  const innerCache = new Map();
+  function stickerShown(st){
+    const base = st.base || st.src;
+    const iz = clamp(num(st.iz, 1), 1, 2.5), ix = clamp(num(st.ixo, 0), -1, 1), iy = clamp(num(st.iyo, 0), -1, 1);
+    if (iz <= 1.0001 && !ix && !iy) return { src: base };
+    const key = base + '|' + iz.toFixed(3) + '|' + ix.toFixed(3) + '|' + iy.toFixed(3) + '|' + (st.mode || 'raw');
+    const hit = innerCache.get(key);
+    if (hit) return hit;
+    const im = stickerImg(base);
+    if (!im) return { src: base };
+    const c = innerCanvas(im, iz, ix, iy, st.mode === 'circle');
+    const rec = { src: encodeSticker(c) };
+    if (innerCache.size > 60) innerCache.clear();
+    innerCache.set(key, rec);
+    return rec;
+  }
   function drawStickers(ctx, s, f){
     const list = s.stickers || [];
     for (let i = 0; i < list.length; i++){
       const st = list[i];
-      const im = stickerImg(st.src);
+      const shown = stickerShown(st);
+      const im = stickerImg(shown.src);
       if (!im) continue;
       const r = stickerRect(st, f, im);
       ctx.save();
@@ -2074,7 +2246,7 @@
       ctx.imageSmoothingQuality = 'high';
       const bw = clamp(num(st.bw, (st.border === false ? 0 : 1)), 0, 2);
       if (bw > 0){
-        const halo = haloFor(st.src, im, st.bc);
+        const halo = haloFor(shown.src, im, st.bc);
         const t = Math.max(2, f.w * 0.0062 * bw);
         const steps = 24;
         ctx.globalAlpha = 1;
@@ -2435,12 +2607,13 @@
     if (mode === 'circle') c = circleCanvas(img);
     else if (mode === 'auto') c = trimCanvas(cutoutCanvas(img, tol));
     else c = scaledCanvas(img, STICKER_MAX);
-    if (inner) c = innerCanvas(c, inner.iz, inner.ixo, inner.iyo, mode === 'circle');
-    const src = encodeSticker(c);
+    /* v5.8: 안쪽 확대·이동은 그릴 때 즉시 반영한다 (base는 자르기 전 상태) */
+    const base = encodeSticker(c);
+    const src = base;
     const orig = keepOrig || (mode === 'raw'
       ? scaledCanvas(img, STICKER_MAX).toDataURL('image/png')
       : scaledCanvas(img, 800).toDataURL('image/jpeg', 0.85));
-    return { src: src, orig: orig };
+    return { src: src, base: base, orig: orig };
   }
 
   function preloadImg(data){
@@ -2578,24 +2751,27 @@
     return total;
   }
 
-  function pillWidth(ctx, opt){
+  /* v5.8: 숫자는 글씨와 같은 크기 · 앞/뒤 위치를 고를 수 있다 */
+  function pillMetrics(ctx, opt){
     const padX = opt.padX || 26, h = opt.height || 60, size = opt.size || 27, weight = opt.weight || 600;
     const track = opt.track || 0;
     const tw = opt.text ? trackedWidth(ctx, opt.text, size, weight, track) : 0;
-    const numW = opt.num ? h * 0.80 : 0;
-    const gap = (opt.num && opt.text) ? h * 0.24 : 0;
-    if (!opt.text && opt.num) return h;
-    return tw + padX * 2 + numW + gap;
+    const d = opt.num ? Math.max(size * 1.02, h * 0.52) : 0;
+    const gap = (opt.num && opt.text) ? Math.max(6, size * 0.26) : 0;
+    const onlyNum = !opt.text && !!opt.num;
+    const w = onlyNum ? h : tw + padX * 2 + d + gap;
+    return { padX: padX, h: h, size: size, weight: weight, track: track, tw: tw, d: d, gap: gap, onlyNum: onlyNum, w: w };
   }
+  function pillWidth(ctx, opt){ return pillMetrics(ctx, opt).w; }
 
   function drawPill(ctx, opt){
-    const padX = opt.padX || 26, h = opt.height || 60, size = opt.size || 27, weight = opt.weight || 600;
-    const track = opt.track || 0;
-    const wPill = pillWidth(ctx, opt);
+    const m = pillMetrics(ctx, opt);
+    const padX = m.padX, h = m.h, size = m.size, weight = m.weight, track = m.track;
+    const wPill = m.w;
     let x = opt.x;
     if (opt.align === 'center') x = opt.x - wPill / 2;
     else if (opt.align === 'right') x = opt.x - wPill;
-    const onlyNum = !opt.text && opt.num;
+    const numAfter = (opt.numAfter != null) ? !!opt.numAfter : (state.numPlace === 'back');
 
     ctx.save();
     if (opt.shadow){ ctx.shadowColor = 'rgba(0,0,0,.22)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 4; }
@@ -2604,28 +2780,35 @@
     ctx.restore();
     if (opt.border){ ctx.strokeStyle = opt.border; ctx.lineWidth = 1.5; ctx.stroke(); }
 
-    let tx = x + (onlyNum ? 0 : padX);
-    if (opt.num){
-      const d = h * 0.80;
-      const cxx = onlyNum ? x + wPill / 2 : tx + d / 2;
+    const numX = (onlyNum) => x + (wPill - m.d) / 2;
+    const drawNum = (cx0) => {
       const cyy = opt.y + h / 2;
       ctx.beginPath();
-      ctx.arc(cxx, cyy, d / 2, 0, Math.PI * 2);
+      ctx.arc(cx0 + m.d / 2, cyy, m.d / 2, 0, Math.PI * 2);
       ctx.fillStyle = opt.numBg || opt.fg;
       ctx.fill();
-      ctx.font = font(d * 0.58, 800);
+      ctx.font = font(size, 800);
       ctx.fillStyle = opt.numFg || opt.bg;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText(String(opt.num), cxx, cyy + d * 0.03);
+      ctx.fillText(String(opt.num), cx0 + m.d / 2, cyy + size * 0.03);
       ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-      if (!onlyNum) tx = cxx + d / 2 + h * 0.24;
-    }
-    if (opt.text){
+    };
+    const drawTxt = (tx) => {
       if (track) drawTracked(ctx, opt.text, tx, opt.y + h / 2 + size * 0.36, size, weight, track, opt.fg, 'left');
       else {
         ctx.font = font(size, weight); ctx.fillStyle = opt.fg; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
         ctx.fillText(opt.text, tx, opt.y + h / 2 + size * 0.36);
       }
+    };
+    if (m.onlyNum){
+      drawNum(x);
+    } else if (numAfter){
+      if (opt.text) drawTxt(x + padX);
+      drawNum(x + padX + m.tw + m.gap);
+    } else {
+      const nx = x + padX;
+      drawNum(nx);
+      if (opt.text) drawTxt(nx + m.d + m.gap);
     }
     return wPill;
   }
@@ -2689,6 +2872,15 @@
     if (m === 'auto') return withAlpha(base, a);
     const col = m === 'white' ? '#FFFFFF' : (m === 'ink' ? '#111110' : ((pal && pal.accent) || '#E4552B'));
     return withAlpha(col, a);
+  }
+  /* v5.8: 글씨 박스(각진/둥근) — 박스 위에서는 글씨를 진한 색으로 */
+  function boxPal(pal){
+    if (state.textBox === 'none') return pal;
+    const ink = PT().ink || '#14161C';
+    /* 박스 안에서는 배지도 진한 색으로 뒤집어 박스 위에서 보이게 */
+    return Object.assign({}, pal, { fg: ink, sub: withAlpha(ink, .88), dark: false,
+      accent: ink, accentFg: PT().color, accentSoft: withAlpha(ink, .16),
+      pillBg: ink, pillFg: PT().color });
   }
   function textPal(pal){
     if (textMode() === 'auto' && textAlpha() >= 0.999) return pal;
@@ -2790,8 +2982,36 @@
   function accentNow(){
     const c = CAT();
     if (c) return { color: c.color, fg: c.fg, soft: hexA(c.color, 0.18) };
-    const p = THEME().paper;
-    return { color: p.accent, fg: p.accentFg, soft: p.accentSoft };
+    const t = THEME();
+    return { color: t.point, fg: t.pointInk, soft: hexA(t.point, 0.30) };
+  }
+  /* v5.8: 모든 템플릿이 함께 쓰는 포인트 컬러(10%) — 컬러 배합을 바꾸면 한 번에 바뀐다 */
+  function PT(){
+    const a = accentNow();
+    return { color: a.color, ink: a.fg };
+  }
+  /* 포인트 색 글씨를 밝은 바탕에서도 읽히게 — 외곽선·그림자 */
+  function pointText(ctx, text, x, base, sz, color, dark){
+    ctx.save();
+    ctx.lineJoin = 'round'; ctx.miterLimit = 2;
+    if (dark){
+      ctx.lineWidth = Math.max(2, Math.round(sz * 0.055));
+      ctx.strokeStyle = 'rgba(9,10,14,.46)';
+      ctx.shadowColor = 'rgba(0,0,0,.42)';
+      ctx.shadowBlur = sz * 0.30;
+      ctx.shadowOffsetY = Math.max(1, Math.round(sz * 0.05));
+    } else {
+      ctx.lineWidth = Math.max(2, Math.round(sz * 0.042));
+      ctx.strokeStyle = 'rgba(26,28,32,.38)';
+      ctx.shadowColor = 'rgba(0,0,0,.10)';
+      ctx.shadowBlur = sz * 0.12;
+      ctx.shadowOffsetY = Math.max(1, Math.round(sz * 0.02));
+    }
+    ctx.strokeText(text, x, base);
+    ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+    ctx.fillStyle = color;
+    ctx.fillText(text, x, base);
+    ctx.restore();
   }
   /* 트렌드 썸네일: 사진은 밝고 선명하게, 흰 굵은 제목 + 검은 테두리, 고대비 흰 알약 배지 */
   function drawCoverTrend(ctx, s, f, T, im, solid){
@@ -2905,9 +3125,9 @@
     const th = THEME();
     /* 사진이 없으면 테마 잉크색(어두운) 바탕이라 항상 밝은 글씨 */
     const onDark = solid ? solid.dark : true;
-    const accent = onDark ? '#E3F45A' : accentNow().color;
+    const accent = PT().color;
     const white = onDark ? '#FFFFFF' : '#1D1C18';
-    const softWhite = onDark ? 'rgba(255,255,255,.86)' : 'rgba(29,28,24,.76)';
+    const softWhite = onDark ? 'rgba(255,255,255,.97)' : 'rgba(29,28,24,.88)';
 
     if (solid){
       /* 단색 배경은 위에서 이미 깔았어요 */
@@ -3066,8 +3286,13 @@
           ctx.shadowColor = 'rgba(0,0,0,.35)';
           ctx.shadowBlur = 14;
           ctx.shadowOffsetY = 3;
-          ctx.fillStyle = accent;
           ctx.font = handFontCSS(emSize);
+          /* v5.8: 포인트 컬러 글씨에 외곽선 — 사진·밝은 바탕에서도 읽히게 */
+          ctx.lineJoin = 'round'; ctx.miterLimit = 2;
+          ctx.lineWidth = Math.max(2, Math.round(emSize * 0.075));
+          ctx.strokeStyle = onDark ? 'rgba(10,9,7,.55)' : 'rgba(28,26,21,.50)';
+          ctx.strokeText(parts.em, 0, 0);
+          ctx.fillStyle = accent;
           ctx.fillText(parts.em, 0, 0);
           ctx.restore();
           /* 손글씨 밑줄 */
@@ -3118,7 +3343,8 @@
     ctx.save();
     ctx.translate(qXo, 0);
     if (subTxt){
-      const fit = fitOneLine(ctx, subTxt, maxW * 0.94, subSize, 500, subSize * 0.8);
+      const fit = fitOneLine(ctx, subTxt, maxW * 0.94, subSize, 700, subSize * 0.8);
+      /* v5.8: 부제도 진하게 (가독성) */
       ctx.save();
       ctx.textAlign = 'left';
       ctx.textBaseline = 'alphabetic';
@@ -3128,7 +3354,7 @@
         ctx.shadowOffsetY = 2;
       }
       ctx.fillStyle = tcol(softWhite, { accent:accent });
-      ctx.font = font(fit.size, 500);
+      ctx.font = font(fit.size, 700);
       ctx.fillText(fit.text, pad, top + gapSub + subSize * 0.92);
       ctx.restore();
     }
@@ -3253,7 +3479,19 @@
   }
 
   /* ---------- 그리기 도구 ---------- */
+  /* v5.8: 줄 앞뒤 공백을 빼고 중심을 맞춘다 (가운데 정렬이 밀리지 않게) */
+  function trimSegs(segs){
+    const out = (segs || []).map(function(sg){ return { t:String(sg.t == null ? '' : sg.t), em:!!sg.em }; });
+    while (out.length && !out[0].t.trim()) out.shift();
+    while (out.length && !out[out.length - 1].t.trim()) out.pop();
+    if (out.length){
+      out[0].t = out[0].t.replace(/^\s+/, '');
+      out[out.length - 1].t = out[out.length - 1].t.replace(/\s+$/, '');
+    }
+    return out.filter(function(sg){ return !!sg.t; });
+  }
   function drawSegsCentered(ctx, segs, cx, base, fontStr, colorOf, outline){
+    segs = trimSegs(segs);
     const xs = [];
     let total = 0;
     ctx.font = fontStr;
@@ -3412,6 +3650,27 @@
     return size * 1.6;
   }
 
+  /* v5.8: 가운데 정렬 여러 줄 — 사진 위에서는 외곽선으로 읽히게 */
+  function drawCenterLines(ctx, lines, cx, yTop, lh, size, weight, color, outline){
+    if (!lines || !lines.length) return;
+    ctx.save();
+    ctx.font = font(size, weight);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+    if (outline){
+      ctx.lineJoin = 'round'; ctx.miterLimit = 2;
+      ctx.lineWidth = Math.max(2, Math.round(size * 0.05));
+      ctx.strokeStyle = 'rgba(9,10,12,.46)';
+      ctx.shadowColor = 'rgba(0,0,0,.44)';
+      ctx.shadowBlur = Math.max(8, Math.round(size * 0.34));
+      ctx.shadowOffsetY = 2;
+      lines.forEach(function(ln, i){ if (ln) ctx.strokeText(ln, cx, yTop + lh * i + size * 0.84); });
+      ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+    }
+    ctx.fillStyle = color;
+    lines.forEach(function(ln, i){ if (ln) ctx.fillText(ln, cx, yTop + lh * i + size * 0.84); });
+    ctx.restore();
+  }
+
   /* 상단 중앙 서명 — 살짝 기울인 @IMING */
   function drawSignature(ctx, cx, y, size, color, plain){
     const full = creditText().trim();
@@ -3437,6 +3696,7 @@
   /* ---------- 💛 IMING 옐로우 표지 ---------- */
   function drawCoverIming(ctx, s, f, T, solid){
     const w = f.w, h = f.h, pad = f.pad;
+    const ACC = PT().color, ACCINK = PT().ink;
     const im = solid ? null : imgFor(s);
     if (!solid){
       if (im) drawPhoto(ctx, im, s, w, h);          /* 딤 없이 사진 그대로 풀블리드 */
@@ -3463,7 +3723,7 @@
     if (pillTxt){
       drawBadgeRect(ctx, {
         text: pillTxt, cx: w / 2, y: y, size: bs, height: pillH,
-        bg: IM_ACCENT, fg: IM_INK, padX: Math.round(bs * 0.95), radius: pillH / 2,
+        bg: ACC, fg: ACCINK, padX: Math.round(bs * 0.95), radius: pillH / 2,
         fontStr: fontOfId('pretendard', bs, 800)
       });
       y += pillH + Math.round(h * 0.004);
@@ -3486,7 +3746,7 @@
       rows.forEach(function(r, ri){
         const accentRow = !emAny && rows.length > 1 && ri === rows.length - 1;
         drawSegsCentered(ctx, charsSegs(r), w / 2, y + title.lh * ri + title.size * 0.84, fstr,
-          function(sg){ return (sg.em || accentRow) ? IM_ACCENT : '#FFFFFF'; }, outline);
+          function(sg){ return (sg.em || accentRow) ? ACC : '#FFFFFF'; }, outline);
       });
       y += rows.length * title.lh;
     }
@@ -3507,6 +3767,7 @@
   /* ---------- ✨ 감성 배지형 표지 ---------- */
   function drawCoverEditorial(ctx, s, f, T, solid){
     const w = f.w, h = f.h, pad = f.pad;
+    const ACC = PT().color, ACCINK = PT().ink;
     const im = solid ? null : imgFor(s);
     if (!solid){
       if (im) drawPhoto(ctx, im, s, w, h);
@@ -3516,6 +3777,9 @@
     const coverFont = fontIdFor('cover');
     const P = tPos(s);
     const cx = w / 2 + P.dx * w * 0.16 + posShiftCx(P.align, maxW * 0.82, w, pad);
+    /* v5.8: 사진이 없으면 밝은 바탕이므로 제목을 진한 색으로 (하얀 글씨가 비어 보이지 않게) */
+    const onPhoto = !!im || !!(solid && solid.dark);
+    const titleCol = onPhoto ? '#FFFFFF' : THEME().paper.fg;
 
     /* 상단 중앙 작은 기울임 서명 */
     drawSignature(ctx, cx,  f.safeTop + Math.max(pad * 0.55, h * 0.040), Math.max(15, Math.round(w * 0.025)));
@@ -3544,17 +3808,17 @@
     if (badgeTxt){
       drawBadgeRect(ctx, {
         text: badgeTxt, cx: cx, y: y, size: bs, height: bH,
-        bg: IM_ACCENT, fg: IM_INK, padX: Math.round(bs * 0.78), radius: 16,
+        bg: ACC, fg: ACCINK, padX: Math.round(bs * 0.78), radius: 16,
         fontStr: bFont
       });
       y += bH + gapBadge;
     }
     if (title){
-      const outline = {
+      const outline = onPhoto ? {
         width: Math.max(3, Math.round(title.size * 0.036)),
         color: 'rgba(12,13,17,.9)',
         shadow: 'rgba(6,6,9,.42)', blur: title.size * 0.10, oy: title.size * 0.02
-      };
+      } : { width: 0 };
       const fstr = fontOfId(coverFont, title.size, 900);
       const titleTop = y;
       let widest = 0;
@@ -3562,29 +3826,30 @@
         const segs = charsSegs(r);
         widest = Math.max(widest, segsWidthAt(ctx, segs, fstr));
         drawSegsCentered(ctx, segs, cx, y + title.lh * ri + title.size * 0.84, fstr,
-          function(){ return '#FFFFFF'; }, outline);
+          function(){ return titleCol; }, outline);
       });
       /* 별 장식 2~3개 */
       const sr = title.size * 0.19;
       const rightEdge = clamp(cx + widest / 2 + sr * 0.7, pad * 0.9, w - pad * 0.6);
       const leftEdge = clamp(cx - widest / 2 - sr * 0.7, pad * 0.9, w - pad);
-      drawStar(ctx, rightEdge, titleTop + title.size * 0.26, sr, IM_ACCENT, 4);
-      drawStar(ctx, leftEdge, titleTop + title.lh * Math.max(0, title.rows.length - 1) + title.size * 0.78, sr * 0.62, '#FFFFFF', 4);
+      drawStar(ctx, rightEdge, titleTop + title.size * 0.26, sr, ACC, 4);
+      drawStar(ctx, leftEdge, titleTop + title.lh * Math.max(0, title.rows.length - 1) + title.size * 0.78, sr * 0.62, onPhoto ? '#FFFFFF' : THEME().paper.fg, 4);
       if (title.rows.length >= 2){
         drawStar(ctx, clamp(cx + widest / 2 - sr * 0.1, pad, w - pad * 0.5),
-          titleTop + title.lh + title.size * 0.6, sr * 0.5, IM_ACCENT, 4);
+          titleTop + title.lh + title.size * 0.6, sr * 0.5, ACC, 4);
       }
       y += title.rows.length * title.lh;
     }
     if (showSub){
       const gap = title ? Math.round(title.size * 0.16) : 0;
-      drawSmallLine(ctx, subTxt, cx, y + gap + subSize * 1.25, subSize, maxW);
+      drawSmallLine(ctx, subTxt, cx, y + gap + subSize * 1.25, subSize, maxW, onPhoto ? '#FFFFFF' : '#201E1A');
     }
   }
 
   /* ---------- ✨ 감성 배지형 본문 ---------- */
   function drawBodyEditorial(ctx, s, f){
     const w = f.w, h = f.h, pad = f.pad;
+    const ACC = PT().color, ACCINK = PT().ink;
     const im = imgFor(s);
     if (im) drawPhoto(ctx, im, s, w, h);
     else { ctx.fillStyle = IM_INK; ctx.fillRect(0, 0, w, h); }
@@ -3610,9 +3875,9 @@
       const bw = Math.min(maxW, ctx.measureText(badgeTxt).width + bs * 1.55);
       drawBadgeRect(ctx, {
         text: badgeTxt, cx: cx, y: topEnd, size: bs, height: bH,
-        bg: IM_ACCENT, fg: IM_INK, padX: Math.round(bs * 0.78), radius: 15, fontStr: bFont, minW: bw
+        bg: ACC, fg: ACCINK, padX: Math.round(bs * 0.78), radius: 15, fontStr: bFont, minW: bw
       });
-      drawStar(ctx, cx - bw / 2 - bs * 0.95, topEnd + bH * 0.22, bs * 0.6, IM_ACCENT, 4);
+      drawStar(ctx, cx - bw / 2 - bs * 0.95, topEnd + bH * 0.22, bs * 0.6, ACC, 4);
       topEnd += bH;
     }
 
@@ -3624,14 +3889,14 @@
       label = dLines[0];
       boxTxt = dLines.slice(1).join('\n');
     }
-    const boxSize = Math.max(13, Math.round(w * 0.0315 * SZ().sub));
-    const padBX = Math.round(boxSize * 1.45), padBY = Math.round(boxSize * 1.3);
+    const boxSize = Math.max(13, Math.round(w * 0.0285 * SZ().sub));
+    const padBX = Math.round(boxSize * 1.45);
     const boxTextMax = maxW - padBX * 2;
     const fit = boxTxt ? fitRich(ctx, boxTxt, {
       maxWidth: boxTextMax, size: boxSize, weight: 800, maxLines: 4, lineHeight: 1.55, minSize: boxSize * 0.8
     }) : null;
     const segFont = function(sg, sz){ return fontOfId(bodyFont, sz, sg.em ? 800 : 500); };
-    let boxW = 0, boxH = 0;
+    let boxW = 0, boxH = 0, padBY = 0;
     if (fit){
       fit.lines.forEach(function(ln){
         let tw = 0;
@@ -3639,6 +3904,8 @@
         boxW = Math.max(boxW, tw);
       });
       boxW = Math.min(maxW, boxW + padBX * 2);
+      /* v5.8: 박스 높이는 줄 수에 맞춰 — 1줄은 얇게, 줄이 늘면 두껍게 */
+      padBY = Math.round(boxSize * (fit.lines.length <= 1 ? 0.92 : 1.18));
       boxH = fit.lines.length * fit.lh + padBY * 2;
     }
     const labSize = Math.max(12, Math.round(w * 0.0235 * SZ().small));
@@ -3650,8 +3917,8 @@
 
     /* 가운데 큰 흰 제목 — 배지와 하단 박스 사이에 중앙 정렬 */
     const title = fitBigTitle(ctx, s.title, {
-      maxWidth: maxW, cap: Math.min(w * 0.135, h * 0.118) * SZ().title, minSize: w * 0.05 * SZ().title, maxRows: 3,
-      lineHeight: 1.10, fontStr: function(sz){ return fontOfId(bodyFont, sz, 900); }
+      maxWidth: maxW, cap: Math.min(w * 0.115, h * 0.100) * SZ().title, minSize: w * 0.048 * SZ().title, maxRows: 3,
+      lineHeight: 1.12, fontStr: function(sz){ return fontOfId(bodyFont, sz, 900); }
     });
     const subTxt = plainMarks(s.subtitle).trim();
     const subSize = Math.max(13, Math.round(w * 0.027 * SZ().sub));
@@ -3683,7 +3950,7 @@
     if (label){
       drawBadgeRect(ctx, {
         text: label, cx: cx, y: labelTop, size: labSize, height: labH,
-        bg: IM_ACCENT, fg: IM_INK, padX: Math.round(labSize * 0.85), radius: 14,
+        bg: ACC, fg: ACCINK, padX: Math.round(labSize * 0.85), radius: 14,
         fontStr: fontOfId(bodyFont, labSize, 800)
       });
     }
@@ -3829,6 +4096,8 @@
   /* 왼쪽 정렬 여러 줄 — 사진 위에서는 얇은 외곽선 + 그림자 */
   function styleLines(ctx, lines, x, yTop, lh, size, weight, color, outline){
     if (!lines || !lines.length) return;
+    /* v5.8: 사진 위에서는 부제·본문도 제목 급 두께로 (가독성) */
+    weight = outline ? Math.max(700, weight) : weight;
     if (outline){
       ctx.save();
       ctx.font = font(size, weight);
@@ -3950,22 +4219,36 @@
           maxLines: 2, lineHeight: 1.14, minSize: tBase * 0.70 });
       }
     }
-    const sub = styleWrapped(ctx, subTxt, maxW * 0.94, sBase, 700, 2, 1.28);
-    const desc = styleWrapped(ctx, descTxt, maxW * 0.96, dBase, 500, 3, 1.52);
-
-    const blocks = [];
-    if (title) blocks.push({ kind:'t', h: title.lines.length * title.lh });
-    if (sub) blocks.push({ kind:'s', h: sub.lines.length * sub.lh, gap: Math.round((title ? title.size : tBase) * 0.26) });
-    if (desc) blocks.push({ kind:'d', h: desc.lines.length * desc.lh, gap: Math.round(dBase * 0.72) });
-    let total = 0;
-    blocks.forEach(function(b, i){ total += b.h + (i ? b.gap : 0); });
-
     const top = f.safeTop + pad;
     const bottom = h - f.safeBottom - pad * (isCover ? 1.02 : 1.0);
+    const avail = Math.max(Math.round(h * 0.22), bottom - top);
+
+    /* v5.8: 제목·오른쪽 위치·부제·설명이 카드 안에 모두 들어오도록 한 번에 맞춘다 */
+    const buildPin = function(k){
+      const tS = Math.max(12, Math.round(tBase * k));
+      const title2 = title ? (title.lines.length === 1
+        ? { lines:[title.lines[0]], size: title.size * k, lh: title.size * k * 1.14 }
+        : fitText(ctx, titleTxt, { maxWidth: maxW, size: tS, weight: 900, maxLines: 2, lineHeight: 1.14, minSize: tS * 0.62 })) : null;
+      const sub2 = styleWrapped(ctx, subTxt, maxW * 0.94, Math.max(11, Math.round(sBase * k)), 700, 2, 1.28);
+      const desc2 = styleWrapped(ctx, descTxt, maxW * 0.96, Math.max(11, Math.round(dBase * k)), 500, 4, 1.52);
+      const blocks2 = [];
+      if (title2) blocks2.push({ kind:'t', h: title2.lines.length * title2.lh });
+      if (sub2) blocks2.push({ kind:'s', h: sub2.lines.length * sub2.lh, gap: Math.round((title2 ? title2.size : tS) * 0.26) });
+      if (desc2) blocks2.push({ kind:'d', h: desc2.lines.length * desc2.lh, gap: Math.round(Math.max(11, Math.round(dBase * k)) * 0.72) });
+      let tot = 0;
+      blocks2.forEach(function(b, i){ tot += b.h + (i ? b.gap : 0); });
+      return { blocks: blocks2, total: tot, title: title2, sub: sub2, desc: desc2, k: k };
+    };
+    let built = buildPin(1);
+    for (let gi = 0; gi < 8 && built.total > avail; gi++){
+      built = buildPin(Math.max(0.55, built.k * (avail / built.total) * 0.97));
+    }
+    const title2 = built.title, sub = built.sub, desc = built.desc, blocks = built.blocks, total = built.total;
+
     let y = posAnchorY(P.pos, top, bottom, total) + P.dy * h * 0.16;
 
     let bw = 0;
-    if (title) bw = Math.max(bw, linesMaxW(ctx, title.lines, title.size, 900) + Math.round(title.size * 0.74));
+    if (title2) bw = Math.max(bw, linesMaxW(ctx, title2.lines, title2.size, 900) + Math.round(title2.size * 0.74));
     if (sub) bw = Math.max(bw, linesMaxW(ctx, sub.lines, sub.size, 700));
     if (desc) bw = Math.max(bw, linesMaxW(ctx, desc.lines, desc.size, 500));
     const bx = pad + posShiftX(P.align, Math.min(maxW, bw), maxW) + P.dx * w * 0.16;
@@ -3973,19 +4256,20 @@
     blocks.forEach(function(b, i){
       if (i) y += b.gap;
       if (b.kind === 't'){
-        const pinH = Math.round(title.size * 0.66);
-        const pinW = drawPinMark(ctx, bx, y + title.size * 0.86, pinH, TPL_PIN);
-        const off = pinW + Math.round(title.size * 0.18);
-        styleLines(ctx, [title.lines[0]], bx + off, y, title.lh, title.size, 900, fg, !!im);
-        if (title.lines.length > 1){
-          styleLines(ctx, title.lines.slice(1), bx, y + title.lh, title.lh, title.size, 900, fg, !!im);
+        const T2 = title2;
+        const pinH = Math.round(T2.size * 0.66);
+        const pinW = drawPinMark(ctx, bx, y + T2.size * 0.86, pinH, TPL_PIN);
+        const off = pinW + Math.round(T2.size * 0.18);
+        styleLines(ctx, [T2.lines[0]], bx + off, y, T2.lh, T2.size, 900, fg, !!im);
+        if (T2.lines.length > 1){
+          styleLines(ctx, T2.lines.slice(1), bx, y + T2.lh, T2.lh, T2.size, 900, fg, !!im);
         }
         if (rlText){
-          ctx.font = font(title.size, 900);
-          const lastW = ctx.measureText(title.lines[title.lines.length - 1]).width +
-            (title.lines.length === 1 ? off : 0);
-          const baseLine = y + title.lh * (title.lines.length - 1) + title.size * 0.84;
-          if (title.lines.length === 1 && bx + lastW + rlW + w * 0.030 <= w - pad + 1){
+          ctx.font = font(T2.size, 900);
+          const lastW = ctx.measureText(T2.lines[T2.lines.length - 1]).width +
+            (T2.lines.length === 1 ? off : 0);
+          const baseLine = y + T2.lh * (T2.lines.length - 1) + T2.size * 0.84;
+          if (T2.lines.length === 1 && bx + lastW + rlW + w * 0.030 <= w - pad + 1){
             ctx.save();
             ctx.font = font(rlSize, 600);
             ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic';
@@ -4001,7 +4285,7 @@
             ctx.fillStyle = dark ? 'rgba(255,255,255,.76)' : 'rgba(23,22,20,.56)';
             ctx.fillText(rlText, w - pad, baseLine);
             ctx.restore();
-          } else if (title.lines.length > 1){
+          } else if (T2.lines.length > 1){
             ctx.save();
             ctx.font = font(rlSize, 600);
             ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic';
@@ -4030,7 +4314,7 @@
     const isCover = mode !== 'body';
     const im = styleCanvas(ctx, s, f, solid, mode);
     const dark = !!im || !!(solid && solid.dark);
-    const accent = TPL_BLUE;
+    const accent = PT().color;
     const maxW = w - pad * 2;
     const P = tPos(s);
     const szC = SZ();
@@ -4154,7 +4438,8 @@
       yy += bh + gapBubble;
     }
     rightTexts.forEach(function(t, i){
-      const bh = bubbleBox(t, 'right', yy, maxW * 0.68, accent, '#FFFFFF', bSize);
+      /* v5.8: 포인트 색 말풍선 위 글씨는 진한 색 (노랑·민트에서도 읽히게) */
+      const bh = bubbleBox(t, 'right', yy, maxW * 0.68, accent, PT().ink || '#FFFFFF', bSize);
       yy += bh + (i < rightTexts.length - 1 ? gapInline : 0);
     });
 
@@ -4262,6 +4547,7 @@
     if (!titleTxt.trim() && !labelTxt) return;
 
     const P = tPos(s);
+    const ACC = PT().color, ACCINK = PT().ink;
     const szB = SZ();
     const bs = Math.max(13, Math.round(w * 0.0295 * szB.sub));
     const bH = Math.round(bs * 2.05);
@@ -4269,6 +4555,12 @@
     const title = titleTxt.trim() ? fitBigTitle(ctx, titleTxt, {
       maxWidth: maxW, cap: Math.min(w * 0.300, h * 0.240) * szB.title, minSize: w * 0.085 * szB.title, maxRows: 3,
       lineHeight: 1.08, fontStr: function(sz){ return font(sz, 900); }
+    }) : null;
+    /* v5.8: 본문으로 쓸 때는 설명도 함께 (표지는 제목·라벨만) */
+    const descTxt = !isCover ? plainMarks(s.desc).replace(/\s*\n\s*/g, ' ').trim() : '';
+    const desc = descTxt ? fitText(ctx, descTxt, {
+      maxWidth: maxW * 0.94, size: Math.max(20, Math.round(T.bodyDesc * 0.98)), weight: 700,
+      maxLines: 3, lineHeight: 1.5, minSize: Math.max(16, Math.round(T.bodyDesc * 0.72))
     }) : null;
     /* 글자 단위로 재면 묶음 측정보다 조금 넓어요 → 카드 밖으로 나가지 않게 한 번 더 맞춘다 */
     if (title){
@@ -4280,7 +4572,9 @@
         title.lh = title.size * 1.08;
       }
     }
-    const blockH = (title ? title.rows.length * title.lh : 0) + (labelTxt ? gapB + bH : 0);
+    const gapD = desc ? Math.round(bH * 0.85) : 0;
+    const blockH = (title ? title.rows.length * title.lh : 0) + (labelTxt ? gapB + bH : 0) +
+      (desc ? gapD + desc.lines.length * desc.lh : 0);
     const top = f.safeTop + pad;
     const bottom = h - f.safeBottom - pad;
     let y = posAnchorY(P.pos, top, bottom, blockH) + P.dy * h * 0.16;
@@ -4297,16 +4591,21 @@
         const rowW = Math.min(maxW, charSumW(ctx, charsSegs(r), title.size, 900));
         const x0 = Math.max(pad * 0.5, cx - rowW / 2);
         drawSegsJustified(ctx, charsSegs(r), x0, rowW, y + title.lh * ri + title.size * 0.86, fstr,
-          function(sg){ return sg.em ? (dark ? '#FFFFFF' : TPL_INK) : TPL_MINT; }, outline);
+          function(sg){ return ACC; }, outline);
       });
       y += title.rows.length * title.lh;
     }
     if (labelTxt){
       drawBadgeRect(ctx, {
         text: labelTxt, cx: cx, y: y + gapB, size: bs, height: bH,
-        bg: TPL_MINT, fg: TPL_INK, padX: Math.round(bs * 0.86), radius: 3,
+        bg: ACC, fg: ACCINK, padX: Math.round(bs * 0.86), radius: 3,
         fontStr: font(bs, 700), shadow: false
       });
+      y += gapB + bH;
+    }
+    if (desc){
+      drawCenterLines(ctx, desc.lines, cx, y + gapD, desc.lh, desc.size, 700,
+        dark ? 'rgba(255,255,255,.97)' : '#1D1C18', dark);
     }
     if (isCover) styleCreditLine(ctx, f, dark);
     else if (s.watermark !== false){
@@ -4329,6 +4628,7 @@
     if (!titleTxt.trim() && !labelTxt) return;
 
     const P = tPos(s);
+    const ACC = PT().color, ACCINK = PT().ink;
     const szW = SZ();
     const bs = Math.max(13, Math.round(w * 0.0275 * szW.sub));
     const bH = Math.round(bs * 1.95);
@@ -4336,6 +4636,11 @@
     const title = titleTxt.trim() ? fitBigTitle(ctx, titleTxt, {
       maxWidth: maxW, cap: Math.min(w * 0.082, h * 0.078) * szW.title, minSize: w * 0.044 * szW.title, maxRows: 3,
       lineHeight: 1.36, fontStr: function(sz){ return font(sz, 800); }
+    }) : null;
+    const descTxt = !isCover ? plainMarks(s.desc).replace(/\s*\n\s*/g, ' ').trim() : '';
+    const desc = descTxt ? fitText(ctx, descTxt, {
+      maxWidth: maxW * 0.94, size: Math.max(20, Math.round(T.bodyDesc * 0.96)), weight: 700,
+      maxLines: 3, lineHeight: 1.5, minSize: Math.max(16, Math.round(T.bodyDesc * 0.70))
     }) : null;
 
     if (title){
@@ -4353,7 +4658,9 @@
         }
       }
     }
-    const blockH = (title ? title.rows.length * title.lh : 0) + (labelTxt ? gapB + bH : 0);
+    const gapD = desc ? Math.round(bH * 1.05) : 0;
+    const blockH = (title ? title.rows.length * title.lh : 0) + (labelTxt ? gapB + bH : 0) +
+      (desc ? gapD + desc.lines.length * desc.lh : 0);
     const top = f.safeTop + pad;
     const bottom = h - f.safeBottom - pad;
     let y = posAnchorY(P.pos, top, bottom, blockH) + P.dy * h * 0.16;
@@ -4371,20 +4678,29 @@
         width: Math.max(3, Math.round(title.size * 0.040)),
         color: 'rgba(8,9,12,.36)',
         shadow: 'rgba(0,0,0,.40)', blur: title.size * 0.16, oy: title.size * 0.03
-      } : { width: 0 };
+      } : (dark ? { width: 0 } : {
+        /* v5.8: 밝은 바탕에서 포인트 색 글씨도 읽히게 얇은 외곽선 */
+        width: Math.max(2, Math.round(title.size * 0.050)),
+        color: 'rgba(24,26,30,.40)', shadow: 'rgba(0,0,0,.10)', blur: title.size * 0.06, oy: 1
+      });
       const fstr = font(title.size, 800);
       title.rows.forEach(function(r, ri){
         drawSegsCentered(ctx, charsSegs(r), cx, y + title.lh * ri + title.size * 0.86, fstr,
-          function(sg){ return sg.em ? TPL_SKY : (dark ? '#FFFFFF' : '#151515'); }, outline);
+          function(sg){ return sg.em ? ACC : (dark ? '#FFFFFF' : '#151515'); }, outline);
       });
       y += title.rows.length * title.lh;
     }
     if (labelTxt){
       drawBadgeRect(ctx, {
         text: labelTxt, cx: cx, y: y + gapB, size: bs, height: bH,
-        bg: TPL_SKY, fg: '#0E2438', padX: Math.round(bs * 0.72), radius: 3,
+        bg: ACC, fg: ACCINK, padX: Math.round(bs * 0.72), radius: 3,
         fontStr: font(bs, 700), shadow: false
       });
+      y += gapB + bH;
+    }
+    if (desc){
+      drawCenterLines(ctx, desc.lines, cx, y + gapD, desc.lh, desc.size, 700,
+        dark ? 'rgba(255,255,255,.97)' : '#1D1C18', dark);
     }
     if (isCover) styleCreditLine(ctx, f, dark);
     else if (s.watermark !== false){
@@ -4458,7 +4774,7 @@
         ctx.fillStyle = dark ? 'rgba(16,18,22,.90)' : 'rgba(20,22,28,.94)';
         ctx.fill();
         ctx.font = font(bs, 700);
-        ctx.fillStyle = TPL_MINT;
+        ctx.fillStyle = PT().color;
         ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
         ctx.fillText(badgeTxt, bx + bs * 0.55, y + bH / 2 + Math.round(bs * 0.04));
         ctx.restore();
@@ -4587,8 +4903,20 @@
     if (sub){
       blocks.push({ h: sub.lines.length * sub.lh, gap: 20, draw: y => {
         ctx.save();
-        ctx.shadowColor = 'rgba(0,0,0,.38)'; ctx.shadowBlur = 16; ctx.shadowOffsetY = 2;
-        drawLines(ctx, sub.lines, pad, y, sub.lh, sub.size, 500, tcol(pal.sub, pal), 'left');
+        if (im){
+          /* v5.8: 사진 위 부제도 제목처럼 진하게 — 굵게 + 얇은 외곽선 + 그림자 */
+          ctx.font = font(sub.size, 800);
+          ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+          ctx.lineJoin = 'round'; ctx.miterLimit = 2;
+          ctx.lineWidth = Math.max(2, Math.round(sub.size * 0.045));
+          ctx.strokeStyle = 'rgba(10,9,7,.34)';
+          ctx.shadowColor = 'rgba(0,0,0,.46)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 2;
+          sub.lines.forEach(function(ln, i){ if (ln) ctx.strokeText(ln, pad, y + sub.lh * i + sub.size * 0.84); });
+          ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+          drawLines(ctx, sub.lines, pad, y, sub.lh, sub.size, 800, tcol('rgba(255,255,255,.97)', pal), 'left');
+        } else {
+          drawLines(ctx, sub.lines, pad, y, sub.lh, sub.size, 700, tcol(pal.sub, pal), 'left');
+        }
         ctx.restore();
       }});
     }
@@ -4602,7 +4930,21 @@
     let totalH = 0;
     blocks.forEach((b, i)=>{ totalH += b.h + (i ? b.gap : 0); });
     const P = tPos(s);
-    let y = posAnchorY(P.pos, topY, bottomY, totalH) + P.dy * h * 0.16;
+    const TB = state.textBox !== 'none';
+    let y = posAnchorY(TB ? state.textBoxPos : P.pos, topY, bottomY, totalH) + P.dy * h * 0.16;
+    if (TB){
+      /* v5.8: 글씨 박스 — 포인트 컬러로 채우고, 높이는 글씨 줄 수에 맞춘다 */
+      const bw = maxW + Math.round(pad * 0.52), bh = totalH + Math.round(pad * 0.66);
+      const bx = pad - Math.round(pad * 0.26) + P.dx * w * 0.16;
+      const by = y - Math.round(pad * 0.33);
+      ctx.save();
+      if (im){ ctx.shadowColor = 'rgba(0,0,0,.30)'; ctx.shadowBlur = 26; ctx.shadowOffsetY = 6; }
+      roundRect(ctx, bx, by, bw, bh, state.textBox === 'round' ? 40 : 8);
+      ctx.fillStyle = PT().color;
+      ctx.fill();
+      ctx.restore();
+      pal = boxPal(pal);
+    }
     ctx.save();
     ctx.translate(posShiftX(P.align, Math.min(maxW, Math.max(title ? linesMaxW(ctx, title.lines, title.size, 800) : 0, sub ? linesMaxW(ctx, sub.lines, sub.size, 500) : 0)), maxW) + P.dx * w * 0.16, 0);
     blocks.forEach((b, i)=>{
@@ -4971,8 +5313,8 @@
     })) : null;
     const rich = /\*\*/.test(String(s.desc || ''));
     const desc = s.desc ? (rich
-      ? fitRich(ctx, s.desc, { maxWidth: maxW * 0.98, size: T.bodyDesc, weight: 500, maxLines: 4, lineHeight: 1.62, minSize: T.bodyDesc * 0.78 })
-      : fitText(ctx, s.desc, { maxWidth: maxW * 0.98, size: T.bodyDesc, weight: 500, maxLines: 4, lineHeight: 1.62, minSize: T.bodyDesc * 0.78 })) : null;
+      ? fitRich(ctx, s.desc, { maxWidth: maxW * 0.98, size: T.bodyDesc, weight: 700, maxLines: 4, lineHeight: 1.62, minSize: T.bodyDesc * 0.78 })
+      : fitText(ctx, s.desc, { maxWidth: maxW * 0.98, size: T.bodyDesc, weight: 700, maxLines: 4, lineHeight: 1.62, minSize: T.bodyDesc * 0.78 })) : null;
 
     const badge = badgeTextOf(s);
     const num = s.badgeNum || 0;
@@ -4994,24 +5336,38 @@
     }
     if (desc){
       blocks.push({ h: desc.lines.length * desc.lh, gap: 16, draw: y => {
-        if (rich) drawRichLines(ctx, desc.lines, anchorX, y, desc.lh, desc.size, 500, tcol(pal.sub, pal), align, pal, vivid);
-        else if (vivid) drawVividLines(ctx, desc.lines, anchorX, y, desc.lh, desc.size, 500, tcol(pal.sub, pal), align);
-        else drawLines(ctx, desc.lines, anchorX, y, desc.lh, desc.size, 500, tcol(pal.sub, pal), align);
+        if (rich) drawRichLines(ctx, desc.lines, anchorX, y, desc.lh, desc.size, 700, tcol(pal.sub, pal), align, pal, vivid);
+        else if (vivid) drawVividLines(ctx, desc.lines, anchorX, y, desc.lh, desc.size, 700, tcol(pal.sub, pal), align);
+        else drawLines(ctx, desc.lines, anchorX, y, desc.lh, desc.size, 700, tcol(pal.sub, pal), align);
       }});
     }
 
     let totalH = 0;
     blocks.forEach((b, i)=>{ totalH += b.h + (i ? b.gap : 0); });
     const wmSpace = (s.watermark !== false) ? Math.round(40 * T.k) : 0;
+    const TB = state.textBox !== 'none';
     let y;
-    if (pos === 'top'){
+    const posUse = TB ? state.textBoxPos : pos;
+    if (posUse === 'top'){
       y = topLimit;
-    } else if (pos === 'middle'){
+    } else if (posUse === 'middle'){
       y = topLimit + Math.max(0, ((bottomY - topLimit) - totalH) * 0.5);
     } else {
       y = bottomY - totalH - wmSpace;
     }
     y += P.dy * h * 0.16;
+    if (TB){
+      const bw = maxW + Math.round(pad * 0.5), bh = totalH + Math.round(pad * 0.6);
+      const bx = pad - Math.round(pad * 0.25) + P.dx * w * 0.16;
+      const by = y - Math.round(pad * 0.30);
+      ctx.save();
+      if (im){ ctx.shadowColor = 'rgba(0,0,0,.30)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 6; }
+      roundRect(ctx, bx, by, bw, bh, state.textBox === 'round' ? 38 : 8);
+      ctx.fillStyle = PT().color;
+      ctx.fill();
+      ctx.restore();
+      pal = boxPal(pal);
+    }
     blocks.forEach((b, i)=>{
       if (i) y += b.gap;
       b.draw(y);
@@ -5548,28 +5904,42 @@
     return { w: Math.floor(ww), h: Math.floor(hh) };
   }
 
+  /* v5.8: 화면 밖 버퍼에 먼저 그리고 마지막에 한 번만 복사한다
+     — 캔버스 크기를 바꾸며 비우는 순간이 없어 글씨 입력 중에도 사진이 깜빡이지 않는다 */
+  const stageBuf = document.createElement('canvas');
   function paint(){
     const f = F();
+    /* 미리보기가 접혀 있거나 화면에 없으면 마지막 그림을 그대로 둔다 */
+    const stageEl = document.querySelector('.stage');
+    if (stageHideNow() || !stageEl || stageEl.getBoundingClientRect().width < 2) return;
     const box = fitStage();
+    if (box.w < 2 || box.h < 2) return;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const cw = Math.max(1, Math.round(box.w * dpr));
     const ch = Math.max(1, Math.round(box.h * dpr));
-    if (preview.width !== cw || preview.height !== ch){
-      preview.width = cw; preview.height = ch;
-    }
+    if (stageBuf.width !== cw || stageBuf.height !== ch){ stageBuf.width = cw; stageBuf.height = ch; }
+    const bx = stageBuf.getContext('2d');
+    bx.setTransform(1, 0, 0, 1, 0, 0);
+    bx.clearRect(0, 0, cw, ch);
+    const sc = cw / f.w;
+    bx.setTransform(sc, 0, 0, sc, 0, 0);
+    bx.imageSmoothingEnabled = true;
+    bx.imageSmoothingQuality = 'high';
+    renderCard(bx, cur(), f, { guides: state.guides && f.safeTop > 0 });
+    bx.setTransform(1, 0, 0, 1, 0, 0);
+    if (preview.width !== cw || preview.height !== ch){ preview.width = cw; preview.height = ch; }
     preview.style.width = box.w + 'px';
     preview.style.height = box.h + 'px';
     const ctx = preview.getContext('2d');
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, cw, ch);
-    const sc = cw / f.w;
-    ctx.setTransform(sc, 0, 0, sc, 0, 0);
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    renderCard(ctx, cur(), f, { guides: state.guides && f.safeTop > 0 });
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.drawImage(stageBuf, 0, 0);
     if (document.body.classList.contains('bulkopen')) paintBulkThumb();
     updateEmptyHint();
+  }
+  function stageHideNow(){
+    const m = document.body.classList;
+    return m.contains('stagehide') && !m.contains('fullprev');
   }
 
   /* =========================================================
@@ -5678,18 +6048,21 @@
   function renderThemeChips(){
     themeChipsEl.innerHTML = THEMES.map(t=>{
       const on = t.id === state.theme ? ' on' : '';
-      const bg = t.paper.bg, ac = t.ink.accent, ink = t.ink.bg;
-      const sw = 'background:linear-gradient(135deg,' + ink + ' 0 50%,' + ac + ' 50% 100%)';
+      const sw = '<span class="sw3"><i style="background:' + t.paper.bg + '"></i>' +
+                 '<i style="background:' + t.main + '"></i>' +
+                 '<i style="background:' + t.point + '"></i></span>';
       return '<button class="chip theme' + on + '" data-theme="' + t.id + '">' +
-             '<span class="sw" style="' + sw + '"></span><span class="t">' + esc(t.name) + '</span></button>';
+             sw + '<span class="t">' + esc(t.name) + '</span></button>';
     }).join('');
     el('themeName').textContent = THEME().name;
     const hint = el('themePrioHint');
     if (hint){
+      const t = THEME();
       const c = CAT();
-      hint.innerHTML = c
-        ? ('포인트 색 = <b>' + c.name + ' ' + c.color + '</b> · 카테고리를 해제하면 컬러 배합 색이 포인트가 돼요')
-        : ('포인트 색 = <b>컬러 배합 색</b> · 카테고리를 고르면 카테고리 색이 우선해요');
+      hint.innerHTML = '<b>60%</b> 배경 <span class="cd" style="background:' + t.paper.bg + '"></span>' +
+        ' · <b>30%</b> 메인 <span class="cd" style="background:' + t.main + '"></span>' +
+        ' · <b>10%</b> 포인트 <span class="cd" style="background:' + t.point + '"></span> ' + t.point +
+        (c ? '\n지금은 카테고리(' + c.name + ' ' + c.color + ')가 포인트를 맡고 있어요' : '\n표지·본문 템플릿 색이 이 포인트로 한 번에 바뀝어요');
     }
   }
 
@@ -5711,7 +6084,11 @@
 
   function fontChipLabel(fn){
     const r = fn.resolve(700);
-    return '"' + r.family + '", ' + fn.tail;
+    /* v5.8: style="" 안에서 안전하도록 작은따옴표만 쓴다 (이름이 실제 폰트로 보이게) */
+    const fam = String(r.family).replace(/['"]/g, '');
+    const tl = String(fn.tail || '');
+    const generic = /sans-serif/.test(tl) ? 'sans-serif' : (/serif/.test(tl) ? 'serif' : 'sans-serif');
+    return "'" + fam + "', " + generic;
   }
   function targetFontId(){ return fontTarget === 'cover' ? fontIdFor('cover') : fontIdFor('main'); }
   function setFontTarget(t){
@@ -5738,6 +6115,24 @@
     renderFontChips();
     persistSoon();
     return true;
+  }
+
+  /* v5.8: 글씨체 목록의 이름을 실제 그 폰트로 보여준다 — 목록을 열 때 전부 미리 불러온다 */
+  let fontFacesLoading = false;
+  function loadAllFontFaces(){
+    if (fontFacesLoading || !document.fonts || !document.fonts.load) return Promise.resolve();
+    fontFacesLoading = true;
+    const jobs = [];
+    FONTS.forEach(function(fn){
+      (fn.faces || []).forEach(function(f){
+        jobs.push(document.fonts.load(f[1] + ' 20px "' + f[0] + '"', '가나다라 Aa 0123').catch(function(){ return null; }));
+      });
+    });
+    return Promise.all(jobs).then(function(){
+      fontFacesLoading = false;
+      renderFontChips();
+      return true;
+    }, function(){ fontFacesLoading = false; });
   }
 
   function renderFontChips(){
@@ -5916,10 +6311,10 @@
   async function redoSticker(st){
     if (!st || !st.orig) return;
     const im = await loadImg(st.orig);
-    const pk = prepareSticker(im, st.mode || 'circle', st.tol == null ? 50 : st.tol, st.orig,
-      { iz:st.iz, ixo:st.ixo, iyo:st.iyo });
+    const pk = prepareSticker(im, st.mode || 'circle', st.tol == null ? 50 : st.tol, st.orig, null);
     clearHalo(st.src);
     st.src = pk.src;
+    st.base = pk.base || pk.src;
     preloadImg(st.src);
     renderStickerChips();
     paintSoon(); persistSoon();
@@ -5959,12 +6354,28 @@
     el('creditState').textContent = state.creditOn === false ? '숨김'
       : ((state.credit || '').trim() ? '표시 중' : '문구 없음');
 
+    /* v5.8: 업로드 칸 안의 작은 미리보기는 쓰지 않는다 (사진은 위 미리보기에서 확인) */
     const thumb = el('thumb');
-    if (s.photo){ thumb.src = s.photo; thumb.hidden = false; el('drop').classList.add('has'); el('dropEmpty').hidden = true; }
-    else { thumb.hidden = true; thumb.removeAttribute('src'); el('drop').classList.remove('has'); el('dropEmpty').hidden = false; }
+    if (thumb){ thumb.hidden = true; thumb.removeAttribute('src'); }
+    el('drop').classList.toggle('has', !!s.photo);
+    el('dropEmpty').hidden = false;
     el('photoClear').style.visibility = s.photo ? 'visible' : 'hidden';
     syncZoomUI();
     syncStyleUI();
+    /* v5.8: 글씨 박스·숫자 위치 */
+    const tbName = el('textBoxName');
+    if (tbName) tbName.textContent = state.textBox === 'round' ? '둥근 박스' : state.textBox === 'square' ? '각진 박스' : '일반 글씨';
+    document.querySelectorAll('#textBoxSeg button').forEach(function(b){
+      b.classList.toggle('on', (b.dataset.tbox || 'none') === (state.textBox || 'none'));
+    });
+    if (el('textBoxMore')) el('textBoxMore').hidden = (state.textBox || 'none') === 'none';
+    document.querySelectorAll('#textBoxPosSeg button').forEach(function(b){
+      b.classList.toggle('on', (b.dataset.tbpos || 'middle') === (state.textBoxPos || 'middle'));
+    });
+    document.querySelectorAll('#numPlaceSeg button').forEach(function(b){
+      b.classList.toggle('on', (b.dataset.numplace || 'front') === (state.numPlace === 'back' ? 'back' : 'front'));
+    });
+    if (el('numPlaceName')) el('numPlaceName').textContent = state.numPlace === 'back' ? '글씨 뒤' : '글씨 앞';
     el('saveAll').textContent = state.slides.length > 1 ? ('전체 저장 (' + state.slides.length + ')') : '전체 저장';
     el('saveTip').textContent = F().w + '×' + F().h + ' PNG · 아이폰은 공유 시트에서 \'이미지 저장\'';
   }
@@ -6087,7 +6498,6 @@
       myTplStore(MY_TPLS.list.filter(function(x){ return x.id !== id; }));
       renderTplChips();
       if (syncOn()) scheduleSync();
-      toast('내 템플릿을 지웠어요');
       return;
     }
     const my = e.target.closest('[data-mytpl]');
@@ -6103,7 +6513,7 @@
     const v = TPL_IDS.indexOf(b.dataset.cstyle) >= 0 ? b.dataset.cstyle : 'classic';
     const ci = coverIndex();
     if (ci < 0){ state.slides.unshift(blankSlide('cover')); }
-    compSnapshot('표지 디자인 변경 직전', { undo:true });
+    compSnapshot('표지 디자인 변경 직전');
     /* v5.6: 표지 디자인만 바꾼다 — 본문 디자인은 건드리지 않아요 */
     state.slides.forEach(function(sl){
       if (sl.type !== 'cover') return;
@@ -6118,7 +6528,6 @@
       state.fontCover = EDITORIAL_PRESET.fontCover;
     }
     renderAll(); persistNow(); setTimeout(paint, 30);
-    toast('🎨 표지 디자인 · ' + tplName(v) + ' · 본문 디자인은 그대로예요');
   });
 
   /* v5.6: 본문 디자인만 따로 고르기 (표지와 분리) */
@@ -6126,7 +6535,7 @@
     const b = e.target.closest('button[data-bstyle]');
     if (!b) return;
     const v = BODY_IDS.indexOf(b.dataset.bstyle) >= 0 ? b.dataset.bstyle : 'classic';
-    compSnapshot('본문 디자인 변경 직전', { undo:true });
+    compSnapshot('본문 디자인 변경 직전');
     state.slides.forEach(function(sl){
       if (sl.type !== 'body') return;
       sl.bodyStyle = v;
@@ -6136,8 +6545,6 @@
     });
     renderAll(); persistNow(); setTimeout(paint, 30);
     syncBodyStyleSeg();
-    toast('📄 본문 디자인 · ' + (BODY_DEFAULT[v] || '기본 깔끔형') +
-      (state.slides.some(function(sl){ return sl.type === 'body'; }) ? ' · ' + BODY_HELP[v] : ' · 본문 카드를 먼저 추가해 주세요'));
   });
 
   /* v5.1: 템플릿 이름 수정 (localStorage + 클라우드) */
@@ -6145,7 +6552,7 @@
   function renderTplEdit(){
     const box = el('tplEditRows');
     if (!box) return;
-    box.innerHTML = TPL_IDS.map(function(id){
+    box.innerHTML = TPL_EDIT_IDS.map(function(id){
       const v = esc(tplName(id));
       return '<div class="tplRow"><span>' + esc(TPL_DEFAULT[id]) + '</span>' +
              '<input type="text" inputmode="text" data-tplname="' + id + '" maxlength="14" value="' + v + '" placeholder="' + esc(TPL_DEFAULT[id]) + '"></div>';
@@ -6153,7 +6560,7 @@
   }
   function tplNameInputs(){
     const map = {};
-    TPL_IDS.forEach(function(id){
+    TPL_EDIT_IDS.forEach(function(id){
       const inp = document.querySelector('[data-tplname="' + id + '"]');
       if (inp) map[id] = String(inp.value || '').trim().slice(0, 14);
     });
@@ -6161,7 +6568,7 @@
   }
   function tplNameApply(map, silent){
     const clean = {};
-    TPL_IDS.forEach(function(id){
+    TPL_EDIT_IDS.forEach(function(id){
       let v = String((map && map[id]) || '').trim().slice(0, 14);
       clean[id] = (v === TPL_DEFAULT[id]) ? '' : v;
     });
@@ -6169,7 +6576,6 @@
     renderTplChips();
     setTimeout(paint, 30);
     if (syncOn()) scheduleSync();
-    if (!silent) toast('디자인 이름을 저장했어요 · 클라우드에도 함께 저장돼요');
     return tplNames();
   }
   let tplNameTimer = 0;
@@ -6208,7 +6614,6 @@
     renderTplChips();
     persistNow();
     if (syncOn()) scheduleSync();
-    toast('내 템플릿 "' + name + '" 저장 · 칩을 누르면 바로 적용돼요');
   }
   if (el('myTplSaveBtn')) el('myTplSaveBtn').addEventListener('click', function(){
     const row = el('myTplRow');
@@ -6248,7 +6653,127 @@
   });
 
   let stAddBusy = false;
-  el('stFile').addEventListener('change', async ()=>{
+  /* ---------- v5.8: 누끼 사진은 먼저 자를 부분을 고른다 ---------- */
+  let stQueue = [], stCropIm = null, stCropVal = { z:1, x:0, y:0 }, stAddCount = 0;
+
+  function stCropDraw(){
+    const c = el('stCropCanvas');
+    if (!c || !stCropIm) return;
+    const V = c.width;
+    const ctx = c.getContext('2d');
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, V, V);
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+    const im = stCropIm;
+    const base = Math.max(V / im.naturalWidth, V / im.naturalHeight) * stCropVal.z;
+    const dw = im.naturalWidth * base, dh = im.naturalHeight * base;
+    const mx = (dw - V) / 2, my = (dh - V) / 2;
+    ctx.drawImage(im, (V - dw) / 2 + stCropVal.x * mx, (V - dh) / 2 + stCropVal.y * my, dw, dh);
+    /* 남길 영역 가이드 */
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,.92)';
+    ctx.lineWidth = Math.max(3, V * 0.008);
+    ctx.setLineDash([V * 0.03, V * 0.022]);
+    ctx.strokeRect(V * 0.02, V * 0.02, V * 0.96, V * 0.96);
+    ctx.restore();
+  }
+  function syncStCropUI(){
+    if (el('stCropZoom')) el('stCropZoom').value = stCropVal.z;
+    if (el('stCropZoomVal')) el('stCropZoomVal').textContent = stCropVal.z.toFixed(2) + '×';
+    if (el('stCropX')) el('stCropX').value = stCropVal.x;
+    if (el('stCropXVal')) el('stCropXVal').textContent = Math.round(stCropVal.x * 100) + '%';
+    if (el('stCropY')) el('stCropY').value = stCropVal.y;
+    if (el('stCropYVal')) el('stCropYVal').textContent = Math.round(stCropVal.y * 100) + '%';
+  }
+  function stCropNext(){
+    if (!stQueue.length){
+      stCropIm = null;
+      openSheetName('stcrop', false);
+      afterStickerAdd();
+      return;
+    }
+    const f = stQueue.shift();
+    imageFromFile(f).then(function(im){
+      stCropIm = im;
+      stCropVal = { z:1, x:0, y:0 };
+      const c = el('stCropCanvas');
+      if (c){ c.width = 600; c.height = 600; }
+      syncStCropUI();
+      openSheetName('stcrop', true);
+      setTimeout(stCropDraw, 30);
+    }).catch(function(){
+      toast('이미지를 읽을 수 없어요');
+      stCropNext();
+    });
+  }
+  function stCropOutCanvas(){
+    const im = stCropIm;
+    const V = Math.min(1080, Math.max(im.naturalWidth, im.naturalHeight));
+    const c = document.createElement('canvas');
+    c.width = V; c.height = V;
+    const ctx = c.getContext('2d');
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+    const base = Math.max(V / im.naturalWidth, V / im.naturalHeight) * stCropVal.z;
+    const dw = im.naturalWidth * base, dh = im.naturalHeight * base;
+    const mx = (dw - V) / 2, my = (dh - V) / 2;
+    ctx.drawImage(im, (V - dw) / 2 + stCropVal.x * mx, (V - dh) / 2 + stCropVal.y * my, dw, dh);
+    return c;
+  }
+  function addOneSticker(im){
+    const s = cur();
+    s.stickers = s.stickers || [];
+    if (s.stickers.length >= MAX_STICKERS) return false;
+    const pk = prepareSticker(im, pendingStMode, STICKER_TOL, null, null);
+    s.stickers.push({ src:pk.src, base:pk.base || pk.src, orig:pk.orig, mode:pendingStMode, tol:STICKER_TOL,
+                      border:true, bw:1, bc:'#FFFFFF', iz:1, ixo:0, iyo:0, x:0.5, y:0.5, w:0.30, rot:0 });
+    preloadImg(pk.src);
+    stAddCount++;
+    return true;
+  }
+  function afterStickerAdd(){
+    if (!stAddCount) return;
+    const s = cur();
+    stickerSel = Math.max(0, (s.stickers || []).length - 1);
+    renderStickerChips();
+    commit();
+    if (state.stageHide && state.step === 1){
+      state.stageHide = false;
+      stageTouched = true;
+      applyStepUI();
+      setTimeout(paint, 60);
+    }
+    toast(stAddCount + '장을 ' + (pendingStMode === 'auto' ? '누끼로' : '원형으로') + ' 붙였어요 · 아래에서 원하는 부분을 맞춰요');
+    stAddCount = 0;
+    pendingStMode = 'circle';
+    setTimeout(function(){
+      const ctl = el('stickerCtl');
+      const box = el('stCropBox');
+      if (!ctl || ctl.hidden || !box) return;
+      try{ box.scrollIntoView({ block:'center', behavior:'smooth' }); }catch(e){}
+      box.classList.add('flash');
+      setTimeout(function(){ box.classList.remove('flash'); }, 1100);
+    }, 150);
+  }
+  async function stCropConfirm(useFull){
+    if (!stCropIm || stAddBusy) return;
+    stAddBusy = true;
+    try{
+      let im = stCropIm;
+      if (!useFull){
+        const out = stCropOutCanvas();
+        im = await loadImg(out.toDataURL('image/png'));
+      }
+      addOneSticker(im);
+      if (cur().stickers.length >= MAX_STICKERS && stQueue.length){
+        toast('누끼는 카드당 ' + MAX_STICKERS + '개까지예요 · 남은 사진은 건너뛰었어요');
+        stQueue = [];
+      }
+      stCropNext();
+    }catch(err){
+      toast(err && err.message ? err.message : '누끼를 만들지 못했어요');
+    } finally { stAddBusy = false; }
+  }
+  el('stFile').addEventListener('change', function(){
     const fs = Array.from(el('stFile').files || []).filter(f => f.type && f.type.indexOf('image/') === 0);
     el('stFile').value = '';
     if (!fs.length || stAddBusy) return;
@@ -6256,44 +6781,57 @@
     s.stickers = s.stickers || [];
     const room = MAX_STICKERS - s.stickers.length;
     if (room <= 0){ toast('누끼는 카드당 ' + MAX_STICKERS + '개까지예요'); return; }
-    const use = fs.slice(0, room);
-    stAddBusy = true;
-    try{
-      for (let i = 0; i < use.length; i++){
-        toast(use.length > 1 ? ('누끼 ' + (i + 1) + '/' + use.length + ' 만드는 중이에요…') : '누끼를 만드는 중이에요…');
-        const im = await imageFromFile(use[i]);
-        const pk = prepareSticker(im, pendingStMode, STICKER_TOL, null, null);
-        s.stickers.push({ src:pk.src, orig:pk.orig, mode:pendingStMode, tol:STICKER_TOL, border:true, bw:1, bc:'#FFFFFF',
-                          iz:1, ixo:0, iyo:0, x:0.5, y:0.5, w:0.30, rot:0 });
-        preloadImg(pk.src);
-      }
-      stickerSel = s.stickers.length - 1;
-      renderStickerChips();
-      commit();
-      /* 1단계는 미리보기가 접혀 있으니, 누끼를 붙이면 한 번 펼쳐서 보여줘요 */
-      if (state.stageHide && state.step === 1){
-        state.stageHide = false;
-        stageTouched = true;
-        applyStepUI();
-        setTimeout(paint, 60);
-      }
-      toast(use.length + '장을 바로 ' + (pendingStMode === 'auto' ? '누끼로' : '원형으로') + ' 붙였어요' +
-        (fs.length > room ? ' · 카드당 ' + MAX_STICKERS + '개라 ' + (fs.length - room) + '장은 빠졌어요' : '') +
-        ' · 자르기 칸에서 원하는 부분을 맞춰요');
-      pendingStMode = 'circle';
-      /* v5.4: 방금 붙인 누끼의 자르기(확대·이동) 칸을 바로 펼쳐서 보여줘요 */
-      setTimeout(function(){
-        const ctl = el('stickerCtl');
-        const box = el('stCropBox');
-        if (!ctl || ctl.hidden || !box) return;
-        try{ box.scrollIntoView({ block:'center', behavior:'smooth' }); }catch(e){}
-        box.classList.add('flash');
-        setTimeout(function(){ box.classList.remove('flash'); }, 1100);
-      }, 150);
-    }catch(err){
-      toast(err && err.message ? err.message : '누끼를 만들지 못했어요');
-    } finally { stAddBusy = false; }
+    stAddCount = 0;
+    stQueue = fs.slice(0, room);
+    if (fs.length > room) toast('카드당 ' + MAX_STICKERS + '개라 ' + (fs.length - room) + '장은 빠져요');
+    stCropNext();
   });
+  if (el('stCropOk')) el('stCropOk').addEventListener('click', function(){ stCropConfirm(false); });
+  if (el('stCropSkip')) el('stCropSkip').addEventListener('click', function(){ stCropConfirm(true); });
+  if (el('stCropCancel')) el('stCropCancel').addEventListener('click', function(){
+    stQueue = []; stCropIm = null;
+    openSheetName('stcrop', false);
+    afterStickerAdd();
+  });
+  ['stCropZoom:z','stCropX:x','stCropY:y'].forEach(function(pair){
+    const parts = pair.split(':');
+    if (!el(parts[0])) return;
+    el(parts[0]).addEventListener('input', function(e){
+      const v = num(e.target.value, 0);
+      if (parts[1] === 'z') stCropVal.z = clamp(v, 1, 3);
+      else stCropVal[parts[1]] = clamp(v, -1, 1);
+      syncStCropUI();
+      stCropDraw();
+    });
+  });
+  (function cropDrag(){
+    const c = el('stCropCanvas');
+    if (!c) return;
+    let drag = null;
+    c.addEventListener('pointerdown', function(e){
+      if (!stCropIm) return;
+      drag = { x:e.clientX, y:e.clientY, ox:stCropVal.x, oy:stCropVal.y };
+      try{ c.setPointerCapture(e.pointerId); }catch(err){}
+      e.preventDefault();
+    });
+    c.addEventListener('pointermove', function(e){
+      if (!drag || !stCropIm) return;
+      const r = c.getBoundingClientRect();
+      const V = Math.max(1, r.width);
+      const im = stCropIm;
+      const base = Math.max(V / im.naturalWidth, V / im.naturalHeight) * stCropVal.z;
+      const mx = Math.max(1, (im.naturalWidth * base - V) / 2);
+      const my = Math.max(1, (im.naturalHeight * base - V) / 2);
+      stCropVal.x = clamp(drag.ox + (e.clientX - drag.x) / mx, -1, 1);
+      stCropVal.y = clamp(drag.oy + (e.clientY - drag.y) / my, -1, 1);
+      syncStCropUI();
+      stCropDraw();
+      e.preventDefault();
+    });
+    const end = function(e){ drag = null; };
+    c.addEventListener('pointerup', end);
+    c.addEventListener('pointercancel', end);
+  })();
 
   /* v5.4: 누끼 안 사진을 화살표로도 밀어요 (슬라이더가 작아서) */
   document.querySelectorAll('[data-stnudge]').forEach(function(b){
@@ -6308,7 +6846,7 @@
       if (k === 'up') st.iyo = clamp(num(st.iyo, 0) - step, -1, 1);
       if (k === 'down') st.iyo = clamp(num(st.iyo, 0) + step, -1, 1);
       syncStickerCtl();
-      commit();
+      paintSoon(); persistSoon();
     });
   });
 
@@ -6368,7 +6906,7 @@
     commit();
   });
 
-  let innerTimer = null;
+  /* v5.8: 안쪽 확대·좌우·상하 — 슬라이더를 움직이는 즉시 캔버스에 반영 */
   [['stZoom','iz'],['stOffX','ixo'],['stOffY','iyo']].forEach(function(pair){
     if (!el(pair[0])) return;
     el(pair[0]).addEventListener('input', function(e){
@@ -6380,8 +6918,7 @@
       const label = el(pair[0] + 'Val');
       if (pair[1] === 'iz') label.textContent = st.iz.toFixed(2) + '×';
       else label.textContent = Math.round(st[pair[1]] * 100) + '%';
-      clearTimeout(innerTimer);
-      innerTimer = setTimeout(function(){ redoSticker(st).catch(function(){}); }, 220);
+      paintSoon(); persistSoon();
     });
   });
 
@@ -6428,7 +6965,6 @@
     if (!b) return;
     setSumBg(b.dataset.style);
     renderAll(); persistSoon();
-    if (b.dataset.style === 'photo' && !cur().photo) toast('사진을 올리면 어둡게 깔아 배경으로 써요');
   });
 
   // 컬러 / 폰트
@@ -6473,16 +7009,15 @@
     renderFontChips();
     persistSoon();
     loadFontFor().then(()=>{ paint(); });
-    toast('표지·본문·요약을 ' + fontById(id).label + ' 한 가지로 통일했어요');
   });
   if (el('fontSelectBtn')) el('fontSelectBtn').addEventListener('click', function(){
     renderFontChips();
     openSheetName('font', true);
+    loadAllFontFaces();
   });
   el('fontOrderBtn').addEventListener('click', ()=>{
     fontOrderMode = !fontOrderMode;
     renderFontChips();
-    toast(fontOrderMode ? '◀ ▶ 로 글씨체 순서를 바꿔보세요' : '글씨체 순서를 저장했어요');
   });
   el('fontOrderReset').addEventListener('click', ()=>resetFontOrder());
 
@@ -6494,10 +7029,51 @@
       commit();
     });
   });
+  /* v5.8: 글씨 스타일 박스 · 박스 위치 · 숫자 앞뒤 */
+  if (el('textBoxSeg')) el('textBoxSeg').addEventListener('click', function(e){
+    const b = e.target.closest('[data-tbox]');
+    if (!b) return;
+    const v = ['none','square','round'].indexOf(b.dataset.tbox) >= 0 ? b.dataset.tbox : 'none';
+    state.textBox = v;
+    syncForm();
+    paintSoon(); persistSoon();
+  });
+  if (el('textBoxPosSeg')) el('textBoxPosSeg').addEventListener('click', function(e){
+    const b = e.target.closest('[data-tbpos]');
+    if (!b) return;
+    state.textBoxPos = ['top','middle','bottom'].indexOf(b.dataset.tbpos) >= 0 ? b.dataset.tbpos : 'middle';
+    syncForm();
+    paintSoon(); persistSoon();
+  });
+  if (el('numPlaceSeg')) el('numPlaceSeg').addEventListener('click', function(e){
+    const b = e.target.closest('[data-numplace]');
+    if (!b) return;
+    state.numPlace = b.dataset.numplace === 'back' ? 'back' : 'front';
+    syncForm();
+    paintSoon(); persistSoon();
+  });
+
+  /* v5.8: 요약표 추가 · 삭제 */
+  if (el('sumAddBtn')) el('sumAddBtn').addEventListener('click', function(){
+    if (summaryIndex() >= 0){ toast('요약표는 이미 1장 있어요 · 카드에서 바로 고칠 수 있어요'); return; }
+    createSummaryCard();
+  });
+  if (el('sumDelBtn')) el('sumDelBtn').addEventListener('click', function(){
+    const si = summaryIndex();
+    if (si < 0){ toast('지울 요약표가 없어요'); return; }
+    if (!confirm('요약표 카드를 지울까요? 항목·금액 입력값도 함께 사라져요. [되돌리기]로 복구할 수 있어요.')) return;
+    compSnapshot('요약표 삭제 직전', { undo:true });
+    state.slides.splice(si, 1);
+    if (!state.slides.length) state.slides.push(blankSlide('cover'));
+    state.current = clamp(state.current, 0, state.slides.length - 1);
+    if (writeTab === 'summary') writeTab = 'cover';
+    renderAll(); persistNow();
+    toast('요약표를 지웠어요', { undo: restoreBackup, ms: 5000 });
+  });
+
   el('sizeReset').addEventListener('click', ()=>{
     state.sizes = { title:1, sub:1, small:1 };
     syncStyleUI(); commit();
-    toast('글씨 크기를 기본값으로 되돌렸어요');
   });
 
   /* v5.3: 글씨 색 · 투명도 */
@@ -7368,7 +7944,8 @@
   /* ---------- 시트 열고 닫기 ---------- */
   function sheetEl(name){
     return el(name === 'menu' ? 'sheetWrap' : name === 'slot' ? 'slotWrap' : name === 'batch' ? 'batchWrap'
-      : name === 'bulk' ? 'bulkWrap' : name === 'sync' ? 'syncWrap' : name === 'font' ? 'fontWrap' : 'stModeWrap');
+      : name === 'bulk' ? 'bulkWrap' : name === 'sync' ? 'syncWrap' : name === 'font' ? 'fontWrap'
+      : name === 'stcrop' ? 'stCropWrap' : 'stModeWrap');
   }
   function openSheetName(name, open){
     const n = sheetEl(name);
@@ -7380,6 +7957,7 @@
   function applyPreviewSize(){
     const v = ['small','normal','large'].indexOf(state.previewSize) >= 0 ? state.previewSize : 'normal';
     document.body.classList.toggle('prev-small', v === 'small');
+    document.body.classList.toggle('prev-normal', v === 'normal');
     document.body.classList.toggle('prev-large', v === 'large');
     document.querySelectorAll('#sizeSeg button').forEach(b=>b.classList.toggle('on', b.dataset.ps === v));
     setTimeout(paint, 40);
@@ -7389,6 +7967,10 @@
     if (!b) return;
     state.previewSize = b.dataset.ps;
     if (state.step === 3) psStep3Picked = true;
+    /* v5.8: 미리보기가 접혀 있어도 크기를 누르면 펼쳐서 보여준다 */
+    stageTouched = true;
+    state.stageHide = false;
+    applyStepUI();
     applyPreviewSize();
     persistSoon();
   });
@@ -7473,6 +8055,10 @@
         roles.map(function(r){
           return '<button data-brole="' + r[0] + '" data-bi="' + i + '" class="' + (it.role === r[0] ? 'on' : '') + '">' + r[1] + '</button>';
         }).join('') + '</div></div>' +
+        '<div class="ordBtns">' +
+          '<button data-bmove="-1" data-bi="' + i + '" aria-label="앞으로"' + (i === 0 ? ' disabled' : '') + '>▲</button>' +
+          '<button data-bmove="1" data-bi="' + i + '" aria-label="뒤로"' + (i === batchItems.length - 1 ? ' disabled' : '') + '>▼</button>' +
+        '</div>' +
         '<button class="x" data-bdel="' + i + '" aria-label="이 사진 빼기">✕</button></div>';
     }).join('');
     const nC = batchItems.filter(function(x){ return x.role === 'cover'; }).length;
@@ -7722,8 +8308,6 @@
     }
     renderAll();
     persistNow();
-    if (c) toast(c.emoji + ' ' + c.name + ' 통일 표지 적용 · 표지·포인트 색 ' + c.color);
-    else toast('카테고리 해제 · 컬러 배합 색으로 돌아왔어요');
   }
   if (el('catChips')) el('catChips').addEventListener('click', function(e){
     const b = e.target.closest('[data-cat]');
@@ -7754,7 +8338,7 @@
     const coverIds = TPL_IDS.filter(function(id){ return roleShownIn(id, 'cover'); });
     const showYellow = roleShownIn('iming_yellow', 'cover');
     box.innerHTML = (showYellow ? '<button class="chip preset' + (yellowOn ? ' on' : '') + '" data-preset="iming" aria-pressed="' + (yellowOn ? 'true' : 'false') + '">' +
-             '<span class="em">💛</span><span class="t">IMING 옐로우</span></button>' : '') +
+             '<span class="em">💛</span><span class="t">' + esc(tplName('iming_yellow')) + '</span></button>' : '') +
              coverIds.map(function(id){
       return '<button class="chip' + (id === csVal ? ' on' : '') + '" data-cstyle="' + id + '">' +
              '<span class="t">' + esc(tplName(id)) + '</span></button>';
@@ -7763,14 +8347,14 @@
              '<span class="t">' + esc(t.name) + '</span>' +
              '<span class="fdel" data-mytpldel="' + esc(t.id) + '" role="button" aria-label="' + esc(t.name) + ' 삭제">✕</span></button>';
     }).join('');
-    if (el('tplNow')) el('tplNow').textContent = yellowOn ? '💛 IMING 옐로우' : tplName(csVal);
+    if (el('tplNow')) el('tplNow').textContent = yellowOn ? tplName('iming_yellow') : tplName(csVal);
     if (el('typeCard')) el('typeCard').dataset.cstyle = csVal;
     const bb = el('bodyChips');
     if (bb){
       const bodyIds = BODY_IDS.filter(function(id){ return roleShownIn(id, 'body'); });
       bb.innerHTML = bodyIds.length ? bodyIds.map(function(id){
         return '<button class="chip" data-bstyle="' + id + '" aria-pressed="false"><span class="t">' +
-               esc(BODY_DEFAULT[id] || id) + '</span></button>';
+               esc(bodyStyleName(id) || id) + '</span></button>';
       }).join('') : '<span class="chipsEmpty">본문으로 분류된 디자인이 없어요 · 🏷️ 디자인 분류 설정에서 본문 디자인을 정해 주세요</span>';
     }
     syncBodyStyleSeg();
@@ -7846,7 +8430,6 @@
     renderTplChips();
     setTimeout(paint, 30);
     if (syncOn()) scheduleSync();
-    toast('🏷️ ' + roleLabel(id) + ' · ' + ROLE_TXT[r] + ' 전용으로 바꿨어요');
   });
   if (el('tplRoleReset')) el('tplRoleReset').addEventListener('click', function(){
     roleSave(ROLE_DEFAULT);
@@ -7854,7 +8437,6 @@
     renderTplChips();
     setTimeout(paint, 30);
     if (syncOn()) scheduleSync();
-    toast('디자인 분류를 기본값으로 돌렸어요');
   });
 
   /* v5.2: 질문 박스형 — 4단계에서 문구·위치 바로 고치기 */
@@ -7899,7 +8481,7 @@
   if (el('qboxClear')) el('qboxClear').addEventListener('click', function(){
     const covers = state.slides.filter(function(s){ return s.type === 'cover'; });
     if (!covers.length) return;
-    compSnapshot('질문 박스 비우기 직전', { undo:true });
+    compSnapshot('질문 박스 비우기 직전');
     covers.forEach(function(s){ s.q1 = ''; s.q2 = ''; s.q3 = ''; });
     if (el('qbox3Row')) el('qbox3Row').hidden = true;
     renderAll(); persistNow();
@@ -7968,7 +8550,6 @@
     if (!b) return;
     setCoverBg(b.dataset.bg);
     applyStepUI();
-    toast('표지 배경 · ' + bgLabel(state.coverBg));
   });
 
   /* =========================================================
@@ -8356,6 +8937,8 @@
     const st = clamp(Math.round(num(n, 1)), 1, 4);
     /* v5.7: 1단계는 미리보기 접기 · 2~4단계는 펼쳐서 보며 수정 (직접 접으면 유지) */
     if (!stageTouched) state.stageHide = (st === 1);
+    /* v5.8: 2단계(글쓰기)에서도 카드 사진·미리보기를 항상 보여준다 */
+    if (st === 2) state.stageHide = false;
     if (st === 2){
       const t = cur().type;
       writeTab = t === 'summary' ? 'summary' : (t === 'body' ? 'body' : 'cover');
@@ -8738,7 +9321,7 @@
   if (el('posApplyAll')) el('posApplyAll').addEventListener('click', function(){
     const s = cur();
     if (s.type === 'summary'){ toast('표지·본문 카드에서 쓸 수 있어요'); return; }
-    compSnapshot('글씨 위치 일괄 적용 직전', { undo:true });
+    compSnapshot('글씨 위치 일괄 적용 직전');
     const posName = { top:'상단', middle:'중간', bottom:'하단' }[s.pos || 'bottom'];
     const alignName = { left:'왼쪽', center:'중앙', right:'오른쪽' }[s.align || 'left'];
     let n = 0;
@@ -8784,7 +9367,7 @@
     const s = cur();
     const want = ['cover','body','summary'].indexOf(role) >= 0 ? role : 'body';
     if (s.type === want){ syncRoleUI(); return; }
-    compSnapshot('카드 역할 변경 직전', { undo:true });
+    compSnapshot('카드 역할 변경 직전');
     if (want === 'summary'){
       const si = summaryIndex();
       if (si >= 0 && si !== state.current){
@@ -9407,6 +9990,12 @@
       window.addEventListener('resize', paintSoon);
     }
     window.addEventListener('orientationchange', ()=>setTimeout(paint, 200));
+    /* v5.8: 화면을 닫거나 앱을 벗어날 때도 저장을 마무리한다 */
+    window.addEventListener('pagehide', function(){ try{ persistNow(); }catch(e){} });
+    document.addEventListener('visibilitychange', function(){
+      if (document.visibilityState === 'hidden'){ try{ persistNow(); }catch(e){} }
+    });
+    setTimeout(function(){ loadAllFontFaces(); }, 1200);
 
     window.__iming = {
       state: state,
