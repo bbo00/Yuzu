@@ -442,6 +442,48 @@
   .capArea{width:100%; min-height:190px; border:1px solid var(--line); border-radius:11px; padding:11px 12px;
     font-size:13px; line-height:1.62; color:#22211D; background:#fff; resize:vertical; font-family:inherit;
     -webkit-appearance:none}
+
+  /* v5.3 ---------- */
+  .editor > *{flex:0 0 auto}
+  /* 1단계는 누끼·사진을 보며 만지므로 미리보기를 열어도 높이를 조금 줄여요 */
+  body[data-step="1"] .stage{height:clamp(200px, 32vh, 330px)}
+  .toast{display:flex; align-items:center; gap:10px; justify-content:center}
+  .toast .tundo{flex:none; border:0; background:#fff; color:#16150F; border-radius:8px; height:28px; padding:0 11px;
+    font-size:11.5px; font-weight:800; letter-spacing:-.2px}
+  .batchItem{position:relative}
+  .batchItem .x{flex:none; width:26px; height:26px; border-radius:50%; border:1px solid var(--line); background:#fff;
+    color:#9C998F; font-size:12px; line-height:1; padding:0; display:grid; place-items:center}
+  .batchItem .x:active{background:#F2EFE7}
+  .batchItem .fname b{color:#22211D; font-size:11.5px}
+  .batchBgRow .bk{width:56px}
+  .roleChips button.on[data-brole="summary"]{background:#1B8A5E; border-color:#1B8A5E}
+  .roleChips button.on[data-brole="cover"]{background:#111; border-color:#111}
+  .roleChips button.on[data-brole="body"]{background:#3F6EDB; border-color:#3F6EDB}
+  .chip.font .pin{flex:none; width:20px; height:20px; border-radius:50%; display:grid; place-items:center;
+    font-size:11px; line-height:1; color:#C9C5B8; background:transparent}
+  .chip.font .pin.on{color:#F2B01E}
+  .chip.font.on .pin{color:rgba(255,255,255,.45)}
+  .chip.font.on .pin.on{color:#FFD262}
+  .fontTarget{display:flex; gap:5px; margin:0 0 7px}
+  .fontTarget .seg{flex:1}
+  .fontTarget .mini{flex:0 0 108px; height:auto; font-size:11px; font-weight:800}
+  .feedGrid{display:grid; grid-template-columns:repeat(3, 1fr); gap:3px; margin:2px 0 10px}
+  .feedCell{position:relative; aspect-ratio:4 / 5; border-radius:7px; overflow:hidden; border:1px solid var(--line);
+    background:#EFECE3; padding:0; display:block; width:100%}
+  .feedCell img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block}
+  .feedCell .ct{position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; align-items:center;
+    gap:3px; padding:7px; text-align:center; font-size:10.5px; font-weight:800; line-height:1.28; letter-spacing:-.3px;
+    word-break:keep-all; overflow:hidden}
+  .feedCell .ct i{display:block; width:16px; height:3px; border-radius:2px; background:currentColor; opacity:.5}
+  .feedCell .nmbar{position:absolute; left:0; right:0; bottom:0; padding:10px 6px 4px; font-size:9px; font-weight:800; color:#fff;
+    background:linear-gradient(to top, rgba(0,0,0,.62), rgba(0,0,0,0)); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:left}
+  .feedCell.cur{outline:2px solid #111; outline-offset:-2px}
+  .feedEmpty{grid-column:1 / -1; padding:16px 2px; text-align:center; font-size:11.5px; color:#A5A298; line-height:1.5}
+  .slotViewSeg{display:flex; background:var(--soft); border-radius:9px; padding:2px; gap:2px; margin:0 0 9px}
+  .slotViewSeg button{flex:1; border:0; background:transparent; padding:6px 4px; border-radius:7px; font-size:11.5px; font-weight:800; color:#6d6b63}
+  .slotViewSeg button.on{background:#fff; color:#111; box-shadow:0 1px 2px rgba(0,0,0,.09)}
+  .themePrio{margin:6px 0 0; font-size:10.5px; color:#9C998F; line-height:1.4}
+  .themePrio b{color:#3E3C36}
 </style>
 </head>
 <body data-type="cover">
@@ -495,11 +537,6 @@
 
 <section class="editor" id="editor">
 
-  <div class="undoBar" id="undoBar" hidden>
-    <span id="undoText">직전 작업을 되돌릴 수 있어요</span>
-    <button id="undoBtn">되돌리기</button>
-  </div>
-
   <div class="card" id="catCard" data-steps="1">
     <div class="cardHead"><span class="label">카테고리 · 통일 표지</span><span class="count" id="catName">선택 안 함</span></div>
     <div class="catGrid" id="catChips"></div>
@@ -513,10 +550,10 @@
     <p class="hint">5개 모두 <b>같은 표지 틀</b>에 <b>시그니처 색만</b> 달라요 · 표지 템플릿은 <b>4단계</b>에서 골라요</p>
   </div>
 
-  <div class="card" id="coverBgCard" data-steps="1">
+  <div class="card" id="coverBgCard" data-steps="1 4">
     <div class="cardHead"><span class="label">표지 배경</span><span class="count" id="coverBgName">사진</span></div>
     <div class="bgGrid" id="bgChips"></div>
-    <p class="hint">사진 없이 <b>단색</b>으로도 깔끔하게 · 글씨 색은 배경 밝기에 맞춰 자동으로 바뀌어요</p>
+    <p class="hint">사진 없이 <b>단색</b>으로도 깔끔하게 · 1단계·4단계 어디서든 바뀌어요 · 글씨 색은 배경 밝기에 맞춰 자동으로 바뀌어요</p>
   </div>
 
   <div class="card" id="writeCard" data-steps="2">
@@ -527,6 +564,10 @@
       <button data-wtab="summary">요약</button>
     </div>
     <p class="stepNote" id="writeNote">적은 내용은 바로 카드에 반영되고, 단계를 옮겨도 자동 저장돼요</p>
+    <div class="chipActions">
+      <button class="mini" id="bulkBtn">📝 모든 카드 글 한 번에</button>
+      <button class="mini danger" id="clearTextBtn">글만 비우기</button>
+    </div>
   </div>
 
   <div class="card" id="bodyWrite" data-steps="2">
@@ -595,6 +636,7 @@
   <div class="card" id="designCard" data-steps="4">
     <div class="cardHead"><span class="label">컬러 배합</span><span class="count" id="themeName">웜 크림 &amp; 에스프레소</span></div>
     <div class="chips" id="themeChips"></div>
+    <p class="themePrio" id="themePrioHint"></p>
 
     <div class="cardHead" style="margin:11px 0 7px">
       <span class="label">글씨체</span>
@@ -604,8 +646,15 @@
         <button class="linkBtn" id="fontOrderBtn" aria-pressed="false" title="글씨체 순서 바꾸기">↕️ 순서</button>
       </span>
     </div>
+    <div class="fontTarget">
+      <div class="seg" id="fontTargetSeg">
+        <button data-ft="cover">표지</button>
+        <button data-ft="main">본문·요약</button>
+      </div>
+      <button class="mini" id="fontUnify">같은 글씨체로 통일</button>
+    </div>
     <div class="chips" id="fontChips"></div>
-    <p class="hint" id="fontOrderHint" hidden>◀ ▶ 로 순서를 바꿔요 · 바뀐 순서는 이 브라우저에 저장돼 새로고침해도 그대로예요</p>
+    <p class="hint">⭐를 누르면 그 글씨체가 목록 맨 앞에 고정돼요 · 위에서 <b>표지</b> / <b>본문·요약</b>을 골라 따로 지정해요</p>
     <div class="chipActions" style="margin-top:7px">
       <button class="mini" id="fontImport">＋ 내 폰트 파일 불러오기</button>
     </div>
@@ -629,11 +678,25 @@
       <span class="tiny num" id="sizeSmallVal">1.00×</span>
     </div>
     <p class="hint">제목 / 부제·강조 / 하단 설명·항목 글씨를 따로 키울 수 있어요</p>
+
+    <div class="cardHead" style="margin:12px 0 7px"><span class="label">글씨 색 · 투명도</span><span class="count" id="tcolName">자동</span></div>
+    <div class="seg" id="tcolSeg">
+      <button data-tcol2="auto">자동</button>
+      <button data-tcol2="white">흰색</button>
+      <button data-tcol2="accent">포인트색</button>
+      <button data-tcol2="ink">검정</button>
+    </div>
+    <div class="zoomRow"><span class="lab">글씨 투명도</span><input type="range" id="textOpacity" min="0.4" max="1" step="0.01"><span class="tiny num" id="textOpacityVal">100%</span></div>
+    <p class="hint">표지·본문·요약 글씨에 함께 적용돼요 · 사진 위에서 안 보일 때 <b>흰색</b>이나 <b>검정</b>으로 바꿔보세요</p>
   </div>
 
   <div class="card" id="captionCard" data-steps="4">
     <div class="cardHead"><span class="label">인스타 캡션</span><span class="count" id="captionMeta">비어 있어요</span></div>
     <p class="hint" style="margin-top:0">2단계에 적은 표지·본문·요약 금액으로 추천 문구를 만들어요 · 직접 고쳐도 돼요</p>
+    <div class="field" style="margin:0 0 8px">
+      <label>지역명</label>
+      <input type="text" id="regionInput" maxlength="14" placeholder="예: 다낭 / 수원 망포">
+    </div>
     <textarea id="captionText" class="capArea" rows="9" placeholder="추천 문구 생성 을 누르면 여기에 채워져요"></textarea>
     <div class="chipActions" style="margin-top:8px">
       <button class="mini primary" id="captionGen">추천 문구 생성</button>
@@ -643,13 +706,15 @@
   </div>
 
   <div class="card" id="photoCard" data-steps="1 3">
-    <div class="cardHead"><span class="label">사진</span><button class="linkBtn st1only" id="photoClear">빼기</button></div>
+    <div class="cardHead"><span class="label">사진 · 일괄 업로드</span><button class="linkBtn st1only" id="photoClear">이 카드 사진 빼기</button></div>
     <div class="st1only">
       <div class="drop" id="drop">
         <input type="file" id="file" accept="image/*" multiple hidden>
         <img id="thumb" alt="" hidden>
-        <div class="dropEmpty" id="dropEmpty"><b>사진 올리기</b><span>탭해서 선택 · 끌어다 놓기</span></div>
+        <div class="dropEmpty" id="dropEmpty"><b>사진 올리기</b><span>여러 장 한 번에 · 끌어다 놓기</span></div>
       </div>
+      <button class="mini primary" id="batchAdd" style="margin-top:7px; height:42px; width:100%; font-size:12.5px">📷 사진 여러 장 · 표지/본문/요약 한 번에</button>
+      <input type="file" id="batchFile" accept="image/*" multiple hidden>
     </div>
     <div class="zoomRow">
       <span class="tiny">확대</span>
@@ -666,19 +731,17 @@
     <p class="hint">미리보기 사진을 <b>드래그</b>해 위치 조정 · <b>두 손가락</b>으로 확대</p>
     <p class="hint st3only" style="margin-top:4px">사진 넣기·바꾸기·전체 삭제는 <b>1단계</b>에서 해요</p>
     <div class="st1only">
-      <p class="hint summaryOnly" style="margin-top:3px">요약표는 배경 <b>‘사진 딤’</b>일 때만 사진을 써요</p>
-      <button class="mini" id="batchAdd" style="margin-top:9px; height:40px; width:100%; font-size:12.5px">사진 여러 장 한 번에 올리기</button>
-      <input type="file" id="batchFile" accept="image/*" multiple hidden>
-      <button class="mini danger" id="photoClearAll" style="margin-top:6px; height:37px; width:100%; font-size:12px">사진 전체 삭제 (모든 슬라이드)</button>
+      <p class="hint summaryOnly" style="margin-top:3px">요약표는 배경 <b>‘사진’</b>일 때만 사진을 써요</p>
+      <button class="mini danger" id="photoClearAll" style="margin-top:9px; height:37px; width:100%; font-size:12px">사진 전체 삭제 (모든 슬라이드)</button>
       <p class="hint" style="margin-top:4px">사진·누끼만 지우고 문구·설정은 그대로 · 되돌리기로 복구</p>
     </div>
   </div>
 
   <div class="card" id="stickerCard" data-steps="1">
-    <div class="cardHead"><span class="label">스티커 · 누끼</span><span class="count" id="stickerCount">0/3</span></div>
+    <div class="cardHead"><span class="label">누끼 · 스티커</span><span class="count" id="stickerCount">0/3</span></div>
     <div class="chips" id="stickerChips"></div>
     <div class="chipActions">
-      <button class="mini primary" id="stickerAdd">+ 스티커 추가</button>
+      <button class="mini primary" id="stickerAdd">＋ 누끼 사진 올리기</button>
       <button class="mini danger" id="stickerDel">선택 삭제</button>
     </div>
     <div id="stickerCtl" hidden>
@@ -691,17 +754,35 @@
         </div>
       </div>
       <div class="zoomRow" id="stTolRow"><span class="lab">누끼 민감도</span><input type="range" id="stTol" min="0" max="100" step="1"><span class="tiny num" id="stTolVal">50</span></div>
-      <div class="switch" id="stBorderRow" style="margin-top:8px">
-        <div><span>흰 스티커 테두리</span><small>누끼가 사진 배경 위에서 또렷하게</small></div>
-        <button class="tog" id="stBorderTog" aria-label="흰 테두리 토글"></button>
+      <div class="field" style="margin-top:10px">
+        <label>누끼 테두리 두께</label>
+        <div class="seg" id="stBorderSeg">
+          <button data-bw="0">없음</button>
+          <button data-bw="0.5">얇게</button>
+          <button data-bw="1">보통</button>
+          <button data-bw="1.8">굵게</button>
+        </div>
       </div>
-      <div class="zoomRow" style="margin-top:10px"><span class="lab">크기</span><input type="range" id="stSize" min="0.06" max="1" step="0.01"><span class="tiny num" id="stSizeVal">30%</span></div>
+      <div class="field">
+        <label>테두리 색</label>
+        <div class="seg" id="stBorderColorSeg">
+          <button data-bc="#FFFFFF">흰색</button>
+          <button data-bc="#111111">검정</button>
+        </div>
+      </div>
+      <div class="field" style="margin-top:10px">
+        <label>누끼 안 사진 확대 · 이동</label>
+        <div class="zoomRow" style="margin-top:2px"><span class="lab">확대</span><input type="range" id="stZoom" min="1" max="2.5" step="0.01"><span class="tiny num" id="stZoomVal">1.00×</span></div>
+        <div class="zoomRow"><span class="lab">좌우</span><input type="range" id="stOffX" min="-1" max="1" step="0.01"><span class="tiny num" id="stOffXVal">0</span></div>
+        <div class="zoomRow"><span class="lab">상하</span><input type="range" id="stOffY" min="-1" max="1" step="0.01"><span class="tiny num" id="stOffYVal">0</span></div>
+      </div>
+      <div class="zoomRow"><span class="lab">크기</span><input type="range" id="stSize" min="0.06" max="1" step="0.01"><span class="tiny num" id="stSizeVal">30%</span></div>
       <div class="zoomRow"><span class="lab">회전</span><input type="range" id="stRot" min="-25" max="25" step="1"><span class="tiny num" id="stRotVal">0°</span></div>
       <div class="zoomRow"><span class="lab">가로</span><input type="range" id="stX" min="0" max="1" step="0.005"><span class="tiny num" id="stXVal">50%</span></div>
       <div class="zoomRow"><span class="lab">세로</span><input type="range" id="stY" min="0" max="1" step="0.005"><span class="tiny num" id="stYVal">50%</span></div>
-      <p class="hint">사진을 올리면 배경을 자동으로 따요 · 민감도로 다시 조정 · 미리보기에서 <b>끌어서</b> 이동</p>
+      <p class="hint">올리면 바로 원형으로 붙어요 · 형태·테두리·안쪽 확대·이동은 여기서 다듬고, 미리보기에서 <b>끌어서</b> 위치를 잡아요</p>
     </div>
-    <input type="file" id="stFile" accept="image/*" hidden>
+    <input type="file" id="stFile" accept="image/*" multiple hidden>
   </div>
 
 
@@ -876,6 +957,7 @@
     <button class="sheetRow" id="sheetExample"><div><div>목식당 예시 채우기</div><div class="sub">문구 템플릿 4장이 채워져요 (사진은 직접)</div></div><span class="val">›</span></button>
     <button class="sheetRow" id="sheetGuide"><div><div>안전영역 가이드</div><div class="sub">릴스 9:16 상·하단 UI 여백선</div></div><span class="val" id="sheetGuideVal">꺼짐</span></button>
     <button class="sheetRow" id="sheetSync"><div><div>클라우드 동기화</div><div class="sub">저장함의 폴더·덱을 다른 기기와 맞추기</div></div><span class="val" id="sheetSyncVal">꺼짐</span></button>
+    <button class="sheetRow" id="menuRestore"><div><div>직전 작업 되돌리기</div><div class="sub" id="menuRestoreSub">직전 백업 없음</div></div><span class="val">↩</span></button>
     <button class="sheetRow" id="sheetReload"><div><div>사진 다시 불러오기</div><div class="sub">저장된 작업은 그대로 두고 화면만 새로</div></div><span class="val">↻</span></button>
     <button class="sheetRow danger" id="sheetReset"><div><div>전체 초기화</div><div class="sub">이 브라우저에 저장된 카드 전부 삭제</div></div><span class="val">›</span></button>
     <p class="sheetNote">작업 내용은 이 브라우저(localStorage)에만 저장돼요. 사진은 서버로 보내지 않고 기기 안에서만 합성됩니다.</p>
@@ -893,6 +975,11 @@
       <button id="slotSyncCfg">코드</button>
     </div>
     <div class="folderChips" id="folderChips"></div>
+    <div class="slotViewSeg" id="slotViewSeg">
+      <button data-sv="list">목록</button>
+      <button data-sv="feed">피드 3열</button>
+    </div>
+    <div class="feedGrid" id="feedGrid" hidden></div>
     <div class="slotSaveBar">
       <input type="text" id="slotName" placeholder="덱 이름 (예: 다낭여행 1편)">
       <button id="slotSaveNow">저장</button>
@@ -922,17 +1009,22 @@
 <div class="sheetWrap" id="batchWrap">
   <div class="sheetBg" data-close="batch"></div>
   <div class="sheet tall">
-    <h4>사진 <span id="batchCount">0</span>장 · 용도 고르기</h4>
+    <h4>사진 <span id="batchCount">0</span>장 · 용도 한 번에</h4>
+    <button class="mini" id="batchMore" style="margin:-4px 0 9px; height:32px; width:100%; font-size:11.5px">＋ 사진 더 추가</button>
     <div class="batchBgRow">
       <span class="bk">표지 배경</span>
       <div class="bgGrid" id="batchBgChips"></div>
+    </div>
+    <div class="batchBgRow">
+      <span class="bk">요약 배경</span>
+      <div class="bgGrid" id="batchSumChips"></div>
     </div>
     <div class="batchList" id="batchList"></div>
     <div class="batchFoot">
       <button id="batchCancel">취소</button>
       <button class="primary" id="batchApply">적용하기</button>
     </div>
-    <p class="batchnote"><b>▲▼</b>로 순서를 바꾸면 <b>그 순서대로</b> 본문 카드·표지에 배치돼요. 표지는 첫 표지 사진, 누끼는 지금 슬라이드에 스티커로(최대 3개).</p>
+    <p class="batchnote">각 사진의 <b>표지 / 본문 / 요약</b>만 골라 두면 한 번에 배치돼요 · 사진 5장이면 표지1·본문3·요약1, 사진 3장이면 본문3만 넣고 위에서 표지·요약 배경을 단색으로 골라 바로 끝낼 수 있어요. 잘못 올린 사진은 <b>✕</b>로 빼요.</p>
   </div>
 </div>
 
@@ -1220,7 +1312,9 @@
       id: str(r.id), name: str(r.name).slice(0, 14), ts: num(r.ts, 0),
       cfg: {
         base: ['cat','trend','question','classic'].indexOf(c.base) >= 0 ? c.base : 'classic',
-        theme: str(c.theme), font: str(c.font),
+        theme: str(c.theme), font: str(c.font), fontCover: str(c.fontCover || c.font),
+        textColor: ['auto','white','accent','ink'].indexOf(c.textColor) >= 0 ? c.textColor : 'auto',
+        textOpacity: clamp(num(c.textOpacity, 1), 0.4, 1),
         sizes: { title: clamp(num(sz.title, 1), 0.6, 1.8), sub: clamp(num(sz.sub, 1), 0.6, 1.8), small: clamp(num(sz.small, 1), 0.6, 1.8) },
         pos: ['top','middle','bottom'].indexOf(c.pos) >= 0 ? c.pos : 'bottom',
         align: ['left','center','right'].indexOf(c.align) >= 0 ? c.align : 'left',
@@ -1258,7 +1352,8 @@
     const base = cur();
     return {
       base: cov ? (cov.coverStyle || 'classic') : 'classic',
-      theme: state.theme, font: state.font, sizes: SZ(),
+      theme: state.theme, font: state.font, fontCover: fontIdFor('cover'),
+      textColor: textMode(), textOpacity: textAlpha(), sizes: SZ(),
       pos: b ? (b.pos || 'bottom') : (base.pos || 'bottom'),
       align: b ? (b.align || 'left') : (base.align || 'left'),
       qboxPos: state.qboxPos || 'top',
@@ -1273,6 +1368,9 @@
     state.slides.forEach(function(s){ if (s.type === 'cover') s.coverStyle = c.cfg.base; });
     if (c.cfg.theme) state.theme = themeById(c.cfg.theme).id;
     if (c.cfg.font) state.font = fontById(c.cfg.font).id;
+    if (c.cfg.fontCover) state.fontCover = fontById(c.cfg.fontCover).id;
+    state.textColor = c.cfg.textColor || 'auto';
+    state.textOpacity = clamp(num(c.cfg.textOpacity, 1), 0.4, 1);
     state.sizes = c.cfg.sizes;
     state.slides.forEach(function(s){
       if (s.type !== 'body') return;
@@ -1287,9 +1385,11 @@
 
   function blankState(mode){
     return { v:5, step:1, mode: mode || 'feed', current:0, guides:false, category:null, coverTitleColor:'cat',
-             theme:'sky', font:'pretendard', fontOrder: FONTS.map(function(f){ return f.id; }),
+             theme:'sky', font:'pretendard', fontCover:'pretendard', fontPins:[], textColor:'auto', textOpacity:1,
+             fontOrder: FONTS.map(function(f){ return f.id; }),
              sizes:{ title:1, sub:1, small:1 }, qboxPos:'top', qboxAlign:'alt',
-             previewSize:'normal', stageHide:false, coverBg:'photo', credit: DEFAULT_CREDIT, creditOn:true,
+             previewSize:'normal', stageHide:false, coverBg:'photo', summaryBg:'dark', region:'', slotView:'list',
+             credit: DEFAULT_CREDIT, creditOn:true,
              bodyDraft:'', caption:'', deckId:'', deckName:'',
              slides:[blankSlide('cover')] };
   }
@@ -1309,6 +1409,13 @@
     return null;
   }
   function fontDefaultOrder(){ return FONTS.map(function(f){ return f.id; }); }
+  /* v5.3: 글씨체는 표지 / 본문·요약 두 갈래로 따로 고른다 */
+  let renderScope = 'main';
+  function fontIdFor(scope){
+    if (scope === 'cover') return fontById(state.fontCover || state.font).id;
+    return fontById(state.font).id;
+  }
+  function fontFor(scope){ return fontById(fontIdFor(scope)); }
   function normFontOrder(list){
     const ids = fontDefaultOrder(), out = [];
     (Array.isArray(list) ? list : []).forEach(function(id){
@@ -1324,8 +1431,21 @@
   }
   /* 글씨체 칩 순서(사용자 지정) — 없으면 기본 순서 */
   function fontOrder(){ return normFontOrder(state.fontOrder); }
-  function orderedFonts(){ return fontOrder().map(fontById); }
-  function FONT(){ return fontById(state.font); }
+  function normPins(list){
+    const ids = fontDefaultOrder(), out = [];
+    (Array.isArray(list) ? list : []).forEach(function(id){
+      const k = str(id);
+      if (ids.indexOf(k) >= 0 && out.indexOf(k) < 0) out.push(k);
+    });
+    return out.slice(0, 3);
+  }
+  function fontPins(){ return normPins(state.fontPins); }
+  function orderedFonts(){
+    const pins = fontPins(), order = fontOrder();
+    const head = pins.map(fontById);
+    return head.concat(order.filter(function(id){ return pins.indexOf(id) < 0; }).map(fontById));
+  }
+  function FONT(){ return fontFor(renderScope); }
   function SZ(){
     const s = state.sizes || {};
     return { title: clamp(num(s.title, 1), 0.6, 1.8),
@@ -1345,6 +1465,14 @@
     out.theme = themeById(raw.theme).id;
     const rawFont = str(raw.font);
     out.font = (rawFont && rawFont.charAt(0) === 'u') ? rawFont : fontById(rawFont).id;
+    const rawCoverFont = str(raw.fontCover) || rawFont;
+    out.fontCover = (rawCoverFont && rawCoverFont.charAt(0) === 'u') ? rawCoverFont : fontById(rawCoverFont).id;
+    out.fontPins = normPins(raw.fontPins);
+    out.textColor = ['auto','white','accent','ink'].indexOf(raw.textColor) >= 0 ? raw.textColor : 'auto';
+    out.textOpacity = clamp(num(raw.textOpacity, 1), 0.4, 1);
+    out.summaryBg = ['photo','dark','light','cream'].indexOf(raw.summaryBg) >= 0 ? raw.summaryBg : 'dark';
+    out.region = str(raw.region).slice(0, 14);
+    out.slotView = raw.slotView === 'feed' ? 'feed' : 'list';
     out.fontOrder = normFontOrder(raw.fontOrder);
     const legacy = clamp(num(raw.textScale, 1), 0.6, 1.8);
     const sz = (raw.sizes && typeof raw.sizes === 'object') ? raw.sizes : {};
@@ -1390,13 +1518,18 @@
           mode: (x && ['auto','circle','raw'].indexOf(x.mode) >= 0) ? x.mode : 'raw',
           tol: clamp(Math.round(num(x && x.tol, STICKER_TOL)), 0, 100),
           border: !!(x && x.border),
+          bw: clamp(num(x && x.bw, (x && x.border === false) ? 0 : 1), 0, 2),
+          bc: (x && x.bc === '#111111') ? '#111111' : '#FFFFFF',
+          iz: clamp(num(x && x.iz, 1), 1, 2.5),
+          ixo: clamp(num(x && x.ixo, 0), -1, 1),
+          iyo: clamp(num(x && x.iyo, 0), -1, 1),
           x: clamp(num(x && x.x, 0.5), 0, 1),
           y: clamp(num(x && x.y, 0.5), 0, 1),
           w: clamp(num(x && x.w, 0.3), 0.06, 1),
           rot: clamp(num(x && x.rot, 0), -25, 25)
         };
       }).filter(x=>x.src);
-      s.summaryStyle = ['photo','dark','light'].includes(r.summaryStyle) ? r.summaryStyle : 'photo';
+      s.summaryStyle = ['photo','dark','light','cream'].includes(r.summaryStyle) ? r.summaryStyle : 'photo';
       s.totalLabel = str(r.totalLabel) || '총 합계';
       s.total = str(r.total); s.totalNote = str(r.totalNote); s.cta = str(r.cta);
       /* 저장된 예전 작업은 손으로 적은 합계를 덮어쓰지 않도록 수동으로 시작 */
@@ -1429,7 +1562,11 @@
   function payloadOf(st){
     const x = st || state;
     return { v:5, step:clamp(Math.round(num(x.step, 1)), 1, 4), mode:x.mode, current:x.current, guides:x.guides,
-      theme:x.theme, font:x.font, fontOrder:normFontOrder(x.fontOrder), sizes:x.sizes, previewSize:x.previewSize,
+      theme:x.theme, font:x.font, fontCover:x.fontCover || x.font, fontPins:normPins(x.fontPins),
+      textColor:['auto','white','accent','ink'].indexOf(x.textColor) >= 0 ? x.textColor : 'auto',
+      textOpacity:clamp(num(x.textOpacity, 1), 0.4, 1), summaryBg:x.summaryBg || 'dark',
+      region:str(x.region).slice(0, 14), slotView:x.slotView === 'feed' ? 'feed' : 'list',
+      fontOrder:normFontOrder(x.fontOrder), sizes:x.sizes, previewSize:x.previewSize,
       stageHide:!!x.stageHide, bodyDraft:str(x.bodyDraft), caption:str(x.caption), deckId:str(x.deckId), deckName:str(x.deckName),
       credit:x.credit, creditOn:x.creditOn, coverBg:x.coverBg || 'photo', category:x.category, coverTitleColor:x.coverTitleColor,
       qboxPos:['top','middle','bottom'].indexOf(x.qboxPos) >= 0 ? x.qboxPos : 'top',
@@ -1483,12 +1620,27 @@
   }
 
   let toastTimer = null;
-  function toast(msg){
+  function toast(msg, opt){
     const t = document.getElementById('toast');
-    t.textContent = msg;
+    t.innerHTML = '';
+    const sp = document.createElement('span');
+    sp.textContent = msg;
+    t.appendChild(sp);
+    const ms = (opt && opt.ms) || 2600;
+    if (opt && typeof opt.undo === 'function'){
+      const b = document.createElement('button');
+      b.className = 'tundo';
+      b.textContent = opt.label || '되돌리기';
+      b.addEventListener('click', function(){
+        t.classList.remove('show');
+        clearTimeout(toastTimer);
+        opt.undo();
+      });
+      t.appendChild(b);
+    }
     t.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(()=>t.classList.remove('show'), 2600);
+    toastTimer = setTimeout(()=>t.classList.remove('show'), ms);
   }
 
   /* =========================================================
@@ -1526,8 +1678,10 @@
   }
 
   const haloCache = new Map();
-  function whiteHalo(src, im){
-    const hit = haloCache.get(src);
+  function haloFor(src, im, color){
+    const col = (color === '#111111') ? '#111111' : '#FFFFFF';
+    const key = src + '|' + col;
+    const hit = haloCache.get(key);
     if (hit && hit.width === im.naturalWidth) return hit;
     const w = im.naturalWidth, h = im.naturalHeight;
     const c = document.createElement('canvas');
@@ -1535,10 +1689,13 @@
     const cx = c.getContext('2d');
     cx.drawImage(im, 0, 0, c.width, c.height);
     cx.globalCompositeOperation = 'source-in';
-    cx.fillStyle = '#FFFFFF';
+    cx.fillStyle = col;
     cx.fillRect(0, 0, c.width, c.height);
-    haloCache.set(src, c);
+    haloCache.set(key, c);
     return c;
+  }
+  function clearHalo(src){
+    Array.from(haloCache.keys()).forEach(function(k){ if (k.indexOf(src + '|') === 0) haloCache.delete(k); });
   }
 
   function drawStickers(ctx, s, f){
@@ -1553,9 +1710,10 @@
       ctx.rotate(r.rot * Math.PI / 180);
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
-      if (st.border){
-        const halo = whiteHalo(st.src, im);
-        const t = Math.max(3, f.w * 0.0062);
+      const bw = clamp(num(st.bw, (st.border === false ? 0 : 1)), 0, 2);
+      if (bw > 0){
+        const halo = haloFor(st.src, im, st.bc);
+        const t = Math.max(2, f.w * 0.0062 * bw);
         const steps = 24;
         ctx.globalAlpha = 1;
         for (let k = 0; k < steps; k++){
@@ -1885,12 +2043,37 @@
     return data;
   }
 
+  /* v5.3: 누끼 프레임 앞에서 사진을 확대·이동 */
+  function innerCanvas(c, z, ox, oy, clipCircle){
+    const zz = clamp(num(z, 1), 1, 2.5);
+    const xo = clamp(num(ox, 0), -1, 1), yo = clamp(num(oy, 0), -1, 1);
+    if (zz <= 1.0001 && !xo && !yo) return c;
+    const w = c.width, h = c.height;
+    const out = document.createElement('canvas');
+    out.width = Math.max(1, w); out.height = Math.max(1, h);
+    const cx = out.getContext('2d');
+    cx.imageSmoothingEnabled = true;
+    cx.imageSmoothingQuality = 'high';
+    if (clipCircle){
+      cx.save();
+      cx.beginPath();
+      cx.arc(w / 2, h / 2, Math.max(0, Math.min(w, h) / 2 - 0.5), 0, Math.PI * 2);
+      cx.clip();
+    }
+    const dw = w * zz, dh = h * zz;
+    const mx = (dw - w) / 2, my = (dh - h) / 2;
+    cx.drawImage(c, (w - dw) / 2 + xo * mx, (h - dh) / 2 + yo * my, dw, dh);
+    if (clipCircle) cx.restore();
+    return out;
+  }
+
   /* 원본 처리 결과 + 민감도 재조정용 원본 보관 */
-  function prepareSticker(img, mode, tol, keepOrig){
+  function prepareSticker(img, mode, tol, keepOrig, inner){
     let c;
     if (mode === 'circle') c = circleCanvas(img);
     else if (mode === 'auto') c = trimCanvas(cutoutCanvas(img, tol));
     else c = scaledCanvas(img, STICKER_MAX);
+    if (inner) c = innerCanvas(c, inner.iz, inner.ixo, inner.iyo, mode === 'circle');
     const src = encodeSticker(c);
     const orig = keepOrig || (mode === 'raw'
       ? scaledCanvas(img, STICKER_MAX).toDataURL('image/png')
@@ -2116,6 +2299,42 @@
       pillBg:'rgba(255,255,255,.96)', pillFg:'#151510', totalBg:'#FFFFFF', totalFg:'#14140F' });
   }
   function surfacePal(){ return THEME().dark ? palInk() : palPaper(); }
+  function palCream(){
+    const t = palPaper();
+    return Object.assign({}, t, { bg:'#F5EFE4', totalBg:'#2B1E15', totalFg:'#FBF3E4' });
+  }
+
+  /* v5.3: 글씨 색 자동/흰색/포인트색/검정 + 투명도 */
+  function alphaOf(c){
+    const m = String(c == null ? '' : c).match(/rgba?\(([^)]+)\)/);
+    if (m){ const p = m[1].split(','); return p.length > 3 ? clamp(parseFloat(p[3]), 0, 1) : 1; }
+    return 1;
+  }
+  function withAlpha(c, a){
+    const s = String(c == null ? '#000000' : c);
+    const m = s.match(/^rgba?\(([^)]+)\)$/);
+    if (m){
+      const p = m[1].split(',').map(function(x){ return x.trim(); });
+      return 'rgba(' + p[0] + ',' + p[1] + ',' + p[2] + ',' + clamp(a, 0, 1) + ')';
+    }
+    return hexA(s, clamp(a, 0, 1));
+  }
+  function textMode(){ return ['auto','white','accent','ink'].indexOf(state.textColor) >= 0 ? state.textColor : 'auto'; }
+  function textAlpha(){ return clamp(num(state.textOpacity, 1), 0.4, 1); }
+  function tcol(base, pal){
+    const m = textMode();
+    const a = textAlpha() * alphaOf(base);
+    if (m === 'auto') return withAlpha(base, a);
+    const col = m === 'white' ? '#FFFFFF' : (m === 'ink' ? '#111110' : ((pal && pal.accent) || '#E4552B'));
+    return withAlpha(col, a);
+  }
+  function textPal(pal){
+    if (textMode() === 'auto' && textAlpha() >= 0.999) return pal;
+    const p = Object.assign({}, pal);
+    p.fg = tcol(pal.fg, pal);
+    p.sub = tcol(pal.sub, pal);
+    return p;
+  }
 
   function drawSurface(ctx, w, h, pal, ghost){
     ctx.fillStyle = pal.bg;
@@ -2241,7 +2460,7 @@
       title.lines.forEach(function(ln, i){
         if (ln) ctx.strokeText(ln, pad, y + title.lh * i + title.size * 0.84);
       });
-      ctx.fillStyle = onPhoto ? '#FFFFFF' : THEME().paper.fg;
+      ctx.fillStyle = tcol(onPhoto ? '#FFFFFF' : THEME().paper.fg, { accent:THEME().paper.accent });
       title.lines.forEach(function(ln, i){
         if (ln) ctx.fillText(ln, pad, y + title.lh * i + title.size * 0.84);
       });
@@ -2442,7 +2661,7 @@
             ctx.shadowBlur = 24;
             ctx.shadowOffsetY = 4;
           }
-          ctx.fillStyle = white;
+          ctx.fillStyle = tcol(white, { accent:accent });
           ctx.font = font(size, 800);
           ctx.fillText(parts.rest, rx, base);
         }
@@ -2458,7 +2677,7 @@
           ctx.shadowBlur = 24;
           ctx.shadowOffsetY = 4;
         }
-        ctx.fillStyle = white;
+        ctx.fillStyle = tcol(white, { accent:accent });
         ctx.font = font(size, 800);
         ctx.fillText(lineB, pad, base);
         ctx.restore();
@@ -2476,7 +2695,7 @@
         ctx.shadowBlur = 12;
         ctx.shadowOffsetY = 2;
       }
-      ctx.fillStyle = softWhite;
+      ctx.fillStyle = tcol(softWhite, { accent:accent });
       ctx.font = font(fit.size, 500);
       ctx.fillText(fit.text, pad, top + gapSub + subSize * 0.92);
       ctx.restore();
@@ -2578,7 +2797,7 @@
           ctx.font = font(title.size, 800); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
           title.lines.forEach(function(ln, i){ if (ln) ctx.strokeText(ln, pad, y + title.lh * i + title.size * 0.84); });
         }
-        drawLines(ctx, title.lines, pad, y, title.lh, title.size, 800, pal.fg, 'left');
+        drawLines(ctx, title.lines, pad, y, title.lh, title.size, 800, tcol(pal.fg, pal), 'left');
         ctx.restore();
       }});
     }
@@ -2586,7 +2805,7 @@
       blocks.push({ h: sub.lines.length * sub.lh, gap: 20, draw: y => {
         ctx.save();
         ctx.shadowColor = 'rgba(0,0,0,.38)'; ctx.shadowBlur = 16; ctx.shadowOffsetY = 2;
-        drawLines(ctx, sub.lines, pad, y, sub.lh, sub.size, 500, pal.sub, 'left');
+        drawLines(ctx, sub.lines, pad, y, sub.lh, sub.size, 500, tcol(pal.sub, pal), 'left');
         ctx.restore();
       }});
     }
@@ -2714,7 +2933,7 @@
       ctx.shadowColor = 'rgba(0,0,0,.18)'; ctx.shadowBlur = 8;
       ctx.font = font(title.size, 900);
       ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-      ctx.fillStyle = (white && onDark) ? '#FFFFFF' : c.color;
+      ctx.fillStyle = tcol((white && onDark) ? '#FFFFFF' : c.color, { accent:c.color });
       title.lines.forEach(function(ln, i){ if (ln) ctx.fillText(ln, w / 2, y + title.lh * i + title.size * 0.84); });
       ctx.restore();
       y += title.lines.length * title.lh;
@@ -2735,7 +2954,7 @@
       ctx.save();
       if (onDark){ ctx.shadowColor = 'rgba(0,0,0,.62)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 2; }
       ctx.font = font(sub.size, 600); ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-      ctx.fillStyle = onDark ? 'rgba(255,255,255,.97)' : 'rgba(30,28,23,.82)';
+      ctx.fillStyle = tcol(onDark ? 'rgba(255,255,255,.97)' : 'rgba(30,28,23,.82)', { accent:c.color });
       sub.lines.forEach(function(ln, i){ if (ln) ctx.fillText(ln, w / 2, y + 16 + sub.lh * i + sub.size * 0.84); });
       ctx.restore();
     }
@@ -2804,6 +3023,96 @@
   }
   function solidPal(solid){ return solid.dark ? catPal(palPhoto()) : catPal(palPaper()); }
 
+  /* v5.3: 본문 `**강조**` 형광펜 */
+  function parseRichSegs(text){
+    const out = [];
+    let buf = '', em = false;
+    const s = String(text == null ? '' : text);
+    for (let i = 0; i < s.length; i++){
+      if (s[i] === '*' && s[i + 1] === '*'){
+        if (buf){ out.push({ t:buf, em:em }); buf = ''; }
+        em = !em; i++; continue;
+      }
+      buf += s[i];
+    }
+    if (buf) out.push({ t:buf, em:em });
+    return out;
+  }
+  function richLines(ctx, text, maxW, size, weight){
+    ctx.font = font(size, weight);
+    const lines = [];
+    let cur = [], cw = 0;
+    const flush = function(){
+      if (!cur.length) return;
+      while (cur.length && /^\s+$/.test(cur[cur.length - 1].t)){ cw -= ctx.measureText(cur[cur.length - 1].t).width; cur.pop(); }
+      if (cur.length) lines.push({ segs:cur, w:cw });
+      cur = []; cw = 0;
+    };
+    parseRichSegs(text).forEach(function(seg){
+      const parts = seg.t.split('\n');
+      parts.forEach(function(part, pi){
+        if (pi > 0) flush();
+        if (!part) return;
+        const words = part.match(/\S+\s*|\s+/g) || [];
+        words.forEach(function(wd){
+          const w = ctx.measureText(wd).width;
+          if (cw + w > maxW && cur.length){ flush(); if (/^\s+$/.test(wd)) return; }
+          cur.push({ t:wd, em:seg.em }); cw += w;
+        });
+      });
+    });
+    flush();
+    return lines;
+  }
+  function fitRich(ctx, text, opt){
+    const maxLines = opt.maxLines || 4, min = opt.minSize || opt.size * 0.7;
+    let size = opt.size, lines = [];
+    for (let g = 0; g < 40; g++){
+      lines = richLines(ctx, text, opt.maxWidth, size, opt.weight);
+      const wide = lines.some(function(l){ return l.w > opt.maxWidth + 0.5; });
+      if (!wide && lines.length <= maxLines) break;
+      if (size <= min){ size = min; lines = richLines(ctx, text, opt.maxWidth, size, opt.weight); break; }
+      size = Math.max(min, size - Math.max(0.5, size * 0.02));
+    }
+    if (lines.length > maxLines) lines = lines.slice(0, maxLines);
+    return { lines: lines, size: size, lh: Math.round(size * (opt.lineHeight || 1.55)) };
+  }
+  function drawRichLines(ctx, lines, x, yTop, lh, size, weight, color, align, pal, vivid){
+    for (let i = 0; i < lines.length; i++){
+      const ln = lines[i];
+      let cx = align === 'center' ? x - ln.w / 2 : (align === 'right' ? x - ln.w : x);
+      const base = yTop + lh * i + size * 0.84;
+      ctx.save();
+      ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+      for (let k = 0; k < ln.segs.length; k++){
+        const sg = ln.segs[k];
+        if (!sg.t) continue;
+        const isEm = sg.em && sg.t.trim();
+        ctx.font = font(size, isEm ? 800 : weight);
+        const w = ctx.measureText(sg.t).width;
+        if (isEm){
+          ctx.fillStyle = (pal && pal.accentSoft) ? pal.accentSoft : 'rgba(228,85,43,.20)';
+          roundRect(ctx, cx - size * 0.05, yTop + lh * i + size * 0.10, w + size * 0.10, size * 1.02, size * 0.10);
+          ctx.fill();
+        }
+        if (vivid){
+          ctx.lineJoin = 'round'; ctx.miterLimit = 2;
+          ctx.lineWidth = Math.max(2, Math.round(size * 0.055));
+          ctx.strokeStyle = 'rgba(8,8,6,.40)';
+          ctx.shadowColor = 'rgba(0,0,0,.52)';
+          ctx.shadowBlur = Math.max(8, Math.round(size * 0.34));
+          ctx.shadowOffsetY = Math.max(1, Math.round(size * 0.06));
+          ctx.strokeText(sg.t, cx, base);
+          ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+        }
+        ctx.fillStyle = isEm ? tcol((pal && pal.accent) ? pal.accent : color, pal) : color;
+        ctx.fillText(sg.t, cx, base);
+        cx += w;
+      }
+      ctx.restore();
+    }
+  }
+
   function drawBody(ctx, s, f){
     const w = f.w, h = f.h, pad = f.pad, T = TS();
     const im = imgFor(s);
@@ -2852,9 +3161,10 @@
     const title = hasTitle ? fitText(ctx, s.title, {
       maxWidth: maxW, size: T.bodyTitle, weight: 800, maxLines: 2, lineHeight: 1.18, minSize: T.bodyTitle * 0.62
     }) : null;
-    const desc = s.desc ? fitText(ctx, s.desc, {
-      maxWidth: maxW * 0.98, size: T.bodyDesc, weight: 500, maxLines: 4, lineHeight: 1.62, minSize: T.bodyDesc * 0.78
-    }) : null;
+    const rich = /\*\*/.test(String(s.desc || ''));
+    const desc = s.desc ? (rich
+      ? fitRich(ctx, s.desc, { maxWidth: maxW * 0.98, size: T.bodyDesc, weight: 500, maxLines: 4, lineHeight: 1.62, minSize: T.bodyDesc * 0.78 })
+      : fitText(ctx, s.desc, { maxWidth: maxW * 0.98, size: T.bodyDesc, weight: 500, maxLines: 4, lineHeight: 1.62, minSize: T.bodyDesc * 0.78 })) : null;
 
     const badge = badgeTextOf(s);
     const num = s.badgeNum || 0;
@@ -2869,14 +3179,15 @@
     }
     if (title){
       blocks.push({ h: title.lines.length * title.lh, gap: (badge || num) ? 22 : 0, draw: y => {
-        if (vivid) drawVividLines(ctx, title.lines, anchorX, y, title.lh, title.size, 800, pal.fg, align);
-        else drawLines(ctx, title.lines, anchorX, y, title.lh, title.size, 800, pal.fg, align);
+        if (vivid) drawVividLines(ctx, title.lines, anchorX, y, title.lh, title.size, 800, tcol(pal.fg, pal), align);
+        else drawLines(ctx, title.lines, anchorX, y, title.lh, title.size, 800, tcol(pal.fg, pal), align);
       }});
     }
     if (desc){
       blocks.push({ h: desc.lines.length * desc.lh, gap: 16, draw: y => {
-        if (vivid) drawVividLines(ctx, desc.lines, anchorX, y, desc.lh, desc.size, 500, pal.sub, align);
-        else drawLines(ctx, desc.lines, anchorX, y, desc.lh, desc.size, 500, pal.sub, align);
+        if (rich) drawRichLines(ctx, desc.lines, anchorX, y, desc.lh, desc.size, 500, tcol(pal.sub, pal), align, pal, vivid);
+        else if (vivid) drawVividLines(ctx, desc.lines, anchorX, y, desc.lh, desc.size, 500, tcol(pal.sub, pal), align);
+        else drawLines(ctx, desc.lines, anchorX, y, desc.lh, desc.size, 500, tcol(pal.sub, pal), align);
       }});
     }
 
@@ -3184,10 +3495,14 @@
     } else if (style === 'light'){
       pal = palPaper();
       drawSurface(ctx, w, h, pal, false);
+    } else if (style === 'cream'){
+      pal = palCream();
+      drawSurface(ctx, w, h, pal, false);
     } else {
       pal = palInk();
       drawSurface(ctx, w, h, pal, false);
     }
+    pal = textPal(pal);
 
     const topY = f.safeTop + pad;
     const bottomY = h - f.safeBottom - pad;
@@ -3372,13 +3687,18 @@
   }
 
   function renderCard(ctx, slide, f, opts){
+    renderScope = slide.type === 'cover' ? 'cover' : 'main';
     ctx.save();
-    if (slide.type === 'body') drawBody(ctx, slide, f);
-    else if (slide.type === 'summary') drawSummary(ctx, slide, f);
-    else drawCover(ctx, slide, f);
-    drawStickers(ctx, slide, f);
-    if (opts && opts.guides) drawGuides(ctx, f);
-    ctx.restore();
+    try{
+      if (slide.type === 'body') drawBody(ctx, slide, f);
+      else if (slide.type === 'summary') drawSummary(ctx, slide, f);
+      else drawCover(ctx, slide, f);
+      drawStickers(ctx, slide, f);
+      if (opts && opts.guides) drawGuides(ctx, f);
+    } finally {
+      ctx.restore();
+      renderScope = 'main';
+    }
   }
 
   /* =========================================================
@@ -3539,27 +3859,83 @@
              '<span class="sw" style="' + sw + '"></span><span class="t">' + esc(t.name) + '</span></button>';
     }).join('');
     el('themeName').textContent = THEME().name;
+    const hint = el('themePrioHint');
+    if (hint){
+      const c = CAT();
+      hint.innerHTML = c
+        ? ('포인트 색 = <b>' + c.name + ' ' + c.color + '</b> · 카테고리를 해제하면 컬러 배합 색이 포인트가 돼요')
+        : ('포인트 색 = <b>컬러 배합 색</b> · 카테고리를 고르면 카테고리 색이 우선해요');
+    }
+  }
+
+  function renderTextCfg(){
+    const m = textMode();
+    document.querySelectorAll('#tcolSeg button').forEach(function(b){
+      b.classList.toggle('on', (b.dataset.tcol2 || 'auto') === m);
+    });
+    const a = textAlpha();
+    if (el('textOpacity')) el('textOpacity').value = a;
+    if (el('textOpacityVal')) el('textOpacityVal').textContent = Math.round(a * 100) + '%';
+    if (el('tcolName')){
+      el('tcolName').textContent = m === 'white' ? '흰색' : m === 'accent' ? '포인트색' : m === 'ink' ? '검정' : '자동';
+    }
   }
 
   let fontOrderMode = false;
+  let fontTarget = 'main';
 
   function fontChipLabel(fn){
     const r = fn.resolve(700);
     return '"' + r.family + '", ' + fn.tail;
   }
+  function targetFontId(){ return fontTarget === 'cover' ? fontIdFor('cover') : fontIdFor('main'); }
+  function setFontTarget(t){
+    fontTarget = (t === 'cover') ? 'cover' : 'main';
+    renderFontChips();
+  }
+  function chooseFont(id){
+    const fn = fontById(id);
+    if (fontTarget === 'cover') state.fontCover = fn.id;
+    else state.font = fn.id;
+    renderFontChips();
+    persistSoon();
+    loadFontFor().then(()=>{ paint(); });
+  }
+  function toggleFontPin(id){
+    const pins = fontPins();
+    const i = pins.indexOf(id);
+    if (i >= 0) pins.splice(i, 1);
+    else {
+      if (pins.length >= 3){ toast('⭐는 3개까지 고정할 수 있어요'); return false; }
+      pins.push(id);
+    }
+    state.fontPins = pins;
+    renderFontChips();
+    persistSoon();
+    return true;
+  }
 
   function renderFontChips(){
     const list = orderedFonts();
     const order = fontOrder();
+    const pins = fontPins();
+    const curId = targetFontId();
     fontChipsEl.classList.toggle('ordermode', fontOrderMode);
     const hint = el('fontOrderHint');
     if (hint) hint.hidden = !fontOrderMode;
 
+    const pinSpan = function(fn){
+      const on = pins.indexOf(fn.id) >= 0;
+      return '<span class="pin' + (on ? ' on' : '') + '" data-fpin="' + fn.id + '" role="button" aria-label="' +
+             esc(fn.label) + (on ? ' 즐겨찾기 해제' : ' 즐겨찾기') + '">' + (on ? '★' : '☆') + '</span>';
+    };
+
     if (fontOrderMode){
       fontChipsEl.innerHTML = list.map(function(fn, i){
-        const on = fn.id === state.font ? ' on' : '';
+        const on = fn.id === curId ? ' on' : '';
         const pos = order.indexOf(fn.id) + 1;
         return '<div class="chip font' + on + '" data-font="' + fn.id + '">' +
+               pinSpan(fn) +
                '<span class="n">' + pos + '</span>' +
                '<button class="mv" data-mv="-1" aria-label="' + esc(fn.label) + ' 앞으로"' + (i === 0 ? ' disabled' : '') + '>◀</button>' +
                '<span class="t" style="font-family:' + fontChipLabel(fn) + '" data-pick="1">' + esc(fn.label) + '</span>' +
@@ -3569,16 +3945,21 @@
       }).join('');
     } else {
       fontChipsEl.innerHTML = list.map(function(fn){
-        const on = fn.id === state.font ? ' on' : '';
-        return '<button class="chip font' + on + '" data-font="' + fn.id + '">' +
+        const on = fn.id === curId ? ' on' : '';
+        const pinned = pins.indexOf(fn.id) >= 0;
+        return '<button class="chip font' + on + (pinned ? ' pinned' : '') + '" data-font="' + fn.id + '">' +
+               pinSpan(fn) +
                (fn.custom ? '<span class="badgeMe">내 폰트</span>' : '') +
                '<span class="t" style="font-family:' + fontChipLabel(fn) + '">' + esc(fn.label) + '</span>' +
                (fn.custom ? '<span class="fdel" data-fdel="' + fn.id + '" role="button" aria-label="' + esc(fn.label) + ' 삭제">✕</span>' : '') +
                '</button>';
       }).join('');
     }
-    el('fontName').textContent = FONT().label;
+    el('fontName').textContent = fontFor(fontTarget).label;
     el('fontName').hidden = !!fontOrderMode;
+    document.querySelectorAll('#fontTargetSeg button').forEach(function(b){
+      b.classList.toggle('on', (b.dataset.ft === 'cover' ? 'cover' : 'main') === fontTarget);
+    });
     const btn = el('fontOrderBtn');
     if (btn){
       btn.classList.toggle('on', fontOrderMode);
@@ -3671,9 +4052,9 @@
           return '<button class="chip stchip ' + (i === stickerSel ? 'on' : '') + '" data-st="' + i + '">' +
                  '<img src="' + st.src + '" alt=""><span class="t">' + (i + 1) + '</span></button>';
         }).join('')
-      : '<span class="count" style="padding:6px 2px">아직 없어요 · 사진을 올리면 자동 누끼로 붙어요</span>';
+      : '<span class="count" style="padding:6px 2px">아직 없어요 · [+ 누끼 사진 올리기]를 누르면 원형 스티커로 바로 붙어요</span>';
     el('stickerCount').textContent = list.length + '/' + MAX_STICKERS;
-    el('stickerAdd').textContent = list.length >= MAX_STICKERS ? '최대 3개' : '+ 스티커 추가';
+    el('stickerAdd').textContent = list.length >= MAX_STICKERS ? '최대 ' + MAX_STICKERS + '개' : '＋ 누끼 사진 올리기';
     el('stickerAdd').disabled = list.length >= MAX_STICKERS;
     el('stickerDel').disabled = !list.length;
     const on = list[stickerSel];
@@ -3684,11 +4065,22 @@
   function syncStickerCtl(){
     const on = selSticker();
     if (!on) return;
-    document.querySelectorAll('#stModeSeg button').forEach(b=>b.classList.toggle('on', b.dataset.stmode === (on.mode || 'auto')));
+    document.querySelectorAll('#stModeSeg button').forEach(b=>b.classList.toggle('on', b.dataset.stmode === (on.mode || 'circle')));
     el('stTolRow').style.display = (on.mode === 'auto') ? '' : 'none';
     el('stTol').value = on.tol;
     el('stTolVal').textContent = String(on.tol);
-    el('stBorderTog').classList.toggle('on', !!on.border);
+    const bw = clamp(num(on.bw, on.border === false ? 0 : 1), 0, 2);
+    document.querySelectorAll('#stBorderSeg button').forEach(function(b){
+      b.classList.toggle('on', Math.abs(parseFloat(b.dataset.bw) - bw) < 0.01);
+    });
+    document.querySelectorAll('#stBorderColorSeg button').forEach(function(b){
+      b.classList.toggle('on', (b.dataset.bc === '#111111' ? '#111111' : '#FFFFFF') === (on.bc || '#FFFFFF'));
+    });
+    const iz = clamp(num(on.iz, 1), 1, 2.5);
+    el('stZoom').value = iz;  el('stZoomVal').textContent = iz.toFixed(2) + '×';
+    const ixo = clamp(num(on.ixo, 0), -1, 1), iyo = clamp(num(on.iyo, 0), -1, 1);
+    el('stOffX').value = ixo; el('stOffXVal').textContent = Math.round(ixo * 100) + '%';
+    el('stOffY').value = iyo; el('stOffYVal').textContent = Math.round(iyo * 100) + '%';
     el('stSize').value = on.w;  el('stSizeVal').textContent = Math.round(on.w * 100) + '%';
     el('stRot').value = on.rot;  el('stRotVal').textContent = Math.round(on.rot) + '°';
     el('stX').value = on.x;      el('stXVal').textContent = Math.round(on.x * 100) + '%';
@@ -3698,8 +4090,9 @@
   async function redoSticker(st){
     if (!st || !st.orig) return;
     const im = await loadImg(st.orig);
-    const pk = prepareSticker(im, st.mode || 'auto', st.tol == null ? 50 : st.tol, st.orig);
-    if (st.src) haloCache.delete(st.src);
+    const pk = prepareSticker(im, st.mode || 'circle', st.tol == null ? 50 : st.tol, st.orig,
+      { iz:st.iz, ixo:st.ixo, iyo:st.iyo });
+    clearHalo(st.src);
     st.src = pk.src;
     preloadImg(st.src);
     renderStickerChips();
@@ -3760,7 +4153,8 @@
     el('sizeSub').value = z.sub;     el('sizeSubVal').textContent = z.sub.toFixed(2) + '×';
     el('sizeSmall').value = z.small; el('sizeSmallVal').textContent = z.small.toFixed(2) + '×';
     el('themeName').textContent = THEME().name;
-    el('fontName').textContent = FONT().label;
+    el('fontName').textContent = fontFor(fontTarget).label;
+    renderTextCfg();
   }
 
   function renderAll(){
@@ -3949,42 +4343,57 @@
     stickerSel = parseInt(b.dataset.st, 10) || 0;
     renderStickerChips();
   });
-  let pendingStMode = 'auto';
+  let pendingStMode = 'circle';
 
   function openStPicker(mode){
-    pendingStMode = mode || 'auto';
+    pendingStMode = mode || 'circle';
     el('stModeWrap').classList.remove('open');
     setTimeout(()=>{ el('stFile').click(); }, 30);
   }
 
   el('stickerAdd').addEventListener('click', ()=>{
-    compSnapshot('스티커 추가');
     const s = cur();
-    if ((s.stickers || []).length >= MAX_STICKERS){ toast('스티커는 3개까지예요'); return; }
-    el('stModeWrap').classList.add('open');
+    if ((s.stickers || []).length >= MAX_STICKERS){ toast('누끼는 카드당 ' + MAX_STICKERS + '개까지예요'); return; }
+    el('stFile').click();
   });
 
+  let stAddBusy = false;
   el('stFile').addEventListener('change', async ()=>{
-    const f = el('stFile').files && el('stFile').files[0];
+    const fs = Array.from(el('stFile').files || []).filter(f => f.type && f.type.indexOf('image/') === 0);
     el('stFile').value = '';
-    if (!f) return;
+    if (!fs.length || stAddBusy) return;
     const s = cur();
-    if ((s.stickers || []).length >= MAX_STICKERS){ toast('스티커는 3개까지예요'); return; }
-    toast(pendingStMode === 'auto' ? '배경을 따는 중이에요…' : '스티커를 만드는 중이에요…');
+    s.stickers = s.stickers || [];
+    const room = MAX_STICKERS - s.stickers.length;
+    if (room <= 0){ toast('누끼는 카드당 ' + MAX_STICKERS + '개까지예요'); return; }
+    const use = fs.slice(0, room);
+    stAddBusy = true;
     try{
-      const im = await imageFromFile(f);
-      const pk = prepareSticker(im, pendingStMode, STICKER_TOL);
-      s.stickers = s.stickers || [];
-      s.stickers.push({ src: pk.src, orig: pk.orig, mode: pendingStMode, tol: STICKER_TOL, border: true,
-                        x: 0.5, y: 0.5, w: 0.30, rot: 0 });
+      for (let i = 0; i < use.length; i++){
+        toast(use.length > 1 ? ('누끼 ' + (i + 1) + '/' + use.length + ' 만드는 중이에요…') : '누끼를 만드는 중이에요…');
+        const im = await imageFromFile(use[i]);
+        const pk = prepareSticker(im, pendingStMode, STICKER_TOL, null, null);
+        s.stickers.push({ src:pk.src, orig:pk.orig, mode:pendingStMode, tol:STICKER_TOL, border:true, bw:1, bc:'#FFFFFF',
+                          iz:1, ixo:0, iyo:0, x:0.5, y:0.5, w:0.30, rot:0 });
+        preloadImg(pk.src);
+      }
       stickerSel = s.stickers.length - 1;
-      preloadImg(pk.src);
       renderStickerChips();
       commit();
-      toast(pendingStMode === 'auto' ? '누끼 완성 · 민감도로 다듬고 끌어서 위치를 잡으세요' : '스티커를 넣었어요');
+      /* 1단계는 미리보기가 접혀 있으니, 누끼를 붙이면 한 번 펼쳐서 보여줘요 */
+      if (state.stageHide && state.step === 1){
+        state.stageHide = false;
+        stageTouched = true;
+        applyStepUI();
+        setTimeout(paint, 60);
+      }
+      toast(use.length + '장을 바로 ' + (pendingStMode === 'auto' ? '누끼로' : '원형으로') + ' 붙였어요' +
+        (fs.length > room ? ' · 카드당 ' + MAX_STICKERS + '개라 ' + (fs.length - room) + '장은 빠졌어요' : '') +
+        ' · 모양·테두리·확대는 아래에서 조정해요');
+      pendingStMode = 'circle';
     }catch(err){
-      toast(err && err.message ? err.message : '스티커를 넣지 못했어요');
-    }
+      toast(err && err.message ? err.message : '누끼를 만들지 못했어요');
+    } finally { stAddBusy = false; }
   });
 
   el('stickerDel').addEventListener('click', ()=>{
@@ -4023,12 +4432,41 @@
     }, 190);
   });
 
-  el('stBorderTog').addEventListener('click', ()=>{
+  if (el('stBorderSeg')) el('stBorderSeg').addEventListener('click', function(e){
+    const b = e.target.closest('button[data-bw]');
+    if (!b) return;
     const st = selSticker();
     if (!st) return;
-    st.border = !st.border;
+    st.bw = clamp(parseFloat(b.dataset.bw) || 0, 0, 2);
+    st.border = st.bw > 0;
     syncStickerCtl();
     commit();
+  });
+  if (el('stBorderColorSeg')) el('stBorderColorSeg').addEventListener('click', function(e){
+    const b = e.target.closest('button[data-bc]');
+    if (!b) return;
+    const st = selSticker();
+    if (!st) return;
+    st.bc = (b.dataset.bc === '#111111') ? '#111111' : '#FFFFFF';
+    syncStickerCtl();
+    commit();
+  });
+
+  let innerTimer = null;
+  [['stZoom','iz'],['stOffX','ixo'],['stOffY','iyo']].forEach(function(pair){
+    if (!el(pair[0])) return;
+    el(pair[0]).addEventListener('input', function(e){
+      const st = selSticker();
+      if (!st) return;
+      const v = num(e.target.value, 0);
+      if (pair[1] === 'iz') st.iz = clamp(v, 1, 2.5);
+      else st[pair[1]] = clamp(v, -1, 1);
+      const label = el(pair[0] + 'Val');
+      if (pair[1] === 'iz') label.textContent = st.iz.toFixed(2) + '×';
+      else label.textContent = Math.round(st[pair[1]] * 100) + '%';
+      clearTimeout(innerTimer);
+      innerTimer = setTimeout(function(){ redoSticker(st).catch(function(){}); }, 220);
+    });
   });
 
   [['stSize','w'],['stRot','rot'],['stX','x'],['stY','y']].forEach(function(pair){
@@ -4085,6 +4523,12 @@
     renderAll(); persistSoon();
   });
   fontChipsEl.addEventListener('click', (e)=>{
+    const pin = e.target.closest('[data-fpin]');
+    if (pin){
+      e.preventDefault(); e.stopPropagation();
+      toggleFontPin(pin.dataset.fpin);
+      return;
+    }
     const del = e.target.closest('[data-fdel]');
     if (del){ e.preventDefault(); e.stopPropagation(); deleteCustomFont(del.dataset.fdel); return; }
     const mv = e.target.closest('[data-mv]');
@@ -4096,10 +4540,19 @@
     const b = e.target.closest('[data-font]');
     if (!b) return;
     if (fontOrderMode && !e.target.closest('[data-pick]')) return;
-    state.font = fontById(b.dataset.font).id;
+    chooseFont(b.dataset.font);
+  });
+  if (el('fontTargetSeg')) el('fontTargetSeg').addEventListener('click', function(e){
+    const b = e.target.closest('button[data-ft]');
+    if (!b) return;
+    setFontTarget(b.dataset.ft);
+  });
+  if (el('fontUnify')) el('fontUnify').addEventListener('click', function(){
+    state.fontCover = fontIdFor('main');
     renderFontChips();
     persistSoon();
     loadFontFor().then(()=>{ paint(); });
+    toast('표지·본문·요약을 ' + fontFor('main').label + ' 한 가지로 통일했어요');
   });
   el('fontOrderBtn').addEventListener('click', ()=>{
     fontOrderMode = !fontOrderMode;
@@ -4120,6 +4573,21 @@
     state.sizes = { title:1, sub:1, small:1 };
     syncStyleUI(); commit();
     toast('글씨 크기를 기본값으로 되돌렸어요');
+  });
+
+  /* v5.3: 글씨 색 · 투명도 */
+  if (el('tcolSeg')) el('tcolSeg').addEventListener('click', function(e){
+    const b = e.target.closest('button[data-tcol2]');
+    if (!b) return;
+    state.textColor = ['auto','white','accent','ink'].indexOf(b.dataset.tcol2) >= 0 ? b.dataset.tcol2 : 'auto';
+    renderTextCfg();
+    persistSoon();
+    paintSoon();
+  });
+  if (el('textOpacity')) el('textOpacity').addEventListener('input', function(e){
+    state.textOpacity = clamp(num(e.target.value, 1), 0.4, 1);
+    if (el('textOpacityVal')) el('textOpacityVal').textContent = Math.round(state.textOpacity * 100) + '%';
+    paintSoon(); persistSoon();
   });
 
   // 동그라미 숫자
@@ -4434,6 +4902,36 @@
              esc(f.name) + ' ' + n + '</button>';
     }).join('') + '<button class="add" data-folder-add="1">＋ 폴더</button>';
   }
+  function feedTile(it){
+    const d = it.data || {};
+    const slides = Array.isArray(d.slides) ? d.slides : [];
+    const cov = slides.filter(function(s){ return s && s.type === 'cover'; })[0] || slides[0] || null;
+    const photo = (cov && typeof cov.photo === 'string' && cov.photo.indexOf('data:image') === 0) ? cov.photo : '';
+    const th = THEMES.filter(function(t){ return t.id === (THEME_FALLBACK[d.theme] || d.theme); })[0] || THEMES[0];
+    const cat = CATS.filter(function(c){ return c.id === d.category; })[0] || null;
+    const bgKey = d.coverBg || 'photo';
+    let bg = th.paper.bg, fg = th.paper.fg;
+    if (bgKey === 'ink'){ bg = '#141310'; fg = '#FFFFFF'; }
+    else if (bgKey === 'white'){ bg = '#FFFFFF'; fg = '#111110'; }
+    else if (bgKey === 'cream'){ bg = '#F5EFE4'; fg = '#2B1E15'; }
+    else if (bgKey === 'cat'){ bg = cat ? cat.soft : '#F5EFE4'; fg = '#FFFFFF'; }
+    const title = cov ? String(cov.title || '').replace(/\*\*/g, '').split('\n')[0].slice(0, 26) : '';
+    const cur = it.id === state.deckId ? ' cur' : '';
+    return '<button class="feedCell' + cur + '" data-slotload="' + it.id + '" title="' + esc(it.name) + '">' +
+      (photo
+        ? '<img src="' + photo + '" alt="">'
+        : '<span class="ct" style="background:' + bg + ';color:' + fg + '"><i></i><span>' + esc(title || it.name) + '</span></span>') +
+      '<span class="nmbar">' + esc(it.name) + '</span></button>';
+  }
+  function renderFeed(){
+    const box = el('feedGrid');
+    if (!box || !lib) return;
+    const list = lib.decks.filter(function(d){ return d.folderId === activeFolder; })
+      .sort(function(a, b){ return (b.updatedAt || 0) - (a.updatedAt || 0); });
+    box.innerHTML = list.length
+      ? list.map(feedTile).join('')
+      : '<div class="feedEmpty">이 폴더에 저장한 덱이 없어요<br>목록으로 돌아가 이름을 넣고 [저장]을 눌러보세요</div>';
+  }
   function renderSlots(){
     const box = el('slotList');
     if (!box || !lib) return;
@@ -4454,6 +4952,14 @@
     }
     let used = 0;
     try{ used = (localStorage.getItem(LIB_KEY) || '').length; }catch(e){}
+    const feedOn = state.slotView === 'feed';
+    const sheetOpen = !!(el('slotWrap') && el('slotWrap').classList.contains('open'));
+    if (feedOn && sheetOpen) renderFeed();
+    if (el('slotList')) el('slotList').hidden = feedOn;
+    if (el('feedGrid')) el('feedGrid').hidden = !feedOn;
+    document.querySelectorAll('#slotViewSeg button').forEach(function(b){
+      b.classList.toggle('on', (b.dataset.sv === 'feed') === feedOn);
+    });
     el('slotNote').textContent = '이 브라우저에 저장(사진 포함) · 이 폴더 ' + list.length + '개 / 전체 ' + lib.decks.length +
       '개 · 약 ' + Math.round(used / 1024) + 'KB' + (syncOn() ? ' · 클라우드 연결됨' : ' · 클라우드 꺼짐');
     renderSyncBar();
@@ -4887,29 +5393,30 @@
     }catch(e){ return null; }
   }
 
-  function compSnapshot(label){
+  function compSnapshot(label, opt){
     const s0 = state.slides[0] || {};
     const empty = state.slides.length <= 1 && !s0.photo && !(s0.title || '').trim() && !(s0.badge || '').trim();
-    if (empty) { updateUndoBar(); return; }
+    if (empty) { updateUndoBar(); return false; }
     let data;
-    try{ data = JSON.stringify(payloadOf(state)); }catch(e){ return; }
+    try{ data = JSON.stringify(payloadOf(state)); }catch(e){ return false; }
     try{ localStorage.setItem(BACKUP_KEY, JSON.stringify({ at: Date.now(), label: label || '', data: data })); }
-    catch(e){ return; }
+    catch(e){ return false; }
     updateUndoBar();
+    if (opt && opt.undo){
+      toast((label ? label.replace(/ 직전$/, '') + ' · ' : '') + '되돌릴 수 있어요',
+        { undo: restoreBackup, label:'되돌리기', ms: 5000 });
+    }
+    return true;
   }
 
+  /* v5.3: 상단 노란 바 대신 톳스트 + 메뉴 항목으로 */
   function updateUndoBar(){
     const b = readBackup();
-    const bar = el('undoBar');
-    if (!bar) return;
-    if (b){
-      el('undoText').textContent = '직전 작업 백업 있음 (' + fmtTime(b.at) + (b.label ? ' · ' + b.label : '') + ')';
-      el('slotRestoreSub').textContent = '직전 백업 · ' + fmtTime(b.at) + (b.label ? ' · ' + b.label : '');
-      bar.hidden = false;
-    } else {
-      el('slotRestoreSub').textContent = '직전 백업 없음';
-      bar.hidden = true;
-    }
+    const tx = b ? ('직전 백업 · ' + fmtTime(b.at) + (b.label ? ' · ' + b.label : '')) : '직전 백업 없음';
+    if (el('slotRestoreSub')) el('slotRestoreSub').textContent = tx;
+    if (el('menuRestoreSub')) el('menuRestoreSub').textContent = tx;
+    const row = el('menuRestore');
+    if (row) row.classList.toggle('off', !b);
   }
 
   function restoreBackup(){
@@ -4953,32 +5460,73 @@
     persistSoon();
   });
 
-  /* ---------- 사진 여러 장 · 용도 배정 ---------- */
+  /* ---------- 사진 여러 장 · 용도 배정 (v5.3: 표지/본문/요약 + 배경 한 번에) ---------- */
   let batchItems = [];
+  let batchSumTouched = false;
+  const SUM_BGS = [
+    { id:'photo', name:'사진', sw:'linear-gradient(135deg,#6E6A60,#2A2824)' },
+    { id:'dark',  name:'다크', sw:'#1A1A18' },
+    { id:'light', name:'라이트', sw:'#F2EFE6' },
+    { id:'cream', name:'크림',  sw:'#F5EFE4' }
+  ];
+  function currentSumBg(){
+    const si = summaryIndex();
+    if (si >= 0) return (state.slides[si].summaryStyle || 'photo');
+    return ['photo','dark','light','cream'].indexOf(state.summaryBg) >= 0 ? state.summaryBg : 'dark';
+  }
+  function setSumBg(id){
+    const v = ['photo','dark','light','cream'].indexOf(id) >= 0 ? id : 'dark';
+    state.summaryBg = v;
+    const si = summaryIndex();
+    if (si >= 0) state.slides[si].summaryStyle = v;
+    renderBatchSum();
+    if (si >= 0){ paintSoon(); persistSoon(); }
+    return v;
+  }
+  function renderBatchSum(){
+    const box = el('batchSumChips');
+    if (!box) return;
+    const on = currentSumBg();
+    box.innerHTML = SUM_BGS.map(function(o){
+      return '<button class="chip' + (o.id === on ? ' on' : '') + '" data-sumbg="' + o.id + '">' +
+             '<span class="sw" style="background:' + o.sw + '"></span><span class="t">' + o.name + '</span></button>';
+    }).join('');
+  }
   function openBatch(files){
     if (batchItems.length) batchItems.forEach(it=>{ if (it.url) URL.revokeObjectURL(it.url); });
+    batchSumTouched = false;
     batchItems = files.map(function(f, i){
       return { file:f, url:URL.createObjectURL(f), role: (i === 0 ? 'cover' : 'body') };
     });
     renderBatch();
     openSheetName('batch', true);
   }
+  /* 본문 카드들로 요약 카드가 없으면 만들어요 */
+  function ensureSummarySlide(){
+    if (summaryIndex() >= 0) return state.slides[summaryIndex()];
+    const bodiesNow = state.slides.filter(function(x){ return x.type === 'body'; });
+    const sum = blankSlide('summary');
+    sum.summaryStyle = ['photo','dark','light','cream'].indexOf(state.summaryBg) >= 0 ? state.summaryBg : 'dark';
+    sum.rows = bodiesNow.slice(0, MAX_ROWS).map(function(b){
+      return { item: (b.title || '').replace(/\n/g, ' '), amount: priceFromDesc(b.desc), auto:true };
+    });
+    if (!sum.rows.length) sum.rows = [{ item:'', amount:'' }];
+    applyAutoTotal(sum);
+    state.slides.push(sum);
+    return sum;
+  }
   function renderBatch(){
     el('batchCount').textContent = String(batchItems.length);
     el('batchList').innerHTML = batchItems.map(function(it, i){
-      const roles = [['cover','표지'],['body','본문'],['sticker','누끼'],['none','제외']];
-      const up = i === 0 ? ' disabled' : '';
-      const dn = i === batchItems.length - 1 ? ' disabled' : '';
+      const roles = [['cover','표지'],['body','본문'],['summary','요약']];
       return '<div class="batchItem"><img src="' + it.url + '" alt=""><div class="bi">' +
-        '<div class="fname"><b style="color:#22211D;font-size:11.5px">' + (i + 1) + '</b> · ' + esc(it.file.name) + '</div><div class="roleChips">' +
+        '<div class="fname"><b>' + (i + 1) + '</b> · ' + esc(it.file.name) + '</div><div class="roleChips">' +
         roles.map(function(r){
           return '<button data-brole="' + r[0] + '" data-bi="' + i + '" class="' + (it.role === r[0] ? 'on' : '') + '">' + r[1] + '</button>';
         }).join('') + '</div></div>' +
-        '<div class="ordBtns">' +
-        '<button data-bmove="-1" data-bi="' + i + '"' + up + ' aria-label="앞로">▲</button>' +
-        '<button data-bmove="1" data-bi="' + i + '"' + dn + ' aria-label="뒤로">▼</button>' +
-        '</div></div>';
+        '<button class="x" data-bdel="' + i + '" aria-label="이 사진 빼기">✕</button></div>';
     }).join('');
+    renderBatchSum();
   }
   function closeBatch(){
     batchItems.forEach(it=>{ if (it.url) URL.revokeObjectURL(it.url); });
@@ -4986,6 +5534,16 @@
     openSheetName('batch', false);
   }
   el('batchList').addEventListener('click', (e)=>{
+    const rm = e.target.closest('[data-bdel]');
+    if (rm){
+      const i = parseInt(rm.dataset.bdel, 10);
+      if (isFinite(i) && batchItems[i]){
+        if (batchItems[i].url) URL.revokeObjectURL(batchItems[i].url);
+        batchItems.splice(i, 1);
+        renderBatch();
+      }
+      return;
+    }
     const mv = e.target.closest('[data-bmove]');
     if (mv){
       const i = parseInt(mv.dataset.bi, 10), d = parseInt(mv.dataset.bmove, 10);
@@ -5003,40 +5561,59 @@
     if (batchItems[i]) batchItems[i].role = b.dataset.brole;
     renderBatch();
   });
+  if (el('batchSumChips')) el('batchSumChips').addEventListener('click', function(e){
+    const b = e.target.closest('[data-sumbg]');
+    if (!b) return;
+    batchSumTouched = true;
+    setSumBg(b.dataset.sumbg);
+  });
   el('batchCancel').addEventListener('click', closeBatch);
   el('batchAdd').addEventListener('click', ()=> el('batchFile').click());
   el('batchFile').addEventListener('change', ()=>{
     const fs = el('batchFile').files;
-    if (fs && fs.length) openBatch(Array.from(fs));
+    if (fs && fs.length){
+      const add = Array.from(fs);
+      const sheetOpen = el('batchWrap').classList.contains('open');
+      if (sheetOpen && batchItems.length){
+        add.forEach(function(f){ batchItems.push({ file:f, url:URL.createObjectURL(f), role:'body' }); });
+        renderBatch();
+      } else {
+        openBatch(add);
+      }
+    }
     el('batchFile').value = '';
   });
+  if (el('batchMore')) el('batchMore').addEventListener('click', ()=> el('batchFile').click());
 
   el('batchApply').addEventListener('click', ()=>{ applyBatch(); });
 
   async function applyBatch(){
     if (!batchItems.length) return;
     const items = batchItems.slice();
-    const target = cur();
     batchItems = [];
     openSheetName('batch', false);
+    compSnapshot('사진 배치 직전', { undo:true });
     toast('사진 ' + items.length + '장을 배치하는 중이에요…');
     const covers = items.filter(x=>x.role === 'cover');
     const bodies = items.filter(x=>x.role === 'body');
-    const sticks = items.filter(x=>x.role === 'sticker');
-    let placedCover = 0, placedBody = 0, placedSt = 0, failed = 0;
+    const sums = items.filter(x=>x.role === 'summary');
+    let placedCover = 0, placedBody = 0, placedSum = 0, failed = 0;
 
     if (covers.length){
       try{
         const data = await compressImage(covers[0].file);
-        let ci = state.slides.map(s=>s.type).indexOf('cover');
+        let ci = coverIndex();
         if (ci < 0){ state.slides.unshift(blankSlide('cover')); ci = 0; }
         const s = state.slides[ci];
         if (CAT()) s.coverStyle = 'cat';
         s.photo = data; s.zoom = 1; s.offX = 0; s.offY = 0;
         preloadImg(data);
+        /* 표지 사진을 넣으면 표지 배경도 사진으로 (단색을 골라 둔 경우 대비) */
+        if ((state.coverBg || 'photo') !== 'photo') setCoverBg('photo', { keepSlide:true });
         placedCover = 1;
       }catch(e){ failed++; }
     }
+
     const emptyBodies = state.slides.filter(x=>x.type === 'body' && !x.photo);
     for (let i = 0; i < bodies.length; i++){
       try{
@@ -5044,7 +5621,7 @@
         let s = emptyBodies[i];
         if (!s){
           s = blankSlide('body');
-          const si = state.slides.map(x=>x.type).indexOf('summary');
+          const si = summaryIndex();
           if (si >= 0) state.slides.splice(si, 0, s); else state.slides.push(s);
           emptyBodies.push(s);
         }
@@ -5053,22 +5630,36 @@
         placedBody++;
       }catch(e){ failed++; }
     }
-    for (let i = 0; i < sticks.length; i++){
-      if ((target.stickers || []).length >= MAX_STICKERS) break;
+
+    /* 요약 배경 — 사진을 안 넣어도 배경을 골랐으면 요약 카드를 만들어 그 배경으로 */
+    if (!sums.length && (batchSumTouched || summaryIndex() >= 0)){
+      ensureSummarySlide();
+      const si0 = summaryIndex();
+      if (si0 >= 0) state.slides[si0].summaryStyle = currentSumBg();
+    }
+
+    if (sums.length){
       try{
-        const im = await imageFromFile(sticks[i].file);
-        const pk = prepareSticker(im, 'auto', STICKER_TOL);
-        target.stickers.push({ src:pk.src, orig:pk.orig, mode:'auto', tol:STICKER_TOL, border:true, x:0.5, y:0.5, w:0.30, rot:0 });
-        preloadImg(pk.src);
-        placedSt++;
+        const data = await compressImage(sums[0].file);
+        ensureSummarySlide();
+        const si = summaryIndex();
+        if (si < 0) throw new Error('no summary');
+        const s = state.slides[si];
+        s.photo = data; s.zoom = 1; s.offX = 0; s.offY = 0;
+        s.summaryStyle = 'photo';
+        state.summaryBg = 'photo';
+        preloadImg(data);
+        placedSum = 1;
       }catch(e){ failed++; }
     }
+    batchSumTouched = false;
+
     items.forEach(it=>{ if (it.url) URL.revokeObjectURL(it.url); });
-    if (sticks.length > placedSt) toast('스티커는 슬라이드당 3개까지라 ' + placedSt + '개만 붙였어요');
-    renderAll(); persistNow();
-    const total = placedCover + placedBody + placedSt;
+    renderAll();
+    persistNow();
+    const total = placedCover + placedBody + placedSum;
     toast(total + '장 배치 완료' + (failed ? ' · ' + failed + '장 실패' : '') +
-          (placedSt ? ' · 누끼는 지금 슬라이드에' : ''));
+      ' · 표지 배경 ' + bgLabel(state.coverBg || 'photo') + ' / 요약 ' + (SUM_BGS.filter(function(o){ return o.id === currentSumBg(); })[0] || { name:'다크' }).name);
   }
 
   /* =========================================================
@@ -5176,11 +5767,11 @@
   if (el('qboxClear')) el('qboxClear').addEventListener('click', function(){
     const covers = state.slides.filter(function(s){ return s.type === 'cover'; });
     if (!covers.length) return;
-    compSnapshot('질문 박스 비우기 직전');
+    compSnapshot('질문 박스 비우기 직전', { undo:true });
     covers.forEach(function(s){ s.q1 = ''; s.q2 = ''; s.q3 = ''; });
     if (el('qbox3Row')) el('qbox3Row').hidden = true;
     renderAll(); persistNow();
-    toast('질문 박스를 비웠어요 · 되돌리기로 복구');
+    toast('질문 박스를 비웠어요', { undo: restoreBackup, ms: 5000 });
   });
   if (el('qboxPosSeg')) el('qboxPosSeg').addEventListener('click', function(e){
     const b = e.target.closest('[data-qpos]');
@@ -5248,14 +5839,14 @@
     const has = state.slides.some(function(s){ return !!s.photo || (s.stickers || []).length > 0; });
     if (!has){ toast('지울 사진이 없어요'); return; }
     if (!confirm('모든 슬라이드의 사진과 누끼 스티커를 지울까요?\n문구·설정은 그대로 남고, [되돌리기]로 복구할 수 있어요.')) return;
-    compSnapshot('사진 전체 삭제 직전');
+    compSnapshot('사진 전체 삭제 직전', { undo:true });
     state.slides.forEach(function(s){
       s.photo = null; s.zoom = 1; s.offX = 0; s.offY = 0; s.stickers = [];
     });
     stickerSel = 0;
     renderAll();
     persistNow();
-    toast('사진 전체 삭제 · [되돌리기]로 복구 가능');
+    toast('사진·누끼 전체 삭제', { undo: restoreBackup, ms: 5000 });
   }
   el('photoClearAll').addEventListener('click', clearAllPhotos);
 
@@ -5502,13 +6093,27 @@
     const d = e.target.closest('[data-slotdel]');
     if (d){ delSlot(d.dataset.slotdel); }
   });
+  if (el('slotViewSeg')) el('slotViewSeg').addEventListener('click', function(e){
+    const b = e.target.closest('button[data-sv]');
+    if (!b) return;
+    state.slotView = b.dataset.sv === 'feed' ? 'feed' : 'list';
+    renderSlots();
+    persistSoon();
+  });
+  if (el('feedGrid')) el('feedGrid').addEventListener('click', function(e){
+    const l = e.target.closest('[data-slotload]');
+    if (l) loadSlot(l.dataset.slotload);
+  });
   function openSyncSheetSafe(){
     if (el('syncWrap') && el('syncWrap').classList.contains('open')) renderSyncSheet();
     renderSlots();
   }
 
   el('slotRestoreRow').addEventListener('click', restoreBackup);
-  el('undoBtn').addEventListener('click', restoreBackup);
+  if (el('menuRestore')) el('menuRestore').addEventListener('click', function(){
+    openSheet(false);
+    restoreBackup();
+  });
 
   document.addEventListener('click', (e)=>{
     const bg = e.target.closest('[data-close]');
@@ -5528,7 +6133,7 @@
   el('sheetReload').addEventListener('click', ()=>{ openSheet(false); location.reload(); });
   el('sheetReset').addEventListener('click', ()=>{
     if (!confirm('저장된 카드와 사진을 모두 지울까요? 되돌리기 버튼으로 복구할 수 있어요.')) return;
-    compSnapshot('초기화 직전');
+    compSnapshot('초기화 직전', { undo:true });
     try{ localStorage.removeItem(STORE_KEY); }catch(e){}
     const mode = state.mode;
     const keep = { sizes: state.sizes, previewSize: state.previewSize, credit: state.credit, creditOn: state.creditOn, deckId:'', deckName:'' };
@@ -5536,7 +6141,7 @@
     closeFull();
     renderAll();
     openSheet(false);
-    toast('전부 지웠어요 · [되돌리기]로 복구 가능');
+    toast('전부 지웠어요', { undo: restoreBackup, ms: 5000 });
   });
 
 
@@ -5544,7 +6149,7 @@
      v5 · 4단계 대시보드
      ========================================================= */
   const STEP_ORDER = {
-    catCard:{1:10}, coverBgCard:{1:16}, photoCard:{1:24,3:40}, stickerCard:{1:32}, creditCard:{1:40}, guideCard:{1:50},
+    photoCard:{1:10, 3:40}, stickerCard:{1:18}, coverBgCard:{1:26, 4:14}, catCard:{1:34}, creditCard:{1:44}, guideCard:{1:52},
     writeCard:{2:10}, bodyWrite:{2:20}, fieldsCard:{2:30,3:50}, sumCard:{2:40,3:60},
     slideCard:{3:20}, posCard:{3:30}, designCard:{4:20}, captionCard:{4:30}, typeCard:{4:10}
   };
@@ -5833,7 +6438,11 @@
       s.badgeNum = k + 1;
       out.push(s);
     });
-    summaries.forEach(function(s){ out.push(s); });
+    /* v5.3: 본문 수를 줄여도 사진이 붙은 카드는 잃지 않고, 빈 카드만 정리 */
+    bodies.slice(blocks.length).forEach(function(s){
+      if (s.photo || (s.stickers || []).length) out.push(s);
+    });
+    summaries.slice(0, 1).forEach(function(s){ out.push(s); });
     state.slides = out;
     /* v5.1: 본문 → 요약 자동 연동 (적용하기 때 요약 카드가 없으면 한 장 만들어 채운다) */
     if (!silent && !summaries.length){
@@ -5900,8 +6509,37 @@
     if (!n){ toast('본문 글을 먼저 적어주세요'); return; }
     const sm = state.slides.filter(function(x){ return x.type === 'summary'; })[0];
     const rn = (sm && sm.rows) ? sm.rows.length : 0;
-    toast('본문 ' + n + '장 반영 · 요약 ' + rn + '행 항목·금액을 맞췄어요');
+    toast('본문 ' + n + '장 반영 · 요약 ' + rn + '행 항목·금액을 맞췄어요 · 카드 ' + state.slides.length + '장');
   });
+
+  /* v5.3: 글만 비우기 — 사진·누끼·색·폰트는 그대로 */
+  function clearAllText(){
+    const hasText = function(s){
+      return !!((s.badge || '').trim() || (s.title || '').trim() || (s.subtitle || '').trim() || (s.desc || '').trim() ||
+        (s.q1 || '').trim() || (s.q2 || '').trim() || (s.q3 || '').trim() || (s.cta || '').trim() || (s.total || '').trim() ||
+        (s.totalNote || '').trim() || (s.rows || []).some(function(r){ return (r && ((r.item || '').trim() || (r.amount || '').trim())); }));
+    };
+    const has = state.slides.some(hasText) || !!(state.bodyDraft || '').trim();
+    if (!has){ toast('비울 글이 없어요'); return; }
+    if (!confirm('카드에 적힌 글만 비울까요?\n사진·누끼·색·글씨체 설정은 그대로 남아요. [되돌리기]로 복구할 수 있어요.')) return;
+    compSnapshot('글 비우기 직전', { undo:true });
+    state.slides.forEach(function(s){
+      s.badge = ''; s.title = ''; s.subtitle = ''; s.desc = '';
+      s.q1 = ''; s.q2 = ''; s.q3 = '';
+      s.cta = ''; s.totalNote = '';
+      if (s.type === 'summary'){
+        s.rows = (s.rows || []).map(function(){ return { item:'', amount:'' }; });
+        if (!s.rows.length) s.rows = [{ item:'', amount:'' }];
+        s.total = ''; s.totalAuto = true;
+      }
+    });
+    state.bodyDraft = '';
+    if (el('bodyBulk')) el('bodyBulk').value = '';
+    renderAll();
+    persistNow();
+    toast('글만 비웠어요 · 사진·설정은 그대로', { undo: restoreBackup, ms: 5000 });
+  }
+  if (el('clearTextBtn')) el('clearTextBtn').addEventListener('click', clearAllText);
 
   /* ---------- 요약 카드 만들기 · 행 수량 ---------- */
   function createSummaryCard(){
@@ -6070,7 +6708,8 @@
     let saved = true;
     try{ await idbPut(rec); }catch(e){ saved = false; }
     addCustomFont(rec);
-    state.font = rec.id;
+    if (fontTarget === 'cover') state.fontCover = rec.id;
+    else state.font = rec.id;
     renderFontChips();
     syncStyleUI();
     commit();
@@ -6088,6 +6727,8 @@
     if (ff){ try{ document.fonts.delete(ff); }catch(e){} fontFaceMap.delete(id); }
     FONTS.splice(FONTS.indexOf(f), 1);
     if (state.font === id) state.font = 'pretendard';
+    if (state.fontCover === id) state.fontCover = 'pretendard';
+    state.fontPins = fontPins().filter(function(x){ return x !== id; });
     state.fontOrder = normFontOrder(state.fontOrder || []).filter(function(x){ return x !== id; });
     try{ await idbDel(id); }catch(e){}
     renderFontChips();
@@ -6147,7 +6788,8 @@
     const title = cleanLine(cov && cov.title);
     const sub = cleanLine(cov && cov.subtitle);
     const badge = cleanLine(cov && cov.badge);
-    const place = badge ? badge.split('·')[0].replace(/[0-9]/g, '').trim() : '';
+    const region = cleanLine(state.region);
+    const place = region || (badge ? badge.split('·')[0].replace(/[0-9]/g, '').trim() : '');
     const L = [];
 
     /* 1) 첫 줄 훅 */
@@ -6202,6 +6844,15 @@
       const pt = place.replace(/\s+/g, '');
       const tag = /여행$/.test(pt) ? pt : pt + '여행';
       if (tags.indexOf(tag) < 0) tags.unshift(tag);
+      if (region){
+        const r = region.replace(/\s+/g, '');
+        const byCat = { food:['맛집'], course:['여행코스'], hotplace:['핫플','여행지'], tips:['여행팁'], shopping:['쇼핑'] };
+        const extra = (cat && byCat[cat.id]) ? byCat[cat.id] : ['맛집'];
+        extra.forEach(function(t){
+          const tg = r + t;
+          if (tags.indexOf(tg) < 0) tags.splice(1, 0, tg);
+        });
+      }
     }
     L.push('');
     L.push(tags.slice(0, 10).map(function(t){ return '#' + t; }).join(' '));
@@ -6212,12 +6863,18 @@
     const ta = el('captionText');
     if (!ta) return;
     if (document.activeElement !== ta && ta.value !== (state.caption || '')) ta.value = state.caption || '';
+    const ri = el('regionInput');
+    if (ri && document.activeElement !== ri && ri.value !== (state.region || '')) ri.value = state.region || '';
     const meta = el('captionMeta');
     if (meta){
       const n = String(state.caption || '').trim().length;
       meta.textContent = n ? n + '자' : '비어 있어요';
     }
   }
+  if (el('regionInput')) el('regionInput').addEventListener('input', function(e){
+    state.region = String(e.target.value || '').slice(0, 14);
+    persistSoon();
+  });
   if (el('captionText')) el('captionText').addEventListener('input', function(e){
     state.caption = e.target.value;
     persistSoon();
@@ -6300,7 +6957,7 @@
     state.current = 0;
     renderAll();
     persistNow();
-    toast('목식당 예시를 채웠어요 · 사진은 직접 올려주세요');
+    toast('목식당 예시를 채웠어요 · 사진은 직접 올려주세요', { undo: restoreBackup, ms: 5000 });
   }
   el('exampleBtn').addEventListener('click', loadExample);
 
@@ -6408,17 +7065,21 @@
   const SAMPLE_TEXT = '여행의 한 끗 차이 예약 방법 할인 꿀팁 댓글 0123456789 동 원 % → · 👇 가나다라마바사';
 
   function loadFontFor(){
-    const fn = FONT();
     if (!document.fonts || !document.fonts.load) return Promise.resolve();
-    const jobs = fn.faces.map(f=>document.fonts.load(f[1] + ' 40px "' + f[0] + '"', SAMPLE_TEXT).catch(()=>null));
+    const jobs = [];
+    [fontFor('cover'), fontFor('main')].forEach(function(fn){
+      fn.faces.forEach(function(f){ jobs.push(document.fonts.load(f[1] + ' 40px "' + f[0] + '"', SAMPLE_TEXT).catch(()=>null)); });
+    });
     return Promise.all(jobs).catch(()=>null);
   }
 
   function ensureFonts(text){
-    const fn = FONT();
     if (!document.fonts || !document.fonts.load) return;
     const sample = String(text || '') + ' ' + SAMPLE_TEXT;
-    const jobs = fn.faces.map(f=>document.fonts.load(f[1] + ' 40px "' + f[0] + '"', sample).catch(()=>null));
+    const jobs = [];
+    [fontFor('cover'), fontFor('main')].forEach(function(fn){
+      fn.faces.forEach(function(f){ jobs.push(document.fonts.load(f[1] + ' 40px "' + f[0] + '"', sample).catch(()=>null)); });
+    });
     Promise.all(jobs).then(()=>{ paintSoon(); }).catch(()=>{});
   }
 
@@ -6482,6 +7143,51 @@
       prepareSticker: prepareSticker,
       cutoutCanvas: cutoutCanvas,
       maxStickers: MAX_STICKERS,
+      fontTarget: function(){ return fontTarget; },
+      setFontTarget: function(t){ setFontTarget(t); return fontTarget; },
+      fontState: function(){ return { cover: fontIdFor('cover'), main: fontIdFor('main'), pins: fontPins(), order: fontOrder() }; },
+      chooseFont: function(id){ chooseFont(id); return { cover: fontIdFor('cover'), main: fontIdFor('main') }; },
+      pinFont: function(id){ toggleFontPin(id); return fontPins(); },
+      textStyle: function(){ return { color: textMode(), opacity: textAlpha() }; },
+      setTextStyle: function(color, op){
+        if (['auto','white','accent','ink'].indexOf(color) >= 0) state.textColor = color;
+        if (op != null) state.textOpacity = clamp(num(op, 1), 0.4, 1);
+        renderTextCfg(); paintSoon(); persistNow();
+        return { color: textMode(), opacity: textAlpha() };
+      },
+      clearText: function(){ clearAllText(); return true; },
+      stickers: function(){
+        return (cur().stickers || []).map(function(st){
+          return { mode: st.mode, bw: st.bw, bc: st.bc, iz: st.iz, ixo: st.ixo, iyo: st.iyo, w: st.w, x: st.x, y: st.y };
+        });
+      },
+      setStickerInner: function(z, x, y){
+        const st = selSticker();
+        if (!st) return null;
+        if (z != null) st.iz = clamp(num(z, 1), 1, 2.5);
+        if (x != null) st.ixo = clamp(num(x, 0), -1, 1);
+        if (y != null) st.iyo = clamp(num(y, 0), -1, 1);
+        return redoSticker(st).then(function(){ syncStickerCtl(); return { iz: st.iz, ixo: st.ixo, iyo: st.iyo }; });
+      },
+      batchRoles: function(){ return batchItems.map(function(x){ return { name: x.file.name, role: x.role }; }); },
+      setBatchRole: function(i, role){
+        if (!batchItems[i]) return false;
+        batchItems[i].role = role;
+        renderBatch();
+        return true;
+      },
+      batchDelete: function(i){
+        if (!batchItems[i]) return false;
+        if (batchItems[i].url) URL.revokeObjectURL(batchItems[i].url);
+        batchItems.splice(i, 1);
+        renderBatch();
+        return true;
+      },
+      applyBatch: function(){ return applyBatch(); },
+      slotView: function(){ return state.slotView; },
+      setSlotView: function(v){ state.slotView = v === 'feed' ? 'feed' : 'list'; renderSlots(); persistNow(); return state.slotView; },
+      summaryBg: function(){ return currentSumBg(); },
+      setSummaryBg: function(v){ return setSumBg(v); },
       slideLabels: function(){ return state.slides.map(function(s, i){ return slideLabel(i); }); },
       sizes: function(){ return SZ(); },
       setSizes: function(o){
@@ -6534,12 +7240,12 @@
       exportDataUrl: function(i){ return exportCanvas(state.slides[i == null ? state.current : i]).toDataURL('image/png'); },
       setStyle: function(o){
         if (o && o.theme) state.theme = themeById(o.theme).id;
-        if (o && o.font) state.font = fontById(o.font).id;
+        if (o && o.font){ state.font = fontById(o.font).id; state.fontCover = fontById(o.font).id; }
         if (o && o.scale != null) state.sizes = { title:clamp(num(o.scale, 1), 0.6, 1.8), sub:clamp(num(o.scale, 1), 0.6, 1.8), small:clamp(num(o.scale, 1), 0.6, 1.8) };
         return loadFontFor().then(()=>{ renderAll(); persistSoon(); return true; });
       },
       fontReady: function(){
-        const fn = FONT();
+        const fn = fontFor('main');
         return fn.faces.map(f=>{
           try{ return document.fonts.check(f[1] + ' 40px "' + f[0] + '"', SAMPLE_TEXT); }catch(e){ return false; }
         });
