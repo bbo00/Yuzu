@@ -32,7 +32,7 @@ const prelude = [
 '  Object.defineProperty(window,"localStorage",{configurable:true,get:function(){return fake;}});',
 '  window.fetch=function(){ return Promise.reject(new Error("test-offline")); };',
 '  window.XMLHttpRequest=function(){ throw new Error("test-offline"); };',
-'  if (window.__MODE__ === "nosr") {',
+'  if (__MODEVAL__ === "nosr") {',
 '    try { delete window.SpeechRecognition; } catch(e){}',
 '    try { delete window.webkitSpeechRecognition; } catch(e){}',
 '    window.SpeechRecognition=undefined; window.webkitSpeechRecognition=undefined;',
@@ -45,7 +45,7 @@ const prelude = [
 '    window.__emit=function(segs, idx){ var results=segs.map(function(s){ var r=[{transcript:s.text, confidence:0.9}]; r.isFinal=!!s.final; return r; }); results.item=function(i){return results[i];}; if(window.__sr&&window.__sr.onresult) window.__sr.onresult({type:"result",resultIndex:idx||0,results:results}); };',
 '  }',
 '})();<\/script>'
-].join('\n').replace('__MODE__', MODE);
+].join('\n').replace('__MODEVAL__', JSON.stringify(MODE));
 
 const frame = document.getElementById('f');
 const st = document.getElementById('st');
