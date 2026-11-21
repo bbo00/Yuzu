@@ -459,6 +459,17 @@
   .roleChips button.on[data-brole="summary"]{background:#1B8A5E; border-color:#1B8A5E}
   .roleChips button.on[data-brole="cover"]{background:#111; border-color:#111}
   .roleChips button.on[data-brole="body"]{background:#3F6EDB; border-color:#3F6EDB}
+  /* v5.4 ---------- */
+  .chip.preset{background:#FFF7D3; border-color:#FFD84D; color:#5A4700}
+  .chip.preset.on{background:#FFD84D; border-color:#111; color:#1F1A08}
+  .chip.preset .em{font-size:13px; line-height:1}
+  .stCrop{margin-top:9px; padding:9px 10px 3px; border:1px solid #F2E5B8; border-radius:12px; background:#FFFDF3}
+  .stCrop .lab2{font-size:11px; font-weight:800; color:#8A6B1E; letter-spacing:-.2px}
+  .stCrop .zoomRow .lab{min-width:40px}
+  .stCrop .nudge{margin-top:4px}
+  .stCrop.flash{animation:stFlash .9s ease}
+  @keyframes stFlash{0%{box-shadow:0 0 0 3px rgba(255,216,77,.85)}100%{box-shadow:0 0 0 3px rgba(255,216,77,0)}}
+  .stepTip{margin:0 0 8px; font-size:11.5px; color:#78766E; line-height:1.5}
   .chip.font .pin{flex:none; width:20px; height:20px; border-radius:50%; display:grid; place-items:center;
     font-size:11px; line-height:1; color:#C9C5B8; background:transparent}
   .chip.font .pin.on{color:#F2B01E}
@@ -553,7 +564,7 @@
   <div class="card" id="coverBgCard" data-steps="1 4">
     <div class="cardHead"><span class="label">표지 배경</span><span class="count" id="coverBgName">사진</span></div>
     <div class="bgGrid" id="bgChips"></div>
-    <p class="hint">사진 없이 <b>단색</b>으로도 깔끔하게 · 1단계·4단계 어디서든 바뀌어요 · 글씨 색은 배경 밝기에 맞춰 자동으로 바뀌어요</p>
+    <p class="hint">사진 없이 <b>단색</b>으로도 깔끔하게 · 1단계는 사진·누끼만 만지고 표지 배경은 여기 <b>4단계</b>에서 바꿔요 · 글씨 색은 배경 밝기에 맞춰 자동으로 바뀌어요</p>
   </div>
 
   <div class="card" id="writeCard" data-steps="2">
@@ -734,6 +745,7 @@
       <p class="hint summaryOnly" style="margin-top:3px">요약표는 배경 <b>‘사진’</b>일 때만 사진을 써요</p>
       <button class="mini danger" id="photoClearAll" style="margin-top:9px; height:37px; width:100%; font-size:12px">사진 전체 삭제 (모든 슬라이드)</button>
       <p class="hint" style="margin-top:4px">사진·누끼만 지우고 문구·설정은 그대로 · 되돌리기로 복구</p>
+      <p class="hint" style="margin-top:6px">표지 배경·카테고리·표지 템플릿은 <b>4단계 디자인</b>에서 골라요</p>
     </div>
   </div>
 
@@ -770,11 +782,19 @@
           <button data-bc="#111111">검정</button>
         </div>
       </div>
-      <div class="field" style="margin-top:10px">
-        <label>누끼 안 사진 확대 · 이동</label>
-        <div class="zoomRow" style="margin-top:2px"><span class="lab">확대</span><input type="range" id="stZoom" min="1" max="2.5" step="0.01"><span class="tiny num" id="stZoomVal">1.00×</span></div>
+      <div class="stCrop" id="stCropBox">
+        <div class="lab2">✂️ 이 사진에서 원하는 부분만 남기기</div>
+        <div class="zoomRow" style="margin-top:6px"><span class="lab">확대</span><input type="range" id="stZoom" min="1" max="2.5" step="0.01"><span class="tiny num" id="stZoomVal">1.00×</span></div>
         <div class="zoomRow"><span class="lab">좌우</span><input type="range" id="stOffX" min="-1" max="1" step="0.01"><span class="tiny num" id="stOffXVal">0</span></div>
         <div class="zoomRow"><span class="lab">상하</span><input type="range" id="stOffY" min="-1" max="1" step="0.01"><span class="tiny num" id="stOffYVal">0</span></div>
+        <div class="nudge">
+          <button data-stnudge="left" aria-label="안쪽 사진 왼쪽">◀</button>
+          <button data-stnudge="up" aria-label="안쪽 사진 위">▲</button>
+          <button data-stnudge="center">가운데</button>
+          <button data-stnudge="down" aria-label="안쪽 사진 아래">▼</button>
+          <button data-stnudge="right" aria-label="안쪽 사진 오른쪽">▶</button>
+        </div>
+        <p class="hint" style="margin:2px 0 6px">올리면 <b>바로 원형</b>으로 붙고 이 칸이 열려요 · 슬라이더·화살표로 원 안에 들어갈 부분을 맞추세요</p>
       </div>
       <div class="zoomRow"><span class="lab">크기</span><input type="range" id="stSize" min="0.06" max="1" step="0.01"><span class="tiny num" id="stSizeVal">30%</span></div>
       <div class="zoomRow"><span class="lab">회전</span><input type="range" id="stRot" min="-25" max="25" step="1"><span class="tiny num" id="stRotVal">0°</span></div>
@@ -1010,21 +1030,14 @@
   <div class="sheetBg" data-close="batch"></div>
   <div class="sheet tall">
     <h4>사진 <span id="batchCount">0</span>장 · 용도 한 번에</h4>
-    <button class="mini" id="batchMore" style="margin:-4px 0 9px; height:32px; width:100%; font-size:11.5px">＋ 사진 더 추가</button>
-    <div class="batchBgRow">
-      <span class="bk">표지 배경</span>
-      <div class="bgGrid" id="batchBgChips"></div>
-    </div>
-    <div class="batchBgRow">
-      <span class="bk">요약 배경</span>
-      <div class="bgGrid" id="batchSumChips"></div>
-    </div>
+    <p class="batchnote" id="batchShape" style="margin:-4px 0 9px">기본은 모두 <b>본문</b>이에요 · 표지·요약으로 쓸 사진만 바꿔 주세요</p>
+    <button class="mini" id="batchMore" style="margin:0 0 9px; height:32px; width:100%; font-size:11.5px">＋ 사진 더 추가</button>
     <div class="batchList" id="batchList"></div>
     <div class="batchFoot">
       <button id="batchCancel">취소</button>
       <button class="primary" id="batchApply">적용하기</button>
     </div>
-    <p class="batchnote">각 사진의 <b>표지 / 본문 / 요약</b>만 골라 두면 한 번에 배치돼요 · 사진 5장이면 표지1·본문3·요약1, 사진 3장이면 본문3만 넣고 위에서 표지·요약 배경을 단색으로 골라 바로 끝낼 수 있어요. 잘못 올린 사진은 <b>✕</b>로 빼요.</p>
+    <p class="batchnote">각 사진의 <b>표지 / 본문 / 요약</b>만 골라 두면 한 번에 배치돼요 · 대부분 본문이니 그대로 두고 표지·요약만 바꾸면 돼요. 배경은 <b>4단계 디자인</b>에서 골라요. 잘못 올린 사진은 <b>✕</b>로 빼요.</p>
   </div>
 </div>
 
@@ -1090,6 +1103,15 @@
 
   /* ---------- 컬러 배합 ---------- */
   const THEMES = [
+    /* v5.4: IMING 시그니처 — 버터 옐로우 #FFD84D + 차콜 */
+    { id:'butter', name:'💛 버터 옐로우 & 차콜', dark:false, photoAccent:'#FFD84D', photoAccentFg:'#1C1E26',
+      paper:{ bg:'#FFFBEC', fg:'#1F1A08', sub:'rgba(31,26,8,.62)', line:'rgba(31,26,8,.14)',
+              accent:'#FFD84D', accentFg:'#1F1A08', accentSoft:'rgba(255,216,77,.26)',
+              badgeBg:'#FFD84D', badgeFg:'#1F1A08', totalBg:'#1C1E26', totalFg:'#FFFBEC' },
+      ink:{ bg:'#1C1E26', fg:'#FFFDF2', sub:'rgba(255,253,242,.72)', line:'rgba(255,253,242,.18)',
+            accent:'#FFD84D', accentFg:'#1C1E26', accentSoft:'rgba(255,216,77,.22)',
+            badgeBg:'#FFD84D', badgeFg:'#1C1E26', totalBg:'#FFD84D', totalFg:'#1C1E26' } },
+
     { id:'sky', name:'스카이 블루 & 화이트', dark:false, photoAccent:'#9BD4F5', photoAccentFg:'#0E2438',
       paper:{ bg:'#F1F8FE', fg:'#10233A', sub:'rgba(16,35,58,.60)', line:'rgba(16,35,58,.14)',
               accent:'#2C7FD6', accentFg:'#FFFFFF', accentSoft:'rgba(44,127,214,.13)',
@@ -1156,7 +1178,7 @@
   ];
 
   /* 차콜/버터 등 사라진 테마 → 기본값 안전 폴백 */
-  const THEME_FALLBACK = { butter:'sky', charcoal:'sky', charcoal_butter:'sky', yellow:'sky' };
+  const THEME_FALLBACK = { charcoal:'sky', charcoal_butter:'sky', yellow:'sky' };
 
   /* ---------- v4: 5대 카테고리 (통일 표지 + 카테고리별 색) ---------- */
   const CATS = [
@@ -1381,6 +1403,35 @@
     renderAll();
     persistNow();
     return loadFontFor().then(function(){ paint(); toast('내 템플릿 · ' + c.name + ' 적용했어요'); return true; });
+  }
+
+  /* v5.4: IMING 시그니처 프리셋 — 트렌드형 · 꾸불림체 · 버터 옐로우 포인트 · 흰 글씨/검정 테두리 · Pretendard 본문 */
+  const IMING_PRESET = { base:'trend', theme:'butter', font:'pretendard', fontCover:'kkubulim' };
+  function imingYellowOn(){
+    const ci = coverIndex();
+    const cov = ci >= 0 ? state.slides[ci] : null;
+    return !!cov && (cov.coverStyle || 'classic') === IMING_PRESET.base &&
+      state.theme === IMING_PRESET.theme &&
+      fontIdFor('cover') === IMING_PRESET.fontCover &&
+      fontIdFor('main') === IMING_PRESET.font;
+  }
+  function applyImingYellow(){
+    compSnapshot('IMING 옐로우 적용 직전', { undo:true });
+    if (coverIndex() < 0) state.slides.unshift(blankSlide('cover'));
+    state.theme = IMING_PRESET.theme;
+    state.font = IMING_PRESET.font;
+    state.fontCover = IMING_PRESET.fontCover;
+    state.textColor = 'auto';
+    /* 카테고리 색이 켜져 있으면 포인트가 카테고리 색으로 덮여요 → 잠시 꺼요 */
+    const hadCat = !!CAT();
+    state.category = null;
+    state.slides.forEach(function(s){ if (s.type === 'cover') s.coverStyle = IMING_PRESET.base; });
+    const ci = coverIndex();
+    if (ci >= 0) state.current = ci;
+    renderAll(); persistNow();
+    loadFontFor().then(function(){ paint(); });
+    toast('💛 IMING 옐로우 적용 · 꾸불림체 표지 + Pretendard 본문 + #FFD84D' +
+      (hadCat ? ' (카테고리 색은 껐어요)' : ''), { undo: restoreBackup, ms: 5000 });
   }
 
   function blankState(mode){
@@ -2473,7 +2524,15 @@
         if (ln) ctx.fillText(ln, pad, y + title.lh * i + title.size * 0.84);
       });
       ctx.restore();
-      y += title.lines.length * title.lh + 24;
+      y += title.lines.length * title.lh + 13;
+      /* v5.4: 포인트 컬러 한 줄 — 테마·카테고리 색이 표지에 드러나요 (IMING 옐로우는 버터 옐로우) */
+      ctx.save();
+      if (onPhoto){ ctx.shadowColor = 'rgba(0,0,0,.36)'; ctx.shadowBlur = 12; ctx.shadowOffsetY = 2; }
+      ctx.fillStyle = AC.color;
+      roundRect(ctx, pad, y, Math.round(Math.min(maxW * 0.6, 120)), 9, 4.5);
+      ctx.fill();
+      ctx.restore();
+      y += 9 + 20;
     }
 
     if (s.subtitle){
@@ -4276,6 +4335,8 @@
       if (t) applyMyTpl(t);
       return;
     }
+    const pre = e.target.closest('[data-preset]');
+    if (pre){ applyImingYellow(); return; }
     const b = e.target.closest('button[data-cstyle]');
     if (!b) return;
     const v = TPL_IDS.indexOf(b.dataset.cstyle) >= 0 ? b.dataset.cstyle : 'classic';
@@ -4405,11 +4466,37 @@
       }
       toast(use.length + '장을 바로 ' + (pendingStMode === 'auto' ? '누끼로' : '원형으로') + ' 붙였어요' +
         (fs.length > room ? ' · 카드당 ' + MAX_STICKERS + '개라 ' + (fs.length - room) + '장은 빠졌어요' : '') +
-        ' · 모양·테두리·확대는 아래에서 조정해요');
+        ' · 자르기 칸에서 원하는 부분을 맞춰요');
       pendingStMode = 'circle';
+      /* v5.4: 방금 붙인 누끼의 자르기(확대·이동) 칸을 바로 펼쳐서 보여줘요 */
+      setTimeout(function(){
+        const ctl = el('stickerCtl');
+        const box = el('stCropBox');
+        if (!ctl || ctl.hidden || !box) return;
+        try{ box.scrollIntoView({ block:'center', behavior:'smooth' }); }catch(e){}
+        box.classList.add('flash');
+        setTimeout(function(){ box.classList.remove('flash'); }, 1100);
+      }, 150);
     }catch(err){
       toast(err && err.message ? err.message : '누끼를 만들지 못했어요');
     } finally { stAddBusy = false; }
+  });
+
+  /* v5.4: 누끼 안 사진을 화살표로도 밀어요 (슬라이더가 작아서) */
+  document.querySelectorAll('[data-stnudge]').forEach(function(b){
+    b.addEventListener('click', function(){
+      const st = selSticker();
+      if (!st) return;
+      const k = b.dataset.stnudge;
+      const step = 0.16;
+      if (k === 'center'){ st.ixo = 0; st.iyo = 0; }
+      if (k === 'left') st.ixo = clamp(num(st.ixo, 0) - step, -1, 1);
+      if (k === 'right') st.ixo = clamp(num(st.ixo, 0) + step, -1, 1);
+      if (k === 'up') st.iyo = clamp(num(st.iyo, 0) - step, -1, 1);
+      if (k === 'down') st.iyo = clamp(num(st.iyo, 0) + step, -1, 1);
+      syncStickerCtl();
+      commit();
+    });
   });
 
   el('stickerDel').addEventListener('click', ()=>{
@@ -5021,6 +5108,7 @@
       Object.assign(state, norm);
       activeFolder = it.folderId;
       if (lib) lib.activeFolder = activeFolder;
+      if (state.step === 3) state.previewSize = 'small';
       applyPreviewSize();
       renderAll(); persistNow();
       openSheetName('slot', false);
@@ -5472,13 +5560,13 @@
     const b = e.target.closest('button[data-ps]');
     if (!b) return;
     state.previewSize = b.dataset.ps;
+    if (state.step === 3) psStep3Picked = true;
     applyPreviewSize();
     persistSoon();
   });
 
   /* ---------- 사진 여러 장 · 용도 배정 (v5.3: 표지/본문/요약 + 배경 한 번에) ---------- */
   let batchItems = [];
-  let batchSumTouched = false;
   const SUM_BGS = [
     { id:'photo', name:'사진', sw:'linear-gradient(135deg,#6E6A60,#2A2824)' },
     { id:'dark',  name:'다크', sw:'#1A1A18' },
@@ -5495,24 +5583,14 @@
     state.summaryBg = v;
     const si = summaryIndex();
     if (si >= 0) state.slides[si].summaryStyle = v;
-    renderBatchSum();
     if (si >= 0){ paintSoon(); persistSoon(); }
     return v;
   }
-  function renderBatchSum(){
-    const box = el('batchSumChips');
-    if (!box) return;
-    const on = currentSumBg();
-    box.innerHTML = SUM_BGS.map(function(o){
-      return '<button class="chip' + (o.id === on ? ' on' : '') + '" data-sumbg="' + o.id + '">' +
-             '<span class="sw" style="background:' + o.sw + '"></span><span class="t">' + o.name + '</span></button>';
-    }).join('');
-  }
   function openBatch(files){
     if (batchItems.length) batchItems.forEach(it=>{ if (it.url) URL.revokeObjectURL(it.url); });
-    batchSumTouched = false;
-    batchItems = files.map(function(f, i){
-      return { file:f, url:URL.createObjectURL(f), role: (i === 0 ? 'cover' : 'body') };
+    /* v5.4: 기본값은 모두 '본문' — 대부분 본문 사진이고 표지·요약만 따로 바꿔요 */
+    batchItems = files.map(function(f){
+      return { file:f, url:URL.createObjectURL(f), role:'body' };
     });
     renderBatch();
     openSheetName('batch', true);
@@ -5542,7 +5620,10 @@
         }).join('') + '</div></div>' +
         '<button class="x" data-bdel="' + i + '" aria-label="이 사진 빼기">✕</button></div>';
     }).join('');
-    renderBatchSum();
+    const nC = batchItems.filter(function(x){ return x.role === 'cover'; }).length;
+    const nB = batchItems.filter(function(x){ return x.role === 'body'; }).length;
+    const nS = batchItems.filter(function(x){ return x.role === 'summary'; }).length;
+    if (el('batchShape')) el('batchShape').textContent = '표지 ' + nC + '장 · 본문 ' + nB + '장 · 요약 ' + nS + '장으로 배치돼요';
   }
   function closeBatch(){
     batchItems.forEach(it=>{ if (it.url) URL.revokeObjectURL(it.url); });
@@ -5577,12 +5658,6 @@
     if (batchItems[i]) batchItems[i].role = b.dataset.brole;
     renderBatch();
   });
-  if (el('batchSumChips')) el('batchSumChips').addEventListener('click', function(e){
-    const b = e.target.closest('[data-sumbg]');
-    if (!b) return;
-    batchSumTouched = true;
-    setSumBg(b.dataset.sumbg);
-  });
   el('batchCancel').addEventListener('click', closeBatch);
   el('batchAdd').addEventListener('click', ()=> el('batchFile').click());
   el('batchFile').addEventListener('change', ()=>{
@@ -5603,6 +5678,54 @@
 
   el('batchApply').addEventListener('click', ()=>{ applyBatch(); });
 
+  /* v5.4: 사진 배치 뒤 슬라이드 구성을 올린 사진에 맞춰요 */
+  function slideHasText(s){
+    return !!((s.badge || '').trim() || (s.title || '').trim() || (s.subtitle || '').trim() ||
+      (s.desc || '').trim() || (s.q1 || '').trim() || (s.q2 || '').trim() || (s.q3 || '').trim() ||
+      (s.cta || '').trim() || (s.total || '').trim() || (s.totalNote || '').trim());
+  }
+  function slideIsBlank(s){
+    if (s.photo || (s.stickers || []).length) return false;
+    if (slideHasText(s)) return false;
+    return !(s.rows || []).some(function(r){ return r && ((r.item || '').trim() || (r.amount || '').trim()); });
+  }
+  /* 사진이 붙은 본문이 있으면, 사진도 글도 없는 빈 본문 카드는 정리해요 */
+  function pruneBlankBodySlides(){
+    const bodies = state.slides.filter(function(s){ return s.type === 'body'; });
+    if (!bodies.some(function(s){ return !!s.photo; })) return 0;
+    if (bodies.filter(function(s){ return !slideIsBlank(s); }).length <= 0) return 0;
+    const keepRef = state.slides[state.current];
+    const before = state.slides.length;
+    state.slides = state.slides.filter(function(s){
+      return !(s.type === 'body' && slideIsBlank(s));
+    });
+    const removed = before - state.slides.length;
+    if (removed){
+      const at = state.slides.indexOf(keepRef);
+      state.current = at >= 0 ? at : clamp(state.current, 0, state.slides.length - 1);
+    }
+    return removed;
+  }
+  /* 표지 → 본문 → 요약 순서로 (같은 종류 안에서는 지금 순서 그대로) */
+  function sortSlideOrder(){
+    const rank = { cover:0, body:1, summary:2 };
+    const keepRef = state.slides[state.current];
+    state.slides = state.slides.map(function(s, i){ return { s:s, i:i }; })
+      .sort(function(a, b){
+        const ra = rank[a.s.type] == null ? 3 : rank[a.s.type];
+        const rb = rank[b.s.type] == null ? 3 : rank[b.s.type];
+        return ra === rb ? a.i - b.i : ra - rb;
+      }).map(function(x){ return x.s; });
+    const at = state.slides.indexOf(keepRef);
+    if (at >= 0) state.current = at;
+  }
+  function deckShapeLabel(){
+    const c = state.slides.filter(function(s){ return s.type === 'cover'; }).length;
+    const b = state.slides.filter(function(s){ return s.type === 'body'; }).length;
+    const m = state.slides.filter(function(s){ return s.type === 'summary'; }).length;
+    return '표지 ' + c + ' · 본문 ' + b + (m ? ' · 요약 ' + m : '');
+  }
+
   async function applyBatch(){
     if (!batchItems.length) return;
     const items = batchItems.slice();
@@ -5615,11 +5738,19 @@
     const sums = items.filter(x=>x.role === 'summary');
     let placedCover = 0, placedBody = 0, placedSum = 0, failed = 0;
 
+    /* 표지 — 표지로 고른 사진 1장을 첫 표지 카드에 (없으면 만들어 맨 앞에) */
     if (covers.length){
       try{
         const data = await compressImage(covers[0].file);
         let ci = coverIndex();
-        if (ci < 0){ state.slides.unshift(blankSlide('cover')); ci = 0; }
+        if (ci < 0){
+          state.slides.unshift(blankSlide('cover'));
+          ci = 0;
+        } else if (ci > 0){
+          const cov = state.slides.splice(ci, 1)[0];
+          state.slides.unshift(cov);
+          ci = 0;
+        }
         const s = state.slides[ci];
         if (CAT()) s.coverStyle = 'cat';
         s.photo = data; s.zoom = 1; s.offX = 0; s.offY = 0;
@@ -5627,33 +5758,32 @@
         /* 표지 사진을 넣으면 표지 배경도 사진으로 (단색을 골라 둔 경우 대비) */
         if ((state.coverBg || 'photo') !== 'photo') setCoverBg('photo', { keepSlide:true });
         placedCover = 1;
+        if (covers.length > 1) failed += covers.length - 1;
       }catch(e){ failed++; }
     }
 
-    const emptyBodies = state.slides.filter(x=>x.type === 'body' && !x.photo);
-    for (let i = 0; i < bodies.length; i++){
-      try{
-        const data = await compressImage(bodies[i].file);
-        let s = emptyBodies[i];
-        if (!s){
-          s = blankSlide('body');
-          const si = summaryIndex();
-          if (si >= 0) state.slides.splice(si, 0, s); else state.slides.push(s);
-          emptyBodies.push(s);
-        }
-        s.photo = data; s.zoom = 1; s.offX = 0; s.offY = 0;
-        preloadImg(data);
-        placedBody++;
-      }catch(e){ failed++; }
+    /* 본문 — 올린 본문 사진을 본문 카드 순서대로 채우고, 남는 사진은 카드를 새로 만들어요 */
+    if (bodies.length){
+      const bodySlides = state.slides.filter(function(x){ return x.type === 'body'; });
+      for (let i = 0; i < bodies.length; i++){
+        try{
+          const data = await compressImage(bodies[i].file);
+          let s = bodySlides[i];
+          if (!s){
+            s = blankSlide('body');
+            const si = summaryIndex();
+            if (si >= 0) state.slides.splice(si, 0, s); else state.slides.push(s);
+            bodySlides.push(s);
+          }
+          s.photo = data; s.zoom = 1; s.offX = 0; s.offY = 0;
+          preloadImg(data);
+          placedBody++;
+        }catch(e){ failed++; }
+      }
+      pruneBlankBodySlides();
     }
 
-    /* 요약 배경 — 사진을 안 넣어도 배경을 골랐으면 요약 카드를 만들어 그 배경으로 */
-    if (!sums.length && (batchSumTouched || summaryIndex() >= 0)){
-      ensureSummarySlide();
-      const si0 = summaryIndex();
-      if (si0 >= 0) state.slides[si0].summaryStyle = currentSumBg();
-    }
-
+    /* 요약 — 요약으로 고른 사진은 맨 끝 요약 카드에 */
     if (sums.length){
       try{
         const data = await compressImage(sums[0].file);
@@ -5668,14 +5798,14 @@
         placedSum = 1;
       }catch(e){ failed++; }
     }
-    batchSumTouched = false;
 
     items.forEach(it=>{ if (it.url) URL.revokeObjectURL(it.url); });
+    sortSlideOrder();
+    state.current = clamp(state.current, 0, state.slides.length - 1);
     renderAll();
     persistNow();
     const total = placedCover + placedBody + placedSum;
-    toast(total + '장 배치 완료' + (failed ? ' · ' + failed + '장 실패' : '') +
-      ' · 표지 배경 ' + bgLabel(state.coverBg || 'photo') + ' / 요약 ' + (SUM_BGS.filter(function(o){ return o.id === currentSumBg(); })[0] || { name:'다크' }).name);
+    toast(total + '장 배치 완료' + (failed ? ' · ' + failed + '장 실패' : '') + ' · ' + deckShapeLabel());
   }
 
   /* =========================================================
@@ -5729,7 +5859,10 @@
     const ci = coverIndex();
     const csVal = s.type === 'cover' ? (s.coverStyle || 'classic')
       : ((state.slides[ci >= 0 ? ci : 0] || {}).coverStyle || 'classic');
-    box.innerHTML = TPL_IDS.map(function(id){
+    const yellowOn = imingYellowOn();
+    box.innerHTML = '<button class="chip preset' + (yellowOn ? ' on' : '') + '" data-preset="iming" aria-pressed="' + (yellowOn ? 'true' : 'false') + '">' +
+             '<span class="em">💛</span><span class="t">IMING 옐로우</span></button>' +
+             TPL_IDS.map(function(id){
       return '<button class="chip' + (id === csVal ? ' on' : '') + '" data-cstyle="' + id + '">' +
              '<span class="t">' + esc(tplName(id)) + '</span></button>';
     }).join('') + MY_TPLS.list.map(function(t){
@@ -5737,7 +5870,7 @@
              '<span class="t">' + esc(t.name) + '</span>' +
              '<span class="fdel" data-mytpldel="' + esc(t.id) + '" role="button" aria-label="' + esc(t.name) + ' 삭제">✕</span></button>';
     }).join('');
-    if (el('tplNow')) el('tplNow').textContent = tplName(csVal);
+    if (el('tplNow')) el('tplNow').textContent = yellowOn ? '💛 IMING 옐로우' : tplName(csVal);
     if (el('typeCard')) el('typeCard').dataset.cstyle = csVal;
   }
 
@@ -5803,7 +5936,7 @@
   });
 
   function renderBgChips(){
-    [[el('bgChips'), null], [el('batchBgChips'), null]].forEach(function(pair){
+    [[el('bgChips'), null]].forEach(function(pair){
       const box = pair[0];
       if (!box) return;
       const c = CAT();
@@ -5840,12 +5973,6 @@
     setCoverBg(b.dataset.bg);
     applyStepUI();
     toast('표지 배경 · ' + bgLabel(state.coverBg));
-  });
-  if (el('batchBgChips')) el('batchBgChips').addEventListener('click', function(e){
-    const b = e.target.closest('[data-bg]');
-    if (!b) return;
-    setCoverBg(b.dataset.bg, { keepSlide:true });
-    renderBgChips();
   });
 
   /* =========================================================
@@ -6165,9 +6292,11 @@
      v5 · 4단계 대시보드
      ========================================================= */
   const STEP_ORDER = {
-    photoCard:{1:10, 3:40}, stickerCard:{1:18}, coverBgCard:{1:26, 4:14}, catCard:{1:34}, creditCard:{1:44}, guideCard:{1:52},
+    /* v5.4: 1단계는 사진·누끼·크레딧만 · 표지 배경·카테고리는 4단계로 */
+    photoCard:{1:10, 3:40}, stickerCard:{1:20}, creditCard:{1:30},
+    typeCard:{4:10}, coverBgCard:{4:12}, catCard:{4:14}, designCard:{4:20}, captionCard:{4:30}, guideCard:{4:44},
     writeCard:{2:10}, bodyWrite:{2:20}, fieldsCard:{2:30,3:50}, sumCard:{2:40,3:60},
-    slideCard:{3:20}, posCard:{3:30}, designCard:{4:20}, captionCard:{4:30}, typeCard:{4:10}
+    slideCard:{3:20}, posCard:{3:30}
   };
   /* v5.2: 3단계는 문구 칸이 맨 위, 사진(확대·위치)은 그 아래 */
   STEP_ORDER.fieldsCard = {2:30, 3:10};
@@ -6217,6 +6346,7 @@
     if (el('modeSeg')) el('modeSeg').dataset.hide = st === 4 ? '1' : '';
   }
 
+  let psStep3Picked = false;
   function setStep(n){
     const st = clamp(Math.round(num(n, 1)), 1, 4);
     /* v5.1: 1단계는 미리보기 기본 접기 · 3·4단계는 펼쳐서 보며 수정 (사용자가 직접 접으면 유지) */
@@ -6228,6 +6358,8 @@
       else if (writeTab === 'summary' && summaryIndex() < 0) writeTab = 'cover';
     }
     state.step = st;
+    /* v5.4: 3단계는 미리보기 '작게'가 기본 (3단계에서 직접 고르면 그 값을 지켜요) */
+    if (st === 3 && !psStep3Picked) state.previewSize = 'small';
     if (st === 1){
       const ci = coverIndex();
       if (ci >= 0) state.current = ci;
@@ -6247,6 +6379,7 @@
     }
     syncWriteTab();
     renderAll();
+    applyPreviewSize();
     persistNow();
     const ed = el('editor');
     if (ed) ed.scrollTop = 0;
@@ -7110,6 +7243,8 @@
     const saved = loadState();
     if (saved) Object.assign(state, saved);
 
+    /* v5.4: 3단계로 열리면 미리보기 '작게' */
+    if (state.step === 3 && !psStep3Picked) state.previewSize = 'small';
     applyPreviewSize();
     syncWriteTab();
     state.stageHide = (state.step === 1);
