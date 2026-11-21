@@ -468,6 +468,15 @@
   .stCrop .lab2{font-size:11px; font-weight:800; color:#8A6B1E; letter-spacing:-.2px}
   .stCrop .zoomRow .lab{min-width:40px}
   .stCrop .nudge{margin-top:4px}
+
+  /* v5.6 ---------- */
+  .tplSec{padding-top:2px}
+  .tplSec + .tplSec{margin-top:12px; padding-top:12px; border-top:1px solid var(--line2)}
+  .tplSec .cardHead{margin-bottom:7px}
+  .tplSec .secEm{font-size:12.5px; font-weight:800; color:#211F1A; letter-spacing:-.2px}
+  .tplSec .secHelp{margin:0; font-size:10.5px; color:var(--muted); line-height:1.5; letter-spacing:-.2px}
+  #tplChips, #bodyChips{flex-wrap:wrap; overflow:visible; padding-bottom:2px}
+  #bodyChips .chip .em{font-size:12.5px; line-height:1}
   .stCrop.flash{animation:stFlash .9s ease}
   @keyframes stFlash{0%{box-shadow:0 0 0 3px rgba(255,216,77,.85)}100%{box-shadow:0 0 0 3px rgba(255,216,77,0)}}
   .stepTip{margin:0 0 8px; font-size:11.5px; color:#78766E; line-height:1.5}
@@ -605,12 +614,15 @@
   </div>
 
   <div class="card" id="typeCard" data-steps="4">
-    <div class="cardHead"><span class="label">템플릿</span><span class="count" id="tplNow">카테고리 통일</span><button class="linkBtn" id="tplEditBtn">이름 수정</button></div>
-    <div class="chips" id="tplChips"></div>
-    <div class="label" style="margin:11px 0 6px">본문 카드 스타일</div>
-    <div class="seg" id="bodyStyleSeg">
-      <button data-bstyle="classic">기본</button>
-      <button data-bstyle="editorial">✨ 에디토리얼</button>
+    <div class="tplSec" id="coverSec">
+      <div class="cardHead"><span class="secEm">🎨 표지 디자인</span><span class="count" id="tplNow">카테고리 통일</span><button class="linkBtn" id="tplEditBtn">이름 수정</button></div>
+      <div class="chips" id="tplChips"></div>
+      <p class="secHelp">표지 카드에만 적용돼요 · 본문은 아래에서 따로 골라요</p>
+    </div>
+    <div class="tplSec" id="bodySec">
+      <div class="cardHead"><span class="secEm">📄 본문 디자인</span><span class="count" id="bodyNow">기본 깔끔형</span></div>
+      <div class="chips" id="bodyChips"></div>
+      <p class="secHelp" id="bodyHelp">본문 카드 전체에 적용돼요 · 표지 디자인은 그대로 남아요</p>
     </div>
     <div class="chipActions" style="margin-top:8px">
       <button class="mini" id="myTplSaveBtn">+ 내 템플릿 저장</button>
@@ -655,7 +667,7 @@
       </div>
       <p class="hint">질문 박스형 표지에 바로 반영돼요 · 비운 박스는 사라져요 · 제목 강조는 <b>**강조**</b></p>
     </div>
-    <p class="hint">표지 디자인 틀 하나만 고르면 돼요 · <b>이름 수정</b>으로 내 말로 바꿔 저장할 수 있어요 · 이 브라우저와 클라우드에 함께 저장돼요</p>
+    <p class="hint">🎨 표지와 📄 본문을 <b>따로</b> 골라 자유롭게 조합해요 · <b>이름 수정</b>으로 내 말로 바꿔 저장할 수 있어요 · 이 브라우저와 클라우드에 함께 저장돼요</p>
   </div>
 
   <div class="card" id="designCard" data-steps="4">
@@ -1296,9 +1308,19 @@
     { id:'cream', name:'크림',   hex:'#F5EFE4' },
     { id:'cat',   name:'카테고리' }
   ];
-  const TPL_IDS = ['editorial', 'cat', 'trend', 'question', 'classic'];
-  const TPL_DEFAULT = { editorial:'✨ 감성 배지형', cat:'카테고리 통일', trend:'트렌드', question:'질문 박스형', classic:'클래식',
+  const TPL_IDS = ['editorial', 'place_pin', 'chat_bubble', 'big_title', 'word_highlight', 'magazine_interview',
+                   'cat', 'trend', 'question', 'classic'];
+  const TPL_DEFAULT = { editorial:'✨ 감성 배지형', place_pin:'📍 여기 저장해 둬', chat_bubble:'💬 톡 말풍선형',
+                        big_title:'🌊 빅 타이틀', word_highlight:'☁️ 한 단어 강조', magazine_interview:'🎙️ 매거진 인터뷰',
+                        cat:'카테고리 통일', trend:'트렌드', question:'질문 박스형', classic:'클래식',
                         iming_yellow:'💛 IMING 옐로우' };
+  /* v5.6: 본문 카드 레이아웃은 표지와 따로 고른다 */
+  const BODY_IDS = ['classic', 'editorial', 'place_pin', 'magazine_interview'];
+  const BODY_DEFAULT = { classic:'기본 깔끔형', editorial:'✨ 에디토리얼', place_pin:'📍 장소 핀형', magazine_interview:'🎙️ 매거진형' };
+  const BODY_HELP = { classic:'사진 위에 배지·제목·본문을 깔끔하게',
+                      editorial:'노란 라벨 + 흰 네모 박스',
+                      place_pin:'하단 3줄 · 오른쪽에 위치 한 줄',
+                      magazine_interview:'왼쪽 정렬 인터뷰 배지 + 큰 제목' };
   const TPL_KEY = 'iming_cards_tplnames_v1';
 
   function tplCfgLoad(){
@@ -1318,6 +1340,13 @@
     return out;
   }
   function tplName(id){ return tplNames()[id] || TPL_DEFAULT[id] || '템플릿'; }
+  /* v5.6: 표지/본문 레이아웃 이름 (사용자가 표지 이름을 바꿨어도 알아보게) */
+  function coverStyleName(id){
+    if (id === 'iming_yellow') return '💛 IMING 옐로우';
+    if (TPL_DEFAULT[id]) return tplName(id);
+    return '클래식';
+  }
+  function bodyStyleName(id){ return BODY_DEFAULT[BODY_IDS.indexOf(id) >= 0 ? id : 'classic']; }
   function tplTs(){ return num(tplCfgLoad().ts, 0); }
   function tplSaveNames(names){
     const now = tplCfgLoad();
@@ -1348,7 +1377,10 @@
     return {
       id: str(r.id), name: str(r.name).slice(0, 14), ts: num(r.ts, 0),
       cfg: {
-        base: ['iming_yellow','editorial','cat','trend','question','classic'].indexOf(c.base) >= 0 ? c.base : 'classic',
+        base: ['iming_yellow','editorial','cat','trend','question','classic','place_pin','chat_bubble','big_title','word_highlight','magazine_interview'].indexOf(c.base) >= 0 ? c.base : 'classic',
+        /* v5.6: 본문 디자인도 함께 저장 (예전 템플릿은 base로 추정) */
+        body: BODY_IDS.indexOf(c.body) >= 0 ? c.body
+          : (c.body == null ? ((['iming_yellow','editorial','cat','trend','question','classic','place_pin','chat_bubble','big_title','word_highlight','magazine_interview'].indexOf(c.base) >= 0 && c.base === 'editorial') ? 'editorial' : 'classic') : 'classic'),
         theme: str(c.theme), font: str(c.font), fontCover: str(c.fontCover || c.font),
         textColor: ['auto','white','accent','ink'].indexOf(c.textColor) >= 0 ? c.textColor : 'auto',
         textOpacity: clamp(num(c.textOpacity, 1), 0.4, 1),
@@ -1389,6 +1421,7 @@
     const base = cur();
     return {
       base: cov ? (cov.coverStyle || 'classic') : 'classic',
+      body: (b && BODY_IDS.indexOf(b.bodyStyle) >= 0) ? b.bodyStyle : 'classic',
       theme: state.theme, font: state.font, fontCover: fontIdFor('cover'),
       textColor: textMode(), textOpacity: textAlpha(), sizes: SZ(),
       pos: b ? (b.pos || 'bottom') : (base.pos || 'bottom'),
@@ -1403,6 +1436,7 @@
     if (!c) return false;
     compSnapshot('내 템플릿 적용 직전');
     state.slides.forEach(function(s){ if (s.type === 'cover') s.coverStyle = c.cfg.base; });
+    state.slides.forEach(function(s){ if (s.type === 'body') s.bodyStyle = c.cfg.body || 'classic'; });
     if (c.cfg.theme) state.theme = themeById(c.cfg.theme).id;
     if (c.cfg.font) state.font = fontById(c.cfg.font).id;
     if (c.cfg.fontCover) state.fontCover = fontById(c.cfg.fontCover).id;
@@ -1442,7 +1476,6 @@
     const hadCat = !!CAT();
     state.category = null;
     state.slides.forEach(function(s){ if (s.type === 'cover') s.coverStyle = IMING_PRESET.base; });
-    state.slides.forEach(function(s){ if (s.type === 'body') s.bodyStyle = 'classic'; });
     const ci = coverIndex();
     if (ci >= 0) state.current = ci;
     renderAll(); persistNow();
@@ -1474,14 +1507,32 @@
     toast('✨ 감성 배지형 적용 · 표지(사각 배지·별·2줄 제목) + 본문(흰 박스) 짝지어 적용' +
       (hadCat ? ' (카테고리 색은 껐어요)' : ''), { undo: restoreBackup, ms: 5000 });
   }
+  /* v5.6: 본문 디자인 칩 — 지금 본문 카드에 적용된 스타일을 그대로 보여줘요 */
+  function bodyStylesOf(){
+    return state.slides.filter(function(s){ return s.type === 'body'; })
+      .map(function(s){ return BODY_IDS.indexOf(s.bodyStyle) >= 0 ? s.bodyStyle : 'classic'; });
+  }
   function syncBodyStyleSeg(){
-    const box = el('bodyStyleSeg');
+    const box = el('bodyChips');
     if (!box) return;
-    const bodies = state.slides.filter(function(s){ return s.type === 'body'; });
-    const any = bodies.some(function(s){ return s.bodyStyle === 'editorial'; });
-    box.querySelectorAll('button').forEach(function(b){
-      b.classList.toggle('on', b.dataset.bstyle === 'editorial' ? any : !any);
+    const list = bodyStylesOf();
+    const first = list.length ? list[0] : 'classic';
+    const mixed = list.some(function(v){ return v !== first; });
+    box.querySelectorAll('button[data-bstyle]').forEach(function(b){
+      const v = b.dataset.bstyle;
+      const on = list.length ? (list.indexOf(v) >= 0) : (v === 'classic');
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
+    if (el('bodyNow')){
+      el('bodyNow').textContent = list.length
+        ? ((BODY_DEFAULT[first] || '기본 깔끔형') + (mixed ? ' 외 ' + list.length + '장' : ''))
+        : '본문 카드 없음';
+    }
+    if (el('bodyHelp')){
+      el('bodyHelp').textContent = (BODY_HELP[first] || BODY_HELP.classic) +
+        ' · 본문 카드 전체에 적용돼요';
+    }
   }
 
   function blankState(mode){
@@ -1611,8 +1662,8 @@
       s.desc = str(r.desc); s.watermark = r.watermark !== false; s.grad = r.grad === true;
       s.pos = ['top','middle','bottom'].indexOf(r.pos) >= 0 ? r.pos : 'bottom';
       s.align = ['left','center','right'].indexOf(r.align) >= 0 ? r.align : 'left';
-      s.coverStyle = ['classic','trend','cat','question','iming_yellow','editorial'].indexOf(r.coverStyle) >= 0 ? r.coverStyle : 'classic';
-      s.bodyStyle = r.bodyStyle === 'editorial' ? 'editorial' : 'classic';
+      s.coverStyle = ['classic','trend','cat','question','iming_yellow','editorial','place_pin','chat_bubble','big_title','word_highlight','magazine_interview'].indexOf(r.coverStyle) >= 0 ? r.coverStyle : 'classic';
+      s.bodyStyle = BODY_IDS.indexOf(r.bodyStyle) >= 0 ? r.bodyStyle : 'classic';
       s.stickers = (Array.isArray(r.stickers) ? r.stickers : []).slice(0, MAX_STICKERS).map(x=>{
         const srcOk = (x && typeof x.src === 'string' && x.src.indexOf('data:image') === 0) ? x.src : '';
         const origOk = (x && typeof x.orig === 'string' && x.orig.indexOf('data:image') === 0) ? x.orig : srcOk;
@@ -1642,6 +1693,16 @@
       if (!s.rows.length) s.rows = [{ item:'', amount:'' }];
       return s;
     });
+    /* v5.6: 저장된 덱에 요약표가 여러 장이면 대표 1장만 남긴다 */
+    out.slides = (function(){
+      let seen = false;
+      return out.slides.filter(function(s){
+        if (s.type !== 'summary') return true;
+        if (seen) return false;
+        seen = true;
+        return true;
+      });
+    })();
     out.current = clamp(Math.round(num(raw.current, 0)), 0, out.slides.length - 1);
     out.slides.forEach(function(s){ if (s.type === 'summary') applyAutoTotal(s); });
     return out;
@@ -2838,6 +2899,7 @@
 
   /* =========================================================
      v5.5  💛 IMING 옐로우 전용 표지 · ✨ 감성 배지형(에디토리얼)
+     v5.6  표지/본문 디자인 분리 · 새 표지 5종(📍💬🌊☁️🎙️) · 요약표 1장 고정
      ========================================================= */
   const IM_ACCENT = '#FFD84D';   /* 버터 옐로우 */
   const IM_INK = '#14161C';      /* 배지 글씨 · 외곽선 */
@@ -3380,6 +3442,543 @@
     }
   }
 
+  /* =========================================================
+     v5.6  새 표지 5종 — 📍 여기 저장해 둬 · 💬 톡 말풍선형 ·
+           🌊 빅 타이틀 · ☁️ 한 단어 강조 · 🎙️ 매거진 인터뷰
+     ========================================================= */
+  /* 사진(또는 단색) 바탕 — 표지·본문 공통 */
+  function styleCanvas(ctx, s, f, solid, mode){
+    const w = f.w, h = f.h;
+    if (solid){ paintSolidBg(ctx, w, h, solid); return null; }
+    const im = imgFor(s);
+    if (im){ drawPhoto(ctx, im, s, w, h); return im; }
+    if (mode === 'body'){ drawSurface(ctx, w, h, surfacePal(), false); return null; }
+    paintBrightBg(ctx, w, h, false);
+    return null;
+  }
+  /* 사진 위 포인트색 / 밝은 바탕 위 포인트색 */
+  function styleAccent(dark){
+    const th = THEME();
+    return dark ? (th.photoAccent || '#FFD84D') : ((th.paper && th.paper.accent) || '#2C7FD6');
+  }
+  /* 왼쪽 정렬 여러 줄 — 사진 위에서는 얇은 외곽선 + 그림자 */
+  function styleLines(ctx, lines, x, yTop, lh, size, weight, color, outline){
+    if (!lines || !lines.length) return;
+    if (outline){
+      ctx.save();
+      ctx.font = font(size, weight);
+      ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+      ctx.lineJoin = 'round'; ctx.miterLimit = 2;
+      ctx.lineWidth = Math.max(2, Math.round(size * 0.055));
+      ctx.strokeStyle = 'rgba(8,8,6,.40)';
+      ctx.shadowColor = 'rgba(0,0,0,.48)';
+      ctx.shadowBlur = Math.max(8, Math.round(size * 0.30));
+      ctx.shadowOffsetY = Math.max(1, Math.round(size * 0.05));
+      for (let i = 0; i < lines.length; i++){
+        if (lines[i]) ctx.strokeText(lines[i], x, yTop + lh * i + size * 0.84);
+      }
+      ctx.restore();
+    }
+    drawLines(ctx, lines, x, yTop, lh, size, weight, color, 'left');
+  }
+  function styleWrapped(ctx, text, maxW, size, weight, maxLines, lhF){
+    const t = String(text == null ? '' : text).replace(/\r/g, '').trim();
+    if (!t) return null;
+    return fitText(ctx, t, { maxWidth: maxW, size: size, weight: weight,
+      maxLines: maxLines || 2, lineHeight: lhF || 1.3, minSize: Math.max(12, Math.round(size * 0.72)) });
+  }
+  /* 📍 핀 마크 — 글꼴 이모지 대신 벡터로 또렷하게 */
+  function drawPinMark(ctx, x, baseY, hgt, color){
+    const wd = hgt * 0.70;
+    const r = hgt * 0.35;
+    const cx = x + wd / 2;
+    const cy = baseY - hgt + r;
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,.34)';
+    ctx.shadowBlur = hgt * 0.16;
+    ctx.shadowOffsetY = hgt * 0.05;
+    ctx.fillStyle = color || '#FF4D3D';
+    ctx.beginPath();
+    ctx.moveTo(cx, baseY);
+    ctx.quadraticCurveTo(cx - r * 0.94, cy + r * 0.70, cx - r, cy + r * 0.08);
+    ctx.arc(cx, cy, r, Math.PI * 0.92, Math.PI * 2.08, false);
+    ctx.quadraticCurveTo(cx + r * 0.94, cy + r * 0.70, cx, baseY);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * 0.36, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,.96)';
+    ctx.fill();
+    return wd;
+  }
+  /* 하단 오른쪽 작은 크레딧 */
+  function styleCreditLine(ctx, f, dark){
+    if (!creditText().trim()) return;
+    ctx.save();
+    ctx.globalAlpha = dark ? 0.46 : 0.38;
+    drawCredit(ctx, f.w - f.pad, f.h - f.safeBottom - Math.round(f.pad * 0.20),
+      dark ? { fg:'#FFFFFF', sub:'rgba(255,255,255,.86)' } : { fg:'#26241F', sub:'rgba(38,36,31,.66)' },
+      'right', 0.86);
+    ctx.restore();
+  }
+
+  /* ---------- 📍 여기 저장해 둬 ---------- */
+  function drawPlacePin(ctx, s, f, T, solid, mode){
+    const w = f.w, h = f.h, pad = f.pad;
+    const isCover = mode !== 'body';
+    const im = styleCanvas(ctx, s, f, solid, mode);
+    const dark = !!im || !!(solid && solid.dark);
+    if (im){
+      const g = ctx.createLinearGradient(0, h * 0.40, 0, h);
+      g.addColorStop(0, 'rgba(0,0,0,0)');
+      g.addColorStop(0.46, 'rgba(0,0,0,.30)');
+      g.addColorStop(1, 'rgba(0,0,0,.74)');
+      ctx.fillStyle = g; ctx.fillRect(0, h * 0.40, w, h * 0.60);
+    }
+    const fg = dark ? '#FFFFFF' : '#171614';
+    const fgSub = dark ? 'rgba(255,255,255,.95)' : 'rgba(23,22,20,.90)';
+    const fgDesc = dark ? 'rgba(255,255,255,.84)' : 'rgba(23,22,20,.70)';
+    const maxW = w - pad * 2;
+    const titleTxt = plainMarks(s.title).trim();
+    const subRaw = plainMarks(s.subtitle).trim();
+    const badgeTxt = (s.badge || '').trim();
+    const descLinesAll = plainMarks(s.desc).split('\n').map(function(t){ return t.trim(); }).filter(Boolean);
+    /* 오른쪽 작은 글씨는 위치·해시태그처럼 짧을 때만 (긴 부제는 둘째 줄로) */
+    const shortSub = subRaw && subRaw.length <= 20 && subRaw.indexOf('\n') < 0;
+    const rightLabel = badgeTxt || (shortSub ? subRaw : '');
+    let subTxt = '', descTxt = '';
+    if (badgeTxt){
+      subTxt = subRaw || descLinesAll[0] || '';
+      descTxt = subRaw ? descLinesAll.join('\n') : descLinesAll.slice(1).join('\n');
+    } else if (shortSub){
+      subTxt = descLinesAll[0] || '';
+      descTxt = descLinesAll.slice(1).join('\n');
+    } else {
+      subTxt = subRaw || descLinesAll[0] || '';
+      descTxt = subRaw ? descLinesAll.join('\n') : descLinesAll.slice(1).join('\n');
+    }
+    /* 오른쪽 작은 위치 글씨 */
+    const rlSize = Math.max(16, Math.round(w * 0.0245));
+    let rlText = '';
+    if (rightLabel){
+      let t = rightLabel;
+      ctx.font = font(rlSize, 600);
+      while (ctx.measureText(t).width > maxW * 0.46 && t.length > 2) t = t.slice(0, -1);
+      rlText = (t === rightLabel) ? t : (t.replace(/\s+$/, '') + '…');
+    }
+    ctx.font = font(rlSize, 600);
+    const rlW = rlText ? ctx.measureText(rlText).width : 0;
+
+    const tBase = isCover ? T.coverTitle * 0.60 : Math.max(38, T.bodyTitle * 0.88);
+    const sBase = isCover ? Math.round(w * 0.0445) : Math.round(w * 0.040);
+    const dBase = isCover ? Math.round(w * 0.0315) : Math.round(w * 0.030);
+
+    let title = null;
+    if (titleTxt){
+      const availOne = Math.max(maxW * 0.34, maxW - (rlW ? rlW + Math.round(w * 0.028) : 0));
+      const one = fitOneLine(ctx, titleTxt, availOne, tBase, 900, tBase * 0.62);
+      if (one.text === titleTxt){
+        title = { lines: [one.text], size: one.size, lh: one.size * 1.16 };
+      } else {
+        title = fitText(ctx, titleTxt, { maxWidth: maxW, size: tBase, weight: 900,
+          maxLines: 2, lineHeight: 1.16, minSize: tBase * 0.64 });
+      }
+    }
+    const sub = styleWrapped(ctx, subTxt, maxW * 0.92, sBase, 700, 2, 1.26);
+    const desc = styleWrapped(ctx, descTxt, maxW * 0.94, dBase, 500, 3, 1.52);
+
+    const blocks = [];
+    if (title) blocks.push({ kind:'t', h: title.lines.length * title.lh });
+    if (sub) blocks.push({ kind:'s', h: sub.lines.length * sub.lh, gap: Math.round((title ? title.size : tBase) * 0.30) });
+    if (desc) blocks.push({ kind:'d', h: desc.lines.length * desc.lh, gap: Math.round(dBase * 0.62) });
+    let total = 0;
+    blocks.forEach(function(b, i){ total += b.h + (i ? b.gap : 0); });
+    const bottom = h - f.safeBottom - pad * (isCover ? 1.04 : 1.0);
+    let y = Math.max(f.safeTop + pad, bottom - total);
+    blocks.forEach(function(b, i){
+      if (i) y += b.gap;
+      if (b.kind === 't'){
+        const pinH = Math.round(title.size * 0.72);
+        const pinW = drawPinMark(ctx, pad, y + title.size * 0.84, pinH);
+        const off = pinW + Math.round(title.size * 0.20);
+        styleLines(ctx, [title.lines[0]], pad + off, y, title.lh, title.size, 900, fg, !!im);
+        if (title.lines.length > 1){
+          styleLines(ctx, title.lines.slice(1), pad, y + title.lh, title.lh, title.size, 900, fg, !!im);
+        }
+        if (rlText){
+          ctx.font = font(title.size, 900);
+          const lastW = ctx.measureText(title.lines[title.lines.length - 1]).width +
+            (title.lines.length === 1 ? pinW + Math.round(title.size * 0.14) : 0);
+          const baseLine = y + title.lh * (title.lines.length - 1) + title.size * 0.84;
+          if (lastW + rlW + w * 0.035 <= maxW){
+            ctx.save();
+            ctx.font = font(rlSize, 600);
+            ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic';
+            ctx.lineJoin = 'round';
+            if (im){
+              ctx.lineWidth = Math.max(2, Math.round(rlSize * 0.15));
+              ctx.strokeStyle = 'rgba(10,11,14,.45)';
+              ctx.shadowColor = 'rgba(0,0,0,.45)';
+              ctx.shadowBlur = rlSize * 0.7;
+              ctx.strokeText(rlText, w - pad, baseLine);
+              ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
+            }
+            ctx.fillStyle = dark ? 'rgba(255,255,255,.74)' : 'rgba(23,22,20,.56)';
+            ctx.fillText(rlText, w - pad, baseLine);
+            ctx.restore();
+          }
+        }
+      } else if (b.kind === 's'){
+        styleLines(ctx, sub.lines, pad, y, sub.lh, sub.size, 700, fgSub, !!im);
+      } else {
+        styleLines(ctx, desc.lines, pad, y, desc.lh, desc.size, 500, fgDesc, !!im);
+      }
+      y += b.h;
+    });
+    if (isCover) styleCreditLine(ctx, f, dark);
+    else if (s.watermark !== false){
+      drawSignature(ctx, w / 2, f.safeTop + Math.max(pad * 0.5, h * 0.036), Math.max(14, Math.round(w * 0.023)));
+    }
+  }
+
+  /* ---------- 💬 톡 말풍선형 ---------- */
+  function drawChatBubble(ctx, s, f, T, solid){
+    const w = f.w, h = f.h, pad = f.pad;
+    const im = styleCanvas(ctx, s, f, solid, 'cover');
+    const dark = !!im || !!(solid && solid.dark);
+    const accent = '#1C88FF';
+    const maxW = w - pad * 2;
+
+    /* 1) 상단 반투명 검색창 */
+    const pillH = Math.round(w * 0.082);
+    const pillY = f.safeTop + Math.round(pad * 0.85);
+    ctx.save();
+    roundRect(ctx, pad, pillY, maxW, pillH, pillH / 2);
+    ctx.fillStyle = dark ? 'rgba(255,255,255,.42)' : 'rgba(255,255,255,.90)';
+    ctx.fill();
+    const ir = pillH * 0.195;
+    const icx = pad + pillH * 0.58, icy = pillY + pillH / 2;
+    ctx.strokeStyle = dark ? 'rgba(255,255,255,.94)' : 'rgba(60,60,60,.60)';
+    ctx.lineWidth = Math.max(2, pillH * 0.05);
+    ctx.beginPath(); ctx.arc(icx, icy, ir, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(icx + ir * 0.72, icy + ir * 0.72); ctx.lineTo(icx + ir * 1.55, icy + ir * 1.55); ctx.stroke();
+    const searchRaw = (s.badge || '').trim() || '주말 사진';
+    const sSize = Math.round(w * 0.033);
+    const sAvail = maxW - (icx - pad) - ir * 2.4 - pillH * 0.42;
+    let st = searchRaw;
+    ctx.font = font(sSize, 600);
+    while (ctx.measureText(st).width > sAvail && st.length > 2) st = st.slice(0, -1);
+    if (st !== searchRaw) st = st.replace(/\s+$/, '') + '…';
+    ctx.font = font(sSize, 600);
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.shadowColor = 'rgba(0,0,0,.30)';
+    ctx.shadowBlur = Math.round(sSize * 0.5);
+    ctx.fillStyle = dark ? 'rgba(255,255,255,.97)' : 'rgba(70,70,70,.86)';
+    ctx.fillText(st, icx + ir * 1.95, icy + 1);
+    ctx.restore();
+
+    /* 2) 말풍선 그리기 */
+    function bubbleBox(text, side, yPos, maxBubbleW, bg, fg, size){
+      const fit = fitText(ctx, text, { maxWidth: Math.max(60, maxBubbleW - size * 1.6), size: size,
+        weight: 600, maxLines: 3, lineHeight: 1.32, minSize: Math.max(14, Math.round(size * 0.80)) });
+      const padX = Math.round(size * 0.80), padY = Math.round(size * 0.55);
+      let tw = 0;
+      ctx.font = font(fit.size, 600);
+      fit.lines.forEach(function(ln){ tw = Math.max(tw, ctx.measureText(ln).width); });
+      const bw = Math.min(maxBubbleW, tw + padX * 2);
+      const bh = fit.lines.length * fit.lh + padY * 2;
+      const bx = side === 'right' ? (w - pad - bw) : pad;
+      const r = Math.min(bh / 2, size * 0.95);
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,.20)';
+      ctx.shadowBlur = size * 0.7;
+      ctx.shadowOffsetY = size * 0.10;
+      roundRect(ctx, bx, yPos, bw, bh, r);
+      ctx.fillStyle = bg; ctx.fill();
+      ctx.restore();
+      ctx.save();
+      ctx.beginPath();
+      if (side === 'right'){
+        ctx.moveTo(bx + bw - size * 2.30, yPos + bh - 5);
+        ctx.lineTo(bx + bw - size * 0.35, yPos + bh + size * 0.55);
+        ctx.lineTo(bx + bw - size * 1.00, yPos + bh - 5);
+      } else {
+        ctx.moveTo(bx + size * 2.30, yPos + bh - 5);
+        ctx.lineTo(bx + size * 0.35, yPos + bh + size * 0.55);
+        ctx.lineTo(bx + size * 1.00, yPos + bh - 5);
+      }
+      ctx.closePath();
+      ctx.fillStyle = bg;
+      ctx.fill();
+      ctx.restore();
+      ctx.font = font(fit.size, 600);
+      ctx.fillStyle = fg;
+      ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+      fit.lines.forEach(function(ln, i){
+        ctx.fillText(ln, bx + padX, yPos + padY + fit.lh * i + fit.size * 0.82);
+      });
+      return bh;
+    }
+
+    const titleTxt = plainMarks(s.title).trim() || '오늘 찍은 사진 보내 줘';
+    const subTxt = plainMarks(s.subtitle).trim();
+    const descLines = plainMarks(s.desc).split('\n').map(function(t){ return t.trim(); }).filter(Boolean);
+    const bSize = Math.round(w * 0.0335);
+    const rightTexts = [];
+    if (subTxt) rightTexts.push(subTxt);
+    descLines.forEach(function(t){ if (rightTexts.length < 3) rightTexts.push(t); });
+
+    /* 3) 하단 좋아요 바 */
+    const barH = Math.round(w * 0.072);
+    const barY = h - f.safeBottom - Math.round(pad * 0.95) - barH;
+    const labels = ['좋아요', '저장', '공유'];
+    const labSize = Math.round(w * 0.028);
+    const playW = Math.round(barH * 1.0);
+    const sidePad = Math.round(barH * 0.28);
+    const barW = Math.min(Math.round(maxW * 0.96), Math.max(Math.round(w * 0.54), Math.round(barH * 4.8)));
+    const barX = w / 2 - barW / 2;
+    const unit = (barW - playW - sidePad * 2) / 3;
+
+    /* 4) 세로 배치 — 하단 바 위에서부터 */
+    const whiteSize = Math.round(w * 0.0355);
+    const usable = (barY - Math.round(w * 0.03)) - Math.round(h * 0.30);
+    let y = Math.round(h * 0.30);
+    const wbh = bubbleBox(titleTxt, 'left', y, maxW * 0.74,
+      dark ? 'rgba(255,255,255,.96)' : '#FFFFFF', '#16161A', whiteSize);
+    let need = wbh + Math.round(w * 0.030) + rightTexts.length * Math.round(w * 0.016);
+    if (need > usable && usable > 0){
+      y = Math.max(pillY + pillH + Math.round(w * 0.05), barY - Math.round(w * 0.03) - need);
+    }
+    y = Math.max(y, pillY + pillH + Math.round(w * 0.04));
+    let yy = y;
+    bubbleBox(titleTxt, 'left', yy, maxW * 0.74,
+      dark ? 'rgba(255,255,255,.96)' : '#FFFFFF', '#16161A', whiteSize);
+    yy += wbh + Math.round(w * 0.030);
+    rightTexts.forEach(function(t){
+      const bh = bubbleBox(t, 'right', yy, maxW * 0.64, accent, '#FFFFFF', bSize);
+      yy += bh + Math.round(w * 0.016);
+    });
+
+    /* 5) 하단 바 그리기 */
+    ctx.save();
+    roundRect(ctx, barX, barY, barW, barH, barH / 2);
+    ctx.fillStyle = 'rgba(0,0,0,.44)';
+    ctx.fill();
+    ctx.restore();
+    ctx.save();
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = font(labSize, 600);
+    ctx.fillStyle = 'rgba(255,255,255,.96)';
+    for (let i = 0; i < labels.length; i++){
+      const cx = barX + sidePad + unit * (i + 0.5);
+      ctx.fillText(labels[i], cx, barY + barH / 2 + 1);
+      if (i < labels.length - 1){
+        const sx = barX + sidePad + unit * (i + 1);
+        ctx.strokeStyle = 'rgba(255,255,255,.22)';
+        ctx.lineWidth = Math.max(1, Math.round(barH * 0.025));
+        ctx.beginPath();
+        ctx.moveTo(sx, barY + barH * 0.18);
+        ctx.lineTo(sx, barY + barH * 0.82);
+        ctx.stroke();
+      }
+    }
+    const pcx = barX + barW - sidePad - playW / 2;
+    const pcy = barY + barH / 2;
+    ctx.beginPath();
+    ctx.arc(pcx, pcy, barH * 0.34, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,.16)';
+    ctx.fill();
+    const tr = barH * 0.155;
+    ctx.beginPath();
+    ctx.moveTo(pcx - tr * 0.62, pcy - tr);
+    ctx.lineTo(pcx + tr * 0.95, pcy);
+    ctx.lineTo(pcx - tr * 0.62, pcy + tr);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(255,255,255,.96)';
+    ctx.fill();
+    ctx.restore();
+    styleCreditLine(ctx, f, dark);
+  }
+
+  /* ---------- 🌊 빅 타이틀 ---------- */
+  function drawBigTitle(ctx, s, f, T, solid){
+    const w = f.w, h = f.h, pad = f.pad;
+    const im = styleCanvas(ctx, s, f, solid, 'cover');
+    const dark = !!im || !!(solid && solid.dark);
+    const accent = styleAccent(dark);
+    const maxW = w - pad * 1.5;
+    const titleTxt = String(s.title == null ? '' : s.title);
+    const badgeTxt = plainMarks(s.subtitle).trim() || (s.badge || '').trim();
+    if (!titleTxt.trim() && !badgeTxt) return;
+
+    const bs = Math.max(19, Math.round(w * 0.0305));
+    const bH = Math.round(bs * 2.15);
+    const gapB = Math.round(h * 0.026);
+    const title = titleTxt.trim() ? fitBigTitle(ctx, titleTxt, {
+      maxWidth: maxW, cap: Math.min(w * 0.295, h * 0.235), minSize: w * 0.085, maxRows: 3,
+      lineHeight: 1.10, fontStr: function(sz){ return font(sz, 900); }
+    }) : null;
+    const blockH = (title ? title.rows.length * title.lh : 0) + (badgeTxt ? gapB + bH : 0);
+    const topMin = f.safeTop + pad;
+    const botMax = h - f.safeBottom - pad;
+    let y = clamp(Math.round(h * 0.485 - blockH / 2), topMin, Math.max(topMin, botMax - blockH));
+
+    if (title){
+      const outline = {
+        width: Math.max(3, Math.round(title.size * 0.014)),
+        color: 'rgba(6,7,10,.88)',
+        shadow: 'rgba(0,0,0,.26)', blur: title.size * 0.09, oy: title.size * 0.02
+      };
+      const fstr = font(title.size, 900);
+      title.rows.forEach(function(r, ri){
+        drawSegsCentered(ctx, charsSegs(r), w / 2, y + title.lh * ri + title.size * 0.84, fstr,
+          function(){ return accent; }, outline);
+      });
+      y += title.rows.length * title.lh;
+    }
+    if (badgeTxt){
+      drawBadgeRect(ctx, {
+        text: badgeTxt, cx: w / 2, y: y + gapB, size: bs, height: bH,
+        bg: accent, fg: IM_INK, padX: Math.round(bs * 0.92), radius: 12,
+        fontStr: font(bs, 800), shadow: false
+      });
+    }
+    styleCreditLine(ctx, f, dark);
+  }
+
+  /* ---------- ☁️ 한 단어 강조 ---------- */
+  function drawWordHighlight(ctx, s, f, T, solid){
+    const w = f.w, h = f.h, pad = f.pad;
+    const im = styleCanvas(ctx, s, f, solid, 'cover');
+    const dark = !!im || !!(solid && solid.dark);
+    const accent = styleAccent(dark);
+    const maxW = w - pad * 1.5;
+    const titleTxt = String(s.title == null ? '' : s.title);
+    const badgeTxt = plainMarks(s.subtitle).trim() || (s.badge || '').trim();
+    if (!titleTxt.trim() && !badgeTxt) return;
+
+    const bs = Math.max(18, Math.round(w * 0.0265));
+    const bH = Math.round(bs * 2.05);
+    const gapB = Math.round(h * 0.022);
+    const title = titleTxt.trim() ? fitBigTitle(ctx, titleTxt, {
+      maxWidth: maxW, cap: Math.min(w * 0.140, h * 0.122), minSize: w * 0.052, maxRows: 3,
+      lineHeight: 1.20, fontStr: function(sz){ return font(sz, 900); }
+    }) : null;
+
+    if (title){
+      let anyEm = false;
+      title.rows.forEach(function(r){ r.forEach(function(c){ if (c.em) anyEm = true; }); });
+      if (!anyEm){
+        const row = title.rows[title.rows.length - 1];
+        if (title.rows.length > 1){
+          row.forEach(function(c){ if (!/\s/.test(c.ch)) c.em = true; });
+        } else if (row && row.length){
+          let sp = -1;
+          for (let i = row.length - 1; i >= 0; i--){ if (/\s/.test(row[i].ch)){ sp = i; break; } }
+          const from = sp >= 0 ? sp + 1 : Math.max(0, row.length - 3);
+          for (let i = from; i < row.length; i++){ if (!/\s/.test(row[i].ch)) row[i].em = true; }
+        }
+      }
+    }
+    const blockH = (title ? title.rows.length * title.lh : 0) + (badgeTxt ? gapB + bH : 0);
+    const topMin = f.safeTop + pad;
+    const botMax = h - f.safeBottom - pad;
+    let y = clamp(Math.round(h * 0.47 - blockH / 2), topMin, Math.max(topMin, botMax - blockH));
+
+    if (title){
+      const outline = {
+        width: Math.max(3, Math.round(title.size * 0.045)),
+        color: 'rgba(8,9,12,.42)',
+        shadow: 'rgba(0,0,0,.42)', blur: title.size * 0.18, oy: title.size * 0.03
+      };
+      const fstr = font(title.size, 900);
+      title.rows.forEach(function(r, ri){
+        drawSegsCentered(ctx, charsSegs(r), w / 2, y + title.lh * ri + title.size * 0.84, fstr,
+          function(sg){ return sg.em ? accent : (dark ? '#FFFFFF' : '#151515'); }, outline);
+      });
+      y += title.rows.length * title.lh;
+    }
+    if (badgeTxt){
+      drawBadgeRect(ctx, {
+        text: badgeTxt, cx: w / 2, y: y + gapB, size: bs, height: bH,
+        bg: accent, fg: IM_INK, padX: Math.round(bs * 0.82), radius: 10,
+        fontStr: font(bs, 800), shadow: false
+      });
+    }
+    styleCreditLine(ctx, f, dark);
+  }
+
+  /* ---------- 🎙️ 매거진 인터뷰 ---------- */
+  function drawMagazine(ctx, s, f, T, solid, mode){
+    const w = f.w, h = f.h, pad = f.pad;
+    const isCover = mode !== 'body';
+    const im = styleCanvas(ctx, s, f, solid, mode);
+    const dark = !!im || !!(solid && solid.dark);
+    if (im){
+      const g = ctx.createLinearGradient(0, h * 0.36, 0, h);
+      g.addColorStop(0, 'rgba(0,0,0,0)');
+      g.addColorStop(0.55, 'rgba(0,0,0,.34)');
+      g.addColorStop(1, 'rgba(0,0,0,.80)');
+      ctx.fillStyle = g; ctx.fillRect(0, h * 0.36, w, h * 0.64);
+    }
+    const fg = dark ? '#FFFFFF' : '#171614';
+    const fgSub = dark ? 'rgba(255,255,255,.90)' : 'rgba(23,22,20,.86)';
+    const accent = styleAccent(dark);
+    const maxW = w - pad * 2;
+    const badgeTxt = (s.badge || '').trim() || '인터뷰';
+    const bs = Math.max(16, Math.round(w * 0.0265));
+    const bH = Math.round(bs * 2.0);
+    const tBase = isCover ? T.coverTitle * 0.80 : Math.max(42, T.bodyTitle * 0.96);
+
+    const title = styleWrapped(ctx, plainMarks(s.title), maxW * 0.94, tBase, 900, 2, 1.20);
+    let sub = styleWrapped(ctx, plainMarks(s.subtitle), maxW * 0.90,
+      Math.round(w * 0.032), 500, 2, 1.42);
+    if (!sub && isCover){
+      const first = plainMarks(s.desc).split('\n')[0].trim();
+      if (first) sub = styleWrapped(ctx, first, maxW * 0.90, Math.round(w * 0.032), 500, 1, 1.42);
+    }
+    const desc = !isCover ? styleWrapped(ctx, plainMarks(s.desc), maxW * 0.92,
+      Math.round(w * 0.029), 500, 3, 1.50) : null;
+
+    const blocks = [{ kind:'b', h: bH }];
+    if (title) blocks.push({ kind:'t', h: title.lines.length * title.lh, gap: Math.round(tBase * 0.24) });
+    if (sub) blocks.push({ kind:'s', h: sub.lines.length * sub.lh, gap: Math.round(w * 0.024) });
+    if (desc) blocks.push({ kind:'d', h: desc.lines.length * desc.lh, gap: Math.round(w * 0.022) });
+    let total = 0;
+    blocks.forEach(function(b, i){ total += b.h + (i ? b.gap : 0); });
+    const bottom = h - f.safeBottom - pad * (isCover ? 1.02 : 1.0);
+    let y = Math.max(f.safeTop + pad, bottom - total);
+
+    blocks.forEach(function(b, i){
+      if (i) y += b.gap;
+      if (b.kind === 'b'){
+        ctx.save();
+        ctx.font = font(bs, 800);
+        const bw = Math.min(maxW, ctx.measureText(badgeTxt).width + bs * 1.55);
+        roundRect(ctx, pad, y, bw, bH, 5);
+        ctx.fillStyle = dark ? 'rgba(0,0,0,.62)' : 'rgba(20,22,28,.92)';
+        ctx.fill();
+        ctx.font = font(bs, 800);
+        ctx.fillStyle = dark ? accent : '#FFFFFF';
+        ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        ctx.fillText(badgeTxt, pad + bs * 0.78, y + bH / 2 + Math.round(bs * 0.04));
+        ctx.restore();
+      } else if (b.kind === 't'){
+        styleLines(ctx, title.lines, pad, y, title.lh, title.size, 900, fg, !!im);
+      } else if (b.kind === 's'){
+        styleLines(ctx, sub.lines, pad, y, sub.lh, sub.size, 500, fgSub, !!im);
+      } else {
+        styleLines(ctx, desc.lines, pad, y, desc.lh, desc.size, 500, fgSub, !!im);
+      }
+      y += b.h;
+    });
+    if (isCover) styleCreditLine(ctx, f, dark);
+    else if (s.watermark !== false){
+      drawSignature(ctx, w / 2, f.safeTop + Math.max(pad * 0.5, h * 0.036), Math.max(14, Math.round(w * 0.023)));
+    }
+  }
+
   function drawCover(ctx, s, f){
     const w = f.w, h = f.h, pad = f.pad, T = TS();
     const solid = coverSolid();
@@ -3389,6 +3988,12 @@
     /* v5.5: 전용 표지 레이아웃 */
     if (s.coverStyle === 'iming_yellow'){ drawCoverIming(ctx, s, f, T, solid); return; }
     if (s.coverStyle === 'editorial'){ drawCoverEditorial(ctx, s, f, T, solid); return; }
+    /* v5.6: 새 표지 5종 */
+    if (s.coverStyle === 'place_pin'){ drawPlacePin(ctx, s, f, T, solid, 'cover'); return; }
+    if (s.coverStyle === 'chat_bubble'){ drawChatBubble(ctx, s, f, T, solid); return; }
+    if (s.coverStyle === 'big_title'){ drawBigTitle(ctx, s, f, T, solid); return; }
+    if (s.coverStyle === 'word_highlight'){ drawWordHighlight(ctx, s, f, T, solid); return; }
+    if (s.coverStyle === 'magazine_interview'){ drawMagazine(ctx, s, f, T, solid, 'cover'); return; }
     const style = s.coverStyle === 'trend' ? 'trend' : (s.coverStyle === 'question' ? 'question' : (s.coverStyle === 'cat' ? 'cat' : 'classic'));
     let pal;
 
@@ -3796,6 +4401,9 @@
 
   function drawBody(ctx, s, f){
     if (s.bodyStyle === 'editorial'){ drawBodyEditorial(ctx, s, f); return; }
+    /* v5.6: 본문에서도 고를 수 있는 표지 계열 레이아웃 */
+    if (s.bodyStyle === 'place_pin'){ drawPlacePin(ctx, s, f, TS(), null, 'body'); return; }
+    if (s.bodyStyle === 'magazine_interview'){ drawMagazine(ctx, s, f, TS(), null, 'body'); return; }
     const w = f.w, h = f.h, pad = f.pad, T = TS();
     const im = imgFor(s);
     const pos = s.pos || 'bottom';
@@ -4897,6 +5505,10 @@
         state.slides.splice(i + 1, 0, n);
         state.current = i + 1;
       } else if (act === 'dup'){
+        if (state.slides[i] && state.slides[i].type === 'summary'){
+          toast('요약표는 1장만 쓸 수 있어요 · 복제하지 않았어요');
+          return;
+        }
         const copy = JSON.parse(JSON.stringify(state.slides[i]));
         copy.id = blankSlide().id;
         state.slides.splice(i + 1, 0, copy);
@@ -4949,31 +5561,29 @@
     const v = TPL_IDS.indexOf(b.dataset.cstyle) >= 0 ? b.dataset.cstyle : 'classic';
     const ci = coverIndex();
     if (ci < 0){ state.slides.unshift(blankSlide('cover')); }
+    compSnapshot('표지 디자인 변경 직전', { undo:true });
+    /* v5.6: 표지 디자인만 바꾼다 — 본문 디자인은 건드리지 않아요 */
     state.slides.forEach(function(sl){ if (sl.type === 'cover') sl.coverStyle = v; });
-    /* v5.5: 감성 배지형은 표지 + 본문을 짝지어, 다른 템플릿은 본문을 기본으로 */
-    state.slides.forEach(function(sl){
-      if (sl.type !== 'body') return;
-      sl.bodyStyle = (v === 'editorial') ? 'editorial' : 'classic';
-    });
     if (v === 'editorial'){
       state.theme = EDITORIAL_PRESET.theme;
       state.font = EDITORIAL_PRESET.font;
       state.fontCover = EDITORIAL_PRESET.fontCover;
     }
     renderAll(); persistNow(); setTimeout(paint, 30);
-    toast(v === 'editorial' ? '✨ 감성 배지형 · 표지 + 본문 짝지어 적용' : '표지 템플릿 · ' + tplName(v));
+    toast('🎨 표지 디자인 · ' + tplName(v) + ' · 본문 디자인은 그대로예요');
   });
 
-  /* v5.5: 본문 카드 스타일만 따로 고르기 */
-  if (el('bodyStyleSeg')) el('bodyStyleSeg').addEventListener('click', function(e){
+  /* v5.6: 본문 디자인만 따로 고르기 (표지와 분리) */
+  if (el('bodyChips')) el('bodyChips').addEventListener('click', function(e){
     const b = e.target.closest('button[data-bstyle]');
     if (!b) return;
-    const v = b.dataset.bstyle === 'editorial' ? 'editorial' : 'classic';
-    compSnapshot('본문 스타일 변경 직전', { undo:true });
+    const v = BODY_IDS.indexOf(b.dataset.bstyle) >= 0 ? b.dataset.bstyle : 'classic';
+    compSnapshot('본문 디자인 변경 직전', { undo:true });
     state.slides.forEach(function(sl){ if (sl.type === 'body') sl.bodyStyle = v; });
     renderAll(); persistNow(); setTimeout(paint, 30);
     syncBodyStyleSeg();
-    toast(v === 'editorial' ? '본문 카드 · ✨ 에디토리얼(노란 라벨 + 흰 박스)' : '본문 카드 · 기본 스타일');
+    toast('📄 본문 디자인 · ' + (BODY_DEFAULT[v] || '기본 깔끔형') +
+      (state.slides.some(function(sl){ return sl.type === 'body'; }) ? ' · ' + BODY_HELP[v] : ' · 본문 카드를 먼저 추가해 주세요'));
   });
 
   /* v5.1: 템플릿 이름 수정 (localStorage + 클라우드) */
@@ -6252,7 +6862,8 @@
     const nC = batchItems.filter(function(x){ return x.role === 'cover'; }).length;
     const nB = batchItems.filter(function(x){ return x.role === 'body'; }).length;
     const nS = batchItems.filter(function(x){ return x.role === 'summary'; }).length;
-    if (el('batchShape')) el('batchShape').textContent = '표지 ' + nC + '장 · 본문 ' + nB + '장 · 요약 ' + nS + '장으로 배치돼요';
+    if (el('batchShape')) el('batchShape').textContent = '표지 ' + nC + '장 · 본문 ' + nB + '장 · 요약 ' + (nS ? 1 : 0) +
+      '장으로 배치돼요' + (nS > 1 ? ' (요약은 1장만)' : '');
   }
   function closeBatch(){
     batchItems.forEach(it=>{ if (it.url) URL.revokeObjectURL(it.url); });
@@ -6284,7 +6895,13 @@
     const b = e.target.closest('[data-brole]');
     if (!b) return;
     const i = parseInt(b.dataset.bi, 10);
-    if (batchItems[i]) batchItems[i].role = b.dataset.brole;
+    if (!batchItems[i]) return;
+    const role = b.dataset.brole;
+    /* v5.6: 요약표는 1장 — 다른 사진에 걸린 '요약'은 본문으로 돌려요 */
+    if (role === 'summary'){
+      batchItems.forEach(function(it, k){ if (k !== i && it.role === 'summary') it.role = 'body'; });
+    }
+    batchItems[i].role = role;
     renderBatch();
   });
   el('batchCancel').addEventListener('click', closeBatch);
@@ -6347,6 +6964,20 @@
       }).map(function(x){ return x.s; });
     const at = state.slides.indexOf(keepRef);
     if (at >= 0) state.current = at;
+  }
+  /* v5.6: 요약표는 덱에 항상 1장 — 여러 장이면 대표(첫) 1장만 남겨요 */
+  function enforceSingleSummary(keep){
+    const sums = state.slides.filter(function(s){ return s.type === 'summary'; });
+    if (sums.length <= 1) return 0;
+    const keepRef = keep || sums[0];
+    const curRef = state.slides[state.current];
+    state.slides = state.slides.filter(function(s){ return s.type !== 'summary' || s === keepRef; });
+    const ci = state.slides.indexOf(curRef);
+    state.current = ci >= 0 ? ci : clamp(state.current, 0, state.slides.length - 1);
+    return sums.length - 1;
+  }
+  function summaryCount(){
+    return state.slides.filter(function(s){ return s.type === 'summary'; }).length;
   }
   function deckShapeLabel(){
     const c = state.slides.filter(function(s){ return s.type === 'cover'; }).length;
@@ -6439,12 +7070,15 @@
 
     items.forEach(it=>{ if (it.url) URL.revokeObjectURL(it.url); });
     sortSlideOrder();
+    const extraSum = enforceSingleSummary();
     state.current = clamp(state.current, 0, state.slides.length - 1);
     renderAll();
     persistNow();
     const total = placedCover + placedBody + placedSum;
     toast(total + '장 배치 완료' + (failed ? ' · ' + failed + '장 실패' : '') +
-      (trimmed ? ' · 남은 카드 ' + trimmed + '장 정리' : '') + ' · ' + deckShapeLabel(),
+      (trimmed ? ' · 남은 카드 ' + trimmed + '장 정리' : '') +
+      (sums.length > 1 ? ' · 요약은 1장만 써요' : '') +
+      (extraSum ? ' · 요약표 1장으로 정리' : '') + ' · ' + deckShapeLabel(),
       { undo: restoreBackup, ms: 5000 });
   }
 
@@ -6512,6 +7146,13 @@
     }).join('');
     if (el('tplNow')) el('tplNow').textContent = yellowOn ? '💛 IMING 옐로우' : tplName(csVal);
     if (el('typeCard')) el('typeCard').dataset.cstyle = csVal;
+    const bb = el('bodyChips');
+    if (bb){
+      bb.innerHTML = BODY_IDS.map(function(id){
+        return '<button class="chip" data-bstyle="' + id + '" aria-pressed="false"><span class="t">' +
+               esc(BODY_DEFAULT[id] || id) + '</span></button>';
+      }).join('');
+    }
     syncBodyStyleSeg();
   }
 
@@ -6675,10 +7316,7 @@
     el('bulkList').innerHTML = state.slides.map(function(sl, i){
       let h = '<div class="bulkCard' + (i === state.current ? ' cur' : '') + '">';
       h += '<div class="bulkTop"><span class="tag ' + sl.type + '">' + slideLabel(i) + '</span>';
-      if (sl.type === 'cover') h += '<span class="bkstyle">' +
-        (sl.coverStyle === 'iming_yellow' ? '💛 IMING 옐로우' :
-          (sl.coverStyle === 'editorial' ? '✨ 감성 배지형' :
-          (sl.coverStyle === 'cat' ? '카테고리 통일' : (sl.coverStyle === 'trend' ? '트렌드 썸네일' : '클래식')))) + '</span>';
+      if (sl.type === 'cover') h += '<span class="bkstyle">' + esc(coverStyleName(sl.coverStyle)) + '</span>';
       h += '<button class="go" data-bulkgo="' + i + '">이 카드</button></div>';
 
       if (sl.type === 'summary'){
@@ -8065,10 +8703,28 @@
       paint: paint,
       applyImingYellow: applyImingYellow,
       applyEditorial: applyEditorial,
-      bodyStyle: function(){ return state.slides.filter(function(x){ return x.type === 'body'; }).map(function(x){ return x.bodyStyle || 'classic'; }); },
+      bodyStyle: function(){ return bodyStylesOf(); },
       setBodyStyle: function(v){
-        state.slides.forEach(function(sl){ if (sl.type === 'body') sl.bodyStyle = v === 'editorial' ? 'editorial' : 'classic'; });
+        const id = BODY_IDS.indexOf(v) >= 0 ? v : 'classic';
+        state.slides.forEach(function(sl){ if (sl.type === 'body') sl.bodyStyle = id; });
         renderAll(); persistNow(); setTimeout(paint, 30); return window.__iming.bodyStyle();
+      },
+      coverStyle: function(){
+        const ci = coverIndex();
+        return ci >= 0 ? (state.slides[ci].coverStyle || 'classic') : null;
+      },
+      setCoverStyle: function(v){
+        const id = ['iming_yellow'].concat(TPL_IDS).indexOf(v) >= 0 ? v : 'classic';
+        if (coverIndex() < 0) state.slides.unshift(blankSlide('cover'));
+        state.slides.forEach(function(sl){ if (sl.type === 'cover') sl.coverStyle = id; });
+        renderAll(); persistNow(); setTimeout(paint, 30); return window.__iming.coverStyle();
+      },
+      summaries: function(){ return summaryCount(); },
+      collapseSummaries: function(){ const n = enforceSingleSummary(); renderAll(); persistNow(); return n; },
+      styles: function(){
+        return { cover: TPL_IDS.slice(), body: BODY_IDS.slice(),
+                 coverNames: TPL_IDS.map(function(id){ return coverStyleName(id); }),
+                 bodyNames: BODY_IDS.map(function(id){ return bodyStyleName(id); }) };
       },
       setStep: setStep,
       coverBgValue: function(){ return state.coverBg || 'photo'; },
