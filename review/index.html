@@ -313,6 +313,24 @@
     background:#fffdfa; font-size:12px; font-weight:800; color:var(--accent);
   }
   .ff-copy:active{transform:scale(.98);}
+
+  /* ---------- 🎤 음성 입력 ---------- */
+  .mic-btn{
+    flex:none; display:inline-flex; align-items:center; gap:5px; white-space:nowrap;
+    padding:7px 10px; border-radius:10px; border:1px solid var(--line);
+    background:#fffdfa; font-size:11.5px; font-weight:800; color:var(--accent);
+  }
+  .mic-btn:active{transform:scale(.98);}
+  .mic-btn.on{
+    background:linear-gradient(160deg,#f7d6cf,#efb7ac); border-color:#e6a79c; color:#8d3a2f;
+    box-shadow:0 0 0 3px rgba(214,120,105,.13);
+  }
+  .mic-btn .vd{
+    width:7px; height:7px; border-radius:99px; background:#d1503f; display:inline-block; flex:none;
+    animation:micpulse 1s ease-in-out infinite;
+  }
+  @keyframes micpulse{0%,100%{opacity:1; transform:scale(1);} 50%{opacity:.3; transform:scale(.7);}}
+  .mic-note{font-size:11px; color:var(--ink3); margin-top:6px; line-height:1.5;}
   .final-field input[type="text"],
   .final-field textarea{
     width:100%; border:1px solid var(--line); border-radius:12px; background:#fffefc;
@@ -781,7 +799,7 @@
   const SYNC_BASE = 'https://mantledb.sh/v2/';
   const LS_KEY = 'yujareview_state_v2';
   const LS_UI = 'yujareview_ui_v1';
-  const VERSION = 'v1.6';
+  const VERSION = 'v1.7';
 
   const STATUSES = ['예약전', '방문예정', '초안작성중', '글완성', '등록완료'];
   const ENTRY_TYPES = { sponsored: '🎁 체험단', paid: '💳 내돈내산' };
@@ -975,13 +993,13 @@
   }
 
   let toastTimer = null;
-  function toast(msg, strong) {
+  function toast(msg, strong, ms) {
     const el = $('toast');
     el.textContent = msg;
     el.classList.toggle('strong', !!strong);
     el.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { el.classList.remove('show'); }, strong ? 2600 : 2100);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, ms || (strong ? 2600 : 2100));
   }
 
   /* =========================================================
@@ -2019,6 +2037,7 @@
           '<div class="sec-head">' +
             '<span class="sec-no">' + s.no + '</span>' +
             '<span class="sec-title">' + esc(s.title) + '</span>' +
+            '<button class="mic-btn" data-act="voice" data-voice="sec" data-key="' + s.key + '">🎤 음성 입력</button>' +
             '<span class="sec-count" id="cnt-' + s.key + '">' + (st.withSpace ? st.withSpace + '자' : '') + '</span>' +
           '</div>' +
           '<p class="sec-hint">' + esc(s.hint) + '</p>' +
@@ -2067,9 +2086,11 @@
           '<div class="final-field">' +
             '<div class="ff-head">' +
               '<span class="ff-label">작성글 (본문)</span>' +
+              '<button class="mic-btn" data-act="voice" data-voice="manuscript">🎤 음성 입력</button>' +
               '<button class="ff-copy" data-act="copy-final">본문 복사</button>' +
             '</div>' +
             '<textarea id="manuscript-input" rows="16" placeholder="AI가 써준 본문을 붙여넣고 다듬은 뒤 여기에 보관하세요. (공백 포함 2,000자 안팎)">' + esc(c.manuscript) + '</textarea>' +
+            '<div class="mic-note">🎤 음성 입력은 커서가 있던 자리에 이어 붙고, 말하는 동안 자동 저장돼요. 아이폰 Safari는 받아쓰기를 지원하지 않아 키보드 오른쪽 아래 🎤 버튼을 쓰면 돼요.</div>' +
           '</div>' +
           '<div class="final-field">' +
             '<div class="ff-head">' +
@@ -2133,6 +2154,7 @@
       '</div>';
 
     host.hidden = false;
+    voiceReattach();
   }
 
   function renderAll() {
@@ -2150,17 +2172,20 @@
   }
 
   function openDetail(id) {
+    voiceStop(true);
     currentId = id;
     subTab = 'draft';
     renderAll();
     window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
   }
   function goList() {
+    voiceStop(true);
     currentId = null;
     renderAll();
     window.scrollTo({ top: 0 });
   }
   function setSubTab(tab) {
+    voiceStop(true);
     subTab = tab;
     const a = $('pane-draft'), b = $('pane-final');
     if (a) a.hidden = tab !== 'draft';
@@ -2219,6 +2244,7 @@
   }
 
   function closeModals() {
+    voiceStop(true);
     $('modal-edit').hidden = true;
     $('modal-sync').hidden = true;
     $('modal-copy').hidden = true;
@@ -2410,8 +2436,165 @@
   }
 
   /* =========================================================
+     🎤 음성 입력 (Web Speech API)
+     ========================================================= */
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const VOICE_IDLE = '🎤 음성 입력';
+  const VOICE_ON = '🔴 듣는 중... 눌러서 멈춤';
+  const VOICE_UNSUPPORTED = '이 브라우저에서는 지원되지 않아요. 아이폰 키보드 오른쪽 아래 🎤 받아쓰기를 이용해 보세요!';
+
+  const voice = {
+    active: false, rec: null, target: null, el: null,
+    base: '', tail: '', finals: [], interim: '', restarts: 0
+  };
+
+  function voiceField(target) {
+    if (!target) return null;
+    if (target.type === 'manuscript') return $('manuscript-input');
+    if (target.type === 'sec') return document.querySelector('textarea[data-sec="' + target.key + '"]');
+    return null;
+  }
+  function voiceSame(a, b) {
+    return !!(a && b && a.type === b.type && String(a.key || '') === String(b.key || ''));
+  }
+  function voiceUi() {
+    document.querySelectorAll('[data-act="voice"]').forEach(function (b) {
+      const on = voice.active && voiceSame(voice.target, { type: b.dataset.voice, key: b.dataset.key || '' });
+      b.classList.toggle('on', on);
+      b.innerHTML = on ? '<i class="vd"></i>' + VOICE_ON : VOICE_IDLE;
+    });
+  }
+  function voiceApply() {
+    const el = (voice.el && document.body.contains(voice.el)) ? voice.el : voiceField(voice.target);
+    if (!el) return;
+    voice.el = el;
+    let ins = voice.finals.join(' ');
+    if (voice.interim) ins += (ins ? ' ' : '') + voice.interim;
+    if (ins && voice.base && !/\s$/.test(voice.base)) ins = ' ' + ins;
+    const val = voice.base + ins + voice.tail;
+    if (el.value === val) return;
+    el.value = val;
+    const pos = (voice.base + ins).length;
+    try { el.setSelectionRange(pos, pos); el._caret = pos; } catch (e) {}
+    // 앱의 자동 저장·동기화(input 핸들러)를 그대로 타게 한다
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+  function voiceStart(type, key) {
+    if (!SR) { toast(VOICE_UNSUPPORTED, true, 5600); return false; }
+    const target = { type: type, key: key || '' };
+    const el = voiceField(target);
+    if (!el) return false;
+    let pos = el.value.length;
+    try {
+      if (document.activeElement === el && el.selectionStart != null) pos = el.selectionStart;
+      else if (typeof el._caret === 'number') pos = Math.min(el._caret, el.value.length);
+    } catch (e) {}
+    voice.target = target;
+    voice.el = el;
+    voice.base = el.value.slice(0, pos);
+    voice.tail = el.value.slice(pos);
+    voice.finals = []; voice.interim = ''; voice.restarts = 0;
+
+    let rec;
+    try { rec = new SR(); } catch (e) { toast(VOICE_UNSUPPORTED, true, 5600); return false; }
+    rec.lang = 'ko-KR';
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.maxAlternatives = 1;
+
+    rec.onresult = function (e) {
+      if (!voice.active) return;
+      let interim = '';
+      for (let i = e.resultIndex || 0; i < e.results.length; i++) {
+        const r = e.results[i];
+        const txt = (r[0] && r[0].transcript) || '';
+        if (r.isFinal) { const f = String(txt).trim(); if (f) voice.finals.push(f); }
+        else interim += txt;
+      }
+      voice.interim = interim;
+      voiceApply();
+    };
+    rec.onerror = function (e) {
+      const err = (e && e.error) || '';
+      if (err === 'no-speech' || err === 'aborted') return;   // onend에서 이어서 듣는다
+      if (!voice.active) return;
+      if (err === 'not-allowed' || err === 'service-not-allowed') {
+        voiceStop(true);
+        toast('마이크 권한이 꺼져 있어요. 주소창 왼쪽 자물쇠에서 마이크를 허용하거나, 아이폰은 키보드 오른쪽 아래 🎤 받아쓰기를 써보세요!', true, 5600);
+      } else if (err === 'audio-capture') {
+        voiceStop(true);
+        toast('마이크를 찾지 못했어요. 마이크 연결을 확인한 뒤 다시 눌러 주세요.', true, 4000);
+      } else if (err === 'network') {
+        voiceStop(true);
+        toast('음성 인식 서버에 연결하지 못했어요. 잠시 뒤 다시 시도해 주세요.', true, 4000);
+      } else {
+        voiceStop(true);
+        toast('음성 인식을 이어가지 못했어요. 다시 눌러 주세요.', true, 3500);
+      }
+    };
+    rec.onend = function () {
+      if (!voice.active) return;
+      if (voice.restarts < 40) {           // continuous: 무음으로 끊기면 다시 이어 붙인다
+        voice.restarts++;
+        try { rec.start(); return; } catch (e) {}
+      }
+      voiceStop(true);
+    };
+
+    voice.rec = rec;
+    voice.active = true;
+    try { rec.start(); } catch (e) {
+      voice.active = false; voice.rec = null;
+      voiceUi();
+      toast('음성 인식을 시작하지 못했어요. 다시 눌러 주세요.', true, 3500);
+      return false;
+    }
+    voiceUi();
+    toast('말하면 커서 자리에 받아 적어요. 다 되면 버튼을 다시 눌러 멈춰 주세요.', true, 3200);
+    return true;
+  }
+  function voiceStop(silent) {
+    const was = voice.active;
+    voice.active = false;
+    voice.interim = '';
+    const rec = voice.rec;
+    voice.rec = null;
+    if (rec) {
+      try { rec.onend = null; rec.onresult = null; rec.onerror = null; rec.stop(); }
+      catch (e) { try { rec.abort(); } catch (e2) {} }
+    }
+    if (was) voiceApply();     // 확정된 문장까지 본문에 남긴다
+    voiceUi();
+    if (was && !silent) toast('음성 입력을 마쳤어요 · 자동 저장했어요');
+    return was;
+  }
+  function voiceReattach() {
+    if (!voice.active) return;
+    const el = voiceField(voice.target);
+    if (!el) { voiceStop(true); return; }
+    if (el !== voice.el) {       // 화면이 다시 그려져 입력 칸이 새로 만들어졌다 → 지금 값 뒤로 이어 쓴다
+      voice.el = el;
+      voice.base = el.value;
+      voice.tail = '';
+      voice.finals = [];
+      voice.interim = '';
+    }
+    voiceUi();
+  }
+
+  /* =========================================================
      이벤트
      ========================================================= */
+  /* 입력 칸의 커서 위치를 기억해 두었다가 음성 입력을 그 자리부터 잇는다 */
+  document.addEventListener('selectionchange', function () {
+    const el = document.activeElement;
+    if (el && el.tagName === 'TEXTAREA') { try { el._caret = el.selectionStart; } catch (e) {} }
+  });
+  document.addEventListener('blur', function (e) {
+    const el = e.target;
+    if (el && el.tagName === 'TEXTAREA') { try { el._caret = el.selectionStart; } catch (err) {} }
+  }, true);
+
   document.addEventListener('click', function (e) {
     const t = e.target.closest('[data-act]');
     if (!t) {
@@ -2422,6 +2605,12 @@
     const id = t.dataset.id;
     switch (act) {
       case 'open': openDetail(id); break;
+      case 'voice': {
+        const vt = { type: t.dataset.voice, key: t.dataset.key || '' };
+        if (voice.active && voiceSame(voice.target, vt)) voiceStop();
+        else { if (voice.active) voiceStop(true); voiceStart(vt.type, vt.key); }
+        break;
+      }
       case 'back': goList(); break;
       case 'add': openEdit(null); break;
       case 'edit': openEdit(id); break;
@@ -2625,9 +2814,10 @@
 
   window.addEventListener('online', function () { syncNow(false); });
   document.addEventListener('visibilitychange', function () {
-    if (!document.hidden) syncNow(false);
+    if (document.hidden) { voiceStop(true); return; }
+    syncNow(false);
   });
-  window.addEventListener('pagehide', function () { if (state) saveLocal(); });
+  window.addEventListener('pagehide', function () { voiceStop(true); if (state) saveLocal(); });
 
   /* =========================================================
      부팅
