@@ -2524,7 +2524,15 @@
         if (ln) ctx.fillText(ln, pad, y + title.lh * i + title.size * 0.84);
       });
       ctx.restore();
-      y += title.lines.length * title.lh + 24;
+      y += title.lines.length * title.lh + 13;
+      /* v5.4: 포인트 컬러 한 줄 — 테마·카테고리 색이 표지에 드러나요 (IMING 옐로우는 버터 옐로우) */
+      ctx.save();
+      if (onPhoto){ ctx.shadowColor = 'rgba(0,0,0,.36)'; ctx.shadowBlur = 12; ctx.shadowOffsetY = 2; }
+      ctx.fillStyle = AC.color;
+      roundRect(ctx, pad, y, Math.round(Math.min(maxW * 0.5, 88)), 8, 4);
+      ctx.fill();
+      ctx.restore();
+      y += 8 + 20;
     }
 
     if (s.subtitle){
