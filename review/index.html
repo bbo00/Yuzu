@@ -254,12 +254,12 @@
     background:var(--paper); border:1px solid var(--line); border-radius:var(--radius);
     padding:13px 14px 12px; margin-bottom:10px; box-shadow:0 1px 2px rgba(94,74,54,.03);
   }
-  .sec-head{display:flex; align-items:center; gap:8px; margin-bottom:3px;}
+  .sec-head{display:flex; align-items:center; gap:8px; row-gap:6px; margin-bottom:3px; flex-wrap:wrap;}
   .sec-no{
     width:22px; height:22px; flex:none; border-radius:8px; display:grid; place-items:center;
     background:var(--accent-soft); color:#a9664d; font-size:11.5px; font-weight:800;
   }
-  .sec-title{font-size:13.5px; font-weight:800; flex:1;}
+  .sec-title{font-size:13.5px; font-weight:800; flex:1; min-width:0;}
   .sec-count{font-size:11px; color:var(--ink3); font-weight:700; white-space:nowrap;}
   .sec-hint{font-size:11.5px; color:var(--ink3); margin:0 0 8px 30px; line-height:1.5;}
   .sec textarea{
@@ -305,7 +305,7 @@
   }
   .final-card textarea:focus{border-color:#e2c3b1; box-shadow:0 0 0 3px rgba(201,138,114,.1);}
   .final-field{margin-bottom:12px;}
-  .ff-head{display:flex; align-items:center; gap:8px; margin-bottom:5px;}
+  .ff-head{display:flex; align-items:center; gap:8px; row-gap:6px; margin-bottom:5px; flex-wrap:wrap;}
   .ff-label{font-size:11.5px; font-weight:800; color:var(--ink2); flex:1;}
   .ff-label .sub{font-weight:700; color:var(--ink3); font-size:10.5px; margin-left:5px;}
   .ff-copy{
@@ -2090,7 +2090,7 @@
               '<button class="ff-copy" data-act="copy-final">본문 복사</button>' +
             '</div>' +
             '<textarea id="manuscript-input" rows="16" placeholder="AI가 써준 본문을 붙여넣고 다듬은 뒤 여기에 보관하세요. (공백 포함 2,000자 안팎)">' + esc(c.manuscript) + '</textarea>' +
-            '<div class="mic-note">🎤 음성 입력은 커서가 있던 자리에 이어 붙고, 말하는 동안 자동 저장돼요. 아이폰 Safari는 받아쓰기를 지원하지 않아 키보드 오른쪽 아래 🎤 버튼을 쓰면 돼요.</div>' +
+            '<div class="mic-note">🎤 음성 입력은 커서가 있던 자리에 이어 붙고, 말하는 동안 자동 저장돼요. 아이폰은 키보드 오른쪽 아래 🎤 받아쓰기를 쓰는 게 가장 확실해요.</div>' +
           '</div>' +
           '<div class="final-field">' +
             '<div class="ff-head">' +
