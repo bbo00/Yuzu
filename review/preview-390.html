@@ -13,6 +13,7 @@
 <div class="bar">
   <button id="b1">🎤 발화1(중간)</button>
   <button id="b2">🎤 발화2(확정)</button>
+  <button id="b3">🎤 발화3(확정)</button>
   <span class="st" id="st">mode …</span>
 </div>
 <div class="frame"><iframe id="f" title="blog notebook" width="390" height="844"></iframe></div>
@@ -40,7 +41,7 @@ const prelude = [
 '    MockSR.prototype.stop=function(){ this._r=false; window.__srState="stopped"; var cb=this.onend; if(cb) setTimeout(function(){cb({type:"end"});},0); };',
 '    MockSR.prototype.abort=function(){ this._r=false; window.__srState="aborted"; };',
 '    window.SpeechRecognition=MockSR; window.webkitSpeechRecognition=MockSR;',
-'    window.__emit=function(segs){ var results=segs.map(function(s){ var r=[{transcript:s.text, confidence:0.9}]; r.isFinal=!!s.final; return r; }); results.item=function(i){return results[i];}; if(window.__sr&&window.__sr.onresult) window.__sr.onresult({type:"result",resultIndex:0,results:results}); };',
+'    window.__emit=function(segs, idx){ var results=segs.map(function(s){ var r=[{transcript:s.text, confidence:0.9}]; r.isFinal=!!s.final; return r; }); results.item=function(i){return results[i];}; if(window.__sr&&window.__sr.onresult) window.__sr.onresult({type:"result",resultIndex:idx||0,results:results}); };',
 '  }',
 '})();<\/script>'
 ].join('\n').replace('__MODE__', MODE);
@@ -53,14 +54,19 @@ fetch('./index.html', { cache: 'no-store' }).then(r => r.text()).then(html => {
   st.textContent = 'mode=' + MODE + ' · app=' + doc.length + 'B';
 }).catch(e => { st.textContent = 'ERR ' + e; });
 
-function emit(segs) {
-  try { frame.contentWindow.__emit(segs); } catch (e) { st.textContent = 'emit err: ' + e; }
+const T1 = '건물 뒤편 15대 무료 주차,';
+const T2 = '망포역 2번 출구 도보 5분 거리예요.';
+function emit(segs, idx) {
+  try { frame.contentWindow.__emit(segs, idx); } catch (e) { st.textContent = 'emit err: ' + e; }
 }
 document.getElementById('b1').addEventListener('click', function () {
-  emit([{ text: '건물 뒤편 15대 무료 주차,', final: false }]);
+  emit([{ text: T1, final: false }], 0);
 });
 document.getElementById('b2').addEventListener('click', function () {
-  emit([{ text: '망포역 2번 출구 도보 5분 거리예요.', final: true }]);
+  emit([{ text: T1, final: true }, { text: T2, final: false }], 0);
+});
+document.getElementById('b3').addEventListener('click', function () {
+  emit([{ text: T1, final: true }, { text: T2, final: true }], 1);
 });
 </script>
 </body></html>
