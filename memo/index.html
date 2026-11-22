@@ -1643,7 +1643,14 @@ function initSync(){
   }
   renderSyncPill();
   if(!syncConnected()) return;
-  if(syncCfg.auto) setTimeout(function(){ syncNow({silent:true}); },600);
+  if(syncCfg.auto) setTimeout(function(){
+    syncNow({silent:true}).then(function(){
+      /* 첫 동기화가 오래된 캐시를 받았을 수 있어 4초 뒤 한 번 더 확인 */
+      setTimeout(function(){
+        if(document.visibilityState==='visible'&&syncCfg.auto&&syncConnected()&&!syncBusy) syncNow({silent:true});
+      },4000);
+    });
+  },600);
   document.addEventListener('visibilitychange',function(){
     if(document.visibilityState==='visible'&&syncCfg.auto&&syncConnected()&&(Date.now()-(syncCfg.lastSync||0)>60000)){
       syncNow({silent:true});
@@ -1657,7 +1664,7 @@ function initSync(){
     if(!syncCfg.auto||!syncConnected()||syncBusy) return;
     if(Date.now()-(syncCfg.lastSync||0)<20000) return;
     syncNow({silent:true});
-  },40000);
+  },25000);
 }
 function startSync(){
   syncLoadCfg();
