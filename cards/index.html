@@ -4435,11 +4435,11 @@
     let y = posAnchorY(P.pos, top, bottom, total) + P.dy * h * 0.16;
     const dx = P.dx * w * 0.16;
 
-    /* v6.0: 포인트 배지 문구는 좌측 상단 */
-    if (badgeTxt || s.badgeNum){
+    /* v6.0: 포인트 배지 문구는 좌측 상단 (숫자만 있을 때는 제목 앞에 붙으므로 알약을 따로 그리지 않는다) */
+    if (badgeTxt){
       const bs = Math.max(14, Math.round(w * 0.0295 * szP0.small));
       drawPill(ctx, {
-        text: badgeTxt, num: s.badgeNum || 0, x: pad + dx, y: f.safeTop + pad * 0.62,
+        text: badgeTxt, num: 0, x: pad + dx, y: f.safeTop + pad * 0.62,
         size: bs, weight: 800, height: Math.round(bs * 2.05), padX: Math.round(bs * 0.82),
         bg: PT().color, fg: PT().ink, numBg: PT().ink, numFg: PT().color, shadow: true
       });
