@@ -1561,7 +1561,7 @@ function renderSyncUI(){
     });
   };
 }
-function openSync(){ renderSyncUI(); openSheet('sheet-sync'); }
+function openSync(){ openSheet('sheet-sync'); renderSyncUI(); }
 function createSyncCode(){
   if(!syncConnected()){ doCreate(); return; }
   askConfirm({title:'새 동기화 코드',message:'이 기기 기록을 새 클라우드에 올려 새 코드를 만들까요?\n지금 코드와는 연결이 끊기고, 기록은 이 기기에 그대로 남아요.',okText:'새 코드'}).then(function(ok){
