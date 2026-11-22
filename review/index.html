@@ -2814,7 +2814,9 @@
       case 'backup-save': backupSave(); break;
       case 'backup-load': $('file-load').click(); break;
       case 'sync-modal': openSyncModal(); break;
-      case 'sync-now': syncNow(true); break;
+      case 'sync-now':
+        if (!syncNs) { toast('먼저 동기화 코드를 연결해 주세요'); break; }
+        syncNow(true); break;
       case 'copy-ns':
         if (!syncNs) { toast('먼저 동기화 코드를 연결해 주세요'); break; }
         copyAndTell(syncNs, '📋 동기화 키를 복사했어요! 채팅창에 붙여넣기 하세요');
