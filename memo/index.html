@@ -1369,10 +1369,10 @@ function mergeCollection(L,R,key,delKey,stats){
     var k=String(x.id);
     localIds[k]=1;
     var r=byId[k];
-    if(!r){ byId[k]=x; return; }
+    if(!r){ byId[k]=x; stats.localOnly=(stats.localOnly||0)+1; return; }
     var lt=Number(x.updatedAt||0), rt=Number(r.updatedAt||0);
     if(rt>lt){ byId[k]=r; stats.updated++; }
-    else byId[k]=x;
+    else { byId[k]=x; if(rt<lt) stats.localNewer=(stats.localNewer||0)+1; }
   });
   remoteIds.forEach(function(id){ if(!localIds[id]) stats.added++; });
   var del={};
@@ -1387,7 +1387,7 @@ function mergeRemoteData(local,remoteDoc){
   var R=(remoteDoc&&remoteDoc.data)?remoteDoc.data:null;
   if(!R) return {data:local,stats:{changed:false,added:0,updated:0}};
   var L=JSON.parse(JSON.stringify(local));
-  var stats={added:0,updated:0,changed:false};
+  var stats={added:0,updated:0,localOnly:0,localNewer:0,changed:false};
   mergeCollection(L,R,'memos','deletedMemoIds',stats);
   mergeCollection(L,R,'folders','deletedFolderIds',stats);
   if(!L.settings||typeof L.settings!=='object') L.settings={linkCategories:DEFAULT_CATS.slice()};
@@ -1429,6 +1429,10 @@ function syncNow(opts){
             syncCfg.rev=mRev;
             syncCfg.lastPushTs=Number(manifest.ts)||syncCfg.lastPushTs;
             syncSaveCfg();
+          }
+          if(merged.stats.localOnly||merged.stats.localNewer) needPush=true;
+          if(!merged.stats.changed&&!needPush&&!(merged.stats.localOnly||merged.stats.localNewer)){
+            syncCfg.lastCount=manifest.counts||syncCfg.lastCount;
           }
           return needPush;
         });
