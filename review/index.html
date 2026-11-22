@@ -2437,6 +2437,7 @@
     // 1) 복사는 클릭 즉시 — await 없이 실행해야 iOS에서 gesture가 살아있다
     copyAndTell(aiRequestText(c), '📋 초안이 클립보드에 복사됐어요! 채팅창에 붙여넣기 하세요');
     // 2) 클라우드 업로드는 복사 뒤 백그라운드로 (복사를 절대 막지 않는다)
+    if (!syncNs) return;                 // v1.8: 코드가 없으면 클라우드로 보내지 않는다
     try {
       mSet('v1/text_' + c.id, {
         name: c.name, status: c.status, deadline: c.deadline || '',
