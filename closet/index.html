@@ -372,6 +372,25 @@
       background: #F4F4F6;
       border-color: #111111;
     }
+    /* v8.25: 사진 입력 — 브라우저 기본 'Choose File' 대신 앱 버튼 */
+    .photo-file-hidden { display: none !important; }
+    .photo-pick-row { display: flex; gap: 8px; margin: 10px 0 4px; }
+    .photo-pick-btn {
+      flex: 1 1 0; min-width: 0; padding: 11px 10px; border-radius: 10px;
+      border: 1px solid var(--border); background: #fff; color: var(--text-main);
+      font-size: 0.85rem; font-weight: 800; cursor: pointer;
+    }
+    .photo-pick-btn:active { background: #F4F4F6; }
+    .photo-pick-btn.sm { padding: 8px 10px; font-size: 0.78rem; }
+    /* 캡처 붙여넣기 안내는 물리 키보드가 있는 화면에서만 */
+    @media (pointer: coarse), (hover: none) {
+      .pc-only { display: none !important; }
+    }
+    .field-error { border-color: #C0685B !important; background: #FFF7F6 !important; }
+    .field-error-msg {
+      display: block; margin-top: 5px; font-size: 0.76rem; font-weight: 700;
+      color: #B14236; line-height: 1.4;
+    }
     .btn-paste-sub {
       background: #fff;
       border: 1px solid #C3C3C9;
@@ -906,7 +925,7 @@
 
   <!-- Top Header -->
   <header>
-    <h1><svg class="brand-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.1 2.5h2l.9 2.4.9-2.4h2l-1.6 4.1 1.8 4.1 3 8.5c.28.8-.32 1.67-1.18 1.67H6.08c-.86 0-1.46-.87-1.18-1.67l3-8.5 1.8-4.1z"/></svg> 마이 스마트 옷장 <span class="ver-badge">v8.24</span></h1>
+    <h1><svg class="brand-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.1 2.5h2l.9 2.4.9-2.4h2l-1.6 4.1 1.8 4.1 3 8.5c.28.8-.32 1.67-1.18 1.67H6.08c-.86 0-1.46-.87-1.18-1.67l3-8.5 1.8-4.1z"/></svg> 마이 스마트 옷장 <span class="ver-badge">v8.25</span></h1>
     <div class="header-btns">
       <button class="icon-btn" onclick="exportBackup()" title="현재 옷장 상태를 JSON 파일로 다운로드합니다"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5v9.5"/><path d="M8.6 9.6 12 13l3.4-3.4"/><path d="M4.5 15v3.2A1.8 1.8 0 0 0 6.3 20h11.4a1.8 1.8 0 0 0 1.8-1.8V15"/></svg> 백업 저장</button>
       <button class="icon-btn" onclick="document.getElementById('backup-file-input').click()" title="모바일/PC 백업 파일을 불러와 동기화합니다"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 13.5V4"/><path d="M8.6 7.4 12 4l3.4 3.4"/><path d="M4.5 15v3.2A1.8 1.8 0 0 0 6.3 20h11.4a1.8 1.8 0 0 0 1.8-1.8V15"/></svg> 백업 불러오기</button>
@@ -1300,8 +1319,14 @@
           <div class="form-group">
             <label>옷 사진 (고화질 자동 누끼 제거 지원)</label>
         
-        <!-- Clipboard Paste Target Area -->
-        <div id="clipboard-drop-zone" class="clipboard-paste-zone" onclick="triggerClipboardPaste()">
+        <!-- v8.25: 모바일은 카메라·앨범 버튼, PC는 캡처 붙여넣기 안내 -->
+        <div class="photo-pick-row">
+          <button type="button" class="photo-pick-btn" onclick="pickPhotoSource('camera')">📷 사진 찍기</button>
+          <button type="button" class="photo-pick-btn" onclick="pickPhotoSource('album')">🖼 앨범에서 고르기</button>
+        </div>
+
+        <!-- Clipboard Paste Target Area (PC 전용) -->
+        <div id="clipboard-drop-zone" class="clipboard-paste-zone pc-only" onclick="triggerClipboardPaste()">
           <div style="font-size:1.05rem; font-weight:800; color:#111111; margin-bottom:4px;">📋 캡처 이미지 붙여넣기 (Ctrl + V)</div>
           <div style="font-size:0.78rem; color:#6B6B68;">화면 캡처(Win+Shift+S 등) 후 <b>Ctrl + V</b>를 누르거나 여기를 클릭하세요</div>
           <div style="display:flex; gap:8px; justify-content:center; margin-top:10px;">
@@ -1310,7 +1335,7 @@
           </div>
         </div>
 
-        <input type="file" id="c-photo" accept="image/*" class="form-input" onchange="handlePhotoSelect(this)">
+        <input type="file" id="c-photo" accept="image/*" class="photo-file-hidden" onchange="handlePhotoSelect(this)">
         
         <!-- Nukki & Quality Preview Box -->
         <div id="nukki-box" class="nukki-box" style="display: none;">
@@ -1354,7 +1379,11 @@
             <span style="font-size:0.85rem; font-weight:700; color:var(--text-main);">🧍 실제 착장 사진 (착용샷/코디컷)</span>
             <span style="font-size:0.7rem; color:var(--text-sub); background:#E8E8E8; padding:2px 6px; border-radius:4px;">선택 사항</span>
           </div>
-          <input type="file" id="c-fit-photo" accept="image/*" class="form-input" onchange="handleFitPhotoSelect(this)">
+          <div class="photo-pick-row">
+            <button type="button" class="photo-pick-btn sm" onclick="pickPhotoSource('camera','fit')">📷 찍기</button>
+            <button type="button" class="photo-pick-btn sm" onclick="pickPhotoSource('album','fit')">🖼 앨범</button>
+          </div>
+          <input type="file" id="c-fit-photo" accept="image/*" class="photo-file-hidden" onchange="handleFitPhotoSelect(this)">
           <div id="fit-photo-preview-box" style="display:none; margin-top:8px; position:relative; width:100%; max-width:220px; border-radius:10px; overflow:hidden; border:1px solid var(--border);">
             <img id="fit-photo-preview" src="" style="width:100%; height:auto; display:block; max-height:220px; object-fit:contain; background:#fff;">
             <button type="button" onclick="removeFitPhoto()" style="position:absolute; top:6px; right:6px; background:rgba(15,23,42,0.7); color:#fff; border:none; border-radius:50%; width:24px; height:24px; font-size:12px; cursor:pointer;">✕</button>
@@ -3064,7 +3093,7 @@
       renderWeather();
       renderStats();
       closeModal('modal-clothes-detail');
-      alert(`[${currentSelectedDetailItem.name}] 아이템이 내 옷장으로 쏙 들어왔습니다! 🎉`);
+      showToast(`[${currentSelectedDetailItem.name}] 아이템이 내 옷장으로 쏙 들어왔습니다! 🎉`);
     }
 
     function wearClothesFromDetail() {
@@ -3074,7 +3103,7 @@
       saveAppStorage();
       renderCloset();
       renderStats();
-      alert(`[${currentSelectedDetailItem.name}] 착용 횟수가 1회 추가되었습니다! 🎉`);
+      showToast(`[${currentSelectedDetailItem.name}] 착용 횟수가 1회 추가되었습니다! 🎉`);
     }
 
     function openEditClothesFromDetail() {
@@ -3185,6 +3214,15 @@
     }
 
     // --- Automatic Nukki + Eraser Brush Engine ---
+    /* v8.25: 한 개의 file input 을 카메라/앨범 두 버튼이 나눠 쓴다 */
+    function pickPhotoSource(source, which) {
+      const el = document.getElementById(which === 'fit' ? 'c-fit-photo' : 'c-photo');
+      if (!el) return;
+      if (source === 'camera') el.setAttribute('capture', 'environment');
+      else el.removeAttribute('capture');
+      el.click();
+    }
+
     function handlePhotoSelect(input) {
       if (!input.files || !input.files[0]) return;
       const file = input.files[0];
@@ -3705,7 +3743,13 @@
       return res;
     }
 
+    function clearFormErrors() {
+      document.querySelectorAll('#modal-clothes .field-error').forEach(el => el.classList.remove('field-error'));
+      document.querySelectorAll('#modal-clothes .field-error-msg').forEach(el => { el.style.display = 'none'; });
+    }
+
     function openAddClothesModal() {
+      clearFormErrors();
       editingClothesId = null;
       document.getElementById('clothes-modal-title').innerText = '👗 새 옷 등록하기';
       document.getElementById('btn-save-clothes').innerText = '옷장에 저장하기';
@@ -3720,6 +3764,7 @@
     }
 
     function openEditClothes(id) {
+      clearFormErrors();
       closeModal("modal-clothes-detail");
       const item = appData.clothes.find(c => c.id === id);
       if (!item) return;
@@ -3884,7 +3929,12 @@
 
     async function saveClothes() {
       let name = document.getElementById('c-name').value.trim();
-      if (!name) return alert('옷 이름을 입력해주세요!');
+      if (!name) {
+        switchEditModalTab('info');
+        const nameEl = document.getElementById('c-name');
+        showFieldError(nameEl, '옷 이름을 입력해 주세요');
+        return;
+      }
 
       const status = document.getElementById('c-status').value;
       const cat = document.getElementById('c-cat').value;
@@ -4012,6 +4062,7 @@
       }
 
       await saveAppStorage();
+      renderEmptyState();      // v8.25: 첫 등록 직후 '데이터 없음' 패널이 남지 않게
       renderCloset();
       renderWeather();
       renderStats();
@@ -4202,8 +4253,8 @@
     async function createLookbookFolder() {
       const inp = document.getElementById('lb-new-folder-name');
       const name = inp ? inp.value.trim() : '';
-      if (!name) { alert('폴더 이름을 입력해 주세요.'); return; }
-      if (name === LB_BASE_FOLDER) { alert('이미 있는 폴더예요.'); return; }
+      if (!name) { showFieldError(inp, '폴더 이름을 입력해 주세요.'); return; }
+      if (name === LB_BASE_FOLDER) { showFieldError(inp, '이미 있는 폴더예요.'); return; }
       ensureLookbookFolder(name);
       await saveAppStorage();
       renderLookbooks();
@@ -4280,8 +4331,8 @@
     async function moveLookbookToNewFolder() {
       const inp = document.getElementById('lb-move-new-name');
       const name = inp ? inp.value.trim() : '';
-      if (!name) { alert('새 폴더 이름을 입력해 주세요.'); return; }
-      if (name === LB_BASE_FOLDER) { alert('이미 있는 폴더예요.'); return; }
+      if (!name) { showFieldError(inp, '새 폴더 이름을 입력해 주세요.'); return; }
+      if (name === LB_BASE_FOLDER) { showFieldError(inp, '이미 있는 폴더예요.'); return; }
       await moveLookbookToFolder(movingLookbookId, name);
     }
 
@@ -4290,7 +4341,8 @@
       const items = [activeSlots.outer, activeSlots.top, activeSlots.bottom, activeSlots.shoes].filter(Boolean);
 
       if (items.length < 2) {
-        return alert('최소 2개 이상의 아이템을 선택하여 코디를 완성해 주세요!');
+        showLookbookError('최소 2개 이상의 아이템을 선택하여 코디를 완성해 주세요!');
+        return;
       }
 
       const folderSel = document.getElementById('lookbook-folder-select');
@@ -4298,7 +4350,7 @@
       if (folderName === '__new__') {
         const inp = document.getElementById('lookbook-folder-new');
         folderName = inp ? inp.value.trim() : '';
-        if (!folderName) return alert('새 폴더 이름을 입력해 주세요!');
+        if (!folderName) { showFieldError(inp, '새 폴더 이름을 입력해 주세요!'); return; }
       }
       folderName = ensureLookbookFolder(folderName);
 
@@ -4541,7 +4593,7 @@
       await saveAppStorage();
       renderCloset();
       renderStats();
-      alert(`오늘(${today}) 착장으로 [${lb.name}]이 기록되었습니다! 🎉`);
+      showToast(`오늘(${today}) 착장으로 [${lb.name}]이 기록되었습니다! 🎉`);
     }
 
     // --- Stats Tab (v8.20 : 요약 카드 · SVG 도넛 · 컬러 바 · 사진 카드) ---
@@ -4923,12 +4975,12 @@
 
             await saveAppStorage();
             renderAll();
-            alert(`✅ 백업 데이터가 성공적으로 반영되었습니다! (총 ${appData.clothes.length}벌)`);
+            showToast(`✅ 백업 데이터를 반영했어요 (총 ${appData.clothes.length}벌)`);
           } else {
-            alert('올바른 옷장 백업 파일(.json)이 아닙니다.');
+            showToast('올바른 옷장 백업 파일(.json)이 아니에요');
           }
         } catch(err) {
-          alert('파일을 읽는 중 오류가 발생했습니다: ' + err.message);
+          showToast('파일을 읽는 중 오류가 발생했어요: ' + err.message);
         }
       };
       reader.readAsText(file);
@@ -6405,6 +6457,7 @@
       if (done || total > 0) return;
       try { localStorage.setItem(EMPTY_PROMPT_FLAG, '1'); } catch (e) {}
       setTimeout(() => {
+        if ((appData && appData.clothes) ? appData.clothes.length : 0) return;   // 그 사이 등록·동기화됐으면 띄우지 않는다
         const box = document.getElementById('empty-onboarding');
         if (box) box.style.display = 'block';
         openSyncModal();
@@ -6459,6 +6512,45 @@
         btnMain.classList.toggle('active', target === 'main');
         btnFit.classList.toggle('active', target === 'fit');
       }
+    }
+
+    /* v8.25: alert 대신 칸 아래 인라인 오류 */
+    function showFieldError(el, msg) {
+      if (!el) { showToast(msg); return; }
+      el.classList.add('field-error');
+      const host = el.parentElement || el;
+      let tip = host.querySelector('.field-error-msg');
+      if (!tip) {
+        tip = document.createElement('div');
+        tip.className = 'field-error-msg';
+        host.appendChild(tip);
+      }
+      tip.textContent = msg;
+      tip.style.display = 'block';
+      try { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {}
+      try { el.focus({ preventScroll: true }); } catch (e) { try { el.focus(); } catch (_) {} }
+      const clear = function () {
+        el.classList.remove('field-error');
+        tip.style.display = 'none';
+        el.removeEventListener('input', clear);
+        el.removeEventListener('change', clear);
+      };
+      el.addEventListener('input', clear);
+      el.addEventListener('change', clear);
+    }
+    function showLookbookError(msg) {
+      let box = document.getElementById('lookbook-error');
+      if (!box) {
+        const btn = document.querySelector('[onclick="saveLookbook()"]');
+        if (btn && btn.parentElement) {
+          box = document.createElement('div');
+          box.id = 'lookbook-error';
+          box.className = 'field-error-msg';
+          btn.parentElement.insertBefore(box, btn);
+        }
+      }
+      if (box) { box.textContent = msg; box.style.display = 'block'; }
+      showToast(msg);
     }
 
     function showToast(msg) {
