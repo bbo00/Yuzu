@@ -1,0 +1,17 @@
+{
+  "name": "유자 메모 · 폴더 카드 메모장",
+  "short_name": "유자 메모",
+  "description": "폴더와 카드로 정리하는 개인 메모장 — 인스타 링크 모음·건강 수첩·클라우드 동기화",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f4ef",
+  "theme_color": "#f5f4ef",
+  "icons": [
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "./apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ]
+}
