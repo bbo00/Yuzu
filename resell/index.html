@@ -401,6 +401,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .pfit b{font-weight:800;color:var(--ok)}
 .pfit.np{color:var(--muted2)}
 .pfit .fitavg{color:var(--muted2);font-size:10.5px}
+.pfit .pfit-lbl{font-style:normal;font-weight:700;font-size:9.5px;color:var(--muted2);background:var(--card2);border:1px solid var(--line2);border-radius:4px;padding:0 3px;margin-right:2px;letter-spacing:0}
 
 /* ---------- 동기화 코드 연결 안내 ---------- */
 .cbar{display:flex;align-items:center;gap:10px;background:var(--accentSoft);border:1px solid #F7C48A;border-radius:14px;padding:11px 12px;margin-bottom:10px}
@@ -1264,7 +1265,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         '<div class="pline">' +
           (hasVar(it) ? '<span class="psz">' + sizeList(it) + '</span>' : '') +
           '<span class="pcost">' + won(avg == null ? 0 : avg) + '</span>' +
-          (pr != null ? '<span class="pfit">+' + won(pr) + '</span>' : '') +
+          (pr != null ? '<span class="pfit" title="목표 손익률 ' + targetMargin() + '% 기준 예상 손익 (확정 아님)"><i class="pfit-lbl">목표</i> +' + won(pr) + '</span>' : '') +
         '</div>' +
         '<div class="pact">' + act +
           '<button class="mini sell" data-act="sell" data-id="' + esc(it.id) + '"' + (q <= 0 ? ' disabled' : '') + '>판매</button>' +
@@ -2664,15 +2665,18 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   }
 
   function syncFetch(url, opt) {
+    /* v1.7: 창을 닫는 순간(flush)에는 keepalive 로 요청이 페이지 종료 뒤에도 전송되게 한다 */
+    if (opt && opt.keepalive) return fetch(url, Object.assign({ cache: 'no-store' }, opt));
     var ctrl = new AbortController();
     var tm = setTimeout(function () { ctrl.abort(); }, 20000);
     return fetch(url, Object.assign({ signal: ctrl.signal, cache: 'no-store' }, opt || {})).then(function (r) {
       clearTimeout(tm); return r;
     }, function (e) { clearTimeout(tm); throw e; });
   }
-  function syncPost(path, obj) {
+  function syncPost(path, obj, keepalive) {
     return syncFetch(SYNC_BASE + path, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(obj)
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(obj),
+      keepalive: !!keepalive
     }).then(function (res) {
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return true;
@@ -2730,6 +2734,41 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       });
     });
   }
+
+  /* v1.7: 닫기 직전 flush — 4초 디바운스를 기다리지 않고 지금 바로 올린다.
+     페이지가 사라져도 요청이 이어지도록 keepalive 로 조각과 매니페스트를 한 번에 보낸다. */
+  var syncFlushedAt = 0;
+  function flushSync() {
+    if (!syncOn() || !syncCfg.dirty) return;
+    if (Date.now() - syncFlushedAt < 1500) return;
+    syncFlushedAt = Date.now();
+    if (syncTimer) { clearTimeout(syncTimer); syncTimer = null; }
+    var inv = invStats();
+    var doc = JSON.stringify({ v: 1, app: 'resellbook', ts: Date.now(), device: syncCfg.deviceId, data: syncDataSnapshot() });
+    var parts = chunk(doc, PART_MAX);
+    if (parts.length > PARTS_PER_NS * 4) return;
+    var rev = Math.max(Number(syncCfg.rev) || 0, Number(syncCfg.lastRemoteRev) || 0) + 1;
+    var manifest = {
+      t: 1, app: 'resellbook', rev: rev, ts: Date.now(), device: syncCfg.deviceId,
+      parts: parts.map(function (p, i) { return { ns: nsForPart(i), k: 'v1/p' + i }; }),
+      counts: { items: state.items.length, txns: state.txns.length, qty: inv.qty, value: inv.value },
+      bytes: doc.length
+    };
+    try {
+      parts.forEach(function (p, i) { syncPost(nsForPart(i) + '/v1/p' + i, { c: p }, true).catch(function () { }); });
+      syncPost(syncCfg.ns + '/v1/manifest', manifest, true).catch(function () { });
+      syncCfg.rev = rev;
+      syncCfg.lastRemoteRev = rev;
+      syncCfg.lastPushTs = manifest.ts;
+      syncCfg.lastCount = manifest.counts;
+      syncCfg.dirty = false;
+      syncSave();
+    } catch (e) { }
+  }
+  window.addEventListener('pagehide', flushSync);
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') flushSync();
+  });
 
   function syncPull() {
     if (!syncOn()) return Promise.resolve(null);
@@ -3149,7 +3188,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     var inv = invStats();
     var sizeTxt = '—';
     try { sizeTxt = (JSON.stringify(state).length / 1024).toFixed(0) + 'KB'; } catch (e) { }
-    var body = '<div class="syncbox"><div class="ownername">📒 리셀북 <span style="color:var(--muted2)">v1.6</span></div>' +
+    var body = '<div class="syncbox"><div class="ownername">📒 리셀북 <span style="color:var(--muted2)">v1.7</span></div>' +
       '<p class="desc">재고 ' + state.items.length + '종 · 거래 ' + state.txns.length + '건 · 저장 ' + sizeTxt + '</p>' +
       '<div class="syncacts">' +
       '<button class="btn" data-mm="sync">🔄 동기화</button>' +
