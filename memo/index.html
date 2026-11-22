@@ -774,7 +774,7 @@ function memoCard(m){
   var h='<article class="card'+(m.pinned?' pinned':'')+'" data-id="'+esc(m.id)+'">';
   h+='<div class="card-head"><span class="'+badge+'">'+esc(fname)+'</span>';
   if(m.pinned) h+='<span class="pin-mark">📌</span>';
-  h+='<span class="dates">'+esc(fmtDate(m.deleted?m.deletedAt:m.updatedAt))+'</span></div>';
+  h+='<span class="dates" title="'+esc('작성 '+fmtDateFull(m.createdAt)+' · 수정 '+fmtDateFull(m.updatedAt))+'">'+esc(fmtDate(m.deleted?m.deletedAt:m.updatedAt))+'</span></div>';
   var title=m.title||autoTitle(m);
   h+='<h3 class="card-title">'+esc(title||'(제목 없음)')+'</h3>';
   if(f&&f.type==='link'&&m.link&&m.link.url){
