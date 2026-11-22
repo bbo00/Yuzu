@@ -1628,6 +1628,12 @@ function initSync(){
   window.addEventListener('online',function(){
     if(syncCfg.auto&&syncConnected()) syncNow({silent:true});
   });
+  setInterval(function(){
+    if(document.visibilityState!=='visible') return;
+    if(!syncCfg.auto||!syncConnected()||syncBusy) return;
+    if(Date.now()-(syncCfg.lastSync||0)<20000) return;
+    syncNow({silent:true});
+  },40000);
 }
 function startSync(){
   syncLoadCfg();
