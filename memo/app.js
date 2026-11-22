@@ -287,11 +287,14 @@
     var ms = roomMsgs(r.id);
     return ms.length ? ms[ms.length - 1].createdAt : (r.createdAt || 0);
   }
+  function previewText(text) {
+    return String(text || '').replace(/https?:\/\/[^\s<>"']+/gi, function (u) { return hostOf(u); }).replace(/\s+/g, ' ').trim();
+  }
   function previewOf(r) {
     var ms = roomMsgs(r.id);
     if (!ms.length) return '아직 메시지가 없어요';
     var last = ms[ms.length - 1];
-    var t = String(last.text || '').replace(/\s+/g, ' ').trim();
+    var t = previewText(last.text);
     if (last.img && !t) return '사진 1장';
     if (last.img) return '사진 · ' + t;
     return t || '(빈 메모)';
@@ -468,7 +471,7 @@
         if (dk !== lastDay) { h += '<div class="daysep"><span>' + dayLabel(m.createdAt) + '</span></div>'; lastDay = dk; }
         h += msgHTML(m);
       });
-      body = h + '<div class="msgend"></div>';
+      body = '<div class="msgs">' + h + '<div class="msgend"></div></div>';
     }
     el.innerHTML = '<div class="roomwrap">' +
       '<header class="roomhead">' +
@@ -477,11 +480,11 @@
         '<button class="rhmenu" type="button" id="roomMenu" aria-label="방 메뉴">' + I.dots + '</button>' +
       '</header>' + pinBar +
       '<div class="msgscroll" id="msgScroll">' + body + '</div>' +
-      '<div class="composer">' +
+      '<div class="composer"><div class="cin">' +
         '<button class="plus" type="button" id="btnPhoto" aria-label="사진 첨부">＋</button>' +
         '<textarea id="msgInput" rows="1" placeholder="메시지를 입력하세요" enterkeyhint="send"></textarea>' +
         '<button class="send" type="button" id="btnSend" aria-label="보내기" disabled>' + I.send + '</button>' +
-      '</div></div>';
+      '</div></div></div>';
 
     var inp = $('#msgInput');
     if (inp) {
@@ -795,7 +798,7 @@
       dh += dayMs.map(function (mm) {
         var r = findRoom(mm.roomId);
         var c = colorOf(r ? r.color : 'blue');
-        var text = String(mm.text || '').replace(/\s+/g, ' ').trim();
+        var text = previewText(mm.text);
         return '<button class="dayrow" type="button" data-room="' + esc(mm.roomId) + '" data-mid="' + esc(mm.id) + '">' +
           '<span class="dr-ico" style="background:' + c.bg + ';color:' + c.ink + '">' + GLYPH + '</span>' +
           '<span class="dr-main"><span class="dr-top"><b>' + esc(r ? r.title : '') + '</b><span class="t">' + fmtTime(mm.createdAt) + '</span></span>' +
