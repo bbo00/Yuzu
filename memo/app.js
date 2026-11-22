@@ -239,7 +239,13 @@
     return data;
   }
   function saveData(opts) {
-    try { localStorage.setItem(LS_DATA, JSON.stringify(data)); } catch (e) {}
+    try { localStorage.setItem(LS_DATA, JSON.stringify(data)); }
+    catch (e) {
+      if (!saveData._warned) {
+        saveData._warned = true;
+        toast('이 기기 저장 공간이 부족해요. 사진을 줄이거나 백업 후 정리해 주세요.');
+      }
+    }
     if (!(opts && opts.noSync)) scheduleSyncPush();
   }
   function loadUI() {
