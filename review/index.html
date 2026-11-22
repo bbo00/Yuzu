@@ -1449,6 +1449,12 @@
     try {
       const idx = await mGet('v1/index');
 
+      // v1.8: 코드는 있는데 그 코드에 기록이 하나도 없고 이 기기에도 없으면 연결을 되돌린다
+      if (!idx && !state.campaigns.length) {
+        syncNs = ''; syncSaveCfg(); setPill('idle'); renderAll();
+        return;
+      }
+
       // 이 기기에 데이터가 없어 방금 깔아둔 임시 시드라면, 원격이 있으면 원격으로 교체한다
       if (state.provisional) {
         const remoteList = (idx && Array.isArray(idx.campaigns)) ? idx.campaigns : [];
