@@ -1,14 +1,14 @@
 {
-  "name": "유자 메모 · 폴더 카드 메모장",
+  "name": "유자 메모 · 채팅 메모장",
   "short_name": "유자 메모",
-  "description": "폴더와 카드로 정리하는 개인 메모장 — 인스타 링크 모음·건강 수첩·클라우드 동기화",
+  "description": "카톡 채팅방처럼 쓰는 개인 메모장 — 방마다 메모·사진·링크, 사진 모아보기, 캘린더, 4자리 PIN 잠금, 클라우드 동기화",
   "lang": "ko",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f5f4ef",
-  "theme_color": "#f5f4ef",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "icons": [
     { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
