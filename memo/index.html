@@ -1291,8 +1291,10 @@ function syncPost(path,obj){
   return syncFetch(SYNC_BASE+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(obj)})
     .then(function(res){ if(!res.ok) throw new Error('HTTP '+res.status); return true; });
 }
-function syncGet(path){
-  return syncFetch(SYNC_BASE+path,{method:'GET'}).then(function(res){
+function syncGet(path,cb){
+  var sep=path.indexOf('?')<0?'?':'&';
+  var url=SYNC_BASE+path+(cb!==undefined&&cb!==null?(sep+'cb='+encodeURIComponent(String(cb))):'');
+  return syncFetch(url,{method:'GET'}).then(function(res){
     if(res.status===404) return null;
     if(!res.ok) throw new Error('HTTP '+res.status);
     return res.text().then(function(txt){
@@ -1306,7 +1308,8 @@ function syncDocCounts(){
 }
 function syncPush(){
   if(!syncConnected()) return Promise.reject(new Error('동기화 코드가 없습니다'));
-  var doc=JSON.stringify({v:1,app:APP_ID,ts:Date.now(),device:syncCfg.deviceId,data:data});
+  var newRev=Math.max(syncCfg.rev||0,syncCfg.lastRemoteRev||0)+1;
+  var doc=JSON.stringify({v:1,app:APP_ID,rev:newRev,ts:Date.now(),device:syncCfg.deviceId,data:data});
   var parts=chunkByEscapedBytes(doc,SYNC_PART_MAX);
   if(parts.length>SYNC_PARTS_PER_NS*6) return Promise.reject(new Error('데이터가 너무 큽니다'));
   var chain=Promise.resolve();
@@ -1314,7 +1317,7 @@ function syncPush(){
     chain=chain.then(function(){ return syncPost(syncNsForPart(i)+'/v1/p'+i,{c:p}); });
   });
   return chain.then(function(){
-    var rev=Math.max(syncCfg.rev||0,syncCfg.lastRemoteRev||0)+1;
+    var rev=newRev;
     var pushTs=Date.now();
     var manifest={
       t:1,app:APP_ID,rev:rev,ts:pushTs,device:syncCfg.deviceId,
@@ -1332,7 +1335,7 @@ function syncPush(){
 }
 function syncReadManifest(){
   if(!syncConnected()) return Promise.resolve(null);
-  return syncGet(syncCfg.ns+'/v1/manifest').then(function(m){
+  return syncGet(syncCfg.ns+'/v1/manifest',Date.now()).then(function(m){
     if(!m||!m.parts||!m.parts.length) return null;
     return m;
   });
@@ -1342,7 +1345,7 @@ function syncReadRemoteData(manifest){
   var chain=Promise.resolve();
   manifest.parts.forEach(function(p){
     chain=chain.then(function(){
-      return syncGet(p.ns+'/'+p.k).then(function(part){
+      return syncGet(p.ns+'/'+p.k,manifest.rev).then(function(part){
         if(!part||typeof part.c!=='string') throw new Error('조각을 읽지 못했습니다');
         buf+=part.c;
       });
@@ -1352,6 +1355,9 @@ function syncReadRemoteData(manifest){
     var doc;
     try{ doc=JSON.parse(buf); }catch(e){ throw new Error('원격 데이터 형식이 올바르지 않습니다'); }
     if(!doc||!doc.data) throw new Error('원격 데이터 형식이 올바르지 않습니다');
+    if(typeof doc.rev==='number'&&manifest.rev&&doc.rev!==Number(manifest.rev)){
+      throw new Error('최신 기록을 다시 받는 중이에요');
+    }
     return doc;
   });
 }
@@ -1407,9 +1413,11 @@ function syncNow(opts){
   return syncReadManifest().then(function(manifest){
     var needPush=!manifest||!!syncCfg.dirty;
     if(manifest){
-      syncCfg.lastRemoteRev=Number(manifest.rev)||0;
-      var upToDate=Number(manifest.rev)===Number(syncCfg.rev)&&Number(manifest.ts||0)<=syncCfg.lastPushTs;
-      if(!upToDate){
+      var mRev=Number(manifest.rev)||0;
+      syncCfg.lastRemoteRev=mRev;
+      var upToDate=mRev===Number(syncCfg.rev)&&Number(manifest.ts||0)<=syncCfg.lastPushTs;
+      var staleManifest=mRev<Number(syncCfg.rev);
+      if(!upToDate&&!staleManifest){
         return syncReadRemoteData(manifest).then(function(remoteDoc){
           merged=mergeRemoteData(data,remoteDoc);
           if(merged.stats.changed){
@@ -1417,6 +1425,10 @@ function syncNow(opts){
             saveData({noSync:true});
             renderAll();
             needPush=true;
+          }else{
+            syncCfg.rev=mRev;
+            syncCfg.lastPushTs=Number(manifest.ts)||syncCfg.lastPushTs;
+            syncSaveCfg();
           }
           return needPush;
         });
@@ -1427,9 +1439,9 @@ function syncNow(opts){
     if(needPush) return syncPush().then(function(){ return true; });
     return syncReadManifest().then(function(mm){
       if(mm){
-        syncCfg.rev=Number(mm.rev)||syncCfg.rev;
+        syncCfg.rev=Math.max(Number(mm.rev)||0,Number(syncCfg.rev)||0);
         syncCfg.lastRemoteRev=syncCfg.rev;
-        syncCfg.lastPushTs=Number(mm.ts)||syncCfg.lastPushTs;
+        syncCfg.lastPushTs=Math.max(Number(mm.ts)||0,Number(syncCfg.lastPushTs)||0);
         syncCfg.lastCount=mm.counts||syncCfg.lastCount;
       }
       syncCfg.lastSync=Date.now(); syncCfg.lastError='';
