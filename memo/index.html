@@ -1409,59 +1409,54 @@ function syncNow(opts){
   if(syncBusy) return Promise.resolve(null);
   syncBusy=true; syncApplying=true;
   renderSyncPill(); renderSyncUI();
-  var merged=null;
-  return syncReadManifest().then(function(manifest){
-    var needPush=!manifest||!!syncCfg.dirty;
-    if(manifest){
+  var acc={added:0,updated:0,localOnly:0,localNewer:0,changed:false};
+  var lastManifest=null;
+  /* 매니페스트를 읽고 더 새 기록이 있으면 내려받기를 반복(최대 3회) — 오래 캐시된 매니페스트를 만나도 바로 따라잡는다 */
+  function step(n){
+    return syncReadManifest().then(function(manifest){
+      if(!manifest) return null;
+      lastManifest=manifest;
       var mRev=Number(manifest.rev)||0;
-      syncCfg.lastRemoteRev=mRev;
-      var upToDate=mRev===Number(syncCfg.rev)&&Number(manifest.ts||0)<=syncCfg.lastPushTs;
-      var staleManifest=mRev<Number(syncCfg.rev);
-      if(!upToDate&&!staleManifest){
-        return syncReadRemoteData(manifest).then(function(remoteDoc){
-          merged=mergeRemoteData(data,remoteDoc);
-          if(merged.stats.changed){
-            data=merged.data; normalizeData();
-            saveData({noSync:true});
-            renderAll();
-            needPush=true;
-          }else{
-            syncCfg.rev=mRev;
-            syncCfg.lastPushTs=Number(manifest.ts)||syncCfg.lastPushTs;
-            syncSaveCfg();
-          }
-          if(merged.stats.localOnly||merged.stats.localNewer) needPush=true;
-          if(!merged.stats.changed&&!needPush&&!(merged.stats.localOnly||merged.stats.localNewer)){
-            syncCfg.lastCount=manifest.counts||syncCfg.lastCount;
-          }
-          return needPush;
-        });
-      }
-    }
-    return needPush;
-  }).then(function(needPush){
-    if(needPush) return syncPush().then(function(){ return true; });
-    return syncReadManifest().then(function(mm){
-      if(mm){
-        syncCfg.rev=Math.max(Number(mm.rev)||0,Number(syncCfg.rev)||0);
-        syncCfg.lastRemoteRev=syncCfg.rev;
-        syncCfg.lastPushTs=Math.max(Number(mm.ts)||0,Number(syncCfg.lastPushTs)||0);
-        syncCfg.lastCount=mm.counts||syncCfg.lastCount;
-      }
-      syncCfg.lastSync=Date.now(); syncCfg.lastError='';
-      syncSaveCfg();
-      return false;
+      syncCfg.lastRemoteRev=Math.max(Number(syncCfg.lastRemoteRev)||0,mRev);
+      var upToDate=(mRev===Number(syncCfg.rev))&&(Number(manifest.ts||0)<=Number(syncCfg.lastPushTs||0));
+      if(upToDate||mRev<Number(syncCfg.rev)) return null;
+      return syncReadRemoteData(manifest).then(function(remoteDoc){
+        var m=mergeRemoteData(data,remoteDoc);
+        acc.added+=m.stats.added||0;
+        acc.updated+=m.stats.updated||0;
+        acc.localOnly+=m.stats.localOnly||0;
+        acc.localNewer+=m.stats.localNewer||0;
+        acc.changed=acc.changed||!!m.stats.changed;
+        if(m.stats.changed){
+          data=m.data; normalizeData();
+          saveData({noSync:true});
+          renderAll();
+        }
+        syncCfg.rev=mRev;
+        syncCfg.lastPushTs=Number(manifest.ts)||syncCfg.lastPushTs;
+        syncCfg.lastCount=manifest.counts||syncCfg.lastCount;
+        syncSaveCfg();
+        if(n<2) return step(n+1);
+        return null;
+      });
     });
+  }
+  return step(0).then(function(){
+    var needPush=!lastManifest||!!syncCfg.dirty||acc.changed||acc.localOnly>0||acc.localNewer>0;
+    if(needPush) return syncPush();
+    syncCfg.rev=Math.max(Number(syncCfg.rev)||0,Number(lastManifest.rev)||0);
+    syncCfg.lastSync=Date.now(); syncCfg.lastError='';
+    syncSaveCfg();
+    return null;
   }).then(function(){
     syncBusy=false; syncApplying=false;
     renderSyncPill(); renderSyncUI();
     if(!silent){
       var c=syncCfg.lastCount||{};
-      var detail=merged&&(merged.stats.added||merged.stats.updated)
-        ?' (클라우드에서 '+merged.stats.added+'건 추가 · '+merged.stats.updated+'건 갱신)' : '';
-      toast('동기화 완료'+detail+' · 메모 '+(c.live!=null?c.live:(liveMemos().length))+'건');
+      var detail=(acc.added||acc.updated)?(' (클라우드에서 '+acc.added+'건 추가 · '+acc.updated+'건 갱신)'):'';
+      toast('동기화 완료'+detail+' · 메모 '+(c.live!=null?c.live:liveMemos().length)+'건');
     }
-    return merged;
+    return {stats:acc};
   }).catch(function(err){
     syncBusy=false; syncApplying=false;
     syncCfg.lastError=syncErrMsg(err);
