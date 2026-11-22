@@ -623,6 +623,34 @@
 
   footer{max-width:1060px; margin:26px auto 0; padding:0 16px; font-size:11px; color:var(--ink3); text-align:center;}
 
+  /* ---------- v1.8 동기화 코드 미연결 상태 ---------- */
+  body.nokey-mode .typechips, body.nokey-mode .toolbar, body.nokey-mode #summary{display:none !important;}
+  body.nokey-mode #campaign-grid{grid-template-columns:minmax(0,1fr);}
+  .nokey{
+    grid-column:1/-1; text-align:center; min-width:0; max-width:100%; background:var(--paper); border:1px solid var(--line);
+    border-radius:18px; padding:28px 18px 22px; box-shadow:var(--shadow);
+  }
+  .nokey .nk-ico{font-size:34px; line-height:1; margin-bottom:10px;}
+  .nokey h2{font-size:17px; margin-bottom:8px;}
+  .nokey p{font-size:12.5px; color:var(--ink2); line-height:1.6;}
+  .nokey .nk-row{display:flex; gap:8px; margin:14px 0 10px;}
+  .nokey .nk-row input{
+    flex:1 1 auto; min-width:0; height:44px; border:1px solid var(--line); border-radius:12px;
+    background:#fffefc; padding:0 12px; font-size:16px; color:var(--ink); outline:none;
+  }
+  .nokey .nk-row input:focus{border-color:#e2c3b1; box-shadow:0 0 0 3px rgba(201,138,114,.1);}
+  .nokey .nk-row .btn{flex:0 0 auto; height:44px; padding:0 16px;}
+  .nokey .nk-note{font-size:11.5px; color:var(--ink3); margin-top:8px;}
+  .nokey .btn.ghost{margin-top:2px;}
+  .nokeybar{
+    grid-column:1/-1; font-size:12px; color:var(--ink2); background:var(--amber-soft);
+    border:1px solid #efdfbb; border-radius:12px; padding:10px 12px; line-height:1.5;
+  }
+  .nokeybar button{
+    font-weight:800; color:var(--accent); text-decoration:underline; text-underline-offset:2px;
+    padding:2px 4px; font-size:12px;
+  }
+
   /* ---------- mobile ---------- */
   @media (max-width:560px){
     body{font-size:14.5px;}
@@ -758,10 +786,20 @@
   <div class="sheet">
     <h3>🔄 자동 클라우드 동기화</h3>
     <p class="desc">입력하는 즉시 이 기기에 저장되고, 잠시 뒤 클라우드(MantleDB)에도 자동 업로드됩니다. 같은 주소를 다른 기기에서 열면 초안이 그대로 따라옵니다.</p>
-    <div class="kv"><span class="k">상태</span><span class="v" id="sync-state-text">—</span></div>
-    <div class="kv"><span class="k">마지막 동기화</span><span class="v" id="sync-time-text">—</span></div>
-    <div class="kv"><span class="k">동기화 키</span><span class="v" id="sync-ns-text">—</span></div>
-    <div class="kv" id="sync-err-row" hidden><span class="k">오류</span><span class="v" id="sync-err-text">—</span></div>
+    <div id="sync-connected-box">
+      <div class="kv"><span class="k">상태</span><span class="v" id="sync-state-text">—</span></div>
+      <div class="kv"><span class="k">마지막 동기화</span><span class="v" id="sync-time-text">—</span></div>
+      <div class="kv"><span class="k">동기화 키</span><span class="v" id="sync-ns-text">—</span></div>
+      <div class="kv" id="sync-err-row" hidden><span class="k">오류</span><span class="v" id="sync-err-text">—</span></div>
+    </div>
+    <div id="sync-connect" hidden>
+      <div class="field"><label>동기화 코드</label>
+        <input id="sync-join-input" type="text" placeholder="yujareview-…" autocomplete="off" autocapitalize="off" spellcheck="false">
+      </div>
+      <div class="nk-row"><button class="btn primary" type="button" data-act="sync-join">이 코드로 연결</button>
+        <button class="btn ghost" type="button" data-act="sync-create">새 코드 만들기</button></div>
+      <p class="nk-note">새 코드를 만들면 이 기기에 있는 기록이 그 코드로 올라갑니다.</p>
+    </div>
     <div class="hint-box">이 키로 <b>mantledb.sh</b>에 초안이 저장됩니다. 메인 AI(유자)는 이 키의 <code>v1/index</code>와 <code>v1/text_&lt;체험단&gt;</code>을 읽어 바로 2,000자 원고를 쓸 수 있습니다. 초안 화면의 <b>📋 AI에게 글 요청용 초안 복사</b>를 누르면 최신 내용이 클라우드에 먼저 올라갑니다.</div>
     <div class="sheet-actions">
       <button class="btn ghost" data-act="copy-ns">키 복사</button>
@@ -795,11 +833,56 @@
      상수 · 데이터 정의
      ========================================================= */
   const APP = 'yujareview';
-  const SYNC_NS = 'yujareview-y4bedjnq8y';
+  /* v1.8: 동기화 키를 소스에 두지 않는다 — ?k= 링크나 이 기기 저장소에만 있고, 없으면 기록을 열지 않는다 */
   const SYNC_BASE = 'https://mantledb.sh/v2/';
+  const SYNC_CFG_KEY = 'yujareview_sync_v1';
   const LS_KEY = 'yujareview_state_v2';
   const LS_UI = 'yujareview_ui_v1';
-  const VERSION = 'v1.7';
+  const VERSION = 'v1.8';
+
+  /* =========================================================
+     동기화 키 (v1.8)
+     ========================================================= */
+  let syncNs = '';
+  function parseSyncCode(raw) {
+    let v = String(raw == null ? '' : raw).trim();
+    const m = v.match(/[?&#](?:k|key|code|sync)=([^&\s]+)/i);
+    if (m) v = decodeURIComponent(m[1].replace(/\+/g, ' '));
+    v = v.replace(/^https?:\/\/\S*$/i, '').replace(/[^a-z0-9_-]/gi, '');
+    if (/^(k|key|code|sync)$/i.test(v)) v = '';
+    return v;
+  }
+  function syncCodeFromUrl() {
+    try {
+      const q = (location.search || '').match(/[?&](?:k|key|code|sync)=([^&]+)/i);
+      if (q) return parseSyncCode(decodeURIComponent(q[1].replace(/\+/g, ' ')));
+      const h = (location.hash || '').match(/(?:^#|&)(?:k|key|code|sync)=([^&]+)/i);
+      if (h) return parseSyncCode(decodeURIComponent(h[1].replace(/\+/g, ' ')));
+    } catch (e) {}
+    return '';
+  }
+  function syncLoadCfg() {
+    let saved = '';
+    try {
+      const raw = localStorage.getItem(SYNC_CFG_KEY);
+      if (raw) { const o = JSON.parse(raw); if (o && typeof o.ns === 'string') saved = parseSyncCode(o.ns); }
+    } catch (e) {}
+    syncNs = syncCodeFromUrl() || saved;
+    if (syncNs) syncSaveCfg();
+  }
+  function syncSaveCfg() {
+    try { localStorage.setItem(SYNC_CFG_KEY, JSON.stringify({ ns: syncNs })); } catch (e) {}
+  }
+  function newSyncNs() {
+    const abc = 'abcdefghijkmnpqrstuvwxyz23456789';
+    let s = '';
+    for (let i = 0; i < 10; i++) s += abc.charAt(Math.floor(Math.random() * abc.length));
+    return 'yujareview-' + s;
+  }
+  function maskNs(s) {
+    const v = String(s || '');
+    return v.length > 16 ? (v.slice(0, 12) + '…' + v.slice(-3)) : v;
+  }
 
   const STATUSES = ['예약전', '방문예정', '초안작성중', '글완성', '등록완료'];
   const ENTRY_TYPES = { sponsored: '🎁 체험단', paid: '💳 내돈내산' };
@@ -1002,6 +1085,79 @@
     toastTimer = setTimeout(function () { el.classList.remove('show'); }, ms || (strong ? 2600 : 2100));
   }
 
+  /* v1.8: 키가 없을 때 보여 주는 안내 (실데이터가 절대 실리지 않는다) */
+  function noKeyHtml() {
+    const hasLocal = !!(state && state.campaigns && state.campaigns.length);
+    return '<div class="nokey">' +
+      '<div class="nk-ico">🔑</div>' +
+      '<h2>동기화 코드를 넣어 주세요</h2>' +
+      '<p>이 주소에는 기록이 담겨 있지 않아요. 쓰던 기기의 <b>동기화 코드</b>를 넣으면 수첩 내용이 그대로 나타납니다.</p>' +
+      '<div class="nk-row"><input id="nk-input" type="text" placeholder="yujareview-…" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="동기화 코드">' +
+      '<button class="btn primary" type="button" data-act="nk-join">연결</button></div>' +
+      (hasLocal ? '<button class="btn ghost" type="button" data-act="nk-create">이 기기 기록을 새 코드로 만들기</button>' : '') +
+      '<p class="nk-note">코드를 모르면 <b>📤 백업 불러오기</b>로 백업 파일을 열 수 있어요.</p>' +
+      '</div>';
+  }
+  function connectSyncCode(raw) {
+    const code = parseSyncCode(raw);
+    if (!code) { toast('동기화 코드를 입력해 주세요'); const i = $('nk-input') || $('sync-join-input'); if (i) i.focus(); return; }
+    if (code === syncNs) { closeModals(); toast('이미 연결돼 있어요'); return; }
+    const prev = syncNs;
+    syncNs = code;
+    setPill('syncing');
+    (async function () {
+      try {
+        const idx = await mGet('v1/index');
+        if (!idx || !Array.isArray(idx.campaigns) || !idx.campaigns.length) {
+          syncNs = prev; syncSaveCfg();
+          setPill(prev ? 'ok' : 'idle');
+          toast('이 코드에는 아직 기록이 없어요 · 코드를 확인해 주세요');
+          return;
+        }
+        const pulled = [];
+        for (let i = 0; i < idx.campaigns.length; i++) {
+          const meta = idx.campaigns[i];
+          if (!meta || !meta.id) continue;
+          const r = await mGet('v1/c_' + meta.id);
+          if (r && r.id) pulled.push(normalizeState({ campaigns: [r], deleted: {} }).campaigns[0]);
+        }
+        syncSaveCfg();
+        if (pulled.length) {
+          state.campaigns = pulled;
+          state.rev = Math.max(state.rev || 0, Number(idx.rev) || 0);
+          state.provisional = false;
+          saveLocal();
+        }
+        renderAll();
+        lastSyncAt = nowMs(); lastSyncErr = '';
+        setPill('ok');
+        closeModals();
+        toast('☁️ 연결됐어요 · ' + pulled.length + '건을 불러왔어요', true);
+      } catch (e) {
+        syncNs = prev; syncSaveCfg();
+        setPill(prev ? 'ok' : 'idle');
+        toast('코드를 확인하지 못했어요 · 네트워크를 확인해 주세요');
+      }
+    })();
+  }
+  function createSyncCode() {
+    if (!state || !state.campaigns.length) { toast('이 기기에 올릴 기록이 없어요'); return; }
+    syncNs = newSyncNs();
+    syncSaveCfg();
+    setPill('syncing');
+    renderAll();
+    pushCampaigns(state.campaigns.slice()).then(function () {
+      lastSyncAt = nowMs(); lastSyncErr = '';
+      setPill('ok');
+      closeModals();
+      renderAll();
+      toast('☁️ 새 동기화 코드를 만들었어요', true);
+    }).catch(function (e) {
+      setPill('err', (e && e.message) ? e.message : String(e));
+      toast('코드를 만들지 못했어요 · 잠시 뒤 다시 시도해 주세요');
+    });
+  }
+
   /* =========================================================
      클립보드
      iOS Safari는 await(네트워크 요청 등) 뒤에는 user gesture가 만료되어
@@ -1068,72 +1224,8 @@
     return false;
   }
 
-  /* =========================================================
-     초기 데이터 (검증된 사실만)
-     ========================================================= */
-  function seedCampaigns() {
-    const t = nowMs();
-    const mk = (o, i) => Object.assign({
-      id: uid(),
-      entryType: 'sponsored', category: '',
-      platform: '', ref: '', deadline: '', benefit: '', status: '예약전',
-      place: '', phone: '', hours: '', note: '',
-      keywords: [], mission: [],
-      sections: { loc: '', mood: '', menu: '', taste: '', verdict: '' },
-      manuscript: '', draftTitle: '', draftTags: '',
-      createdAt: t + i, updatedAt: t + i
-    }, o);
-
-    return [
-      mk({
-        name: '요시야 야키니쿠 영통망포역점',
-        platform: '레뷰', ref: '#1428585', deadline: '2026-11-16',
-        benefit: '5만 원 페이백',
-        status: '초안작성중',
-        phone: '0503-7153-5976',
-        note: '체험권 미사용 확인 필요',
-        keywords: ['망포역 연말모임', '망포역 맛집', '수원 영통 맛집', '망포역 회식', '망포역 고기집'],
-        mission: ['본문 1,000자 이상', '사진 15장 이상', '지도 첨부', '스폰서 배너 삽입', '결제 영수증']
-      }, 1),
-      mk({
-        name: '국밥보감 광교점',
-        platform: '레뷰', ref: '#1426999', deadline: '2026-11-16',
-        benefit: '보양미나리순대국밥 2인 + 모듬순대 1',
-        status: '초안작성중',
-        note: '방문·체험권 사용 완료 · 리뷰 미등록(0/1)',
-        mission: ['사진 15장 이상', '본문 1,000자 이상', '짧은 동영상', '지도 첨부', '배너 삽입']
-      }, 2),
-      mk({
-        name: '한상차림코다리명가',
-        platform: '리뷰노트', ref: '', deadline: '2026-11-20',
-        status: '방문예정'
-      }, 3),
-      mk({
-        name: '마라도해물탕&찜 수원본점',
-        platform: '리뷰노트', ref: '#1510500', deadline: '2026-11-22',
-        status: '초안작성중',
-        note: '공정위 배너: https://reviewnote.cloud/gongjeong/v1/image.webp?applyId=25decf19-06ff-4f7b-bdfc-546a687227b6',
-        keywords: ['연말회식', '연말모임 장소', '단체모임'],
-        mission: ['사진 15장 이상', '본문 1,000자 이상', '지도 첨부', '동영상 또는 GIF', '넓은 주차장 언급', '공정위 배너']
-      }, 4),
-      mk({
-        name: '이서방왕족발보쌈 수원본점',
-        platform: '레뷰', ref: '#1429612', deadline: '2026-11-25',
-        benefit: '4만 원 이용권',
-        status: '예약전',
-        phone: '010-8669-0512',
-        hours: '11:00~23:00 (브레이크 15:00~15:30)',
-        note: '최소 1일 전 문자 예약 필수 · 영수증 리뷰 금지'
-      }, 5),
-      mk({
-        name: '인생막창 권선점',
-        platform: '레뷰', ref: '#1426159', deadline: '2026-11-25',
-        benefit: '4만 원 상당',
-        status: '예약전',
-        hours: '16:00~03:00 (화요일만 23:00까지)'
-      }, 6)
-    ];
-  }
+  /* v1.8: 초기 시드 데이터(매장·연락처·배너 주소)를 소스에서 제거했다.
+     기록은 동기화 코드로 연결한 클라우드 사본이나 이 기기 저장소에서만 온다. */
 
   /* =========================================================
      상태 관리
@@ -1247,7 +1339,7 @@
       lbl.textContent = '오프라인 저장';
       pill.title = detail || '클라우드에 연결하지 못했습니다. 이 기기에는 저장되어 있습니다.';
     } else {
-      lbl.textContent = '동기화 준비';
+      lbl.textContent = syncNs ? '동기화 준비' : '코드 연결';
     }
     const st = $('sync-state-text');
     if (st) {
@@ -1259,14 +1351,14 @@
     const tt = $('sync-time-text');
     if (tt) tt.textContent = lastSyncAt ? timeLabel(lastSyncAt) : '—';
     const ns = $('sync-ns-text');
-    if (ns) ns.textContent = SYNC_NS;
+    if (ns) ns.textContent = syncNs || '연결되지 않음';
     const errRow = $('sync-err-row'), errTxt = $('sync-err-text');
     if (errRow && errTxt) {
       if (lastSyncErr) { errRow.hidden = false; errTxt.textContent = lastSyncErr; }
       else { errRow.hidden = true; }
     }
     const foot = $('foot-ns');
-    if (foot) foot.textContent = '두밍로그 블로그 수첩 ' + VERSION + ' · 자동 저장 키 ' + SYNC_NS;
+    if (foot) foot.textContent = '두밍로그 블로그 수첩 ' + VERSION + (syncNs ? (' · 동기화 ' + maskNs(syncNs)) : ' · 이 기기에만 저장 중 (동기화 코드 미연결)');
   }
 
   async function mFetch(path, opts) {
@@ -1285,7 +1377,7 @@
     });
   }
   async function mGet(key) {
-    const res = await withTimeout(mFetch(SYNC_NS + '/' + key, { method: 'GET' }), 13000);
+    const res = await withTimeout(mFetch(syncNs + '/' + key, { method: 'GET' }), 13000);
     if (res.status === 404) return null;
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const txt = await res.text();
@@ -1293,7 +1385,7 @@
     try { return JSON.parse(txt); } catch (e) { return null; }
   }
   async function mSet(key, obj) {
-    const res = await withTimeout(mFetch(SYNC_NS + '/' + key, {
+    const res = await withTimeout(mFetch(syncNs + '/' + key, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(obj)
@@ -1307,7 +1399,7 @@
   }
   async function mDel(key) {
     try {
-      const res = await mFetch(SYNC_NS + '/' + key, { method: 'DELETE' });
+      const res = await mFetch(syncNs + '/' + key, { method: 'DELETE' });
       return res.ok || res.status === 404;
     } catch (e) { return false; }
   }
@@ -1320,6 +1412,7 @@
   }
 
   async function pushCampaigns(list) {
+    if (!syncNs) throw new Error('동기화 코드가 없습니다');
     for (let i = 0; i < list.length; i++) {
       const c = list[i];
       await mSet('v1/c_' + c.id, c);
@@ -1349,6 +1442,7 @@
 
   async function syncNow(manual) {
     if (!state) return;
+    if (!syncNs) { setPill('idle'); return; }
     if (syncBusy) { pendingSync = true; return; }
     syncBusy = true;
     setPill('syncing');
@@ -1421,8 +1515,8 @@
         return !remote.has(String(c.id)) || (c.updatedAt || 0) > (remote.get(String(c.id)) || 0);
       });
       if (!idx) {
-        // 원격이 비었음(처음/만료) → 이 기기 원본을 그대로 올려 복구
-        await pushCampaigns(state.campaigns.slice());
+        // 원격이 비었음(처음/만료) → 이 기기 원본이 있으면 그대로 올려 복구
+        if (state.campaigns.length) await pushCampaigns(state.campaigns.slice());
       } else if (need.length) {
         await pushCampaigns(need);
       } else if (!pulled) {
@@ -1449,6 +1543,7 @@
   let pushRetryTimer = null;
 
   function schedulePush(id, delay) {
+    if (!syncNs) return;               // v1.8: 코드가 없으면 클라우드로 보내지 않는다
     if (id) pushIds[id] = true;
     clearTimeout(pushTimer);
     pushTimer = setTimeout(function () {
@@ -1717,6 +1812,19 @@
   }
 
   function renderList() {
+    /* v1.8: 동기화 코드가 없고 이 기기에도 기록이 없으면 키 입력 안내만 보여 준다 */
+    const noKey = !syncNs && !(state && state.campaigns && state.campaigns.length);
+    if (document.body.classList) document.body.classList.toggle('nokey-mode', noKey);
+    if (noKey) {
+      if (dashTab === 'summary') {
+        const host0 = $('money-dash');
+        if (host0) host0.innerHTML = noKeyHtml();
+        return;
+      }
+      const g0 = $('campaign-grid');
+      if (g0) g0.innerHTML = noKeyHtml();
+      return;
+    }
     const tabs = $('dash-tabs');
     if (tabs) {
       Array.prototype.forEach.call(tabs.querySelectorAll('button'), function (b) {
@@ -1783,7 +1891,9 @@
       '<span class="sep">|</span>마감 임박(2일 내) <b>' + dueSoon + '건</b>' +
       '<span class="sep">|</span>초안 작성 중 <b>' + drafting + '건</b>';
 
-    $('campaign-grid').innerHTML = list.map(cardHtml).join('') +
+    const keyBanner = syncNs ? '' :
+      '<div class="nokeybar">🔑 지금은 <b>이 기기에만</b> 저장돼요 · <button type="button" data-act="sync-modal">동기화 코드 연결</button></div>';
+    $('campaign-grid').innerHTML = keyBanner + list.map(cardHtml).join('') +
       '<button class="add-card" data-act="add"><span class="plus">＋</span>새 글 추가</button>';
 
     if (!state.campaigns.length) {
@@ -2389,7 +2499,7 @@
   function backupSave() {
     const payload = {
       app: APP, version: VERSION, exportedAt: new Date().toISOString(),
-      syncKey: SYNC_NS, state: state
+      syncKey: syncNs, state: state
     };
     const blob = new Blob([JSON.stringify(payload, null, 1)], { type: 'application/json' });
     const d = new Date();
@@ -2432,6 +2542,10 @@
 
   function openSyncModal() {
     $('modal-sync').hidden = false;
+    const box = $('sync-connected-box'), conn = $('sync-connect');
+    if (box) box.hidden = !syncNs;
+    if (conn) conn.hidden = !!syncNs;
+    if (conn && !syncNs) setTimeout(function () { const i = $('sync-join-input'); if (i) { try { i.focus(); } catch (e) {} } }, 80);
     setPill(pillState, lastSyncErr);
   }
 
@@ -2696,8 +2810,13 @@
       case 'sync-modal': openSyncModal(); break;
       case 'sync-now': syncNow(true); break;
       case 'copy-ns':
-        copyAndTell(SYNC_NS, '📋 동기화 키를 복사했어요! 채팅창에 붙여넣기 하세요');
+        if (!syncNs) { toast('먼저 동기화 코드를 연결해 주세요'); break; }
+        copyAndTell(syncNs, '📋 동기화 키를 복사했어요! 채팅창에 붙여넣기 하세요');
         break;
+      case 'nk-join': connectSyncCode($('nk-input') ? $('nk-input').value : ''); break;
+      case 'sync-join': connectSyncCode($('sync-join-input') ? $('sync-join-input').value : ''); break;
+      case 'nk-create':
+      case 'sync-create': createSyncCode(); break;
       case 'copy-retry': {
         const txt = ($('copy-fallback-text').value || fallbackCopyText);
         const r = copyTextNow(txt);
@@ -2803,6 +2922,11 @@
   });
 
   document.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && e.target && (e.target.id === 'nk-input' || e.target.id === 'sync-join-input')) {
+      e.preventDefault();
+      connectSyncCode(e.target.value);
+      return;
+    }
     if (e.key === 'Enter' && e.target && e.target.id === 'kw-add-input') {
       e.preventDefault();
       const b = document.querySelector('[data-act="kw-add"]');
@@ -2828,21 +2952,22 @@
   }
   window.addEventListener('resize', syncHeaderH);
 
-  async function boot() {
+  function boot() {
+    syncLoadCfg();                // v1.8: ?k= 링크 또는 이 기기 저장소에서만 키를 읽는다
     const local = loadLocal();
     if (local) {
       state = local;
       state.provisional = false;
     } else {
-      state = normalizeState({ v: 2, app: APP, rev: 0, campaigns: seedCampaigns(), deleted: {}, updatedAt: nowMs(), seeded: true });
-      state.provisional = true;   // 아직 사용자가 만진 적 없는 임시 시드
+      state = blankState();
+      state.provisional = true;   // 이 기기에 아직 기록이 없는 상태 (시드는 넣지 않는다)
       saveLocal();
     }
     syncHeaderH();
     loadUi();
     renderAll();                  // 네트워크를 기다리지 않고 바로 그린다
-    setPill('syncing');
-    syncNow(false);
+    if (syncNs) { setPill('syncing'); syncNow(false); }
+    else { setPill('idle'); }
   }
 
   window.addEventListener('error', function (e) {
