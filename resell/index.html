@@ -434,6 +434,10 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 /* ---------- form: 사이즈 행 ---------- */
 .vrows{display:flex;flex-direction:column;gap:6px}
 .vrow{display:grid;grid-template-columns:1fr 58px 1fr 26px;gap:6px;align-items:center}
+.vhead{display:grid;grid-template-columns:1fr 58px 1fr 26px;gap:6px;padding:0 2px 3px}
+.vhead span{font-size:10.5px;color:var(--muted2);letter-spacing:-.2px;padding-left:5px}
+.vhead span:nth-child(2){text-align:center;padding:0}
+.vrow.only,.vhead.only{grid-template-columns:1fr 58px 1fr}
 .vrow input{width:100%;font-size:16px !important;background:var(--card2);border:1px solid var(--line2);color:var(--fg);border-radius:10px;padding:9px;appearance:none;-webkit-appearance:none;text-align:left;min-width:0}
 .vrow .vdel{border:1px solid var(--line2);background:var(--card2);color:#8A93A0;border-radius:8px;height:36px;font-size:11px;padding:0}
 .vadd{display:flex;align-items:center;gap:8px;margin-top:7px;flex-wrap:wrap}
@@ -581,6 +585,31 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     return won(v);
   }
   function num(v) { var n = Number(String(v == null ? '' : v).replace(/[^0-9.\-]/g, '')); return isFinite(n) ? n : 0; }
+  /* 금액 표시: 천 단위 쉼표. 저장·계산은 num()이 쉼표를 걸러 숫자로 파싱한다 (v1.6) */
+  function group3(s) { return String(s).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  function fmtMoney(n) {
+    var v = Math.round(Number(n) || 0);
+    return (v < 0 ? '-' : '') + group3(String(Math.abs(v)));
+  }
+  /* 금액 입력란에 숫자만 남기고 실시간으로 천 단위 쉼표를 맞춘다 */
+  function bindMoney(el) {
+    if (!el) return el;
+    el.setAttribute('inputmode', 'numeric');
+    el.setAttribute('autocomplete', 'off');
+    el.addEventListener('input', function () {
+      var raw = el.value;
+      var caret = (el.selectionStart == null) ? raw.length : el.selectionStart;
+      var left = raw.slice(0, caret).replace(/[^0-9]/g, '').length;
+      var digits = raw.replace(/[^0-9]/g, '').replace(/^0+(?=\d)/, '');
+      var next = digits ? group3(digits) : '';
+      if (next === raw) return;
+      el.value = next;
+      var i = 0, seen = 0;
+      while (i < next.length && seen < left) { if (next[i] >= '0' && next[i] <= '9') seen++; i++; }
+      try { el.setSelectionRange(i, i); } catch (e) { }
+    });
+    return el;
+  }
   function pad2(n) { return String(n).padStart(2, '0'); }
   function ymd(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
   function today() { return ymd(new Date()); }
@@ -1618,18 +1647,13 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       '<div class="field"><label>카테고리</label><select id="f-cat">' +
       CATS.map(function (c) { return '<option value="' + c + '"' + (draft.cat === c ? ' selected' : '') + '>' + c + '</option>'; }).join('') +
       '</select></div>' +
-      '<div class="field" id="f-qty-wrap"><label>수량</label><input id="f-qty" type="number" inputmode="numeric" min="0" step="1" value="' + (Number(draft.qty) || 0) + '" /></div>' +
-      '</div>';
-
-    body += '<div class="row2">' +
-      '<div class="field" id="f-price-wrap"><label>' + (it ? '평균 원가' : '구매가 (원가)') + '<span class="req">*</span></label>' +
-      '<input id="f-price" type="number" inputmode="numeric" min="0" step="100" placeholder="0" value="' + (Number(draft.avgCost) ? Math.round(Number(draft.avgCost)) : '') + '" /></div>' +
       '<div class="field"><label>구매일</label><input id="f-date" type="date" placeholder="YYYY-MM-DD" value="' + esc(draft.buyDate || today()) + '" /></div>' +
       '</div>';
 
-    body += '<div class="field vsec"><label>사이즈·단가 <span style="color:var(--muted2)">(같은 상품의 사이즈가 여러 개면 각각 입력)</span></label>' +
+    body += '<div class="field vsec"><label>사이즈·수량·단가 <span style="color:var(--muted2)">(여러 사이즈면 ＋ 사이즈 추가)</span></label>' +
+      '<div class="vhead" id="f-vhead"><span>사이즈</span><span>수량</span><span>단가 (원가)</span></div>' +
       '<div class="vrows" id="f-vars"></div>' +
-      '<div class="vadd"><button class="btn small" type="button" id="f-varadd">＋ 사이즈/단가 추가</button>' +
+      '<div class="vadd"><button class="btn small" type="button" id="f-varadd">＋ 사이즈 추가</button>' +
       '<span class="vhint" id="f-varsum"></span></div></div>';
 
     body += '<div class="row2">' +
@@ -1662,13 +1686,12 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       body: body,
       foot: foot,
       onMount: function (root) {
-        /* ---- 사이즈·단가 편집기 ---- */
+        /* ---- 사이즈·수량·단가 편집기 (v1.6 · 기본 1칸) ---- */
         var varBox = root.querySelector('#f-vars');
         var varSum = root.querySelector('#f-varsum');
-        var qtyWrap = root.querySelector('#f-qty-wrap');
-        var priceWrap = root.querySelector('#f-price-wrap');
+        var varHead = root.querySelector('#f-vhead');
 
-        function readVars() {
+        function readRows() {
           return $$('.vrow', varBox).map(function (r) {
             var size = r.querySelector('.v-size').value.trim();
             var q = Math.max(0, Math.round(num(r.querySelector('.v-qty').value)));
@@ -1676,51 +1699,61 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
             var c = null;
             if (raw !== '') { var n = Math.max(0, num(raw)); c = n > 0 ? Math.round(n) : null; }
             return { size: size, qty: q, cost: c };
-          }).filter(function (x) { return !!x.size || x.qty > 0 || x.cost != null; });
+          });
         }
 
         function refreshVar() {
-          var vars = readVars();
           var rows = $$('.vrow', varBox);
-          var hasRows = rows.length > 0;
-          qtyWrap.classList.toggle('hidden', hasRows);
-          priceWrap.classList.toggle('hidden', hasRows);
+          var only = rows.length < 2;
+          rows.forEach(function (r) {
+            r.classList.toggle('only', only);
+            r.querySelector('.vdel').classList.toggle('hidden', only);
+          });
+          if (varHead) varHead.classList.toggle('only', only);
+          var all = readRows();
           var tot = 0, sum = 0, kq = 0;
-          vars.forEach(function (v) { tot += v.qty; if (v.cost != null) { sum += v.qty * v.cost; kq += v.qty; } });
+          all.forEach(function (v) { tot += v.qty; if (v.cost != null) { sum += v.qty * v.cost; kq += v.qty; } });
           var miss = tot - kq;
           var rec = kq ? recommendPrice(Math.round(sum / kq)) : null;
-          if (!hasRows) {
-            varSum.innerHTML = '사이즈를 나누지 않으면 위 <b>수량·원가</b>로 계산해요';
+          var parts = [];
+          if (all.length === 1 && !all[0].size) {
+            parts.push('사이즈를 비우면 <b>사이즈 없이</b> 등록돼요');
           } else {
-            varSum.innerHTML = '총 <b>' + tot + '개</b>' +
-              (kq ? ' · 평균 <b>' + won(Math.round(sum / kq)) + '</b>' : '') +
-              (rec ? ' · 추천 <b>' + won(rec) + '</b>' : '') +
-              (miss > 0 ? ' · <span style="color:var(--accent2)">가격 미입력 ' + miss + '개</span>' : '');
+            parts.push('총 <b>' + tot + '개</b>');
+            if (kq) parts.push('평균 <b>' + won(Math.round(sum / kq)) + '</b>');
           }
+          if (rec) parts.push('추천 <b>' + won(rec) + '</b>');
+          if (miss > 0 && all.length > 1) parts.push('<span style="color:var(--accent2)">가격 미입력 ' + miss + '개</span>');
+          varSum.innerHTML = parts.join(' · ');
         }
 
         function addVarRow(v) {
           v = v || { size: '', qty: 1, cost: null };
           var row = document.createElement('div');
           row.className = 'vrow';
-          row.innerHTML = '<input class="v-size" type="text" maxlength="12" placeholder="사이즈" value="' + esc(v.size || '') + '" />' +
+          row.innerHTML = '<input class="v-size" type="text" maxlength="12" autocomplete="off" placeholder="예: L" value="' + esc(v.size || '') + '" />' +
             '<input class="v-qty" type="number" inputmode="numeric" min="0" step="1" placeholder="수량" value="' + (v.qty == null ? 1 : v.qty) + '" />' +
-            '<input class="v-cost" type="number" inputmode="numeric" min="0" step="100" placeholder="단가" value="' + (v.cost == null ? '' : Math.round(v.cost)) + '" />' +
+            '<input class="v-cost" type="text" inputmode="numeric" autocomplete="off" placeholder="단가" value="' + (v.cost == null ? '' : fmtMoney(v.cost)) + '" />' +
             '<button class="vdel" type="button" aria-label="이 사이즈 삭제">✕</button>';
-          row.querySelector('.vdel').onclick = function () { row.remove(); refreshVar(); };
+          bindMoney(row.querySelector('.v-cost'));
+          row.querySelector('.vdel').onclick = function () { row.remove(); ensureRow(); refreshVar(); };
           $$('input', row).forEach(function (i) { i.addEventListener('input', refreshVar); });
           varBox.appendChild(row);
           refreshVar();
           return row;
         }
+        function ensureRow() { if (!$$('.vrow', varBox).length) addVarRow(); }
 
         root.querySelector('#f-varadd').onclick = function () {
           var row = addVarRow();
           var s = row.querySelector('.v-size');
           if (s) s.focus();
         };
+        /* 기본 1칸은 처음부터 보인다 — 기존 상품은 저장된 사이즈·수량·단가를 그대로 채운다 */
         if (hasVar(it)) {
           it.variants.slice().sort(bySizeOrder).forEach(function (v) { addVarRow({ size: v.size, qty: v.qty, cost: v.cost }); });
+        } else {
+          addVarRow({ size: '', qty: (Number(draft.qty) || 0), cost: (Number(draft.avgCost) || null) });
         }
         refreshVar();
 
@@ -1764,12 +1797,21 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         root.querySelector('#save-item').onclick = function () {
           var name = root.querySelector('#f-name').value.trim();
           if (!name) { toast('상품명을 넣어주세요'); root.querySelector('#f-name').focus(); return; }
-          var varRows = readVars();
-          var altRows = $$('.vrow', varBox);
-          if (altRows.length && !varRows.length) { toast('사이즈 이름을 넣어주세요'); return; }
-          if (varRows.some(function (v) { return !v.size; })) { toast('사이즈 이름을 넣어주세요'); return; }
-          var price = Math.max(0, num(root.querySelector('#f-price').value));
-          var qty = Math.max(0, Math.round(num(root.querySelector('#f-qty').value)));
+          var all = readRows();
+          if (!all.length) { toast('사이즈·수량·단가를 입력해 주세요'); return; }
+          var multi = all.length > 1;
+          var kept = all.filter(function (x) { return !!x.size || x.cost != null; })
+            .map(function (x) { return { size: x.size, qty: x.qty, cost: x.cost }; });
+          if (multi && kept.some(function (v) { return !v.size; })) { toast('사이즈 이름을 넣어주세요'); return; }
+          /* 칸이 1개고 사이즈를 비우면 기존과 같은 '사이즈 없는 상품'으로 저장 */
+          var useVar = multi ? kept.length > 0 : !!(all[0].size);
+          var varRows = useVar ? kept : [];
+          var price = 0, qty = 0;
+          if (!useVar) {
+            var baseRow = all[0];
+            qty = Math.max(0, Math.round(baseRow.qty));
+            price = Math.max(0, baseRow.cost == null ? 0 : baseRow.cost);
+          }
           var src = srcSel.value === '직접입력' ? (root.querySelector('#f-source-etc').value.trim() || '직접입력') : srcSel.value;
           var p = {
             name: name, cat: root.querySelector('#f-cat').value,
@@ -1782,13 +1824,13 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
             kind: kindVal,
             updatedAt: Date.now()
           };
-          if (varRows.length) {
+          if (useVar) {
             p.variants = varRows;
             p.qty = 0; p.avgCost = 0;
             syncVarTotals(p);
           }
           if (it) {
-            if (!varRows.length) delete it.variants;
+            if (!useVar) delete it.variants;
             Object.assign(it, p);
             syncVarTotals(it);
             toast('수정했어요 · ' + esc(name));
@@ -1923,7 +1965,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 
     body += '<div class="field"><label>판매가</label>' +
       '<div class="seg" id="s-mode"><button class="on" data-mode="total">총액으로 입력</button><button data-mode="unit">개당 단가로</button></div>' +
-      '<input id="s-price" type="number" inputmode="numeric" min="0" step="100" placeholder="0" style="margin-top:8px" />' +
+      '<input id="s-price" type="text" inputmode="numeric" autocomplete="off" placeholder="0" style="margin-top:8px" />' +
       '<div class="rechint" id="s-rec"></div>' +
       '</div>';
 
@@ -1935,8 +1977,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       '</div>';
 
     body += '<div class="row2">' +
-      '<div class="field"><label>수수료 (원)</label><input id="s-fee" type="number" inputmode="numeric" min="0" step="100" placeholder="0" /></div>' +
-      '<div class="field"><label>배송비 (원)</label><input id="s-ship" type="number" inputmode="numeric" min="0" step="100" placeholder="0" /></div>' +
+      '<div class="field"><label>수수료 (원)</label><input id="s-fee" type="text" inputmode="numeric" autocomplete="off" placeholder="0" /></div>' +
+      '<div class="field"><label>배송비 (원)</label><input id="s-ship" type="text" inputmode="numeric" autocomplete="off" placeholder="0" /></div>' +
       '</div>';
 
     body += '<div class="field"><label>메모</label><input id="s-memo" type="text" maxlength="300" placeholder="선택" /></div>';
@@ -1953,6 +1995,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         var priceEl = root.querySelector('#s-price');
         var feeEl = root.querySelector('#s-fee');
         var shipEl = root.querySelector('#s-ship');
+        bindMoney(priceEl); bindMoney(feeEl); bindMoney(shipEl);
         var calcEl = root.querySelector('#s-calc');
         var warnEl = root.querySelector('#s-warn');
         var modeEl = root.querySelector('#s-mode');
@@ -2022,7 +2065,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
             var r = calc();
             state2.mode = m;
             $$('#s-mode button').forEach(function (x) { x.classList.toggle('on', x === b); });
-            priceEl.value = m === 'unit' ? round(r.unit) : round(r.revenue);
+            priceEl.value = m === 'unit' ? fmtMoney(round(r.unit)) : fmtMoney(round(r.revenue));
             calc();
           });
           if (sizeEl) {
@@ -2046,7 +2089,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
             var b = e.target.closest('[data-fill]');
             if (!b) return;
             var v = Number(b.getAttribute('data-fill'));
-            priceEl.value = state2.mode === 'total' ? v * Math.max(1, Math.round(num(qtyEl.value))) : v;
+            priceEl.value = fmtMoney(state2.mode === 'total' ? v * Math.max(1, Math.round(num(qtyEl.value))) : v);
             calc();
           });
         }
@@ -2116,7 +2159,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       '<div class="field"><label>수량</label><input id="r-qty" type="number" inputmode="numeric" min="1" step="1" value="1" /></div>' +
       '</div>';
     body += '<div class="row2">' +
-      '<div class="field"><label>개당 단가</label><input id="r-price" type="number" inputmode="numeric" min="0" step="100" placeholder="0" /></div>' +
+      '<div class="field"><label>개당 단가</label><input id="r-price" type="text" inputmode="numeric" autocomplete="off" placeholder="0" /></div>' +
       '<div class="field"><label>구매처</label><select id="r-src">' +
       stockSrcs.map(function (s) { return '<option value="' + esc(s) + '"' + (stockSel === s ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') +
       '</select></div></div>';
@@ -2131,6 +2174,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         var calcEl = root.querySelector('#r-calc');
         var sizeEl = root.querySelector('#r-size');
         var newEl = root.querySelector('#r-size-new');
+        bindMoney(priceEl);
 
         function curVar() {
           if (!isVar) return null;
@@ -2141,7 +2185,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         }
         function syncPrice() {
           var v = curVar();
-          priceEl.value = (v && v.cost != null) ? Math.round(v.cost) : '';
+          priceEl.value = (v && v.cost != null) ? fmtMoney(v.cost) : '';
           calc();
         }
         function calc() {
@@ -2392,17 +2436,17 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     }
     if (isSale) {
       body += '<div class="row2">' +
-        '<div class="field"><label>판매가 (총액)</label><input id="e-total" type="number" inputmode="numeric" min="0" step="100" value="' + Math.round(t.total) + '" /></div>' +
+        '<div class="field"><label>판매가 (총액)</label><input id="e-total" type="text" inputmode="numeric" autocomplete="off" value="' + fmtMoney(t.total) + '" /></div>' +
         '<div class="field"><label>판매처</label><select id="e-venue">' +
         venueList.map(function (v) { return '<option value="' + esc(v) + '"' + (v === (tv || '크림') ? ' selected' : '') + '>' + esc(v) + '</option>'; }).join('') +
         '</select></div></div>';
       body += '<div class="row2">' +
-        '<div class="field"><label>수수료 (원)</label><input id="e-fee" type="number" inputmode="numeric" min="0" step="100" value="' + Math.round(t.fee) + '" /></div>' +
-        '<div class="field"><label>배송비 (원)</label><input id="e-ship" type="number" inputmode="numeric" min="0" step="100" value="' + Math.round(t.ship) + '" /></div>' +
+        '<div class="field"><label>수수료 (원)</label><input id="e-fee" type="text" inputmode="numeric" autocomplete="off" value="' + fmtMoney(t.fee) + '" /></div>' +
+        '<div class="field"><label>배송비 (원)</label><input id="e-ship" type="text" inputmode="numeric" autocomplete="off" value="' + fmtMoney(t.ship) + '" /></div>' +
         '</div>';
     } else {
       body += '<div class="row2">' +
-        '<div class="field"><label>개당 단가</label><input id="e-unit" type="number" inputmode="numeric" min="0" step="100" value="' + Math.round(t.unitPrice) + '" /></div>' +
+        '<div class="field"><label>개당 단가</label><input id="e-unit" type="text" inputmode="numeric" autocomplete="off" value="' + fmtMoney(t.unitPrice) + '" /></div>' +
         '<div class="field"><label>구매처</label><select id="e-venue">' +
         venueList.map(function (v) { return '<option value="' + esc(v) + '"' + (v === (tv || '공홈') ? ' selected' : '') + '>' + esc(v) + '</option>'; }).join('') +
         '</select></div></div>';
@@ -2427,6 +2471,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         var shipEl = root.querySelector('#e-ship');
         var calcEl = root.querySelector('#e-calc');
         var noteEl = root.querySelector('#e-note');
+        bindMoney(totalEl); bindMoney(unitEl); bindMoney(feeEl); bindMoney(shipEl);
 
         function curSize() { return isVar ? (sizeEl ? sizeEl.value : t.size) : ''; }
         function availFor(size) {
@@ -3104,7 +3149,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     var inv = invStats();
     var sizeTxt = '—';
     try { sizeTxt = (JSON.stringify(state).length / 1024).toFixed(0) + 'KB'; } catch (e) { }
-    var body = '<div class="syncbox"><div class="ownername">📒 리셀북 <span style="color:var(--muted2)">v1.5</span></div>' +
+    var body = '<div class="syncbox"><div class="ownername">📒 리셀북 <span style="color:var(--muted2)">v1.6</span></div>' +
       '<p class="desc">재고 ' + state.items.length + '종 · 거래 ' + state.txns.length + '건 · 저장 ' + sizeTxt + '</p>' +
       '<div class="syncacts">' +
       '<button class="btn" data-mm="sync">🔄 동기화</button>' +
@@ -3317,7 +3362,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   /* expose a tiny hook for self-checks */
   window.__resellbook = {
     get state() { return state; },
-    version: '1.5'
+    version: '1.6'
   };
 })();
 
