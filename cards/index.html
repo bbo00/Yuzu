@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>@IMING 카드 제작</title>
-<!-- v5.8 · 26가지 UX·디자인 개편: 선크롭 누끼·미리보기 고정·60/30/10 컬러배합(민트·스카이) -->
+<!-- v5.9 · 9가지 수정: 누끼창 스크롤 분리·글쓰기 사진 고정·숫자 앞뒤 전 템플릿·요약 카드 2종(주문서·핵심 요약)·파스텔 4종 추가·기본 위치 좌측 하단·에디토리얼 박스 이동·글씨 크기 명칭·질문박스/트렌드 상단 잘림 · 하단 글씨 칸 자동 늘어남 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#FFFFFF">
@@ -47,18 +47,26 @@
     --bg:#FFFFFF; --ink:#111110; --muted:#78766E; --line:#E7E4DC; --line2:#F1EEE7;
     --paper:#FBFAF6; --soft:#F4F2EB; --accent:#E4552B; --danger:#AE3B2E;
     --ui:-apple-system, BlinkMacSystemFont, "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    /* v5.9: iOS 자판이 올라올 때 화면(visualViewport) 높이·위치를 그대로 따라간다 */
+    --vvh:100dvh; --vvt:0px;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
-  html,body{height:100%; margin:0}
+  html,body{height:var(--vvh,100%); margin:0}
   /* 카드 종류별 필드 */
   body[data-type="cover"] .bodyOnly, body[data-type="cover"] .summaryOnly{display:none}
   body[data-type="body"] .coverOnly, body[data-type="body"] .summaryOnly{display:none}
   body[data-type="summary"] .coverOnly, body[data-type="summary"] .bodyOnly{display:none}
   body{
     background:var(--bg); color:var(--ink); font-family:var(--ui);
-    display:flex; flex-direction:column; height:100vh; height:100dvh; overflow:hidden;
+    display:flex; flex-direction:column; position:fixed; left:0; right:0; top:var(--vvt,0px);
+    height:var(--vvh,100dvh); overflow:hidden;
     -webkit-font-smoothing:antialiased; overscroll-behavior:none;
   }
+  /* v5.9: 자판이 올라와도 위쪽 사진 미리보기가 사라지지 않게 남는 높이에 맞춰 줄인다 */
+  body.kb-open .stage{height:clamp(110px, calc(var(--vvh,100dvh) * 0.30), 300px)}
+  /* v5.9: 시트가 열려 있는 동안 뒤 화면은 스크롤되지 않는다 */
+  body.modal-open .editor{overflow:hidden; touch-action:none}
+  body.modal-open .stage{touch-action:none}
   button{font-family:inherit; cursor:pointer}
   button:disabled{opacity:.4}
 
@@ -99,7 +107,7 @@
   body.fullprev .emptyHint{display:none}
 
   /* ---------- editor ---------- */
-  .editor{flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:11px 14px 20px; background:var(--paper)}
+  .editor{flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding:11px 14px 20px; background:var(--paper)}
   .card{background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px; margin-bottom:9px}
   .cardHead{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:9px}
   .label{font-size:11px; font-weight:700; color:var(--muted); letter-spacing:.3px}
@@ -200,10 +208,11 @@
   .tip{margin:6px 0 0; font-size:10px; color:#A5A298; text-align:center; line-height:1.4}
 
   /* ---------- sheet / toast ---------- */
-  .sheetWrap{position:fixed; inset:0; z-index:80; display:none}
+  .sheetWrap{position:fixed; left:0; right:0; top:var(--vvt,0px); height:var(--vvh,100dvh); z-index:80; display:none}
   .sheetWrap.open{display:block}
-  .sheetBg{position:absolute; inset:0; background:rgba(15,14,12,.42); animation:fade .18s ease}
-  .sheet{position:absolute; left:0; right:0; bottom:0; background:#fff; border-radius:18px 18px 0 0; padding:10px 14px calc(16px + env(safe-area-inset-bottom)); animation:up .2s ease}
+  .sheetBg{position:absolute; inset:0; background:rgba(15,14,12,.42); animation:fade .18s ease; overscroll-behavior:contain}
+  .sheet{position:absolute; left:0; right:0; bottom:0; max-height:100%; overflow-y:auto; -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain; background:#fff; border-radius:18px 18px 0 0; padding:10px 14px calc(16px + env(safe-area-inset-bottom)); animation:up .2s ease}
   @keyframes fade{from{opacity:0}}
   @keyframes up{from{transform:translateY(16px); opacity:.6}}
   .sheet h4{margin:6px 4px 10px; font-size:13px; font-weight:800}
@@ -248,7 +257,7 @@
   .undoBar[hidden]{display:none}
   .undoBar span{flex:1; font-size:11.5px; color:#6B5426; font-weight:600; line-height:1.35}
   .undoBar button{flex:none; border:0; background:#111; color:#fff; border-radius:8px; height:30px; padding:0 10px; font-size:11.5px; font-weight:800}
-  .batchList{display:flex; flex-direction:column; gap:8px; max-height:52vh; overflow-y:auto; margin:2px 0 10px; -webkit-overflow-scrolling:touch}
+  .batchList{display:flex; flex-direction:column; gap:8px; max-height:52vh; overflow-y:auto; overscroll-behavior:contain; margin:2px 0 10px; -webkit-overflow-scrolling:touch}
   .batchItem{display:flex; gap:9px; align-items:center; border:1px solid var(--line); border-radius:11px; padding:8px}
   .batchItem img{width:56px; height:56px; object-fit:cover; border-radius:8px; flex:none; background:#EFECE3}
   .batchItem .bi{flex:1; min-width:0}
@@ -279,14 +288,14 @@
     font-size:12.5px; font-weight:800; letter-spacing:-.2px; display:flex; align-items:center; justify-content:center; gap:6px}
   .bulkBtn span{font-size:14px}
   .bulkBtn b{font-weight:800}
-  .sheet.full{top:0; border-radius:0; display:flex; flex-direction:column; max-height:none;
+  .sheet.full{top:0; border-radius:0; display:flex; flex-direction:column; max-height:100%; overflow:hidden;
     padding:calc(12px + env(safe-area-inset-top)) 14px calc(12px + env(safe-area-inset-bottom))}
-  .bulkHead{flex:none; display:flex; align-items:center; gap:8px; margin:0 2px 4px}
+  .bulkHead{flex:none; position:sticky; top:calc(-12px - env(safe-area-inset-top)); z-index:5; display:flex; align-items:center; gap:8px; margin:0 2px 4px; padding:2px 0 6px; background:#fff}
   .bulkHead b{flex:1; font-size:15.5px; font-weight:800; letter-spacing:-.2px}
   .bulkHead small{font-size:11px; color:#A5A298; font-weight:700}
   .bulkSub{flex:none; margin:0 2px 9px; font-size:10.5px; color:#9C998F; line-height:1.4}
   .bulkThumb{flex:none; width:72px; height:90px; border-radius:8px; border:1px solid var(--line); background:#EFECE3; box-shadow:0 1px 4px rgba(0,0,0,.12)}
-  .bulkList{flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-bottom:8px}
+  .bulkList{flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding-bottom:8px}
   .bulkCard{border:1px solid var(--line); border-radius:13px; padding:10px; margin-bottom:8px; background:#fff}
   .bulkCard.cur{border-color:#111; box-shadow:0 0 0 2px rgba(17,17,17,.07)}
   .bulkTop{display:flex; align-items:center; gap:6px; margin-bottom:2px}
@@ -339,6 +348,8 @@
   .wtabseg button.on{background:#fff; color:#111; box-shadow:0 1px 2px rgba(0,0,0,.09)}
   body[data-step="2"] #fieldsCard input[type=text]{height:48px; font-size:17px}
   body[data-step="2"] #fieldsCard textarea{font-size:16.5px; line-height:1.55}
+  /* v5.9: 하단(강조 내용) 입력 칸 — 기본 1줄, 엔터 줄 수만큼 세로로 늘어남 */
+  textarea.autogrow{min-height:40px; overflow:hidden; resize:none; line-height:1.55}
   body[data-step="2"] #fieldsCard .field > label{font-size:11.5px}
   .stepNote{margin:0 0 9px; font-size:10.5px; color:#9C998F; line-height:1.45}
   .bigArea{min-height:296px; font-size:15.5px; line-height:1.62; padding:11px 12px}
@@ -356,8 +367,11 @@
   .rowStep .v{flex:1; text-align:center; font-size:12.5px; font-weight:800; color:#22211D; font-variant-numeric:tabular-nums}
   .emptyMini{padding:14px 12px; border:1px dashed #D9D5C9; border-radius:10px; text-align:center; font-size:11.5px; color:#8C897F; line-height:1.6}
   .emptyMini button{margin-top:9px; height:36px; padding:0 16px; border-radius:9px; border:0; background:#111; color:#fff; font-size:12px; font-weight:800}
+  /* v5.9: 요약 카드 2종 — 주문서·영수증형 / 핵심 요약형 */
+  body[data-sumkind="text"] #sumCard .receiptOnly{display:none}
+  body[data-sumkind="receipt"] #sumCard .textOnly{display:none}
   /* 저장함 · 폴더 · 동기화 */
-  .sheet.tall{max-height:88vh; overflow-y:auto; -webkit-overflow-scrolling:touch}
+  .sheet.tall{max-height:100%; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain}
   .folderChips{display:flex; gap:5px; overflow-x:auto; padding:1px 0 9px; scrollbar-width:none}
   .folderChips::-webkit-scrollbar{display:none}
   .folderChips button{flex:0 0 auto; border:1px solid var(--line); background:#fff; border-radius:9px; padding:7px 11px; font-size:12px; font-weight:800; color:#5D5B53; white-space:nowrap}
@@ -509,7 +523,7 @@
   .fontSelect .fsName{flex:1; min-width:0; font-size:14px; font-weight:700; color:#211F1A;
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:-.2px}
   .fontSelect .fsChev{flex:none; font-size:12px; color:var(--muted)}
-  .fsList{display:flex; flex-direction:column; gap:5px; margin:2px 0 10px; max-height:56vh; overflow-y:auto;
+  .fsList{display:flex; flex-direction:column; gap:5px; margin:2px 0 10px; max-height:56vh; overflow-y:auto; overscroll-behavior:contain;
     -webkit-overflow-scrolling:touch}
   .fsRow{display:flex; align-items:center; gap:8px; width:100%; min-height:46px; padding:0 11px;
     border:1px solid var(--line); border-radius:11px; background:#fff; text-align:left}
@@ -815,11 +829,11 @@
       <span class="tiny num" id="sizeTitleVal">1.00×</span>
     </div>
     <div class="zoomRow">
-      <span class="lab">내용<em class="labSub">내용, 강조 내용</em></span>
+      <span class="lab">하단<em class="labSub">강조 내용</em></span>
       <input type="range" id="sizeSub" min="0.6" max="1.8" step="0.01" value="1">
       <span class="tiny num" id="sizeSubVal">1.00×</span>
     </div>
-    <p class="hint">디자인 위→아래 순서대로 <b>상단 · 중앙 · 내용</b> 글씨를 따로 키울 수 있어요</p>
+    <p class="hint">디자인 위→아래 순서대로 <b>상단 · 중앙 · 하단</b> 글씨를 따로 키울 수 있어요</p>
 
     <div class="cardHead" style="margin:12px 0 7px"><span class="label">글씨 스타일 · 박스</span><span class="count" id="textBoxName">일반 글씨</span></div>
     <div class="seg" id="textBoxSeg">
@@ -977,6 +991,14 @@
       <br><button id="sumCreate">요약 카드 만들기</button></div>
     <div id="sumBody">
       <div class="field">
+        <label>요약 카드 종류</label>
+        <div class="seg" id="sumKindSeg">
+          <button data-sumkind="receipt">🧾 주문서·영수증형</button>
+          <button data-sumkind="text">💡 핵심 요약형</button>
+        </div>
+        <p class="hint" id="sumKindNote">주문서형은 <b>항목 + 금액 + 총 합계</b>, 핵심 요약형은 <b>포인트·체크리스트만</b> (금액·합계 없음)</p>
+      </div>
+      <div class="field">
         <label>제목</label>
         <input type="text" data-f="title" placeholder="예: 다낭 목식당 요약표">
       </div>
@@ -993,7 +1015,7 @@
           <button data-style="light">라이트</button>
         </div>
       </div>
-      <div class="field">
+      <div class="field receiptOnly">
         <label>항목 · 금액 <span id="rowCount" style="color:#A6A399; font-weight:600"></span></label>
         <div class="rowStep">
           <button id="rowMinus" aria-label="행 줄이기">−</button>
@@ -1005,7 +1027,7 @@
         <p class="hint">금액은 <b>80,000 → 72,000동</b>처럼 쓰면 정가 취소선·할인가 강조·할인율 배지가 자동으로 붙어요</p>
         <p class="hint">본문 글을 적용하면 <b>항목·금액이 자동으로</b> 채워져요 · 직접 고친 칸은 그대로 둬요</p>
       </div>
-      <div class="field">
+      <div class="field receiptOnly">
         <label>합계 줄</label>
         <div class="rowLine" style="border:1px solid var(--line); border-radius:10px; gap:6px">
           <input class="ri" type="text" data-f="totalLabel" placeholder="총 합계">
@@ -1017,9 +1039,24 @@
         <p class="hint">행 금액을 더해 <b>총 합계를 자동</b>으로 채워요 · 합계 칸을 직접 고치면 그 값으로 두고, <b>자동 계산</b>을 누르면 다시 더해요</p>
         <input class="field" style="margin-top:6px" type="text" data-f="totalNote" placeholder="보조 금액 (예: 약 11만 원)">
       </div>
-      <div class="field">
+      <div class="field textOnly">
+        <label>핵심 포인트 (한 줄에 하나씩)</label>
+        <textarea id="sumPoints" class="autogrow" rows="1" placeholder="예:&#10;예약 없이 가면 2시간 대기&#10;오픈 30분 전 전화예약이 가장 빨라요&#10;가리비구이·크레이피시 강추&#10;2인 11만 원대, 가성비 좋아요"></textarea>
+        <div class="label" style="margin:9px 0 5px">앞머리 모양</div>
+        <div class="seg" id="sumBulletSeg">
+          <button data-sumbullet="check">✓ 체크</button>
+          <button data-sumbullet="dot">• 점</button>
+          <button data-sumbullet="num">① 번호</button>
+        </div>
+        <p class="hint">본문 글을 적용하면 각 카드 제목이 <b>포인트로 자동</b>으로 들어와요 · 금액·합계는 나오지 않아요</p>
+      </div>
+      <div class="field receiptOnly">
         <label>댓글 유도 문구 · CTA</label>
         <input type="text" data-f="cta" placeholder="예: 예약 방법 &amp; 10% 할인 꿀팁 댓글 👇">
+      </div>
+      <div class="field textOnly">
+        <label>댓글 유도 문구 · CTA</label>
+        <input type="text" data-f="cta" placeholder="예: 저장해 두고 다음 여행 때 꺼내 보세요">
       </div>
     </div>
   </div>
@@ -1067,7 +1104,7 @@
       </div>
       <div class="field">
         <label>설명 (2~3줄)</label>
-        <textarea data-f="desc" rows="3" placeholder="예: 80,000동. 파기름 향이 진하게 배어&#10;가리비 살이 통통해요. 첫 접시로 강추."></textarea>
+        <textarea data-f="desc" class="autogrow" rows="1" placeholder="예: 80,000동. 파기름 향이 진하게 배어&#10;가리비 살이 통통해요. 첫 접시로 강추."></textarea>
       </div>
     </div>
 
@@ -1335,29 +1372,41 @@
             accent:'#6EC1FF', accentFg:'#0B2A40', accentSoft:'rgba(110,193,255,.24)',
             badgeBg:'#6EC1FF', badgeFg:'#0B2A40', totalBg:'#6EC1FF', totalFg:'#0B2A40' } },
 
-    { id:'sky', name:'스카이 블루 & 화이트', dark:false, photoAccent:'#9BD4F5', photoAccentFg:'#0E2438',
-      paper:{ bg:'#F1F8FE', fg:'#10233A', sub:'rgba(16,35,58,.60)', line:'rgba(16,35,58,.14)',
-              accent:'#2C7FD6', accentFg:'#FFFFFF', accentSoft:'rgba(44,127,214,.13)',
-              badgeBg:'#2C7FD6', badgeFg:'#FFFFFF', totalBg:'#10233A', totalFg:'#F1F8FE' },
-      ink:{ bg:'#0F2036', fg:'#EFF7FF', sub:'rgba(239,247,255,.70)', line:'rgba(239,247,255,.18)',
-            accent:'#8CCBFF', accentFg:'#0F2036', accentSoft:'rgba(140,203,255,.20)',
-            badgeBg:'#8CCBFF', badgeFg:'#0F2036', totalBg:'#EFF7FF', totalFg:'#0F2036' } },
+    { id:'peach', name:'\uD83C\uDF51 피치 살구', dark:false, point:'#FFD3B6', pointInk:'#3B2A1F',
+      photoAccent:'#FFD3B6', photoAccentFg:'#3B2A1F',
+      paper:{ bg:'#FFF7F0', fg:'#3B2A1F', sub:'rgba(59,42,31,.60)', line:'rgba(59,42,31,.13)',
+              accent:'#FFD3B6', accentFg:'#3B2A1F', accentSoft:'rgba(255,211,182,.55)',
+              badgeBg:'#FFD3B6', badgeFg:'#3B2A1F', totalBg:'#3B2A1F', totalFg:'#FFF7F0' },
+      ink:{ bg:'#2A1D15', fg:'#FFF6EE', sub:'rgba(255,246,238,.74)', line:'rgba(255,246,238,.18)',
+            accent:'#FFD3B6', accentFg:'#3B2A1F', accentSoft:'rgba(255,211,182,.26)',
+            badgeBg:'#FFD3B6', badgeFg:'#3B2A1F', totalBg:'#FFD3B6', totalFg:'#3B2A1F' } },
 
-    { id:'peach', name:'피치 크림 & 코랄', dark:false, photoAccent:'#FFB59B', photoAccentFg:'#3B2019',
-      paper:{ bg:'#FFF4EC', fg:'#3B2019', sub:'rgba(59,32,25,.60)', line:'rgba(59,32,25,.13)',
-              accent:'#F0704A', accentFg:'#FFF9F5', accentSoft:'rgba(240,112,74,.13)',
-              badgeBg:'#F0704A', badgeFg:'#FFF9F5', totalBg:'#3B2019', totalFg:'#FFF4EC' },
-      ink:{ bg:'#33201A', fg:'#FFF1E7', sub:'rgba(255,241,231,.70)', line:'rgba(255,241,231,.18)',
-            accent:'#FFA07E', accentFg:'#33201A', accentSoft:'rgba(255,160,126,.20)',
-            badgeBg:'#FFA07E', badgeFg:'#33201A', totalBg:'#FFF1E7', totalFg:'#33201A' } },
+    { id:'lavender', name:'\uD83D\uDC9C 연라벤더', dark:false, point:'#DED6FF', pointInk:'#2B2350',
+      photoAccent:'#DED6FF', photoAccentFg:'#2B2350',
+      paper:{ bg:'#F8F6FF', fg:'#2B2545', sub:'rgba(43,37,69,.60)', line:'rgba(43,37,69,.13)',
+              accent:'#DED6FF', accentFg:'#2B2350', accentSoft:'rgba(222,214,255,.60)',
+              badgeBg:'#DED6FF', badgeFg:'#2B2350', totalBg:'#2B2545', totalFg:'#F8F6FF' },
+      ink:{ bg:'#221C38', fg:'#F6F3FF', sub:'rgba(246,243,255,.74)', line:'rgba(246,243,255,.18)',
+            accent:'#DED6FF', accentFg:'#2B2350', accentSoft:'rgba(222,214,255,.26)',
+            badgeBg:'#DED6FF', badgeFg:'#2B2350', totalBg:'#DED6FF', totalFg:'#2B2350' } },
 
-    { id:'sage', name:'세이지 민트 & 딥그린', dark:false, photoAccent:'#A8DCC0', photoAccentFg:'#16301F',
-      paper:{ bg:'#EFF5EE', fg:'#16301F', sub:'rgba(22,48,31,.60)', line:'rgba(22,48,31,.13)',
-              accent:'#2E7A52', accentFg:'#F4FBF6', accentSoft:'rgba(46,122,82,.13)',
-              badgeBg:'#2E7A52', badgeFg:'#F4FBF6', totalBg:'#16301F', totalFg:'#EFF5EE' },
-      ink:{ bg:'#16301F', fg:'#EDF6EE', sub:'rgba(237,246,238,.70)', line:'rgba(237,246,238,.18)',
-            accent:'#9BD9B4', accentFg:'#16301F', accentSoft:'rgba(155,217,180,.20)',
-            badgeBg:'#9BD9B4', badgeFg:'#16301F', totalBg:'#EDF6EE', totalFg:'#16301F' } },
+    { id:'rose', name:'\uD83C\uDF80 베이비 핑크', dark:false, point:'#FFD6E4', pointInk:'#3A2230',
+      photoAccent:'#FFD6E4', photoAccentFg:'#3A2230',
+      paper:{ bg:'#FFF7FA', fg:'#3A2230', sub:'rgba(58,34,48,.60)', line:'rgba(58,34,48,.13)',
+              accent:'#FFD6E4', accentFg:'#3A2230', accentSoft:'rgba(255,214,228,.58)',
+              badgeBg:'#FFD6E4', badgeFg:'#3A2230', totalBg:'#3A2230', totalFg:'#FFF7FA' },
+      ink:{ bg:'#2A1822', fg:'#FFF5F9', sub:'rgba(255,245,249,.74)', line:'rgba(255,245,249,.18)',
+            accent:'#FFD6E4', accentFg:'#3A2230', accentSoft:'rgba(255,214,228,.26)',
+            badgeBg:'#FFD6E4', badgeFg:'#3A2230', totalBg:'#FFD6E4', totalFg:'#3A2230' } },
+
+    { id:'sage', name:'\uD83C\uDF3F 크림 세이지', dark:false, point:'#DDEBC4', pointInk:'#24331A',
+      photoAccent:'#DDEBC4', photoAccentFg:'#24331A',
+      paper:{ bg:'#F8FBF1', fg:'#26301E', sub:'rgba(38,48,30,.60)', line:'rgba(38,48,30,.13)',
+              accent:'#DDEBC4', accentFg:'#24331A', accentSoft:'rgba(221,235,196,.62)',
+              badgeBg:'#DDEBC4', badgeFg:'#24331A', totalBg:'#26301E', totalFg:'#F8FBF1' },
+      ink:{ bg:'#1E2617', fg:'#F4FAEC', sub:'rgba(244,250,236,.74)', line:'rgba(244,250,236,.18)',
+            accent:'#DDEBC4', accentFg:'#24331A', accentSoft:'rgba(221,235,196,.24)',
+            badgeBg:'#DDEBC4', badgeFg:'#24331A', totalBg:'#DDEBC4', totalFg:'#24331A' } },
 
     { id:'mono', name:'블랙 & 화이트', dark:false, photoAccent:'#FFFFFF', photoAccentFg:'#111111',
       paper:{ bg:'#FFFFFF', fg:'#111111', sub:'rgba(17,17,17,.60)', line:'rgba(17,17,17,.13)',
@@ -1367,49 +1416,18 @@
             accent:'#FFFFFF', accentFg:'#111111', accentSoft:'rgba(255,255,255,.16)',
             badgeBg:'#FFFFFF', badgeFg:'#111111', totalBg:'#FAFAF7', totalFg:'#111111' } },
 
-    { id:'cream', name:'웜 크림 & 에스프레소', dark:false, photoAccent:'#F0B978', photoAccentFg:'#241811',
-      paper:{ bg:'#F7F0E2', fg:'#2B1E15', sub:'rgba(43,30,21,.62)', line:'rgba(43,30,21,.15)',
-              accent:'#8A4A22', accentFg:'#FFF6E8', accentSoft:'rgba(138,74,34,.12)',
-              badgeBg:'#8A4A22', badgeFg:'#FFF6E8', totalBg:'#2B1E15', totalFg:'#FBF3E4' },
-      ink:{ bg:'#241811', fg:'#F8EEDC', sub:'rgba(248,238,220,.70)', line:'rgba(248,238,220,.20)',
-            accent:'#DD9A4E', accentFg:'#241811', accentSoft:'rgba(221,154,78,.20)',
-            badgeBg:'#DD9A4E', badgeFg:'#241811', totalBg:'#F8EEDC', totalFg:'#241811' } },
-
-    { id:'navy', name:'네이비 & 골드', dark:true, photoAccent:'#E8C877', photoAccentFg:'#1A1508',
-      paper:{ bg:'#F2EFE6', fg:'#14243C', sub:'rgba(20,36,60,.62)', line:'rgba(20,36,60,.16)',
-              accent:'#A67C1F', accentFg:'#FFF9EA', accentSoft:'rgba(166,124,31,.14)',
-              badgeBg:'#14243C', badgeFg:'#F6EFDC', totalBg:'#14243C', totalFg:'#F6EFDC' },
-      ink:{ bg:'#101F36', fg:'#F6EFDC', sub:'rgba(246,239,220,.72)', line:'rgba(246,239,220,.20)',
-            accent:'#D7B25A', accentFg:'#1A1508', accentSoft:'rgba(215,178,90,.20)',
-            badgeBg:'#D7B25A', badgeFg:'#1A1508', totalBg:'#F6EFDC', totalFg:'#14243C' } },
-
-    { id:'olive', name:'오프화이트 & 올리브', dark:false, photoAccent:'#C9D882', photoAccentFg:'#1E2119',
-      paper:{ bg:'#F3F2E9', fg:'#23261C', sub:'rgba(35,38,28,.62)', line:'rgba(35,38,28,.15)',
-              accent:'#5F6B33', accentFg:'#F7F8EE', accentSoft:'rgba(95,107,51,.14)',
-              badgeBg:'#5F6B33', badgeFg:'#F7F8EE', totalBg:'#23261C', totalFg:'#F3F2E9' },
-      ink:{ bg:'#1E2119', fg:'#F2F3E7', sub:'rgba(242,243,231,.70)', line:'rgba(242,243,231,.18)',
-            accent:'#B3C36B', accentFg:'#1E2119', accentSoft:'rgba(179,195,107,.20)',
-            badgeBg:'#B3C36B', badgeFg:'#1E2119', totalBg:'#F2F3E7', totalFg:'#1E2119' } },
-
-    { id:'rose', name:'더스티 로즈 & 잉크', dark:false, photoAccent:'#EFA7B1', photoAccentFg:'#201A1C',
-      paper:{ bg:'#F9EEEB', fg:'#2A2023', sub:'rgba(42,32,35,.62)', line:'rgba(42,32,35,.14)',
-              accent:'#A8505C', accentFg:'#FFF6F4', accentSoft:'rgba(168,80,92,.13)',
-              badgeBg:'#A8505C', badgeFg:'#FFF6F4', totalBg:'#2A2023', totalFg:'#F9EEEB' },
-      ink:{ bg:'#201A1C', fg:'#FAF0EE', sub:'rgba(250,240,238,.70)', line:'rgba(250,240,238,.18)',
-            accent:'#E394A0', accentFg:'#201A1C', accentSoft:'rgba(227,148,160,.20)',
-            badgeBg:'#E394A0', badgeFg:'#201A1C', totalBg:'#FAF0EE', totalFg:'#201A1C' } },
-
   ];
 
   /* v5.8: 60% 배경 · 30% 메인 · 10% 포인트 컬러 배합 원칙
-     — 표지·본문 템플릿이 쓰는 포인트 색을 한 곳에서 정한다. */
+     — 표지·본문 템플릿이 쓰는 포인트 색을 한 곳에서 정한다.
+     v5.9: 어둠거나 탁한 색을 덜어내고 화사한 파스텔로 맞춤 */
   const THEME_POINT = {
-    butter:'#FFD84D', sky:'#2C7FD6', peach:'#F0704A', sage:'#2E7A52', mono:'#111111',
-    cream:'#8A4A22', navy:'#A67C1F', olive:'#5F6B33', rose:'#A8505C', mint:'#BFF5F2', skyblue:'#6EC1FF'
+    butter:'#FFD84D', mint:'#BFF5F2', skyblue:'#6EC1FF',
+    peach:'#FFD3B6', lavender:'#DED6FF', rose:'#FFD6E4', sage:'#DDEBC4', mono:'#111111'
   };
   const THEME_MAIN = {
-    butter:'#1C1E26', sky:'#10233A', peach:'#3B2019', sage:'#16301F', mono:'#111111',
-    cream:'#2B1E15', navy:'#14243C', olive:'#23261C', rose:'#2A2023', mint:'#1B2B29', skyblue:'#152430'
+    butter:'#1C1E26', mint:'#1B2B29', skyblue:'#152430',
+    peach:'#3B2A1F', lavender:'#2B2545', rose:'#3A2230', sage:'#26301E', mono:'#111111'
   };
   (function themeRoletize(){
     THEMES.forEach(function(t){
@@ -1429,8 +1447,9 @@
     });
   })();
 
-  /* 차콜/버터 등 사라진 테마 → 기본값 안전 폴백 */
-  const THEME_FALLBACK = { charcoal:'butter', charcoal_butter:'butter', yellow:'butter' };
+  /* 사라진 테마 → 가까운 파스텔 안전 폴백 (저장된 덮도 그대로 보임) */
+  const THEME_FALLBACK = { charcoal:'butter', charcoal_butter:'butter', yellow:'butter',
+                           sky:'skyblue', cream:'butter', navy:'butter', olive:'sage' };
 
   /* ---------- v4: 5대 카테고리 (통일 표지 + 카테고리별 색) ---------- */
   const CATS = [
@@ -1511,6 +1530,7 @@
       summaryStyle: 'photo',
       totalLabel: '총 합계', total: '', totalNote: '', cta: '',
       totalAuto: true,
+      sumKind: 'receipt', sumBullet: 'check', pointsText: '',
       rows: [{ item:'', amount:'' }, { item:'', amount:'' }, { item:'', amount:'' }]
     };
   }
@@ -1549,13 +1569,13 @@
                       trend:'흰 굵은 제목 + 검은 테두리',
                       question:'질문 박스 3개 나열',
                       iming_yellow:'노란 알약 배지 + 2색 꾸불림체 제목' };
-  /* v5.7: 디자인마다 자연스러운 기본 글씨 위치 */
-  const TPL_POS = { place_pin:'bottom', chat_bubble:'middle', big_title:'middle', word_highlight:'middle',
-                    magazine_interview:'bottom', editorial:'bottom', classic:'bottom', trend:'top',
-                    question:'middle', iming_yellow:'middle' };
-  /* 가운데 정렬이 기본인 디자인 (레퍼런스처럼) */
-  const TPL_ALIGN = { big_title:'center', word_highlight:'center', iming_yellow:'center',
-                      editorial:'center', place_pin:'left',
+  /* v5.7: 디자인마다 자연스러운 기본 글씨 위치 — v5.9: 전 디자인 기본 = 좌측 하단 */
+  const TPL_POS = { place_pin:'bottom', chat_bubble:'bottom', big_title:'bottom', word_highlight:'bottom',
+                    magazine_interview:'bottom', editorial:'bottom', classic:'bottom', trend:'bottom',
+                    question:'bottom', iming_yellow:'bottom' };
+  /* v5.9: 기본 정렬도 왼쪽으로 통일 (가운데·오른쪽은 위치 컨트롤로 고를 수 있다) */
+  const TPL_ALIGN = { big_title:'left', word_highlight:'left', iming_yellow:'left',
+                      editorial:'left', place_pin:'left',
                       chat_bubble:'left', question:'left', trend:'left' };
 
   const TPL_KEY = 'iming_cards_tplnames_v1';
@@ -1982,6 +2002,10 @@
         };
       }).filter(x=>x.src);
       s.summaryStyle = ['photo','grad','dark','light','cream'].includes(r.summaryStyle) ? r.summaryStyle : 'photo';
+      /* v5.9: 요약 카드 종류 — 주문서·영수증형 / 핵심 요약형 */
+      s.sumKind = r.sumKind === 'text' ? 'text' : 'receipt';
+      s.sumBullet = ['check','dot','num'].indexOf(r.sumBullet) >= 0 ? r.sumBullet : 'check';
+      s.pointsText = str(r.pointsText);
       s.totalLabel = str(r.totalLabel) || '총 합계';
       s.total = str(r.total); s.totalNote = str(r.totalNote); s.cta = str(r.cta);
       /* 저장된 예전 작업은 손으로 적은 합계를 덮어쓰지 않도록 수동으로 시작 */
@@ -3023,23 +3047,44 @@
     const onPhoto = solid ? solid.dark : !!im;
     const cp = onPhoto ? palPhoto() : palPaper();
     const P = tPos(s);
-    const tDy = P.pos === 'top' ? 0 : P.pos === 'middle' ? Math.round(h * 0.20) : Math.round(h * 0.33);
+    const bs = T.badge * 1.05;
+
+    const titleSize = T.coverTitle * 1.08;
+    const title = s.title ? fitText(ctx, plainMarks(s.title), { maxWidth: maxW, size: titleSize, weight: 900,
+      maxLines: 3, lineHeight: 1.16, minSize: titleSize * 0.52 }) : null;
+
+    let sub = null, subPadX = 0, subPadY = 0, subW = 0, subBoxH = 0;
+    if (s.subtitle){
+      const ss = Math.max(22, T.coverSub * 0.94);
+      sub = fitText(ctx, plainMarks(s.subtitle), { maxWidth: maxW * 0.94, size: ss, weight: 700,
+        maxLines: 2, lineHeight: 1.34, minSize: ss * 0.78 });
+      ctx.font = font(sub.size, 700);
+      let tw = 0;
+      sub.lines.forEach(function(t){ tw = Math.max(tw, ctx.measureText(t).width); });
+      subPadX = sub.size * 0.86; subPadY = sub.size * 0.44;
+      subBoxH = sub.lines.length * sub.lh + subPadY * 2;
+      subW = Math.min(maxW, tw + subPadX * 2);
+    }
+
+    /* v5.9: 블록 높이를 재서 고른 위치(상/중/하)에 앉힌다 — 기본은 좌측 하단 */
+    let blockH = 0;
+    if (badge || num) blockH += bs * 2.2 + 24;
+    if (title) blockH += title.lines.length * title.lh + 13 + 9 + 20;
+    if (sub) blockH += subBoxH;
+    const topLimit = f.safeTop + pad;
+    const botLimit = h - f.safeBottom - pad - 46;
+
     ctx.save();
-    ctx.translate(P.dx * w * 0.16 + alignShiftC(P.align, maxW, w, pad), tDy + P.dy * h * 0.16);
-    let y = Math.max(f.safeTop + pad, h * 0.115);
+    ctx.translate(P.dx * w * 0.16 + alignShiftC(P.align, maxW, w, pad), 0);
+    let y = posAnchorY(P.pos, topLimit, botLimit, blockH) + P.dy * h * 0.16;
 
     if (badge || num){
-      const bs = T.badge * 1.05;
       const fill = onPhoto ? '#FFFFFF' : AC.color;
       const txtc = onPhoto ? '#141410' : AC.fg;
       drawPill(ctx, { text: badge, num: num, x: pad, y: y, size: bs, weight: 800, height: bs * 2.2,
         padX: bs * 0.82, bg: fill, fg: txtc, numBg: txtc, numFg: fill, shadow: true });
       y += bs * 2.2 + 24;
     }
-
-    const titleSize = T.coverTitle * 1.08;
-    const title = s.title ? fitText(ctx, plainMarks(s.title), { maxWidth: maxW, size: titleSize, weight: 900,
-      maxLines: 3, lineHeight: 1.16, minSize: titleSize * 0.52 }) : null;
 
     if (title){
       const lw = Math.max(6, Math.round(title.size * (onPhoto ? 0.15 : 0.11)));
@@ -3060,7 +3105,7 @@
       });
       ctx.restore();
       y += title.lines.length * title.lh + 13;
-      /* v5.4: 포인트 컬러 한 줄 — 테마·카테고리 색이 표지에 드러나요 (IMING 옐로우는 버터 옐로우) */
+      /* v5.4: 포인트 컬러 한 줄 — 테마·카테고리 색이 표지에 드러나요 */
       ctx.save();
       if (onPhoto){ ctx.shadowColor = 'rgba(0,0,0,.36)'; ctx.shadowBlur = 12; ctx.shadowOffsetY = 2; }
       ctx.fillStyle = AC.color;
@@ -3070,27 +3115,18 @@
       y += 9 + 20;
     }
 
-    if (s.subtitle){
-      const ss = Math.max(22, T.coverSub * 0.94);
-      const sub = fitText(ctx, plainMarks(s.subtitle), { maxWidth: maxW * 0.94, size: ss, weight: 700,
-        maxLines: 2, lineHeight: 1.34, minSize: ss * 0.78 });
-      ctx.font = font(sub.size, 700);
-      let tw = 0;
-      sub.lines.forEach(function(t){ tw = Math.max(tw, ctx.measureText(t).width); });
-      const padX = sub.size * 0.86, padY = sub.size * 0.44;
-      const ph = sub.lines.length * sub.lh + padY * 2;
-      const pw = Math.min(maxW, tw + padX * 2);
+    if (sub){
       ctx.save();
       ctx.shadowColor = 'rgba(0,0,0,.22)';
       ctx.shadowBlur = 16;
       ctx.shadowOffsetY = 3;
-      roundRect(ctx, pad, y, pw, ph, sub.lines.length > 1 ? Math.min(ph / 4, 28) : ph / 2);
+      roundRect(ctx, pad, y, subW, subBoxH, sub.lines.length > 1 ? Math.min(subBoxH / 4, 28) : subBoxH / 2);
       ctx.fillStyle = onPhoto ? '#FFFFFF' : AC.color;
       ctx.fill();
       ctx.restore();
-      drawLines(ctx, sub.lines, pad + padX, y + padY, sub.lh, sub.size, 700,
+      drawLines(ctx, sub.lines, pad + subPadX, y + subPadY, sub.lh, sub.size, 700,
         onPhoto ? '#141410' : AC.fg, 'left');
-      y += ph;
+      y += subBoxH;
     }
 
     ctx.restore();
@@ -3204,7 +3240,13 @@
     const gapSub = subTxt ? size * 0.34 : 0;
     const P = tPos(s);
     const txtH = subH + gapSub + titleLines * lh;
-    let top = posAnchorY(P.pos, f.safeTop + pad, creditBase - 44, txtH) + P.dy * h * 0.16;
+    /* v5.9: 배지가 있으면 제목은 배지 아래에서 시작 — 배지가 제목을 덮어 '잘려 보이던' 문제 수정 */
+    const hasBadgeQ = !!(s.badge || '').trim() || !!s.badgeNum;
+    const badgeTopQ = f.safeTop + pad * 0.72;
+    const badgeHQ = T.badge * 2.0;
+    const contentTopQ = hasBadgeQ ? (badgeTopQ + badgeHQ + Math.round(size * 0.30)) : (f.safeTop + pad);
+    const bottomLimitQ = creditBase - 44;
+    let top = posAnchorY(P.pos, contentTopQ, bottomLimitQ, txtH) + P.dy * h * 0.16;
     const qXo = posShiftX(P.align, Math.max(titleWidth(size),
       lineB ? (function(){ ctx.font = font(size, 800); return ctx.measureText(lineB).width; })() : 0), maxW) + P.dx * w * 0.16;
 
@@ -3217,14 +3259,26 @@
     const qTotal = qs.length ? (boxH * qs.length + boxGap * (qs.length - 1)) : 0;
     const qPos = state.qboxPos || 'top';
     const qAlign = state.qboxAlign || 'alt';
-    const qTopMin = f.safeTop + pad;
-    const qLimit = top - Math.round(boxSize * 1.1);
-    let by = qTopMin + Math.round(h * (f.safeTop ? 0.055 : 0.075));
-    if (qPos === 'middle') by = qTopMin + Math.round(Math.max(0, qLimit - qTopMin - qTotal) * 0.5);
-    else if (qPos === 'bottom') by = qLimit - qTotal;
-    const qRange = Math.max(0, (h - f.safeBottom - pad - 16 - qTotal) - qTopMin);
-    by += clamp(num(state.qboxDY, 0), -1, 1) * qRange * 0.5;
-    by = clamp(by, qTopMin, Math.max(qTopMin, h - f.safeBottom - pad - qTotal - 16));
+    /* v5.9: 질문 박스도 배지·제목을 비켜 앉는다 (상단 글씨가 박스에 가려지지 않게) */
+    const boxGapQ = Math.round(boxSize * 0.55);
+    const hiFullQ = Math.max(contentTopQ, h - f.safeBottom - pad - qTotal - 16);
+    let loQ, hiQ;
+    if (P.pos === 'top'){
+      /* 제목이 위에 있으면 박스는 제목 아래로 */
+      loQ = Math.min(hiFullQ, top + txtH + boxGapQ);
+      hiQ = hiFullQ;
+    } else {
+      /* 제목이 중간·아래면 박스는 제목 위로 */
+      loQ = contentTopQ;
+      hiQ = Math.max(contentTopQ, top - boxGapQ - qTotal);
+    }
+    if (hiQ < loQ) hiQ = loQ;
+    let by;
+    if (qPos === 'bottom') by = hiQ;
+    else if (qPos === 'middle') by = loQ + (hiQ - loQ) * 0.5;
+    else by = loQ;
+    by += clamp(num(state.qboxDY, 0), -1, 1) * Math.max(0, hiQ - loQ) * 0.5;
+    by = clamp(by, loQ, hiQ);
     qs.forEach(function(q, i){
       const indent = (qAlign === 'alt' && i % 2 === 1) ? Math.round(maxW * 0.085) : 0;
       const maxBoxW = maxW - indent;
@@ -3367,6 +3421,15 @@
 
   /* v5.3: **는 본문 설명·질문형 표지에서만 강조로 쓰고, 나머지 글에선 글자만 지워 보여요 */
   function plainMarks(t){ return String(t == null ? '' : t).replace(/\*\*/g, ''); }
+  /* v5.9 ③: 동그라미 숫자를 글씨 앞/뒤 어디에 붙일지 — 모든 템플릿이 같은 규칙을 씀 */
+  function numGlyphOf(n){ return (n >= 1 && n <= 10) ? NUMGLYPH[n] : ''; }
+  function numJoin(text, num){
+    const g = numGlyphOf(num);
+    const t = String(text == null ? '' : text).trim();
+    if (!g) return t;
+    if (!t) return g;
+    return state.numPlace === 'back' ? (t + ' ' + g) : (g + ' ' + t);
+  }
 
 
   /* =========================================================
@@ -3708,32 +3771,49 @@
     const badgeTxt = (s.badge || '').trim();
     const subTxt = (s.subtitle || '').trim();
     let pillTxt = badgeTxt;
-    if (num) pillTxt = NUMGLYPH[num] + (badgeTxt ? ' ' + badgeTxt : '');
+    if (num) pillTxt = numJoin(badgeTxt, num);
     if (!pillTxt) pillTxt = subTxt;
 
-    /* 1) 상단 중앙 노란 알약 배지 */
     const szM = SZ();
     const bs = Math.max(14, Math.round(w * 0.042 * szM.small));
     const pillH = Math.round(bs * 2.0);
     const P = tPos(s);
-    const iDy = P.pos === 'top' ? Math.round(-h * 0.10) : P.pos === 'middle' ? 0 : Math.round(h * 0.15);
+
+    /* 제목·부제 크기를 먼저 재서 고른 위치(상/중/하)에 앉힌다 */
+    const title = fitBigTitle(ctx, s.title, {
+      maxWidth: maxW, cap: Math.min(w * 0.195, h * 0.16) * szM.title, minSize: w * 0.058 * szM.title, maxRows: 3,
+      lineHeight: 0.99, fontStr: function(sz){ return fontOfId(coverFont, sz, 900); }
+    });
+    const showSub = !!(subTxt && pillTxt !== subTxt);
+    const ss = Math.max(13, Math.round(w * 0.032 * szM.sub));
+    const gapSub = title ? Math.round(title.size * 0.14) : 0;
+
+    /* v5.9: 기본은 좌측 하단 */
+    let blockH = 0;
+    if (pillTxt) blockH += pillH + Math.round(h * 0.004);
+    if (title) blockH += title.rows.length * title.lh;
+    if (showSub) blockH += gapSub + ss * 1.4;
+    const topLimit = Math.max(f.safeTop + pad * 0.5, h * 0.048);
+    const botLimit = h - f.safeBottom - Math.max(pad * 1.0, h * 0.074) - Math.round(pillH * 0.9);
+
     ctx.save();
-    ctx.translate(P.dx * w * 0.16 + alignShiftC(P.align, maxW, w, pad), iDy + P.dy * h * 0.16);
-    let y = Math.max(f.safeTop + pad * 0.5, h * 0.048);
+    ctx.translate(P.dx * w * 0.16, 0);
+    let y = posAnchorY(P.pos, topLimit, botLimit, blockH) + P.dy * h * 0.16;
+
     if (pillTxt){
+      const pillW = (function(){
+        ctx.font = fontOfId('pretendard', bs, 800);
+        return Math.min(maxW, ctx.measureText(pillTxt).width + bs * 1.9);
+      })();
+      const pcx = P.align === 'center' ? w / 2 : (P.align === 'right' ? w - pad - pillW / 2 : pad + pillW / 2);
       drawBadgeRect(ctx, {
-        text: pillTxt, cx: w / 2, y: y, size: bs, height: pillH,
+        text: pillTxt, cx: pcx, y: y, size: bs, height: pillH,
         bg: ACC, fg: ACCINK, padX: Math.round(bs * 0.95), radius: pillH / 2,
         fontStr: fontOfId('pretendard', bs, 800)
       });
       y += pillH + Math.round(h * 0.004);
     }
 
-    /* 2) 가운데 큰 2색 꾸불림체 제목 — 흰색 / 마지막 줄·강조 노랑 */
-    const title = fitBigTitle(ctx, s.title, {
-      maxWidth: maxW, cap: Math.min(w * 0.195, h * 0.16) * szM.title, minSize: w * 0.058 * szM.title, maxRows: 3,
-      lineHeight: 0.99, fontStr: function(sz){ return fontOfId(coverFont, sz, 900); }
-    });
     if (title){
       const outline = {
         width: Math.max(4, Math.round(title.size * 0.115)),
@@ -3743,19 +3823,33 @@
       const rows = title.rows;
       const emAny = rows.some(function(r){ return r.some(function(c){ return c.em; }); });
       const fstr = fontOfId(coverFont, title.size, 900);
+      const rowWidths = rows.map(function(r){ return segsWidthAt(ctx, charsSegs(r), fstr); });
+      const maxRowW = Math.max.apply(null, rowWidths.concat([0]));
+      const rowCx = P.align === 'center' ? w / 2
+        : (P.align === 'right' ? w - pad - maxRowW / 2 : pad + maxRowW / 2);
       rows.forEach(function(r, ri){
         const accentRow = !emAny && rows.length > 1 && ri === rows.length - 1;
-        drawSegsCentered(ctx, charsSegs(r), w / 2, y + title.lh * ri + title.size * 0.84, fstr,
+        const cxi = P.align === 'center' ? w / 2
+          : (P.align === 'right' ? w - pad - rowWidths[ri] / 2 : pad + rowWidths[ri] / 2);
+        drawSegsCentered(ctx, charsSegs(r), cxi, y + title.lh * ri + title.size * 0.84, fstr,
           function(sg){ return (sg.em || accentRow) ? ACC : '#FFFFFF'; }, outline);
       });
       y += rows.length * title.lh;
     }
 
-    /* 3) 부제 (배지와 다른 문구일 때만 제목 아래 작게) */
-    if (subTxt && pillTxt !== subTxt){
-      const ss = Math.max(13, Math.round(w * 0.032 * szM.sub));
-      const gap = title ? Math.round(title.size * 0.14) : 0;
-      y += drawSmallLine(ctx, subTxt, w / 2, y + gap + ss * 1.3, ss, maxW);
+    /* 부제 (배지와 다른 문구일 때만 제목 아래 작게) */
+    if (showSub){
+      const scx = P.align === 'center' ? w / 2 : (P.align === 'right' ? w - pad : pad);
+      const fit = fitOneLine(ctx, subTxt, maxW, ss, 700, ss * 0.8);
+      ctx.save();
+      ctx.textAlign = P.align === 'center' ? 'center' : (P.align === 'right' ? 'right' : 'left');
+      ctx.textBaseline = 'alphabetic';
+      ctx.shadowColor = 'rgba(0,0,0,.42)'; ctx.shadowBlur = 14; ctx.shadowOffsetY = 2;
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = font(fit.size, 700);
+      ctx.fillText(fit.text, scx, y + gapSub + ss * 1.1);
+      ctx.restore();
+      y += gapSub + ss * 1.4;
     }
 
     ctx.restore();
@@ -3776,19 +3870,15 @@
     const maxW = w - pad * 1.6;
     const coverFont = fontIdFor('cover');
     const P = tPos(s);
-    const cx = w / 2 + P.dx * w * 0.16 + posShiftCx(P.align, maxW * 0.82, w, pad);
     /* v5.8: 사진이 없으면 밝은 바탕이므로 제목을 진한 색으로 (하얀 글씨가 비어 보이지 않게) */
     const onPhoto = !!im || !!(solid && solid.dark);
     const titleCol = onPhoto ? '#FFFFFF' : THEME().paper.fg;
-
-    /* 상단 중앙 작은 기울임 서명 */
-    drawSignature(ctx, cx,  f.safeTop + Math.max(pad * 0.55, h * 0.040), Math.max(15, Math.round(w * 0.025)));
 
     const num = s.badgeNum || 0;
     const badgeTxtRaw = (s.badge || '').trim();
     const subTxt = (s.subtitle || '').trim();
     let badgeTxt = badgeTxtRaw || subTxt;
-    if (num) badgeTxt = NUMGLYPH[num] + (badgeTxt ? ' ' + badgeTxt : '');
+    if (num) badgeTxt = numJoin(badgeTxt, num);
 
     const bs = Math.max(13, Math.round(w * 0.0275 * SZ().small));
     const bH = Math.round(bs * 1.95);
@@ -3797,6 +3887,23 @@
       maxWidth: maxW, cap: Math.min(w * 0.155, h * 0.132) * SZ().title, minSize: w * 0.055 * SZ().title, maxRows: 3,
       lineHeight: 1.09, fontStr: function(sz){ return fontOfId(coverFont, sz, 900); }
     });
+    /* v5.9: 위치 컨트롤(좌/중/우)이 실제로 보이게 — 실제 글씨 폭 기준으로 앉힌다 */
+    let widestRow = 0;
+    if (title){
+      const fstr0 = fontOfId(coverFont, title.size, 900);
+      title.rows.forEach(function(r){ widestRow = Math.max(widestRow, segsWidthAt(ctx, charsSegs(r), fstr0)); });
+    }
+    let badgeW = 0;
+    if (badgeTxt){
+      ctx.font = bFont;
+      badgeW = Math.min(maxW, ctx.measureText(badgeTxt).width + bs * 1.56);
+    }
+    const blockW = Math.max(widestRow, badgeW, maxW * 0.30);
+    const cx = (P.align === 'center' ? w / 2 : (P.align === 'right' ? w - pad - blockW / 2 : pad + blockW / 2))
+      + P.dx * w * 0.16;
+
+    /* 상단 작은 기울임 서명 */
+    drawSignature(ctx, cx,  f.safeTop + Math.max(pad * 0.55, h * 0.040), Math.max(15, Math.round(w * 0.025)));
     const showSub = !!(subTxt && badgeTxtRaw);
     const subSize = Math.max(13, Math.round(w * 0.028 * SZ().sub));
     const gapBadge = title ? Math.round(h * 0.018) : 0;
@@ -3856,32 +3963,21 @@
     const maxW = w - pad * 1.35;
     const bodyFont = 'pretendard';
     const P = tPos(s);
-    const cx = w / 2 + P.dx * w * 0.16 + posShiftCx(P.align, maxW * 0.82, w, pad);
 
-    if (s.watermark !== false){
-      drawSignature(ctx, cx, f.safeTop + Math.max(pad * 0.5, h * 0.036), Math.max(14, Math.round(w * 0.023)));
-    }
-
-    /* 상단 포인트 사각 배지 + 별 */
+    /* 상단 포인트 사각 배지 + 별 (측정 먼저) */
     const num = s.badgeNum || 0;
     let badgeTxt = (s.badge || '').trim();
-    if (num) badgeTxt = badgeTxt ? NUMGLYPH[num] + ' ' + badgeTxt : 'EP.' + num;
+    if (num) badgeTxt = badgeTxt ? numJoin(badgeTxt, num) : 'EP.' + num;
     const bs = Math.max(13, Math.round(w * 0.0265 * SZ().small));
     const bH = Math.round(bs * 1.95);
     const bFont = fontOfId(bodyFont, bs, 800);
-    let topEnd = f.safeTop + pad * 0.92;
+    let badgeW = 0;
     if (badgeTxt){
       ctx.font = bFont;
-      const bw = Math.min(maxW, ctx.measureText(badgeTxt).width + bs * 1.55);
-      drawBadgeRect(ctx, {
-        text: badgeTxt, cx: cx, y: topEnd, size: bs, height: bH,
-        bg: ACC, fg: ACCINK, padX: Math.round(bs * 0.78), radius: 15, fontStr: bFont, minW: bw
-      });
-      drawStar(ctx, cx - bw / 2 - bs * 0.95, topEnd + bH * 0.22, bs * 0.6, ACC, 4);
-      topEnd += bH;
+      badgeW = Math.min(maxW, ctx.measureText(badgeTxt).width + bs * 1.55);
     }
 
-    /* 하단: 노란 라벨 + 흰 본문 박스 */
+    /* 하단: 노란 라벨 + 흰 본문 박스 (측정 먼저) */
     const descRaw = String(s.desc || '').replace(/\r/g, '').trim();
     const dLines = descRaw.split('\n').map(function(t){ return t.trim(); }).filter(Boolean);
     let label = '', boxTxt = descRaw;
@@ -3893,7 +3989,7 @@
     const padBX = Math.round(boxSize * 1.45);
     const boxTextMax = maxW - padBX * 2;
     const fit = boxTxt ? fitRich(ctx, boxTxt, {
-      maxWidth: boxTextMax, size: boxSize, weight: 800, maxLines: 4, lineHeight: 1.55, minSize: boxSize * 0.8
+      maxWidth: boxTextMax, size: boxSize, weight: 800, maxLines: 8, lineHeight: 1.55, minSize: boxSize * 0.74
     }) : null;
     const segFont = function(sg, sz){ return fontOfId(bodyFont, sz, sg.em ? 800 : 500); };
     let boxW = 0, boxH = 0, padBY = 0;
@@ -3904,30 +4000,66 @@
         boxW = Math.max(boxW, tw);
       });
       boxW = Math.min(maxW, boxW + padBX * 2);
-      /* v5.8: 박스 높이는 줄 수에 맞춰 — 1줄은 얇게, 줄이 늘면 두껍게 */
-      padBY = Math.round(boxSize * (fit.lines.length <= 1 ? 0.92 : 1.18));
+      /* v5.8/v5.9: 박스 높이는 줄 수에 맞춰 — 1줄은 얇게, 줄이 늘면 한 줄씩 두껍게 */
+      padBY = Math.round(boxSize * (fit.lines.length <= 1 ? 0.82 : 1.02));
       boxH = fit.lines.length * fit.lh + padBY * 2;
     }
     const labSize = Math.max(12, Math.round(w * 0.0235 * SZ().small));
     const labH = Math.round(labSize * 2.1);
     const labGap = Math.round(labSize * 0.85);
-    const bottomY = h - f.safeBottom - pad * 0.95;
-    let boxTop = bottomY - boxH;
-    let labelTop = boxTop - labGap - labH;
 
-    /* 가운데 큰 흰 제목 — 배지와 하단 박스 사이에 중앙 정렬 */
+    /* 가운데 큰 흰 제목 */
     const title = fitBigTitle(ctx, s.title, {
       maxWidth: maxW, cap: Math.min(w * 0.115, h * 0.100) * SZ().title, minSize: w * 0.048 * SZ().title, maxRows: 3,
       lineHeight: 1.12, fontStr: function(sz){ return fontOfId(bodyFont, sz, 900); }
     });
+    let widestRow = 0;
+    if (title){
+      const fstr0 = fontOfId(bodyFont, title.size, 900);
+      title.rows.forEach(function(r){ widestRow = Math.max(widestRow, segsWidthAt(ctx, charsSegs(r), fstr0)); });
+    }
     const subTxt = plainMarks(s.subtitle).trim();
     const subSize = Math.max(13, Math.round(w * 0.027 * SZ().sub));
     const titleH = title ? title.rows.length * title.lh : 0;
     const subH = subTxt ? subSize * 1.9 : 0;
-    const areaTop = topEnd + Math.round(h * 0.030);
-    const areaBottom = (label ? labelTop : boxTop) - Math.round(h * 0.035);
-    let ty = areaTop + Math.max(0, (areaBottom - areaTop - titleH - subH) *
-      (P.pos === 'top' ? 0 : P.pos === 'middle' ? 0.5 : 1)) + P.dy * h * 0.10;
+    const gapTS = title ? Math.round(title.size * 0.14) : 0;
+
+    /* v5.9: 좌/중/우 위치가 실제로 보이게 — 실제 글씨·박스 폭 기준 */
+    const blockW = Math.max(widestRow, badgeW, boxW, maxW * 0.30);
+    const cx = (P.align === 'center' ? w / 2 : (P.align === 'right' ? w - pad - blockW / 2 : pad + blockW / 2))
+      + P.dx * w * 0.16;
+
+    if (s.watermark !== false){
+      drawSignature(ctx, cx, f.safeTop + Math.max(pad * 0.5, h * 0.036), Math.max(14, Math.round(w * 0.023)));
+    }
+
+    let topEnd = f.safeTop + pad * 0.92;
+    if (badgeTxt){
+      drawBadgeRect(ctx, {
+        text: badgeTxt, cx: cx, y: topEnd, size: bs, height: bH,
+        bg: ACC, fg: ACCINK, padX: Math.round(bs * 0.78), radius: 15, fontStr: bFont, minW: badgeW
+      });
+      drawStar(ctx, cx - badgeW / 2 - bs * 0.95, topEnd + bH * 0.22, bs * 0.6, ACC, 4);
+      topEnd += bH;
+    }
+
+    const bottomY = h - f.safeBottom - pad * 0.95;
+    const dyS = P.dy * h * 0.16;
+    const stackH = boxH + (label ? labGap + labH : 0);
+    const blockAll = titleH + gapTS + subH + Math.round(h * 0.035) + stackH;
+    let ty = 0, labelTop = 0, boxTop = 0;
+    if (P.pos === 'bottom'){
+      boxTop = clamp(bottomY - boxH + dyS, topEnd + Math.round(h * 0.10), bottomY - boxH);
+      labelTop = boxTop - labGap - labH;
+      const areaTop = topEnd + Math.round(h * 0.030);
+      const areaBottom = (label ? labelTop : boxTop) - Math.round(h * 0.035);
+      ty = areaTop + Math.max(0, (areaBottom - areaTop - titleH - subH));
+    } else {
+      ty = posAnchorY(P.pos, topEnd + Math.round(h * 0.030), bottomY, blockAll) + dyS;
+      labelTop = ty + titleH + gapTS + subH + Math.round(h * 0.035);
+      boxTop = labelTop + (label ? labH + labGap : 0);
+    }
+
     if (title){
       const outline = {
         width: Math.max(3, Math.round(title.size * 0.034)),
@@ -3942,8 +4074,7 @@
       ty += titleH;
     }
     if (subTxt){
-      const gap = title ? Math.round(title.size * 0.14) : 0;
-      drawSmallLine(ctx, subTxt, cx, ty + gap + subSize * 1.25, subSize, maxW);
+      drawSmallLine(ctx, subTxt, cx, ty + gapTS + subSize * 1.25, subSize, maxW);
     }
 
     /* 노란 라벨 */
@@ -4175,7 +4306,7 @@
     const fgSub = dark ? 'rgba(255,255,255,.97)' : 'rgba(23,22,20,.92)';
     const fgDesc = dark ? 'rgba(255,255,255,.88)' : 'rgba(23,22,20,.70)';
     const maxW = w - pad * 2;
-    const titleTxt = plainMarks(s.title).replace(/\n+/g, ' ').trim();
+    const titleTxt = numJoin(plainMarks(s.title).replace(/\n+/g, ' ').trim(), s.badgeNum || 0);
     const subRaw = plainMarks(s.subtitle).replace(/\n+/g, ' ').trim();
     const badgeTxt = (s.badge || '').trim();
     const descLinesAll = plainMarks(s.desc).split('\n').map(function(t){ return t.trim(); }).filter(Boolean);
@@ -4408,7 +4539,7 @@
       return bh;
     }
 
-    const titleTxt = plainMarks(s.title).replace(/\n+/g, ' ').trim();
+    const titleTxt = numJoin(plainMarks(s.title).replace(/\n+/g, ' ').trim(), s.badgeNum || 0);
     const subTxt = plainMarks(s.subtitle).replace(/\n+/g, ' ').trim();
     const descLines = plainMarks(s.desc).split('\n').map(function(t){ return t.trim(); }).filter(Boolean);
     const rightTexts = [];
@@ -4542,8 +4673,14 @@
     const im = styleCanvas(ctx, s, f, solid, mode);
     const dark = !!im || !!(solid && solid.dark);
     const maxW = Math.min(w - pad * 1.4, w * 0.80);
-    const titleTxt = String(s.title == null ? '' : s.title);
-    const labelTxt = plainMarks(s.subtitle).trim() || (s.badge || '').trim();
+    /* v5.9: 숫자를 붙일 곳 — 배지(라벨)가 있으면 거기에, 없으면 제목에 (앞/뒤 설정을 따른다) */
+    const numBH = s.badgeNum || 0;
+    let titleTxt = String(s.title == null ? '' : s.title);
+    let labelTxt = plainMarks(s.subtitle).trim() || (s.badge || '').trim();
+    if (numBH){
+      if (labelTxt) labelTxt = numJoin(labelTxt, numBH);
+      else titleTxt = numJoin(titleTxt, numBH);
+    }
     if (!titleTxt.trim() && !labelTxt) return;
 
     const P = tPos(s);
@@ -4623,8 +4760,14 @@
     const im = styleCanvas(ctx, s, f, solid, mode);
     const dark = !!im || !!(solid && solid.dark);
     const maxW = w - pad * 1.3;
-    const titleTxt = String(s.title == null ? '' : s.title);
-    const labelTxt = plainMarks(s.subtitle).trim() || (s.badge || '').trim();
+    /* v5.9: 숫자를 붙일 곳 — 배지(라벨)가 있으면 거기에, 없으면 제목에 (앞/뒤 설정을 따른다) */
+    const numBH = s.badgeNum || 0;
+    let titleTxt = String(s.title == null ? '' : s.title);
+    let labelTxt = plainMarks(s.subtitle).trim() || (s.badge || '').trim();
+    if (numBH){
+      if (labelTxt) labelTxt = numJoin(labelTxt, numBH);
+      else titleTxt = numJoin(titleTxt, numBH);
+    }
     if (!titleTxt.trim() && !labelTxt) return;
 
     const P = tPos(s);
@@ -4728,12 +4871,13 @@
     const maxW = w - pad * 2;
     /* v5.7: 배지 문구를 비우면 배지 박스 자체를 그리지 않는다 */
     const badgeTxt = plainMarks(s.badge).trim();
+    const numMg = s.badgeNum || 0;
     const szMg = SZ();
     const bs = Math.max(12, Math.round(w * 0.0295 * szMg.small));
     const bH = Math.round(bs * 1.68);
     const tBase = isCover ? Math.round(w * 0.079 * szMg.title) : Math.round(T.bodyTitle * 1.02);
 
-    const title = styleWrapped(ctx, plainMarks(s.title), maxW * 0.96, tBase, 900, 2, 1.16);
+    const title = styleWrapped(ctx, numJoin(plainMarks(s.title), badgeTxt ? 0 : numMg), maxW * 0.96, tBase, 900, 2, 1.16);
     let sub = styleWrapped(ctx, plainMarks(s.subtitle), maxW * 0.94, Math.round(w * 0.040 * szMg.sub), 500, 2, 1.40);
     if (!sub && isCover){
       const first = plainMarks(s.desc).split('\n')[0].trim();
@@ -4743,8 +4887,9 @@
       Math.round(w * 0.032 * szMg.sub), 500, 3, 1.50) : null;
 
     const blocks = [];
-    if (badgeTxt) blocks.push({ kind:'b', h: bH });
-    if (title) blocks.push({ kind:'t', h: title.lines.length * title.lh, gap: Math.round(bH * (badgeTxt ? 0.46 : 0)) });
+    const badgeOut = badgeTxt ? numJoin(badgeTxt, numMg) : '';
+    if (badgeOut) blocks.push({ kind:'b', h: bH });
+    if (title) blocks.push({ kind:'t', h: title.lines.length * title.lh, gap: Math.round(bH * (badgeOut ? 0.46 : 0)) });
     if (sub) blocks.push({ kind:'s', h: sub.lines.length * sub.lh, gap: Math.round(Math.max(18, w * 0.019)) });
     if (desc) blocks.push({ kind:'d', h: desc.lines.length * desc.lh, gap: Math.round(w * 0.017) });
     let total = 0;
@@ -4755,9 +4900,9 @@
     let y = posAnchorY(P.pos, top, bottom, total) + P.dy * h * 0.16;
 
     let bw = 0;
-    if (badgeTxt){
+    if (badgeOut){
       ctx.font = font(bs, 700);
-      bw = Math.max(bw, ctx.measureText(badgeTxt).width + bs * 1.1);
+      bw = Math.max(bw, ctx.measureText(badgeOut).width + bs * 1.1);
     }
     if (title) bw = Math.max(bw, linesMaxW(ctx, title.lines, title.size, 900));
     if (sub) bw = Math.max(bw, linesMaxW(ctx, sub.lines, sub.size, 500));
@@ -4769,14 +4914,14 @@
       if (b.kind === 'b'){
         ctx.save();
         ctx.font = font(bs, 700);
-        const bwd = Math.min(maxW, ctx.measureText(badgeTxt).width + bs * 1.1);
+        const bwd = Math.min(maxW, ctx.measureText(badgeOut).width + bs * 1.1);
         roundRect(ctx, bx, y, bwd, bH, 3);
         ctx.fillStyle = dark ? 'rgba(16,18,22,.90)' : 'rgba(20,22,28,.94)';
         ctx.fill();
         ctx.font = font(bs, 700);
         ctx.fillStyle = PT().color;
         ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-        ctx.fillText(badgeTxt, bx + bs * 0.55, y + bH / 2 + Math.round(bs * 0.04));
+        ctx.fillText(badgeOut, bx + bs * 0.55, y + bH / 2 + Math.round(bs * 0.04));
         ctx.restore();
       } else if (b.kind === 't'){
         styleLines(ctx, title.lines, bx, y, title.lh, title.size, 900, fg, !!im);
@@ -4875,7 +5020,7 @@
     }) : null;
     const subTxt = plainMarks(s.subtitle);
     const sub = subTxt ? fitText(ctx, subTxt, {
-      maxWidth: maxW * 0.94, size: T.coverSub, weight: 500, maxLines: 2, lineHeight: 1.5
+      maxWidth: maxW * 0.94, size: T.coverSub, weight: 500, maxLines: 4, lineHeight: 1.5
     }) : null;
 
     const blocks = [];
@@ -4934,7 +5079,8 @@
     let y = posAnchorY(TB ? state.textBoxPos : P.pos, topY, bottomY, totalH) + P.dy * h * 0.16;
     if (TB){
       /* v5.8: 글씨 박스 — 포인트 컬러로 채우고, 높이는 글씨 줄 수에 맞춘다 */
-      const bw = maxW + Math.round(pad * 0.52), bh = totalH + Math.round(pad * 0.66);
+      const coverLines = (title ? title.lines.length : 0) + (sub ? sub.lines.length : 0);
+      const bw = maxW + Math.round(pad * 0.52), bh = totalH + Math.round(pad * (coverLines <= 1 ? 0.36 : 0.56));
       const bx = pad - Math.round(pad * 0.26) + P.dx * w * 0.16;
       const by = y - Math.round(pad * 0.33);
       ctx.save();
@@ -5313,8 +5459,8 @@
     })) : null;
     const rich = /\*\*/.test(String(s.desc || ''));
     const desc = s.desc ? (rich
-      ? fitRich(ctx, s.desc, { maxWidth: maxW * 0.98, size: T.bodyDesc, weight: 700, maxLines: 4, lineHeight: 1.62, minSize: T.bodyDesc * 0.78 })
-      : fitText(ctx, s.desc, { maxWidth: maxW * 0.98, size: T.bodyDesc, weight: 700, maxLines: 4, lineHeight: 1.62, minSize: T.bodyDesc * 0.78 })) : null;
+      ? fitRich(ctx, s.desc, { maxWidth: maxW * 0.98, size: T.bodyDesc, weight: 700, maxLines: 8, lineHeight: 1.62, minSize: T.bodyDesc * 0.72 })
+      : fitText(ctx, s.desc, { maxWidth: maxW * 0.98, size: T.bodyDesc, weight: 700, maxLines: 8, lineHeight: 1.62, minSize: T.bodyDesc * 0.72 })) : null;
 
     const badge = badgeTextOf(s);
     const num = s.badgeNum || 0;
@@ -5357,7 +5503,9 @@
     }
     y += P.dy * h * 0.16;
     if (TB){
-      const bw = maxW + Math.round(pad * 0.5), bh = totalH + Math.round(pad * 0.6);
+      /* v5.9: 글씨 박스 높이는 줄 수에 따라 — 1줄은 얇게, 엔터 줄이 늘면 그만큼 두껍게 */
+      const boxLines = (title ? title.lines.length : 0) + (desc ? desc.lines.length : 0);
+      const bw = maxW + Math.round(pad * 0.5), bh = totalH + Math.round(pad * (boxLines <= 1 ? 0.34 : 0.52));
       const bx = pad - Math.round(pad * 0.25) + P.dx * w * 0.16;
       const by = y - Math.round(pad * 0.30);
       ctx.save();
@@ -5649,7 +5797,186 @@
       blockTop: availTop + Math.max(0, (avail - blockH) / 2), fits: fits };
   }
 
+  /* ---------- v5.9: 핵심 요약형 (포인트·체크리스트만 · 금액·합계 없음) ---------- */
+  function sumTextPoints(s){
+    return String(s.pointsText || '').split('\n').map(function(t){ return plainMarks(t).trim(); })
+      .filter(Boolean).slice(0, 10);
+  }
+  function measureSumText(ctx, s, f, sh, points, topY, footerTop, maxW, pad){
+    const z = SZ(), k = sh;
+    const T = { title:f.t.sumTitle*z.title*k, sub:f.t.sumSub*z.sub*k, row:f.t.sumSub*z.sub*k, cta:f.t.cta*z.sub*k };
+    let y = topY + 4 + 12 * k;
+    const labelSize = 21 * Math.max(0.85, Math.min(k, 1.1));
+    const labelTrack = 5.5 * Math.max(0.85, Math.min(k, 1.1));
+    const labelBase = y + labelSize;
+    y += labelSize + 14 * k;
+
+    const title = fitText(ctx, plainMarks(s.title) || '핵심 요약', {
+      maxWidth: maxW, size: T.title, weight: 800, maxLines: 2, lineHeight: 1.16, minSize: T.title * 0.74 });
+    const titleTop = y;
+    y += title.lines.length * title.lh;
+
+    let sub = null, subTop = 0;
+    if ((s.subtitle || '').trim()){
+      y += 14 * k;
+      subTop = y;
+      sub = fitText(ctx, plainMarks(s.subtitle), { maxWidth: maxW, size: T.sub, weight: 500, maxLines: 2, lineHeight: 1.42, minSize: T.sub * 0.92 });
+      y += sub.lines.length * sub.lh;
+    }
+    const headerH = y - topY;
+
+    const bulletStyle = ['check','dot','num'].indexOf(s.sumBullet) >= 0 ? s.sumBullet : 'check';
+    const rowSize = T.row * 1.06;
+    const bulletW = rowSize * 1.95;
+    const gapRow = 22 * k;
+    const items = points.map(function(t){
+      const fit = wrapItem(ctx, t, maxW - bulletW, rowSize, 700, 3, 0.82);
+      return { fit: fit, h: fit.lines.length * fit.lh };
+    });
+    let rowsH = items.reduce(function(a, b){ return a + b.h; }, 0) + gapRow * Math.max(0, items.length - 1);
+
+    let cta = null;
+    if ((s.cta || '').trim()){
+      const ctaSize = T.cta;
+      const fit = fitText(ctx, s.cta, { maxWidth: maxW - ctaSize * 2.2, size: ctaSize, weight: 800, maxLines: 2, lineHeight: 1.28, minSize: ctaSize * 0.82 });
+      const textH = fit.lines.length * fit.lh;
+      const ph = Math.max(ctaSize * 2.0, textH + ctaSize * 0.9);
+      const twMax = Math.max.apply(null, fit.lines.map(function(t){ ctx.font = font(fit.size, 800); return ctx.measureText(t).width; }).concat([0]));
+      cta = { fit: fit, h: ph, w: Math.min(maxW, twMax + ctaSize * 2.2) };
+    }
+    const gapCta = cta ? 26 * k + cta.h : 0;
+    let blockH = rowsH + gapCta;
+    const availTop = topY + headerH + 26 * k;
+    const avail = Math.max(80, footerTop - 10 - availTop);
+    const fits = blockH <= avail;
+
+    /* 남는 높이는 항목 간격으로 나눠 넣어 빈 곳 없이 채운다 */
+    if (fits && items.length){
+      const slack = avail - blockH;
+      const add = Math.min(slack * 0.9 / items.length, rowSize * 1.3);
+      if (add > 1){
+        items.forEach(function(it){ it.h += add; });
+        rowsH += add * items.length;
+        blockH = rowsH + gapCta;
+      }
+    }
+
+    return { T: T, k: k, topY: topY, maxW: maxW, pad: pad,
+      labelSize: labelSize, labelTrack: labelTrack, labelBase: labelBase,
+      title: title, titleTop: titleTop, sub: sub, subTop: subTop, headerH: headerH,
+      items: items, rowsH: rowsH, gapRow: gapRow, cta: cta, blockH: blockH,
+      bulletStyle: bulletStyle, bulletW: bulletW, rowSize: rowSize,
+      blockTop: availTop + Math.max(0, (avail - blockH) * 0.5), fits: fits };
+  }
+
+  function drawSummaryText(ctx, s, f){
+    const w = f.w, h = f.h, pad = f.pad;
+    const style = s.summaryStyle || 'photo';
+    const im = imgFor(s);
+    let pal;
+
+    if (style === 'photo' && im){
+      drawPhoto(ctx, im, s, w, h);
+      ctx.fillStyle = 'rgba(9,9,8,.74)';
+      ctx.fillRect(0, 0, w, h);
+      const g = ctx.createLinearGradient(0, 0, 0, h);
+      g.addColorStop(0, 'rgba(0,0,0,.42)');
+      g.addColorStop(0.45, 'rgba(0,0,0,0)');
+      g.addColorStop(1, 'rgba(0,0,0,.55)');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+      pal = palInk();
+    } else if (style === 'light'){
+      pal = palPaper();
+      drawSurface(ctx, w, h, pal, false);
+    } else if (style === 'cream'){
+      pal = palCream();
+      drawSurface(ctx, w, h, pal, false);
+    } else if (style === 'grad'){
+      pal = palInk();
+      const th = THEME();
+      const g = ctx.createLinearGradient(0, 0, w * 0.5, h);
+      g.addColorStop(0, mixHex(th.ink.bg, '#FFFFFF', 0.04));
+      g.addColorStop(0.55, mixHex(th.ink.bg, th.ink.accent, 0.16));
+      g.addColorStop(1, mixHex(th.ink.bg, '#000000', 0.34));
+      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+    } else {
+      pal = palInk();
+      drawSurface(ctx, w, h, pal, false);
+    }
+    pal = textPal(pal);
+
+    const topY = f.safeTop + pad;
+    const bottomY = h - f.safeBottom - pad;
+    const maxW = w - pad * 2;
+    const footerTop = bottomY - 34;
+    const points = sumTextPoints(s);
+
+    let k = 1, L = null;
+    for (let guard = 0; guard < 26; guard++){
+      L = measureSumText(ctx, s, f, k, points, topY, footerTop, maxW, pad);
+      if (L.fits || k <= 0.62) break;
+      k = Math.max(0.62, k - 0.04);
+    }
+
+    /* 헤더 */
+    ctx.fillStyle = pal.accent;
+    roundRect(ctx, pad, topY, 38, 4, 2); ctx.fill();
+    drawTracked(ctx, 'KEY POINTS', pad, L.labelBase, L.labelSize, 700, L.labelTrack, pal.sub, 'left');
+    drawLines(ctx, L.title.lines, pad, L.titleTop, L.title.lh, L.title.size, 800, pal.fg, 'left');
+    if (L.sub){
+      drawLines(ctx, L.sub.lines, pad, L.subTop, L.sub.lh, L.sub.size, 500, pal.sub, 'left');
+    }
+
+    /* 포인트 */
+    let ry = L.blockTop;
+    L.items.forEach(function(it, i){
+      const fit = it.fit;
+      const cyy = ry + Math.min(it.h, fit.lh) * 0.5;
+      const bs = fit.size * 1.05;
+      ctx.save();
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      if (L.bulletStyle === 'num'){
+        const g = (i < 10) ? NUMGLYPH[i + 1] : String(i + 1);
+        ctx.font = font(bs, 800);
+        ctx.fillStyle = pal.accent;
+        ctx.fillText(g, pad + L.bulletW * 0.42, cyy + bs * 0.04);
+      } else if (L.bulletStyle === 'dot'){
+        ctx.beginPath();
+        ctx.arc(pad + L.bulletW * 0.40, cyy, bs * 0.22, 0, Math.PI * 2);
+        ctx.fillStyle = pal.accent; ctx.fill();
+      } else {
+        const r = bs * 0.52;
+        ctx.beginPath();
+        ctx.arc(pad + L.bulletW * 0.40, cyy, r, 0, Math.PI * 2);
+        ctx.fillStyle = pal.accent; ctx.fill();
+        ctx.strokeStyle = pal.accentFg; ctx.lineWidth = Math.max(2, bs * 0.11);
+        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(pad + L.bulletW * 0.40 - r * 0.44, cyy + r * 0.04);
+        ctx.lineTo(pad + L.bulletW * 0.40 - r * 0.08, cyy + r * 0.42);
+        ctx.lineTo(pad + L.bulletW * 0.40 + r * 0.50, cyy - r * 0.38);
+        ctx.stroke();
+      }
+      ctx.restore();
+      drawLines(ctx, fit.lines, pad + L.bulletW, ry, fit.lh, fit.size, 700, pal.fg, 'left');
+      if (i < L.items.length - 1){
+        ctx.strokeStyle = pal.line; ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(pad, ry + it.h - L.gapRow * 0.42);
+        ctx.lineTo(w - pad, ry + it.h - L.gapRow * 0.42);
+        ctx.stroke();
+      }
+      ry += it.h + (i < L.items.length - 1 ? L.gapRow : 0);
+    });
+
+    if (L.cta) drawCta(ctx, L, pal, ry + 26 * L.k, w, pad, maxW);
+
+    drawCredit(ctx, w / 2, bottomY, pal, 'center', SZ().small);
+  }
+
   function drawSummary(ctx, s, f){
+    /* v5.9: 요약 카드 2종 — 핵심 요약형이면 포인트만 그린다 */
+    if ((s.sumKind || 'receipt') === 'text'){ drawSummaryText(ctx, s, f); return; }
     const w = f.w, h = f.h, pad = f.pad;
     const style = s.summaryStyle || 'photo';
     const im = imgFor(s);
@@ -6320,6 +6647,24 @@
     paintSoon(); persistSoon();
   }
 
+  /* v5.9: 하단(강조 내용) 네모 칸 — 기본 1줄, 엔터 줄 수만큼 자동으로 늘어난다 */
+  function autoGrow(ta){
+    if (!ta || !ta.classList || !ta.classList.contains('autogrow')) return;
+    const cs = window.getComputedStyle ? getComputedStyle(ta) : null;
+    const lh = cs ? parseFloat(cs.lineHeight) : 0;
+    const pT = cs ? parseFloat(cs.paddingTop) : 0;
+    const pB = cs ? parseFloat(cs.paddingBottom) : 0;
+    const bT = cs ? parseFloat(cs.borderTopWidth) : 0;
+    const bB = cs ? parseFloat(cs.borderBottomWidth) : 0;
+    const oneLine = (isFinite(lh) && lh > 0 ? lh : 20) + (isFinite(pT) ? pT : 0) + (isFinite(pB) ? pB : 0) + (isFinite(bT) ? bT : 0) + (isFinite(bB) ? bB : 0) + 2;
+    ta.style.height = 'auto';
+    const h = Math.max(ta.scrollHeight, oneLine);
+    ta.style.height = Math.round(h) + 'px';
+  }
+  function autoGrowAll(){
+    document.querySelectorAll('textarea.autogrow').forEach(function(ta){ autoGrow(ta); });
+  }
+
   function syncForm(){
     const s = cur();
     document.body.dataset.type = s.type;
@@ -6335,6 +6680,16 @@
     if (el('coverQFields')) el('coverQFields').hidden = !(cur().type === 'cover' && cur().coverStyle === 'question');
     document.querySelectorAll('#catTitleSeg button').forEach(function(b){ b.classList.toggle('on', (state.coverTitleColor === 'white' ? 'white' : 'cat') === b.dataset.tcol); });
     document.querySelectorAll('#styleSeg button').forEach(function(b){ b.classList.toggle('on', b.dataset.style === currentSumBg()); });
+    /* v5.9: 요약 카드 2종 — 주문서·영수증형 / 핵심 요약형 */
+    const sumKindNow = (s.type === 'summary' && s.sumKind === 'text') ? 'text' : 'receipt';
+    document.body.dataset.sumkind = sumKindNow;
+    document.querySelectorAll('#sumKindSeg button').forEach(function(b){ b.classList.toggle('on', (b.dataset.sumkind || 'receipt') === sumKindNow); });
+    document.querySelectorAll('#sumBulletSeg button').forEach(function(b){ b.classList.toggle('on', (b.dataset.sumbullet || 'check') === (s.sumBullet || 'check')); });
+    const ptsEl = el('sumPoints');
+    if (ptsEl && document.activeElement !== ptsEl && ptsEl.value !== (s.pointsText || '')) ptsEl.value = s.pointsText || '';
+    if (el('sumKindNote')) el('sumKindNote').innerHTML = sumKindNow === 'text'
+      ? '핵심 요약형은 <b>포인트·체크리스트만</b> 적어요 · 금액·합계 없이 깔끔하게'
+      : '주문서형은 <b>항목 + 금액 + 총 합계</b> · 본문 금액에서 자동으로 채워져요';
     document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('on', b.dataset.mode === state.mode));
     document.querySelectorAll('#posSeg button').forEach(function(b){ b.classList.toggle('on', b.dataset.pos === effPosOf(s)); });
     document.querySelectorAll('#alignSeg button').forEach(function(b){ b.classList.toggle('on', b.dataset.align === effAlignOf(s)); });
@@ -6378,6 +6733,7 @@
     if (el('numPlaceName')) el('numPlaceName').textContent = state.numPlace === 'back' ? '글씨 뒤' : '글씨 앞';
     el('saveAll').textContent = state.slides.length > 1 ? ('전체 저장 (' + state.slides.length + ')') : '전체 저장';
     el('saveTip').textContent = F().w + '×' + F().h + ' PNG · 아이폰은 공유 시트에서 \'이미지 저장\'';
+    autoGrowAll();
   }
 
   function syncZoomUI(){
@@ -7073,6 +7429,38 @@
     toast('요약표를 지웠어요', { undo: restoreBackup, ms: 5000 });
   });
 
+  /* v5.9: 요약 카드 종류 · 핵심 포인트 입력 */
+  if (el('sumKindSeg')) el('sumKindSeg').addEventListener('click', function(e){
+    const b = e.target.closest('[data-sumkind]');
+    if (!b) return;
+    const s = cur();
+    if (s.type !== 'summary'){ toast('요약 카드에서만 골라요'); return; }
+    const v = b.dataset.sumkind === 'text' ? 'text' : 'receipt';
+    if ((s.sumKind || 'receipt') === v) return;
+    compSnapshot('요약 카드 종류 변경 직전');
+    s.sumKind = v;
+    /* 핵심 요약형으로 처음 바꿀 때, 본문 카드 제목을 포인트로 자동으로 채운다 */
+    if (v === 'text' && !(s.pointsText || '').trim()){
+      s.pointsText = bodySlides().map(function(b){ return plainMarks(b.title).replace(/\n/g, ' ').trim(); })
+        .filter(Boolean).slice(0, 8).join('\n');
+    }
+    renderAll(); persistNow(); setTimeout(paint, 30);
+  });
+  if (el('sumBulletSeg')) el('sumBulletSeg').addEventListener('click', function(e){
+    const b = e.target.closest('[data-sumbullet]');
+    if (!b) return;
+    cur().sumBullet = ['check','dot','num'].indexOf(b.dataset.sumbullet) >= 0 ? b.dataset.sumbullet : 'check';
+    syncForm();
+    paintSoon(); persistSoon();
+  });
+  if (el('sumPoints')) el('sumPoints').addEventListener('input', function(e){
+    const s = cur();
+    if (s.type !== 'summary') return;
+    s.pointsText = e.target.value;
+    autoGrow(e.target);
+    paintSoon(); persistSoon();
+  });
+
   el('sizeReset').addEventListener('click', ()=>{
     state.sizes = { title:1, sub:1, small:1 };
     syncStyleUI(); commit();
@@ -7133,6 +7521,7 @@
     if (inp.matches('[data-f]')){
       const s = cur();
       s[inp.dataset.f] = inp.value;
+      autoGrow(inp);
       if (inp.dataset.f === 'total'){ s.totalAuto = false; syncTotalField(s); }
       if (inp.dataset.f === 'badge') syncForm();
       commit();
@@ -7952,8 +8341,45 @@
   function openSheetName(name, open){
     const n = sheetEl(name);
     if (n) n.classList.toggle('open', !!open);
+    syncSheetLock();
   }
   function openSheet(open){ openSheetName('menu', open); }
+
+  /* v5.9 ①: 시트(누끼창·글쓰기 등)가 열린 동안 뒤 화면은 스크롤되지 않게 잠근다 */
+  function syncSheetLock(){
+    let any = false;
+    document.querySelectorAll('.sheetWrap').forEach(function(n){ if (n.classList.contains('open')) any = true; });
+    document.body.classList.toggle('modal-open', any);
+  }
+  document.querySelectorAll('.sheetWrap').forEach(function(n){
+    new MutationObserver(syncSheetLock).observe(n, { attributes:true, attributeFilter:['class'] });
+  });
+  syncSheetLock();
+
+  /* v5.9 ②: iOS 자판이 올라오면 visualViewport 높이·위치를 CSS 변수로 넘긴다
+     — 상단 우측 사진 미리보기(#bulkThumb)와 위쪽 미리보기가 사라지지 않고 그 자리에 남는다. */
+  function vvSync(){
+    const vv = window.visualViewport;
+    const h = vv ? Math.round(vv.height) : window.innerHeight;
+    const t = vv ? Math.round(vv.offsetTop) : 0;
+    const root = document.documentElement;
+    root.style.setProperty('--vvh', h + 'px');
+    root.style.setProperty('--vvt', t + 'px');
+    const kb = !!(vv && h < window.innerHeight - 120);
+    document.body.classList.toggle('kb-open', kb);
+    return { h: h, t: t, kb: kb };
+  }
+  (function watchViewport(){
+    const vv = window.visualViewport;
+    if (vv){
+      vv.addEventListener('resize', vvSync);
+      vv.addEventListener('scroll', vvSync);
+    }
+    window.addEventListener('resize', vvSync);
+    window.addEventListener('orientationchange', function(){ setTimeout(vvSync, 220); });
+    vvSync();
+    setTimeout(vvSync, 60);
+  })();
 
   /* ---------- 미리보기 크기 ---------- */
   function applyPreviewSize(){
@@ -8932,6 +9358,7 @@
     if (el('stageToggle')) el('stageToggle').textContent = state.stageHide ? '펼치기' : '접기';
     if (el('sheetSyncVal')) el('sheetSyncVal').textContent = syncOn() ? '연결됨' : '꺼짐';
     if (el('modeSeg')) el('modeSeg').dataset.hide = '';
+    setTimeout(autoGrowAll, 30);
   }
 
   let psStep3Picked = false;
@@ -8969,6 +9396,7 @@
     const ed = el('editor');
     if (ed) ed.scrollTop = 0;
     setTimeout(paint, 40);
+    setTimeout(autoGrowAll, 60);
   }
 
   el('stepBar').addEventListener('click', function(e){
@@ -9149,6 +9577,11 @@
     });
     sum.rows = rows;
     applyAutoTotal(sum);
+    /* v5.9: 핵심 요약형이면 본문 제목을 포인트로도 채워 둔다 */
+    if (sum.sumKind === 'text' && !String(sum.pointsText || '').trim()){
+      sum.pointsText = bodies.slice(0, 8).map(function(b){ return plainMarks(b.title).replace(/\n/g, ' ').trim(); })
+        .filter(Boolean).join('\n');
+    }
     return filled;
   }
 
@@ -9286,6 +9719,9 @@
       return { item: (b.title || '').replace(/\n/g, ' '), amount: priceFromDesc(b.desc), auto:true };
     });
     if (!s.rows.length) s.rows = [{ item:'', amount:'' }];
+    /* v5.9: 핵심 요약형으로 바꾸면 바로 보이도록 본문 제목을 포인트로도 넣어 둔다 */
+    s.pointsText = bodies.slice(0, 8).map(function(b){ return plainMarks(b.title).replace(/\n/g, ' ').trim(); })
+      .filter(Boolean).join('\n');
     applyAutoTotal(s);
     state.slides.push(s);
     state.current = state.slides.length - 1;
