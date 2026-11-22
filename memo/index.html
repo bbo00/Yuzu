@@ -111,6 +111,8 @@ a{color:var(--accent)}
 .hb-r{text-align:right;font-size:11.5px;color:#4a7566;line-height:1.6}
 .hb-r b{font-weight:800;color:#1f5747}
 .subbar{display:flex;gap:6px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none}
+.trashbar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:9px 12px;margin:0 0 10px;font-size:12.5px;color:var(--ink-2)}
+.trashbar .btn{padding:7px 11px;font-size:12px}
 .subbar::-webkit-scrollbar{display:none}
 .cat{
   flex:0 0 auto;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);
@@ -302,7 +304,7 @@ a{color:var(--accent)}
   .topbar{padding:16px 26px 10px}
   .tb-title h1{font-size:22px}
   .content{padding:14px 26px 120px}
-  .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;align-items:start}
+  .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
   .card:hover{border-color:var(--accent-line)}
   .fab{right:30px;bottom:30px;width:60px;height:60px;border-radius:20px}
   .sheet{align-items:center;padding:24px}
@@ -359,6 +361,10 @@ a{color:var(--accent)}
         <div class="hb-r" id="hbSub"></div>
       </div>
       <div class="subbar" id="subbar" hidden></div>
+      <div class="trashbar" id="trashBar" hidden>
+        <span id="trashInfo">휴지통</span>
+        <button class="btn danger" type="button" data-act="empty-trash">휴지통 비우기</button>
+      </div>
       <div class="list" id="list"></div>
       <div class="empty" id="empty" hidden></div>
     </div>
@@ -682,7 +688,7 @@ function renderHeader(){
   $('#vTitle').textContent=viewTitle();
   var sub;
   if(ui.q.trim()) sub='검색 '+list.length+'건';
-  else if(ui.view==='trash') sub='휴지통 '+list.length+'건 · 복원하거나 비울 수 있어요';
+  else if(ui.view==='trash') sub='휴지통 '+list.length+'건';
   else sub='메모 '+list.length+'건';
   $('#vSub').textContent=sub;
   document.title=(ui.q.trim()?'검색 · ':'')+viewTitle().replace(/^[^\u3131-\uD7A3]+/,'')+' · 유자 메모';
@@ -763,7 +769,7 @@ function healthMeta(m){
 }
 function memoCard(m){
   var f=folderOf(m.folderId);
-  var fname=f?f.name:'(폴더 없음)';
+  var fname=f?f.name:'폴더 삭제됨';
   var badge='badge'+(f&&f.type==='link'?' link':'')+(f&&f.type==='health'?' health':'');
   var h='<article class="card'+(m.pinned?' pinned':'')+'" data-id="'+esc(m.id)+'">';
   h+='<div class="card-head"><span class="'+badge+'">'+esc(fname)+'</span>';
@@ -813,6 +819,13 @@ function emptyHTML(){
 function renderList(){
   var list=memosForView();
   var el=$('#list'), empty=$('#empty');
+  var tb=$('#trashBar');
+  if(tb){
+    if(ui.view==='trash'&&list.length){
+      tb.hidden=false;
+      $('#trashInfo').textContent='삭제한 메모는 여기 보관돼요';
+    }else tb.hidden=true;
+  }
   if(!list.length){
     el.innerHTML='';
     empty.innerHTML=emptyHTML();
