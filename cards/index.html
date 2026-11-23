@@ -2996,22 +2996,18 @@
     const W = 216, H = Math.max(120, Math.round(W * ih / iw));
     c = document.createElement('canvas'); c.width = W; c.height = H;
     const cx = c.getContext('2d');
-    if (typeof cx.filter === 'string'){
-      const bs = Math.max((W + 48) / iw, (H + 48) / ih);
-      const bw = iw * bs, bh = ih * bs;
-      cx.filter = 'blur(' + Math.round(W / 13) + 'px)';
-      cx.drawImage(im, (W - bw) / 2, (H - bh) / 2, bw, bh);
-      cx.filter = 'none';
-    } else {
-      const t = document.createElement('canvas');
-      t.width = 28; t.height = Math.max(14, Math.round(28 * ih / iw));
-      const tx = t.getContext('2d');
-      tx.imageSmoothingEnabled = true;
-      tx.drawImage(im, 0, 0, t.width, t.height);
-      cx.imageSmoothingEnabled = true;
-      if ('imageSmoothingQuality' in cx) cx.imageSmoothingQuality = 'high';
-      cx.drawImage(t, 0, 0, W, H);
-    }
+    /* 1) 아주 작게 줄인 사본을 늘려 깔고 (필터가 없어도 부드럽게)
+       2) blur 필터가 있으면 한 번 더 흐리게 */
+    const t = document.createElement('canvas');
+    t.width = 28; t.height = Math.max(14, Math.round(28 * ih / iw));
+    const tx = t.getContext('2d');
+    tx.imageSmoothingEnabled = true;
+    tx.drawImage(im, 0, 0, t.width, t.height);
+    cx.imageSmoothingEnabled = true;
+    if ('imageSmoothingQuality' in cx) cx.imageSmoothingQuality = 'high';
+    if (typeof cx.filter === 'string') cx.filter = 'blur(' + Math.round(W / 26) + 'px)';
+    cx.drawImage(t, 0, 0, W, H);
+    if (typeof cx.filter === 'string') cx.filter = 'none';
     blurCache.set(im, c);
     return c;
   }
