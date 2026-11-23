@@ -404,7 +404,7 @@
   .kw-mini .n{font-size:10.5px; color:var(--ink3); font-weight:700;}
   .kwbulk{margin-top:8px;}
   .kwbulk textarea{
-    width:100%; min-height:72px; resize:vertical; border:1px solid var(--line); border-radius:11px;
+    width:100%; min-height:104px; resize:vertical; border:1px solid var(--line); border-radius:11px;
     background:#fffefc; padding:9px 12px; font-size:16px; line-height:1.55; outline:none; color:var(--ink);
   }
   .kwbulk textarea:focus{border-color:#e2c3b1; box-shadow:0 0 0 3px rgba(201,138,114,.1);}
@@ -2145,7 +2145,7 @@
           (kws.length ? '<button data-act="kw-bulk-toggle">' + (bulkOpen ? '📋 붙여넣기 접기' : '📋 공고 키워드 한 번에 붙여넣기') + '</button>' : '<span class="n">공고 키워드를 한 번에 등록해 두면 위에서 골라 쓸 수 있어요.</span>') +
         '</div>' +
         '<div class="kwbulk" id="kw-bulk-box"' + (bulkOpen ? '' : ' hidden') + '>' +
-          '<textarea id="kw-bulk-input" placeholder="공고에 적힌 필수 키워드를 붙여넣으세요 (쉼표·줄바꿈으로 여러 개)&#10;예) 망포역 맛집, 수원 영통 맛집, 망포역 고기집">' + esc(kwBulkText) + '</textarea>' +
+          '<textarea id="kw-bulk-input" placeholder="공고 필수 키워드를 붙여넣으세요 (쉼표·줄바꿈)&#10;예) 망포역 맛집, 수원 영통 맛집">' + esc(kwBulkText) + '</textarea>' +
           '<div class="kwbulk-row"><span class="note">공고에 적힌 그대로 넣어 주세요. 앱이 키워드를 지어내지 않아요.</span>' +
           '<button class="btn small" data-act="kw-bulk-add">필수 키워드로 등록</button></div>' +
         '</div>' +
