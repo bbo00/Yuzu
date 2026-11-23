@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>@IMING 카드 제작</title>
-<!-- v6.1 · 릴스 사진 확대 수정(카드 비율과 많이 다르면 원본 전체를 보여주고 남는 자리는 흐린 사진으로 채움·사진 맞춤 자동/꽉 채우기/사진 전체) · 1단계 사진 올리기 칸에 작은 사진 미리보기 복원 -->
+<!-- v6.2 · 사진 배치 1장 / 2분할 / 4분할(칸별 업로드·교체·삭제, 미리보기·PNG·클라우드 동기화) · 📋 기획 메모(상단 버튼·편집·저장·클라우드 동기화) -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#FFFFFF">
@@ -581,6 +581,32 @@
   .slotViewSeg{display:flex; background:var(--soft); border-radius:9px; padding:2px; gap:2px; margin:0 0 9px}
   .slotViewSeg button{flex:1; border:0; background:transparent; padding:6px 4px; border-radius:7px; font-size:11.5px; font-weight:800; color:#6d6b63}
   .slotViewSeg button.on{background:#fff; color:#111; box-shadow:0 1px 2px rgba(0,0,0,.09)}
+  /* v6.2 ---------- */
+  /* 사진 배치 1장 / 2분할 / 4분할 — 칸별 업로드·교체 */
+  .cellGrid{display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:9px}
+  .cellGrid.one{grid-template-columns:1fr}
+  .pcell{position:relative; aspect-ratio:4 / 5; border-radius:11px; border:1px dashed #D9D5C9; background:#F4F1E8;
+    overflow:hidden; padding:0; display:block; width:100%}
+  .pcell.has{border-style:solid; border-color:var(--line); background:#EFECE3}
+  .pcell img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block}
+  .pcell .ph{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:2px; font-size:10.5px; font-weight:800; color:#A9A498; letter-spacing:-.2px}
+  .pcell .ph b{font-size:17px; font-weight:700; line-height:1}
+  .pcell .clr{position:absolute; right:4px; top:4px; width:22px; height:22px; border-radius:50%; border:0;
+    background:rgba(20,20,20,.62); color:#fff; font-size:10px; display:grid; place-items:center; padding:0}
+  .pcell .idx{position:absolute; left:4px; bottom:4px; padding:1px 6px; border-radius:6px; font-size:9px;
+    font-weight:800; color:#fff; background:rgba(20,20,20,.55)}
+  /* 기획 메모 */
+  .memoArea{width:100%; min-height:44vh; border:1px solid var(--line); border-radius:12px; padding:11px 12px;
+    font-size:12.5px; line-height:1.66; font-family:inherit; color:#26241F; background:#fff; resize:vertical;
+    letter-spacing:-.2px}
+  .memoMeta{display:flex; align-items:center; gap:8px; margin-top:9px}
+  .memoMeta .st{flex:1; font-size:10.5px; color:var(--muted); line-height:1.5}
+  @media (max-width: 430px){
+    .topbar{gap:6px; padding-left:12px; padding-right:12px}
+    .topbar .brand span{display:none}
+    .topbar .pillbtn{padding:0 7px; font-size:10.5px}
+  }
   /* v5.8 ---------- */
   /* 글씨 크기 라벨: 이름 + 괄호 설명 두 줄 */
   .zoomRow .lab .labSub{display:block; font-style:normal; font-size:8.5px; color:#B3B0A5;
@@ -611,6 +637,7 @@
   <div class="brand"><b>@IMING</b><span>카드 제작</span></div>
   <button class="pillbtn" id="slotSaveBtn">임시저장</button>
   <button class="pillbtn" id="slotOpenBtn">저장함<i class="topdot" id="topSyncDot"></i></button>
+  <button class="pillbtn" id="memoOpenBtn">📋 기획 메모</button>
   <button class="iconbtn" id="menuBtn" aria-label="메뉴">⋯</button>
 </header>
 
@@ -932,6 +959,18 @@
       <p class="hint" style="margin-top:4px">사진·누끼만 지우고 문구·설정은 그대로 · 되돌리기로 복구</p>
       <p class="hint" style="margin-top:6px">표지 배경·카테고리·표지 디자인은 <b>3단계 디자인</b>에서 골라요</p>
     </div>
+  </div>
+
+  <div class="card" id="gridCard" data-steps="1 4">
+    <div class="cardHead"><span class="label">🧩 사진 배치</span><span class="count" id="gridNow">1장</span></div>
+    <div class="seg" id="gridSeg">
+      <button data-grid="1">1장</button>
+      <button data-grid="2">2분할</button>
+      <button data-grid="4">4분할</button>
+    </div>
+    <div class="cellGrid" id="cellGrid"></div>
+    <input type="file" id="cellFile" accept="image/*" hidden>
+    <p class="hint">2분할은 <b>위·아래</b>, 4분할은 <b>2×2</b>로 나눠요 · 칸을 누르면 <b>그 칸 사진만</b> 바꾸고 ✕로 뺄 수 있어요 · 1장으로 되돌리면 첫 칸 사진을 써요</p>
   </div>
 
   <div class="card" id="stickerCard" data-steps="1">
@@ -1329,6 +1368,18 @@
   </div>
 </div>
 
+<div class="sheetWrap" id="memoWrap">
+  <div class="sheetBg" data-close="memo"></div>
+  <div class="sheet tall">
+    <h4>📋 기획 메모 <span style="font-weight:600; color:var(--muted); font-size:10.5px" id="memoState"></span></h4>
+    <textarea id="memoText" class="memoArea" placeholder="다음에 할 일·기획을 여기에 적어두세요"></textarea>
+    <div class="memoMeta">
+      <span class="st" id="memoNote">이 기기에 저장되고, 클라우드 코드에 연결하면 다른 기기와도 맞춰져요.</span>
+      <button class="mini primary" id="memoSave">저장</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1539,6 +1590,7 @@
       id: 's' + Date.now() + Math.random().toString(36).slice(2,6),
       type: t,
       photo: null, zoom: 1, offX: 0, offY: 0, fit: 'auto',
+      photoGrid: 1, photoCells: [],
       badge: '', badgeNum: 0, title: '', subtitle: '', desc: '', q1: '', q2: '', q3: '',
       watermark: true, grad: false,
       pos: 'bottom', align: 'left', dx: 0, dy: 0, posSet: false, alignSet: false,
@@ -1991,6 +2043,22 @@
       s.type = ['cover','body','summary'].includes(r.type) ? r.type : 'cover';
       s.photo = typeof r.photo === 'string' && r.photo.indexOf('data:image') === 0 ? r.photo : null;
       if (!s.photo) s.photo = photoLoadFor(s) || null;
+      /* v6.2: 사진 배치 1장 / 2분할 / 4분할 — 칸별 사진 */
+      s.photoGrid = (Number(r.photoGrid) === 2 || Number(r.photoGrid) === 4) ? Number(r.photoGrid) : 1;
+      if (s.photoGrid > 1){
+        const rawCells = Array.isArray(r.photoCells) ? r.photoCells : [];
+        const cells = [];
+        for (let ci = 0; ci < s.photoGrid; ci++){
+          const v = rawCells[ci];
+          if (typeof v === 'string' && v.indexOf('data:image') === 0) cells.push(v);
+          else cells.push('');
+        }
+        if (!cells[0] && s.photo) cells[0] = s.photo;
+        s.photoCells = cells;
+        s.photo = cells.filter(function(v){ return !!v; })[0] || null;
+      } else {
+        s.photoCells = [];
+      }
       s.zoom = clamp(num(r.zoom, 1), 1, 3);
       s.offX = clamp(num(r.offX, 0), -1, 1);
       s.offY = clamp(num(r.offY, 0), -1, 1);
@@ -2088,6 +2156,16 @@
       return (v && v.indexOf('data:image') === 0) ? v : '';
     }catch(e){ return ''; }
   }
+  /* v6.2: 덱을 불러올 때 모든 칸 사진을 미리 읽어 두어 넘길 때·내보낼 때 바로 나오게 */
+  function warmPhotos(){
+    if (!state || !Array.isArray(state.slides)) return;
+    state.slides.forEach(function(s){
+      try{
+        if (s.photo) cachedImg(s.photo);
+        photoCellsOf(s).forEach(function(v){ if (v) cachedImg(v); });
+      }catch(e){}
+    });
+  }
   function photoKeysClean(keepIds){
     try{
       const keep = {};
@@ -2134,13 +2212,13 @@
       let textSaved = false;
       try{
         const slim = payloadOf(state);
-        slim.slides = slim.slides.map(s=>Object.assign({}, s, { photo:null }));
+        slim.slides = slim.slides.map(s=>Object.assign({}, s, { photo:null, photoCells:[] }));
         localStorage.setItem(STORE_KEY, JSON.stringify(slim));
         textSaved = true;
       }catch(e2){
         try{
           const slim2 = payloadOf(state);
-          slim2.slides = slim2.slides.map(s=>Object.assign({}, s, { photo:null, stickers:[] }));
+          slim2.slides = slim2.slides.map(s=>Object.assign({}, s, { photo:null, photoCells:[], stickers:[] }));
           localStorage.setItem(STORE_KEY, JSON.stringify(slim2));
           textSaved = true;
         }catch(e3){ /* storage unavailable */ }
@@ -3012,6 +3090,12 @@
     return c;
   }
   function drawPhoto(ctx, im, s, w, h){
+    /* v6.2: 2분할 · 4분할 배치면 칸별 사진을 격자로 그린다 */
+    if (s && (s.photoGrid === 2 || s.photoGrid === 4) && photoCellsOf(s).some(function(v){ return !!v; })){
+      drawPhotoGrid(ctx, s, w, h);
+      return;
+    }
+    if (!im) return;
     const zoom = clamp(num(s.zoom, 1), 1, 3);
     const fit = photoFitOf(s, im, w, h);
     const base = fit.useFit ? fit.contain : fit.cover;
@@ -3032,6 +3116,101 @@
       ctx.restore();
     }
     ctx.drawImage(im, w / 2 - dw / 2 + ox, h / 2 - dh / 2 + oy, dw, dh);
+  }
+
+  /* ---------- v6.2: 사진 배치 1장 · 2분할 · 4분할 ---------- */
+  function photoGridOf(s){ return (s && (s.photoGrid === 2 || s.photoGrid === 4)) ? s.photoGrid : 1; }
+  function photoCellsOf(s){
+    const g = photoGridOf(s);
+    if (g === 1) return [s && s.photo ? s.photo : ''];
+    const src = (s && Array.isArray(s.photoCells)) ? s.photoCells : [];
+    const out = [];
+    for (let i = 0; i < g; i++){
+      let v = src[i];
+      if (typeof v !== 'string' || v.indexOf('data:image') !== 0) v = '';
+      if (!v && i === 0 && s && s.photo) v = s.photo;
+      out.push(v);
+    }
+    return out;
+  }
+  /* 칸 하나를 카드에 꽉 차게(cover) 그린다 · 확대·이동은 슬라이드 값을 따른다 */
+  function drawPhotoCellCover(ctx, im, x, y, cw, ch, s){
+    const zoom = clamp(num(s.zoom, 1), 1, 3);
+    const sc = Math.max(cw / (im.naturalWidth || 1), ch / (im.naturalHeight || 1)) * zoom;
+    const dw = im.naturalWidth * sc, dh = im.naturalHeight * sc;
+    const maxX = Math.max(0, (dw - cw) / 2), maxY = Math.max(0, (dh - ch) / 2);
+    const ox = clamp(num(s.offX, 0), -1, 1) * maxX;
+    const oy = clamp(num(s.offY, 0), -1, 1) * maxY;
+    ctx.save();
+    ctx.beginPath(); ctx.rect(x, y, cw, ch); ctx.clip();
+    ctx.drawImage(im, x + cw / 2 - dw / 2 + ox, y + ch / 2 - dh / 2 + oy, dw, dh);
+    ctx.restore();
+  }
+  function drawPhotoGrid(ctx, s, w, h){
+    const g = photoGridOf(s);
+    const cells = photoCellsOf(s);
+    const cols = g === 4 ? 2 : 1, rows = 2;
+    const gap = Math.max(3, Math.round(Math.min(w, h) * 0.011));
+    ctx.save();
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, w, h);
+    const cw = (w - gap * (cols - 1)) / cols;
+    const ch = (h - gap * (rows - 1)) / rows;
+    for (let i = 0; i < g; i++){
+      const c = i % cols, r = Math.floor(i / cols);
+      const x = c * (cw + gap), y = r * (ch + gap);
+      const src = cells[i];
+      const im = src ? cachedImg(src) : null;
+      if (im) drawPhotoCellCover(ctx, im, x, y, cw, ch, s);
+      else {
+        ctx.fillStyle = '#EFEBE0';
+        ctx.fillRect(x, y, cw, ch);
+        ctx.fillStyle = 'rgba(150,143,125,.80)';
+        ctx.font = font(Math.max(15, Math.round(w * 0.028)), 600);
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('+', x + cw / 2, y + ch / 2);
+      }
+    }
+    ctx.restore();
+  }
+
+  /* v6.2: 본문 카드 — 사진은 위쪽 띠, 아래는 글씨 자리(어두운 바탕) */
+  function drawPhotoGridBand(ctx, s, w, h){
+    const g = photoGridOf(s);
+    const cells = photoCellsOf(s);
+    const cols = g === 4 ? 2 : 1, rows = 2;
+    const gap = Math.max(3, Math.round(Math.min(w, h) * 0.011));
+    const ink = themeById(state.theme).ink.bg;
+    const bandH = Math.round(h * 0.56);
+    const fadeH = Math.round(h * 0.09);
+    ctx.save();
+    /* 사진 칸 사이는 얇은 흰 여백, 아래는 글씨 자리(어두운 바탕) */
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, w, h);
+    const cw = (w - gap * (cols - 1)) / cols;
+    const chh = (bandH - gap * (rows - 1)) / rows;
+    for (let i = 0; i < g; i++){
+      const c = i % cols, r = Math.floor(i / cols);
+      const x = c * (cw + gap), y = r * (chh + gap);
+      const im = cells[i] ? cachedImg(cells[i]) : null;
+      if (im) drawPhotoCellCover(ctx, im, x, y, cw, chh, s);
+      else {
+        ctx.fillStyle = '#E9E5DA';
+        ctx.fillRect(x, y, cw, chh);
+        ctx.fillStyle = 'rgba(150,143,125,.75)';
+        ctx.font = font(Math.max(15, Math.round(w * 0.026)), 600);
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('+', x + cw / 2, y + chh / 2);
+      }
+    }
+    ctx.fillStyle = ink;
+    ctx.fillRect(0, bandH, w, h - bandH);
+    const gd = ctx.createLinearGradient(0, bandH - fadeH, 0, bandH);
+    gd.addColorStop(0, 'rgba(0,0,0,0)');
+    gd.addColorStop(1, ink);
+    ctx.fillStyle = gd;
+    ctx.fillRect(0, bandH - fadeH, w, fadeH);
+    ctx.restore();
   }
 
   function drawCredit(ctx, x, baseline, pal, align, k){
@@ -5543,10 +5722,15 @@
     const P = tPos(s);
     const pos = P.pos;
     const align = P.align;
-    const vivid = !!im;
+    /* v6.2: 2분할·4분할은 위쪽 사진 띠 + 아래 글씨 띠로 그린다 */
+    const gridMode = (s.photoGrid === 2 || s.photoGrid === 4) && photoCellsOf(s).some(function(v){ return !!v; });
+    const vivid = gridMode ? true : !!im;
     let pal;
 
-    if (im){
+    if (gridMode){
+      drawPhotoGridBand(ctx, s, w, h);
+      pal = palPhoto();
+    } else if (im){
       drawPhoto(ctx, im, s, w, h);
       if (s.grad === true){
       if (pos === 'top'){
@@ -6933,6 +7117,7 @@
     renderWrite();
     renderCaption();
     renderPhotoMap();
+    renderGridUI();
     syncRoleUI();
     applyStepUI();
     paintSoon();
@@ -7779,7 +7964,7 @@
 
   el('photoClear').addEventListener('click', ()=>{
     const s = cur();
-    s.photo = null; s.zoom = 1; s.offX = 0; s.offY = 0;
+    clearSlidePhoto(s);
     syncForm(); commit();
   });
 
@@ -7833,7 +8018,7 @@
           if (!state.slides[slideIndex]) state.slides.push(blankSlide('body'));
         }
         const s = state.slides[slideIndex];
-        s.photo = data; s.zoom = 1; s.offX = 0; s.offY = 0;
+        setSlidePhoto(s, data);
         done++;
         const im = new Image(); im.src = data; imgCache.set(data, im);
       }
@@ -8077,6 +8262,7 @@
       if (lib) lib.activeFolder = activeFolder;
       if (state.step === 3) state.previewSize = 'small';
       applyPreviewSize();
+      warmPhotos();
       renderAll(); persistNow();
       openSheetName('slot', false);
       toast('"' + it.name + '"을 불러왔어요');
@@ -8096,6 +8282,108 @@
     toast('저장함에서 지웠어요');
   }
 
+
+  /* =========================================================
+     v6.2 · 📋 기획 메모 (로컬 + 클라우드 동기화)
+     ========================================================= */
+  const MEMO_KEY = 'imingcards_memo_v1';
+  const MEMO_SEED = [
+    '[1. 인스타 릴스 계획 (8편)]',
+    '✅ 1) 목식당 (완성본)',
+    '⬜ 2) 다낭 입국 & 그랩 루트 (구름·다낭공항·그랩 웨이팅존·택시존·다리 국기 건물)',
+    '⬜ 3) 포피스 피자 (화덕·부라타·피자 뜨기·리조또·맥주 짠)',
+    '⬜ 4) 반미 코티엔 (들어가는 길·내부·단면)',
+    '⬜ 5) 살말리아 호텔 수영장 (로비·낮 수영장·밤 수영장)',
+    '⬜ 6) 브라운스파 힐링 (로비·내부·차 따라주는 컷)',
+    '⬜ 7) 하트스파2 마스코트 강아지 (드러누움·걷기·인형놀이)',
+    '⬜ 8) 다낭 밤·로컬 모음 (야시장 스파이더맨·쩐가죠 닭날개·콴푸홍·펍 바텐더·다낭 길가)',
+    '',
+    '[2. 인스타 카드뉴스 계획 (9편)]',
+    '✅ 1) 비 오는 다낭 3박 5일 현실 동선 (카드앱 저장 완료)',
+    '⬜ 2) 윙크호텔 24시 스테이 & 포박하이 첫날 밤 루트',
+    '⬜ 3) 다낭 숙소 4곳 솔직 비교 (윙크·살말리아·치하우스·불라니 0.5박)',
+    '⬜ 4) 벱꾸온 & 포피스 피자 주문 가이드 (반쎄오 무조건 추천 + 부라타 반반)',
+    '⬜ 5) 다낭 로컬 맛집 3곳 비교 (콴푸홍·나벱수아·쩐가죠)',
+    '⬜ 6) 한시장 & 콩카페 & 야시장 쇼핑 팁',
+    '⬜ 7) 다낭 롯데마트 쇼핑 리스트 (꼭 살 것 vs 안 사도 될 것)',
+    '⬜ 8) 다낭 마사지 2곳 비교 (브라운스파 vs 하트스파2 재방문 후기)',
+    '⬜ 9) 다낭 다녀온 맛집 총정리 요약표',
+    '',
+    '[3. 블로그 포스팅 계획 (12편)]',
+    '⬜ 1) 총정리 - 비 오는 다낭 3박 5일 현실 코스 (바나힐·참섬·호이안 제외)',
+    '⬜ 2) 공항·그랩 - 청주 밤비행기 다낭공항 입국 & 그랩 타는 법',
+    '⬜ 3) 숙소 1 - 윙크호텔 24시간 스테이 & 조식 + 포박하이 야식',
+    '⬜ 4) 숙소 2 - 살말리아 부티크 호텔 솔직 후기 (룸·조식·수영장)',
+    '⬜ 5) 숙소 3 - 치하우스 & 마지막 0.5박 불라니 호텔 후기',
+    '⬜ 6) 맛집 1 - 목식당 메뉴·가격·할인 영수증 솔직 후기',
+    '⬜ 7) 맛집 2 - 포피스 피자 예약 및 메뉴 추천',
+    '⬜ 8) 맛집 3 - 반미 코티엔 & 콩카페 & 낮/밤 핑크성당',
+    '⬜ 9) 맛집 4 - 벱꾸온(반쎄오 필수) & 나벱수아 후기',
+    '⬜ 10) 맛집 5 - 콴푸홍(분팃느엉·석쇠불고기) & 쩐가죠 닭날개구이',
+    '⬜ 11) 스파 - 브라운스파 vs 하트스파2 스톤마사지 비교 후기',
+    '⬜ 12) 쇼핑·밤코스 - 한시장·롯데마트 쇼핑 리스트 & 선짜야시장·펍'
+  ].join('\n');
+  function memoLoad(){
+    try{
+      const j = JSON.parse(localStorage.getItem(MEMO_KEY) || 'null');
+      if (j && typeof j.text === 'string') return { text: j.text, ts: num(j.ts, 0) };
+    }catch(e){}
+    return { text: '', ts: 0 };
+  }
+  let MEMO = memoLoad();
+  let memoDirty = false;
+  let memoSaveTimer = null;
+  function memoStore(text, ts){
+    MEMO = { text: String(text == null ? '' : text), ts: ts || Date.now() };
+    try{ localStorage.setItem(MEMO_KEY, JSON.stringify(MEMO)); }catch(e){}
+    return MEMO;
+  }
+  function memoSettings(){ return { text: MEMO.text, ts: MEMO.ts }; }
+  function memoApplyRemote(st){
+    if (!st || typeof st.text !== 'string') return false;
+    const ts = num(st.ts, 0);
+    if (ts <= MEMO.ts) return false;
+    MEMO = { text: st.text, ts: ts };
+    try{ localStorage.setItem(MEMO_KEY, JSON.stringify(MEMO)); }catch(e){ return false; }
+    return true;
+  }
+  function renderMemo(){
+    const ta = el('memoText');
+    if (!ta) return;
+    const show = (MEMO.text || (!localStorage.getItem(MEMO_KEY) ? MEMO_SEED : ''));
+    if (document.activeElement !== ta && !memoDirty && ta.value !== show) ta.value = show;
+    if (el('memoState')){
+      el('memoState').textContent = MEMO.ts ? ('저장됨 · ' + fmtTime(MEMO.ts)) : '아직 저장 안 됨';
+    }
+    if (el('memoNote')){
+      el('memoNote').textContent = syncOn()
+        ? '이 기기에 저장되고, 클라우드 코드(' + (syncCfg ? syncCfg.ns : '') + ')에 자동으로 함께 저장돼요.'
+        : '이 기기에 저장돼요 · 저장함에서 클라우드 코드를 연결하면 다른 기기와도 맞춰져요.';
+    }
+  }
+  function openMemo(){
+    memoDirty = false;
+    const ta = el('memoText');
+    if (ta) ta.value = (MEMO.text || MEMO_SEED);
+    renderMemo();
+    openSheetName('memo', true);
+  }
+  function saveMemo(){
+    const ta = el('memoText');
+    if (!ta) return;
+    memoStore(ta.value);
+    memoDirty = false;
+    renderMemo();
+    scheduleSync();
+    toast('기획 메모를 저장했어요');
+  }
+  if (el('memoOpenBtn')) el('memoOpenBtn').addEventListener('click', openMemo);
+  if (el('memoSave')) el('memoSave').addEventListener('click', saveMemo);
+  if (el('memoText')) el('memoText').addEventListener('input', function(){
+    memoDirty = true;
+    clearTimeout(memoSaveTimer);
+    memoSaveTimer = setTimeout(function(){ if (memoDirty) saveMemo(); }, 1200);
+  });
 
   /* =========================================================
      v5 · MantleDB 클라우드 동기화 (폴더 + 덱)
@@ -8181,7 +8469,10 @@
     let photos = 0;
     lib.decks.forEach(function(d){
       ((d.data && d.data.slides) || []).forEach(function(s){
-        if (s.photo) photos++;
+        if (!s) return;
+        if (s.photoGrid === 2 || s.photoGrid === 4){
+          photos += (Array.isArray(s.photoCells) ? s.photoCells : []).filter(function(v){ return !!v; }).length;
+        } else if (s && s.photo) photos++;
         photos += (s.stickers || []).filter(function(x){ return x && x.src; }).length;
       });
     });
@@ -8214,7 +8505,15 @@
       const slides = (out[i].data && out[i].data.slides) || [];
       for (let j = 0; j < slides.length; j++){
         const s = slides[j];
-        if (s.photo) s.photo = await compactImage(s.photo, maxPx, q);
+        /* v6.2: 분할 칸 사진도 함께 줄여 올린다 */
+        if (s && Array.isArray(s.photoCells) && s.photoCells.length){
+          for (let m = 0; m < s.photoCells.length; m++){
+            if (typeof s.photoCells[m] === 'string' && s.photoCells[m].indexOf('data:image') === 0){
+              s.photoCells[m] = await compactImage(s.photoCells[m], maxPx, q);
+            }
+          }
+          if (s.photoGrid === 2 || s.photoGrid === 4) s.photo = s.photoCells.filter(function(v){ return !!v; })[0] || '';
+        } else if (s && s.photo) s.photo = await compactImage(s.photo, maxPx, q);
         for (let k = 0; k < (s.stickers || []).length; k++){
           const st = s.stickers[k];
           if (st.src) st.src = await compactImage(st.src, Math.min(900, maxPx), q);
@@ -8254,7 +8553,10 @@
     /* v5.7.2: 디자인 분류(표지/본문/둘 다)도 함께 맞춘다 */
     const rr = (remoteData.settings && remoteData.settings.templateRoles) ? remoteData.settings.templateRoles : null;
     if (rr && num(rr.ts, 0) > roleTs()) stats.templateRoles = rr;
-    const changed = stats.folders > 0 || stats.decks > 0 || stats.updated > 0 || !!stats.settings || !!stats.customTemplates || !!stats.templateRoles;
+    /* v6.2: 기획 메모도 함께 맞춘다 */
+    const rm = (remoteData.settings && remoteData.settings.memo) ? remoteData.settings.memo : null;
+    if (rm && typeof rm.text === 'string' && num(rm.ts, 0) > MEMO.ts) stats.memo = rm;
+    const changed = stats.folders > 0 || stats.decks > 0 || stats.updated > 0 || !!stats.settings || !!stats.customTemplates || !!stats.templateRoles || !!stats.memo;
     return { folders:folders, decks:decks, changed:changed, stats:stats };
   }
 
@@ -8263,7 +8565,7 @@
     if (!lib) libLoad();
     const compact = await compactDecks(lib.decks, 1280, 0.68);
     const doc = JSON.stringify({ v:1, app:'imingcards', ts:Date.now(), device:syncCfg.deviceId,
-      data:{ folders:lib.folders, decks:compact, settings:{ tplNames: tplSettings(), customTemplates: myTplSettings(), templateRoles: roleSettings() } } });
+      data:{ folders:lib.folders, decks:compact, settings:{ tplNames: tplSettings(), customTemplates: myTplSettings(), templateRoles: roleSettings(), memo: memoSettings() } } });
     const parts = chunkBytes(doc, SYNC_PART_MAX);
     if (parts.length > SYNC_PARTS_PER_NS * 4) throw new Error('데이터가 너무 큽니다 (' + parts.length + '조각) · 오래된 덱을 정리해 주세요');
     for (let i = 0; i < parts.length; i++){
@@ -8330,6 +8632,7 @@
           if (merged.stats.settings && tplApplyRemote(merged.stats.settings)){ renderTplChips(); }
           if (merged.stats.customTemplates && myTplApplyRemote(merged.stats.customTemplates)){ renderTplChips(); }
           if (merged.stats.templateRoles && roleApplyRemote(merged.stats.templateRoles)){ renderRoleRows(); renderTplChips(); }
+          if (merged.stats.memo && memoApplyRemote(merged.stats.memo)){ renderMemo(); }
           lib.folders = merged.folders;
           lib.decks = merged.decks;
           libSave();
@@ -8512,6 +8815,7 @@
   function sheetEl(name){
     return el(name === 'menu' ? 'sheetWrap' : name === 'slot' ? 'slotWrap' : name === 'batch' ? 'batchWrap'
       : name === 'bulk' ? 'bulkWrap' : name === 'sync' ? 'syncWrap' : name === 'font' ? 'fontWrap'
+      : name === 'memo' ? 'memoWrap'
       : name === 'stcrop' ? 'stCropWrap' : 'stModeWrap');
   }
   function openSheetName(name, open){
@@ -8819,7 +9123,7 @@
         }
         const s = state.slides[ci];
         if (CAT()) s.coverStyle = 'cat';
-        s.photo = data; s.zoom = 1; s.offX = 0; s.offY = 0;
+        setSlidePhoto(s, data);
         preloadImg(data);
         /* 표지 사진을 넣으면 표지 배경도 사진으로 (단색을 골라 둔 경우 대비) */
         if ((state.coverBg || 'photo') !== 'photo') setCoverBg('photo', { keepSlide:true });
@@ -8841,7 +9145,7 @@
             if (si >= 0) state.slides.splice(si, 0, s); else state.slides.push(s);
             bodySlides.push(s);
           }
-          s.photo = data; s.zoom = 1; s.offX = 0; s.offY = 0;
+          setSlidePhoto(s, data);
           preloadImg(data);
           placedBody++;
         }catch(e){ failed++; }
@@ -8866,7 +9170,7 @@
         const si = summaryIndex();
         if (si < 0) throw new Error('no summary');
         const s = state.slides[si];
-        s.photo = data; s.zoom = 1; s.offX = 0; s.offY = 0;
+        setSlidePhoto(s, data);
         s.summaryStyle = 'photo';
         state.summaryBg = 'photo';
         preloadImg(data);
@@ -9182,7 +9486,8 @@
     if (!confirm('모든 슬라이드의 사진과 누끼 스티커를 지울까요?\n문구·설정은 그대로 남고, [되돌리기]로 복구할 수 있어요.')) return;
     compSnapshot('사진 전체 삭제 직전', { undo:true });
     state.slides.forEach(function(s){
-      s.photo = null; s.zoom = 1; s.offX = 0; s.offY = 0; s.stickers = [];
+      clearSlidePhoto(s);
+      s.stickers = [];
     });
     stickerSel = 0;
     renderAll();
@@ -9460,6 +9765,7 @@
     if (!bg) return;
     const k = bg.dataset.close;
     if (k === 'bulk'){ openBulk(false); return; }
+    if (k === 'memo' && memoDirty) saveMemo();
     openSheetName(k === '1' ? 'menu' : k, false);
   });
 
@@ -9490,7 +9796,7 @@
      ========================================================= */
   const STEP_ORDER = {
     /* v6.0: 1 사진·누끼 · 2 글쓰기 · 3 디자인 · 4 최종 — 단계마다 할 일만 남긴다 */
-    photoCard:{1:10, 4:70}, stickerCard:{1:20}, creditCard:{1:30}, guideCard:{1:40},
+    photoCard:{1:10, 4:70}, gridCard:{1:15, 4:65}, stickerCard:{1:20}, creditCard:{1:30}, guideCard:{1:40},
     writeCard:{2:10}, roleCard:{2:15}, bodyWrite:{2:20}, fieldsCard:{2:30}, sumCard:{2:40}, photoMapCard:{2:50},
     designHead:{3:5}, typeCard:{3:10}, roleSetCard:{3:11}, coverBgCard:{3:12}, sumBgCard:{3:14},
     designCard:{3:20}, posCard:{3:30, 4:30},
@@ -10043,13 +10349,16 @@
     if (!box) return;
     box.innerHTML = state.slides.map(function(s, i){
       const cur2 = i === state.current ? ' cur' : '';
-      const thumb = s.photo
-        ? '<img src="' + s.photo + '" alt="">'
+      const gcell = photoCellsOf(s).filter(function(v){ return !!v; });
+      const gnow = photoGridOf(s);
+      const thumb = gcell.length
+        ? '<img src="' + gcell[0] + '" alt="">'
         : (s.type === 'summary' ? '📊' : (s.type === 'cover' ? '🖼' : '▢'));
       const kind = { cover:'표지', body:'본문', summary:'요약표' }[s.type] || '카드';
       const nm = slideLabel(i);
       const hasT = (s.title || '').trim();
-      const sub = hasT ? hasT.slice(0, 22) : (s.photo ? '사진 있음' : '사진 없음');
+      const sub = hasT ? hasT.slice(0, 22)
+        : (gnow > 1 ? (gnow + '분할 · ' + gcell.length + '칸') : (s.photo ? '사진 있음' : '사진 없음'));
       return '<div class="pmRow' + cur2 + '" data-pm="' + i + '">' +
         '<div class="th" data-pm-pick="' + i + '">' + thumb + '</div>' +
         '<div class="meta" data-pm-pick="' + i + '"><div class="nm">' + esc(nm) + ' <span style="font-weight:600; color:var(--muted); font-size:10px">' + kind + '</span></div>' +
@@ -10059,7 +10368,7 @@
           (s.photo ? '<button class="x" data-pm-clear="' + i + '" aria-label="사진 빼기">✕</button>' : '') +
         '</div></div>';
     }).join('');
-    const n = state.slides.filter(function(s){ return !!s.photo; }).length;
+    const n = state.slides.filter(function(s){ return photoCellsOf(s).some(function(v){ return !!v; }); }).length;
     if (el('photoMapCount')) el('photoMapCount').textContent = n + '/' + state.slides.length + '장';
   }
   if (el('photoMapList')) el('photoMapList').addEventListener('click', function(e){
@@ -10077,7 +10386,7 @@
       const s = state.slides[i];
       if (!s) return;
       compSnapshot('카드 사진 빼기 직전', { undo:true });
-      s.photo = null; s.zoom = 1; s.offX = 0; s.offY = 0;
+      clearSlidePhoto(s);
       state.current = i;
       renderAll(); persistNow();
       toast(slideLabel(i) + ' 사진을 뺐어요', { undo: restoreBackup, ms: 5000 });
@@ -10096,12 +10405,118 @@
     if (!s) return;
     try{
       const data = await compressImage(file);
-      s.photo = data; s.zoom = 1; s.offX = 0; s.offY = 0;
+      setSlidePhoto(s, data);
       const im = new Image(); im.src = data; imgCache.set(data, im);
       state.current = i;
       renderAll();
       persistNow();
       toast(slideLabel(i) + '에 사진을 넣었어요');
+    }catch(err){
+      toast(err && err.message ? err.message : '사진을 불러오지 못했어요');
+    }
+  });
+
+  /* ---------- v6.2: 사진 배치 UI (1단계·최종) ---------- */
+  let cellTarget = 0;
+  function setSlidePhoto(s, data){
+    if (!s) return;
+    const g = photoGridOf(s);
+    if (g > 1){
+      if (!Array.isArray(s.photoCells)) s.photoCells = [];
+      while (s.photoCells.length < g) s.photoCells.push('');
+      s.photoCells[0] = data;
+      s.photo = s.photoCells.filter(function(v){ return !!v; })[0] || null;
+    } else {
+      s.photo = data;
+    }
+    s.zoom = 1; s.offX = 0; s.offY = 0;
+  }
+  function clearSlidePhoto(s){
+    if (!s) return;
+    s.photo = null; s.zoom = 1; s.offX = 0; s.offY = 0;
+    s.photoCells = [];
+  }
+  function renderGridUI(){
+    const s = cur();
+    const g = photoGridOf(s);
+    document.querySelectorAll('#gridSeg button').forEach(function(b){
+      b.classList.toggle('on', Number(b.dataset.grid) === g);
+    });
+    if (el('gridNow')) el('gridNow').textContent = g === 1 ? '1장' : (g === 2 ? '2분할' : '4분할');
+    const box = el('cellGrid');
+    if (!box) return;
+    box.hidden = g === 1;
+    box.classList.toggle('one', g === 2);
+    if (g === 1){ box.innerHTML = ''; return; }
+    const cells = photoCellsOf(s);
+    box.innerHTML = cells.map(function(v, i){
+      return '<button class="pcell' + (v ? ' has' : '') + '" data-cell="' + i + '" aria-label="' + (i + 1) + '칸 사진">' +
+        (v ? '<img src="' + v + '" alt="">' : '<span class="ph"><b>＋</b>사진 ' + (i + 1) + '</span>') +
+        '<span class="idx">' + (i + 1) + '칸</span>' +
+        (v ? '<span class="clr" data-cellclear="' + i + '" role="button" aria-label="' + (i + 1) + '칸 사진 빼기">✕</span>' : '') +
+        '</button>';
+    }).join('');
+  }
+  if (el('gridSeg')) el('gridSeg').addEventListener('click', function(e){
+    const b = e.target.closest('button[data-grid]');
+    if (!b) return;
+    const s = cur();
+    const want = Number(b.dataset.grid);
+    const g = want === 4 ? 4 : (want === 2 ? 2 : 1);
+    if (g === photoGridOf(s)) return;
+    compSnapshot('사진 배치 바꾸기 직전', { undo:true });
+    const prev = Array.isArray(s.photoCells) ? s.photoCells.slice() : [];
+    if (g > 1){
+      const cells = [];
+      for (let i = 0; i < g; i++) cells.push(prev[i] || (i === 0 ? (s.photo || '') : ''));
+      s.photoCells = cells;
+      s.photoGrid = g;
+      s.photo = cells.filter(function(v){ return !!v; })[0] || null;
+      toast(g + '분할로 바꿨어요 · 칸을 누르면 사진을 넣을 수 있어요');
+    } else {
+      const first = prev.filter(function(v){ return !!v; })[0] || s.photo || null;
+      s.photoGrid = 1;
+      s.photo = first;
+      s.photoCells = [];
+      toast('1장으로 바꿨어요');
+    }
+    renderAll(); persistNow();
+  });
+  if (el('cellGrid')) el('cellGrid').addEventListener('click', function(e){
+    const s = cur();
+    const clr = e.target.closest('[data-cellclear]');
+    if (clr){
+      const i = parseInt(clr.dataset.cellclear, 10) || 0;
+      compSnapshot('칸 사진 빼기 직전', { undo:true });
+      if (Array.isArray(s.photoCells)) s.photoCells[i] = '';
+      s.photo = (s.photoCells || []).filter(function(v){ return !!v; })[0] || null;
+      renderAll(); persistNow();
+      toast((i + 1) + '칸 사진을 뺐어요', { undo: restoreBackup, ms: 5000 });
+      return;
+    }
+    const b = e.target.closest('[data-cell]');
+    if (!b) return;
+    cellTarget = parseInt(b.dataset.cell, 10) || 0;
+    if (el('cellFile')) el('cellFile').click();
+  });
+  if (el('cellFile')) el('cellFile').addEventListener('change', async function(){
+    const f = el('cellFile');
+    if (!f || !f.files || !f.files.length) return;
+    const file = f.files[0];
+    f.value = '';
+    const s = cur();
+    const g = photoGridOf(s);
+    if (g === 1) return;
+    const i = clamp(cellTarget, 0, g - 1);
+    try{
+      const data = await compressImage(file);
+      if (!Array.isArray(s.photoCells)) s.photoCells = [];
+      while (s.photoCells.length < g) s.photoCells.push('');
+      s.photoCells[i] = data;
+      s.photo = s.photoCells.filter(function(v){ return !!v; })[0] || null;
+      const im = new Image(); im.src = data; imgCache.set(data, im);
+      renderAll(); persistNow();
+      toast((i + 1) + '칸에 사진을 넣었어요');
     }catch(err){
       toast(err && err.message ? err.message : '사진을 불러오지 못했어요');
     }
@@ -10752,6 +11167,21 @@
       exportCanvas: exportCanvas,
       exportSize: function(i){ const c = exportCanvas(state.slides[i == null ? state.current : i]); return { w:c.width, h:c.height }; },
       exportDataUrl: function(i){ return exportCanvas(state.slides[i == null ? state.current : i]).toDataURL('image/png'); },
+      /* v6.2: 사진 배치 · 기획 메모 테스트 훅 */
+      gridInfo: function(i){
+        const s = state.slides[i == null ? state.current : i];
+        if (!s) return null;
+        return { grid: photoGridOf(s), cells: photoCellsOf(s).map(function(v){ return v ? v.length : 0; }) };
+      },
+      setGrid: function(n, i){
+        const s = state.slides[i == null ? state.current : i];
+        if (!s) return false;
+        const b = document.querySelector('#gridSeg button[data-grid="' + (Number(n) === 4 ? 4 : (Number(n) === 2 ? 2 : 1)) + '"]');
+        if (b) b.click();
+        return photoGridOf(s);
+      },
+      memo: function(){ return { text: MEMO.text, ts: MEMO.ts }; },
+      setMemo: function(t){ memoStore(t); renderMemo(); scheduleSync(); return MEMO.text.length; },
       setStyle: function(o){
         if (o && o.theme) state.theme = themeById(o.theme).id;
         if (o && o.font){ state.font = fontById(o.font).id; state.fontCover = fontById(o.font).id; }
