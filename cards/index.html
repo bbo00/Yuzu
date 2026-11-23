@@ -8655,6 +8655,10 @@
       syncBusy = false;
       renderSyncBar();
       if (el('syncWrap') && el('syncWrap').classList.contains('open')) renderSyncSheet();
+      /* v6.2: 동기화 중에 저장된 변경이 있으면 한 번 더 올린다 (메모·격자 사진 유실 방지) */
+      if (syncCfg && syncCfg.dirty && !syncCfg.lastError && !syncTimer){
+        syncTimer = setTimeout(function(){ syncTimer = null; syncNow({ silent:true }); }, 900);
+      }
     }
   }
 
