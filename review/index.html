@@ -389,6 +389,28 @@
   .kw-addrow input:focus{border-color:#e2c3b1; box-shadow:0 0 0 3px rgba(201,138,114,.1);}
   .kw-addrow .btn{padding:9px 14px; font-size:12.5px; border-radius:11px; flex:none;}
   .kw-empty{font-size:11.5px; color:var(--ink3); line-height:1.55;}
+  /* ---------- v1.9 공고 필수 키워드 · 내돈내산 추천 키워드 ---------- */
+  .kwsec-hint{font-size:11px; color:var(--ink3); line-height:1.55; margin:-2px 0 8px;}
+  .kwsec-hint b{color:var(--ink2);}
+  .kwchip.sug{background:#fdf7ef; color:#96683f; border-color:#efdfc9; border-style:dashed;}
+  .kwchip.sug.on{background:#f7e5dc; color:#8a5a43; border-color:#e6c8b6; border-style:solid;}
+  .kwchip .chk{font-size:10.5px; opacity:.55;}
+  .kw-mini{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:9px;}
+  .kw-mini button{
+    font-size:11.5px; font-weight:800; color:#8a5a43;
+    padding:7px 11px; border-radius:9px; background:#f7e5dc; border:1px solid #efd9cc;
+  }
+  .kw-mini button:active{transform:scale(.98);}
+  .kw-mini .n{font-size:10.5px; color:var(--ink3); font-weight:700;}
+  .kwbulk{margin-top:8px;}
+  .kwbulk textarea{
+    width:100%; min-height:72px; resize:vertical; border:1px solid var(--line); border-radius:11px;
+    background:#fffefc; padding:9px 12px; font-size:16px; line-height:1.55; outline:none; color:var(--ink);
+  }
+  .kwbulk textarea:focus{border-color:#e2c3b1; box-shadow:0 0 0 3px rgba(201,138,114,.1);}
+  .kwbulk-row{display:flex; align-items:center; gap:8px; margin-top:6px;}
+  .kwbulk-row .note{flex:1; min-width:0; font-size:10.5px; color:var(--ink3); line-height:1.45;}
+  .kwbulk-row .btn{padding:9px 14px; font-size:12.5px; border-radius:11px; flex:none;}
   .kw-empty b{color:var(--ink2);}
   .kw-sel-line{
     margin-top:10px; padding:9px 11px; border-radius:11px; background:#f7f4ee;
@@ -770,7 +792,7 @@
       <div class="field"><label>전화</label><input id="f-phone" placeholder="0503-000-0000"></div>
       <div class="field"><label>영업시간</label><input id="f-hours" placeholder="11:00~23:00 (브레이크 15:00~15:30)"></div>
     </div>
-    <div class="field"><label>필수 키워드 (쉼표로 구분)</label><input id="f-keywords" placeholder="망포역 맛집, 수원 영통 맛집"></div>
+    <div class="field"><label id="f-keywords-label">필수 키워드 (쉼표로 구분)</label><textarea id="f-keywords" rows="3" placeholder="공고에 적힌 필수 키워드를 쉼표나 줄바꿈으로 붙여넣으세요&#10;예) 망포역 맛집, 수원 영통 맛집"></textarea></div>
     <div class="field"><label>필수 미션 (한 줄에 하나씩)</label><textarea id="f-mission" placeholder="본문 1,000자 이상&#10;사진 15장 이상&#10;지도 첨부"></textarea></div>
     <div class="field"><label>메모</label><textarea id="f-note" placeholder="예약 방법, 체험권 사용 여부, 주의사항"></textarea></div>
     <div class="sheet-actions">
@@ -838,7 +860,7 @@
   const SYNC_CFG_KEY = 'yujareview_sync_v1';
   const LS_KEY = 'yujareview_state_v2';
   const LS_UI = 'yujareview_ui_v1';
-  const VERSION = 'v1.8';
+  const VERSION = 'v1.9';
 
   /* =========================================================
      동기화 키 (v1.8)
@@ -1616,7 +1638,7 @@
     if (c.note) lines.push('메모: ' + c.note);
     if (!paid && String(c.bannerUrl || '').trim()) lines.push('공정위 배너 이미지(본문 아닌 별도 칸·해시태그 아래): ' + String(c.bannerUrl).trim());
     if (String(c.visitDate || '').trim()) lines.push((paid ? '방문일: ' : '체험일: ') + String(c.visitDate).trim());
-    if ((c.keywords || []).length) lines.push('필수 키워드: ' + c.keywords.join(', '));
+    if ((c.keywords || []).length) lines.push((paid ? '내 키워드' : '체험단 필수 키워드(공고 제공)') + ': ' + c.keywords.join(', '));
     if (!paid && (c.mission || []).length) lines.push('필수 미션: ' + c.mission.join(' / '));
     const selKw = selectedKw(c);
     if (selKw.length) lines.push('선정 제목 키워드(제목 포함 + 본문 각 5회 이상): ' + selKw.join(', '));
@@ -1915,45 +1937,236 @@
      렌더링 — 상세
      ========================================================= */
   let kwFolded = false;
+  let kwBulkOpen = false;
+  let kwBulkText = '';
+
+  /* 키워드 문자열 → 배열 (쉼표·줄바꿈으로 여러 개, 앞 # 제거, 중복 제거) */
+  function parseKwList(raw) {
+    const out = [];
+    String(raw == null ? '' : raw).split(/[,\n\r·、;]+/).forEach(function (s) {
+      const v = String(s).replace(/^#+/, '').replace(/\s+/g, ' ').trim();
+      if (v && out.indexOf(v) < 0) out.push(v);
+    });
+    return out;
+  }
+
+  /* 담긴 키워드 칩 — 누르면 제목 키워드로 선정/해제 */
+  function kwChipHtml(k, on) {
+    return '<button class="kwchip' + (on ? ' on' : '') + '" data-act="kw-toggle" data-kw="' + esc(k) + '">' +
+      '<span class="chk">' + (on ? '✓' : '＋') + '</span>' + esc(k) + '</button>';
+  }
+  /* 추천 키워드 칩 — 누르면 내 키워드로 담김 */
+  function sugChipHtml(k) {
+    return '<button class="kwchip sug" data-act="kw-pick" data-kw="' + esc(k) + '">' +
+      '<span class="chk">💡</span>' + esc(k) + '</button>';
+  }
+
+  /* =====================================================================
+     내돈내산 추천 키워드 — 매장명 · 지역(주소·동네) · 메뉴 · 메모 조합
+     ※ 체험단 건에는 쓰지 않는다(공고에 없는 키워드를 지어내지 않기 위해)
+     ===================================================================== */
+  const KW_REGIONS = [
+    ['망포', ['망포역', '망포동']],
+    ['영통', ['영통']],
+    ['광교', ['광교']],
+    ['인계', ['인계동']],
+    ['매탄', ['매탄동']],
+    ['권선', ['권선']],
+    ['동탄', ['동탄']],
+    ['기흥', ['기흥']],
+    ['보정', ['보정동']],
+    ['화서', ['화서동']],
+    ['우만', ['우만동']],
+    ['수원', ['수원']],
+    ['화성', ['화성']],
+    ['용인', ['용인']],
+    ['청주', ['청주']],
+    ['서울', ['서울']],
+    ['부산', ['부산']],
+    ['제주', ['제주']],
+    ['강릉', ['강릉']],
+    ['다낭', ['다낭']],
+    ['호이안', ['호이안']],
+    ['하노이', ['하노이']],
+    ['방콕', ['방콕']],
+    ['도쿄', ['도쿄']],
+    ['오사카', ['오사카']],
+    ['후쿠오카', ['후쿠오카']],
+    ['타이베이', ['타이베이']]
+  ];
+  const KW_REGIONS_LATIN = [
+    ['da nang', '다낭'], ['đà nẵng', '다낭'], ['hoi an', '호이안'], ['hanoi', '하노이'],
+    ['bangkok', '방콕'], ['tokyo', '도쿄'], ['osaka', '오사카'], ['fukuoka', '후쿠오카'], ['taipei', '타이베이']
+  ];
+  const KW_DISHES = [
+    '해물탕', '갈비탕', '설렁탕', '곰탕', '부대찌개', '닭갈비', '찜닭', '감자탕', '삼계탕', '순두부',
+    '떡볶이', '쌀국수', '막국수', '칼국수', '돈까스', '스테이크', '파스타', '피자', '버거', '치킨',
+    '타코', '포케', '샐러드', '초밥', '덮밥', '비빔밥', '볶음밥', '김밥', '냉면', '소바',
+    '라멘', '우동', '국밥', '순대', '족발', '보쌈', '막창', '곱창', '삼겹살', '목살',
+    '갈비', '찌개', '전골', '조림', '구이', '찜', '스시', '커피', '디저트', '베이커리',
+    '케이크', '마카롱', '해산물', '가리비', '조개', '장어', '오리', '분짜', '반미', '팟타이', '매운탕'
+  ];
+
+  /* 매장명·주소·키워드·메모에서 지역 이름을 뽑아 역 → 동 → 구 → 시 순으로 */
+  function kwRegionList(c) {
+    const sec = c.sections || {};
+    const hay = [c.name, c.place, (c.keywords || []).join(' '), selectedKw(c).join(' '), c.note, sec.loc]
+      .map(function (x) { return String(x == null ? '' : x); }).join(' ').toLowerCase();
+    const found = [];
+    KW_REGIONS.forEach(function (pair) {
+      if (hay.indexOf(String(pair[0]).toLowerCase()) < 0) return;
+      pair[1].forEach(function (l) { if (found.indexOf(l) < 0) found.push(l); });
+    });
+    KW_REGIONS_LATIN.forEach(function (pair) {
+      if (hay.indexOf(pair[0]) >= 0 && found.indexOf(pair[1]) < 0) found.push(pair[1]);
+    });
+    const rank = function (l) { return /역$/.test(l) ? 0 : (/동$/.test(l) ? 1 : 2); };
+    return found.map(function (l, i) { return { l: l, r: rank(l), i: i }; })
+      .sort(function (a, b) { return (a.r - b.r) || (a.i - b.i); })
+      .map(function (o) { return o.l; });
+  }
+
+  /* 메뉴 → 음식 이름 후보 (메뉴에 있는 말을 먼저, 긴 말을 먼저) */
+  function kwDishList(c) {
+    const sec = c.sections || {};
+    const menu = String(sec.menu || '');
+    const taste = String(sec.taste || '');
+    const name = String(c.name || '');
+    const note = String(c.note || '');
+    const scored = [];
+    KW_DISHES.forEach(function (d) {
+      let s = 0, src = 9;
+      /* 매장 이름에 있는 음식(예: 깡우동·이서방왕족발)을 가장 먼저, 그다음 메뉴에서 */
+      if (name.indexOf(d) >= 0) { s += 6; src = Math.min(src, 1); }
+      if (menu.indexOf(d) >= 0) { s += 5; src = Math.min(src, 2); }
+      if (taste.indexOf(d) >= 0) { s += 3; src = Math.min(src, 3); }
+      if (note.indexOf(d) >= 0) { s += 1; src = Math.min(src, 4); }
+      if (s) scored.push({ d: d, s: s, src: src });
+    });
+    scored.sort(function (a, b) { return (a.src - b.src) || (b.d.length - a.d.length) || (b.s - a.s); });
+    const out = [];
+    scored.forEach(function (o) {
+      if (out.some(function (x) { return x.indexOf(o.d) >= 0; })) return;
+      out.push(o.d);
+    });
+    return out;
+  }
+
+  /* 매장 이름에서 브랜드만 (지역·지점명 제외) */
+  function kwBrandOf(c) {
+    const name = String(c.name || '').replace(/\([^)]*\)/g, ' ').replace(/\s+/g, ' ').trim();
+    const regions = kwRegionList(c);
+    const toks = name.split(' ').filter(Boolean);
+    for (let i = 0; i < toks.length; i++) {
+      let t = String(toks[i]).trim();
+      if (!t) continue;
+      if (regions.indexOf(t) >= 0) continue;
+      if (/(점|본점|지점)$/.test(t) && t.length <= 4) continue;
+      t = t.replace(/(본점|지점)$/, '');
+      if (t.length < 2) continue;
+      if (KW_REGIONS.some(function (p) { return p[1].indexOf(t) >= 0; })) continue;
+      return t;
+    }
+    return '';
+  }
+
+  function suggestPaidKeywords(c) {
+    const regions = kwRegionList(c);
+    const station = regions.filter(function (l) { return /역$/.test(l); })[0] || '';
+    const dong = regions.filter(function (l) { return /동$/.test(l); })[0] || '';
+    const tops = regions.filter(function (l) { return !/역$/.test(l) && !/동$/.test(l); });
+    const city = tops.length ? tops[tops.length - 1] : '';
+    const gu = tops.length > 1 ? tops[0] : '';
+    const dish = kwDishList(c)[0] || '';
+    const cat = String(c.category || '').trim();
+    const catWord = (cat === '맛집' || cat === '카페') ? cat : '';
+    const brand = kwBrandOf(c);
+    const out = [];
+    const add = function (v) {
+      const s = String(v == null ? '' : v).replace(/\s+/g, ' ').trim();
+      if (!s || s.length < 2 || out.indexOf(s) >= 0) return;
+      out.push(s);
+    };
+    if (dish && city) add(city + dish);
+    if (dish && station) add(station + dish);
+    if (station && catWord) add(station + catWord);
+    if (dong && catWord) add(dong + catWord);
+    if (city && catWord) add(city + catWord);
+    if (gu && gu !== city && catWord) add(gu + catWord);
+    if (dish && catWord) add(dish + catWord);
+    if (brand) add(brand);
+    if (cat === '여행') {
+      if (city) add(city + '여행');
+      if (city) add(city + '여행코스');
+      if (dong) add(dong + '여행');
+    }
+    return out.slice(0, 8);
+  }
 
   function kwCardHtml(c) {
+    const paid = isPaid(c);
     const miss = (c.mission || []).filter(function (x) { return String(x || '').trim(); });
-    const kws = (c.keywords || []).filter(function (x) { return String(x || '').trim(); });
     const sels = selectedKw(c);
+    const kws = (c.keywords || []).map(function (x) { return String(x == null ? '' : x).trim(); }).filter(Boolean);
+    /* 선정만 남고 목록에서는 빠진 키워드도 칩으로 보이게 한다(기존 기록 호환) */
+    sels.forEach(function (k) { if (kws.indexOf(k) < 0) kws.push(k); });
+    const sugg = paid ? suggestPaidKeywords(c).filter(function (k) { return kws.indexOf(k) < 0; }) : [];
+    const allOn = kws.length > 0 && kws.every(function (k) { return sels.indexOf(k) >= 0; });
+    const bulkOpen = kwBulkOpen || !kws.length;
+
     const guide = miss.length
       ? miss.map(function (m) {
           return '<div class="guide-item"><span class="gi">' + guideIcon(m) + '</span><span>' + esc(m) + '</span></div>';
         }).join('')
       : '<div class="kw-empty">가이드라인(필수 미션)이 비어 있어요. 위 <b>정보 수정</b>에서 채울 수 있어요.</div>';
-    const chips = kws.length
-      ? kws.map(function (k) {
-          const on = sels.indexOf(k) >= 0;
-          return '<button class="kwchip' + (on ? ' on' : '') + '" data-act="kw-toggle" data-kw="' + esc(k) + '">' +
-            '<span class="chk">' + (on ? '✓' : '＋') + '</span>' + esc(k) + '</button>';
-        }).join('')
-      : '<div class="kw-empty">등록된 키워드가 없어요. 아래 칸에 제목 키워드를 직접 추가해 보세요.</div>';
+
+    const savedChips = kws.map(function (k) { return kwChipHtml(k, sels.indexOf(k) >= 0); }).join('');
+    const sugChips = sugg.map(sugChipHtml).join('');
+
+    const kwSection = paid
+      ? ('<div class="kwc-label">① 💡 유자 추천 키워드 ' +
+          '<span class="n">담은 키워드 ' + kws.length + '개 · 선정 ' + sels.length + '개</span></div>' +
+        '<div class="kwsec-hint">매장명·지역·메뉴를 보고 만든 추천이에요. 점선 칩은 추천, 초록 칩은 담긴 키워드예요. 누르면 제목 키워드로 담겨요.</div>' +
+        '<div class="kwchips">' + (savedChips + sugChips || '<div class="kw-empty">매장명·지역·메뉴를 추가하면 추천 키워드가 자동으로 나와요. 아래 칸에 직접 추가해도 돼요.</div>') + '</div>' +
+        '<div class="kw-addrow">' +
+          '<input type="text" id="kw-add-input" placeholder="원하는 키워드 직접 추가">' +
+          '<button class="btn small" data-act="kw-add">추가</button>' +
+        '</div>')
+      : ('<div class="kwc-label">① 가이드라인 <span class="n">필수 미션 ' + miss.length + '개</span></div>' +
+        '<div class="guide-list">' + guide + '</div>' +
+        '<div class="kwc-label">② 🎁 체험단 제공 필수 키워드 ' +
+          '<span class="n">선정 ' + sels.length + ' / ' + kws.length + '</span></div>' +
+        '<div class="kwsec-hint">공고에서 준 필수 키워드예요. 누르면 <b>제목 키워드로 선정</b>되고, 다시 누르면 해제돼요.</div>' +
+        '<div class="kwchips">' + (kws.length ? savedChips : '<div class="kw-empty">아직 등록된 공고 키워드가 없어요. 아래 칸에 <b>공고 키워드를 붙여넣어</b> 등록해 주세요.</div>') + '</div>' +
+        '<div class="kw-mini">' +
+          (kws.length > 1 ? '<button data-act="kw-select-all">' + (allOn ? '선정 전체 해제' : '공고 키워드 전체 선정') + '</button>' : '') +
+          (kws.length ? '<button data-act="kw-bulk-toggle">' + (bulkOpen ? '📋 붙여넣기 접기' : '📋 공고 키워드 한 번에 붙여넣기') + '</button>' : '<span class="n">공고 키워드를 한 번에 등록해 두면 위에서 골라 쓸 수 있어요.</span>') +
+        '</div>' +
+        '<div class="kwbulk" id="kw-bulk-box"' + (bulkOpen ? '' : ' hidden') + '>' +
+          '<textarea id="kw-bulk-input" placeholder="공고에 적힌 필수 키워드를 붙여넣으세요 (쉼표·줄바꿈으로 여러 개)&#10;예) 망포역 맛집, 수원 영통 맛집, 망포역 고기집">' + esc(kwBulkText) + '</textarea>' +
+          '<div class="kwbulk-row"><span class="note">공고에 적힌 그대로 넣어 주세요. 앱이 키워드를 지어내지 않아요.</span>' +
+          '<button class="btn small" data-act="kw-bulk-add">필수 키워드로 등록</button></div>' +
+        '</div>' +
+        '<div class="kw-addrow">' +
+          '<input type="text" id="kw-add-input" placeholder="필수 키워드 하나 직접 추가">' +
+          '<button class="btn small" data-act="kw-add">추가</button>' +
+        '</div>');
+
     const selLine = sels.length
       ? sels.map(function (k) { return '<b>' + esc(k) + '</b>'; }).join(' · ')
       : '<b>없음</b> — 위 키워드를 탭하면 제목 키워드로 선정돼요.';
     return '' +
       '<div class="kwcard">' +
         '<div class="kwc-head">' +
-          '<h3>🏷️ 제목 키워드 · 가이드라인</h3>' +
+          '<h3>🏷️ 키워드 · 가이드라인</h3>' +
           '<span class="sp"></span>' +
           '<button class="kwc-toggle" data-act="kw-fold">' + (kwFolded ? '펼치기' : '접기') + '</button>' +
         '</div>' +
         '<div class="kwc-body' + (kwFolded ? ' collapsed' : '') + '" id="kwc-body">' +
-          '<div class="kwc-label">① 가이드라인 <span class="n">필수 미션 ' + miss.length + '개</span></div>' +
-          '<div class="guide-list">' + guide + '</div>' +
-          '<div class="kwc-label">② 제목 키워드 리스트 <span class="n">선정 ' + sels.length + ' / ' + kws.length + '</span></div>' +
-          '<div class="kwchips">' + chips + '</div>' +
-          '<div class="kw-addrow">' +
-            '<input type="text" id="kw-add-input" placeholder="새 제목 키워드 직접 추가">' +
-            '<button class="btn small" data-act="kw-add">추가</button>' +
-          '</div>' +
+          kwSection +
           '<div class="kw-sel-line">선정된 제목 키워드: ' + selLine +
             '<br>선정한 키워드는 <b>제목</b>에 넣고, 본문에도 각각 <b>5회 이상</b> 들어가야 해요.</div>' +
-          '<div class="kwc-label">\u2462 추천 제목 <span class="n">키워드를 고르면 4~5개 자동</span></div>' +
+          '<div class="kwc-label">' + (paid ? '②' : '③') + ' 추천 제목 <span class="n">키워드를 고르면 4~5개 자동</span></div>' +
           titleRecHtml(c) +
         '</div>' +
       '</div>';
@@ -2137,7 +2350,7 @@
     }).join('');
 
     const kwHtml = (c.keywords || []).length
-      ? '<div class="tag-label">필수 키워드</div><div class="tagbox">' +
+      ? '<div class="tag-label">' + (paid ? '내 키워드' : '🎁 공고 필수 키워드') + '</div><div class="tagbox">' +
         c.keywords.map(function (k) { return '<span class="tag kw">#' + esc(k) + '</span>'; }).join('') + '</div>'
       : '';
     const miHtml = (!paid && (c.mission || []).length)
@@ -2323,6 +2536,14 @@
       const el = $(p[0]);
       if (el) el.hidden = p[1];
     });
+    const kl = $('f-keywords-label');
+    if (kl) kl.textContent = paid
+      ? '내 키워드 (쉼표·줄바꿈으로 구분)'
+      : '체험단 제공 필수 키워드 (쉼표·줄바꿈으로 구분 · 공고 그대로)';
+    const kf = $('f-keywords');
+    if (kf) kf.placeholder = paid
+      ? '원하는 키워드를 쉼표나 줄바꿈으로 넣어 주세요\n예) 수원족발, 망포동맛집'
+      : '공고에 적힌 필수 키워드를 쉼표나 줄바꿈으로 붙여넣으세요\n예) 망포역 맛집, 수원 영통 맛집';
     const sw = $('f-type');
     if (sw) {
       Array.prototype.forEach.call(sw.querySelectorAll('button'), function (b) {
@@ -2351,7 +2572,7 @@
     $('f-place').value = c ? (c.place || '') : '';
     $('f-phone').value = c ? (c.phone || '') : '';
     $('f-hours').value = c ? (c.hours || '') : '';
-    $('f-keywords').value = c ? (c.keywords || []).join(', ') : '';
+    $('f-keywords').value = c ? (c.keywords || []).join('\n') : '';
     $('f-mission').value = c ? (c.mission || []).join('\n') : '';
     $('f-note').value = c ? (c.note || '') : '';
     $('btn-del').style.display = c ? '' : 'none';
@@ -2387,7 +2608,7 @@
       place: $('f-place').value.trim(),
       phone: $('f-phone').value.trim(),
       hours: $('f-hours').value.trim(),
-      keywords: $('f-keywords').value.split(',').map(function (s) { return s.trim(); }).filter(Boolean),
+      keywords: parseKwList($('f-keywords').value),
       mission: $('f-mission').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean),
       note: $('f-note').value.trim()
     };
@@ -2771,6 +2992,60 @@
         toast('"' + v + '" 제목 키워드로 추가했어요');
         break;
       }
+      case 'kw-pick': {
+        /* 내돈내산 추천 키워드 — 누르면 내 키워드로 담고 바로 선정 */
+        const c = currentCampaign();
+        if (!c) break;
+        const kw = (t.dataset.kw || '').trim();
+        if (!kw) break;
+        if (!Array.isArray(c.keywords)) c.keywords = [];
+        if (c.keywords.indexOf(kw) < 0) c.keywords.push(kw);
+        if (!Array.isArray(c.selectedTitleKeywords)) c.selectedTitleKeywords = [];
+        if (c.selectedTitleKeywords.indexOf(kw) < 0) c.selectedTitleKeywords.push(kw);
+        touchCampaign(c, true);
+        renderDetail();
+        toast('"' + kw + '" 추천 키워드를 담았어요', true);
+        break;
+      }
+      case 'kw-bulk-toggle': {
+        kwBulkOpen = !kwBulkOpen;
+        const box = $('kw-bulk-box');
+        if (box) {
+          box.hidden = !kwBulkOpen;
+          if (kwBulkOpen) { const bi = $('kw-bulk-input'); if (bi) { try { bi.focus(); } catch (e) {} } }
+        }
+        t.textContent = kwBulkOpen ? '📋 붙여넣기 접기' : '📋 공고 키워드 한 번에 붙여넣기';
+        break;
+      }
+      case 'kw-bulk-add': {
+        const c = currentCampaign();
+        if (!c) break;
+        const inp = $('kw-bulk-input');
+        const got = parseKwList(inp ? inp.value : kwBulkText);
+        if (!got.length) { toast('공고 키워드를 붙여넣어 주세요'); if (inp) inp.focus(); break; }
+        if (!Array.isArray(c.keywords)) c.keywords = [];
+        let added = 0;
+        got.forEach(function (v) { if (c.keywords.indexOf(v) < 0) { c.keywords.push(v); added++; } });
+        kwBulkText = '';
+        kwBulkOpen = false;
+        touchCampaign(c, true);
+        renderDetail();
+        toast(added ? added + '개 필수 키워드를 등록했어요 · 위에서 골라 주세요' : '이미 등록된 키워드예요', true);
+        break;
+      }
+      case 'kw-select-all': {
+        const c = currentCampaign();
+        if (!c) break;
+        const kws = (c.keywords || []).slice();
+        if (!kws.length) break;
+        const sels = selectedKw(c);
+        const allOn = kws.every(function (k) { return sels.indexOf(k) >= 0; });
+        c.selectedTitleKeywords = allOn ? [] : kws;
+        touchCampaign(c, true);
+        renderDetail();
+        toast(allOn ? '선정을 모두 해제했어요' : '공고 키워드 ' + kws.length + '개를 모두 선정했어요', true);
+        break;
+      }
       case 'title-pick': {
         const c = currentCampaign();
         if (!c) break;
@@ -2871,6 +3146,10 @@
     if (el.id === 'search-input') {
       searchTerm = el.value.trim();
       renderList();
+      return;
+    }
+    if (el.id === 'kw-bulk-input') {
+      kwBulkText = el.value;
       return;
     }
     if (el.dataset && el.dataset.sec) {
