@@ -5722,8 +5722,8 @@
     const P = tPos(s);
     const pos = P.pos;
     const align = P.align;
-    /* v6.2: 2분할·4분할은 위쪽 사진 띠 + 아래 글씨 띠로 그린다 */
-    const gridMode = (s.photoGrid === 2 || s.photoGrid === 4) && photoCellsOf(s).some(function(v){ return !!v; });
+    /* v6.2: 2분할·4분할은 위쪽 사진 띠 + 아래 글씨 띠로 그린다 (빈 칸도 틀로 보여줌) */
+    const gridMode = (s.photoGrid === 2 || s.photoGrid === 4);
     const vivid = gridMode ? true : !!im;
     let pal;
 
