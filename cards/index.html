@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>@IMING 카드 제작</title>
-<!-- v6.0 · 라벨 통일(상단/중앙/하단)·디자인별 기본 위치(중앙/왼쪽/기타)·좌중우 정렬 실작동·여기 저장해둬(배지 좌상단·한 칸 위)·트렌드 가운데·매거진 줄바꿈 정리·3단계에 글씨 위치·3↔4단계 중복 제거 -->
+<!-- v6.1 · 릴스 사진 확대 수정(카드 비율과 많이 다르면 원본 전체를 보여주고 남는 자리는 흐린 사진으로 채움·사진 맞춤 자동/꽉 채우기/사진 전체) · 1단계 사진 올리기 칸에 작은 사진 미리보기 복원 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#FFFFFF">
@@ -915,6 +915,15 @@
       <button data-nudge="down" aria-label="아래">▼</button>
       <button data-nudge="right" aria-label="오른쪽">▶</button>
     </div>
+    <div id="fitRow" hidden>
+      <div class="cardHead" style="margin:4px 0 6px"><span class="label">사진 맞춤</span><span class="count" id="fitName">자동</span></div>
+      <div class="seg" id="fitSeg">
+        <button data-fit="auto">자동</button>
+        <button data-fit="fill">꽉 채우기</button>
+        <button data-fit="fit">사진 전체</button>
+      </div>
+      <p class="hint" style="margin-top:5px">자동은 카드와 사진 비율이 많이 다를 때 <b>사진 전체</b>를 보여주고, 남는 자리는 같은 사진을 흐리게 채워요</p>
+    </div>
     <p class="hint">미리보기 사진을 <b>드래그</b>해 위치 조정 · <b>두 손가락</b>으로 확대</p>
     <p class="hint st3only" style="margin-top:4px">사진 넣기·바꾸기·전체 삭제는 <b>1단계</b>에서 해요</p>
     <div class="st1only">
@@ -1529,7 +1538,7 @@
     return {
       id: 's' + Date.now() + Math.random().toString(36).slice(2,6),
       type: t,
-      photo: null, zoom: 1, offX: 0, offY: 0,
+      photo: null, zoom: 1, offX: 0, offY: 0, fit: 'auto',
       badge: '', badgeNum: 0, title: '', subtitle: '', desc: '', q1: '', q2: '', q3: '',
       watermark: true, grad: false,
       pos: 'bottom', align: 'left', dx: 0, dy: 0, posSet: false, alignSet: false,
@@ -1985,6 +1994,7 @@
       s.zoom = clamp(num(r.zoom, 1), 1, 3);
       s.offX = clamp(num(r.offX, 0), -1, 1);
       s.offY = clamp(num(r.offY, 0), -1, 1);
+      s.fit = ['auto','fill','fit'].indexOf(r.fit) >= 0 ? r.fit : 'auto';
       s.badge = str(r.badge);
       s.q1 = str(r.q1); s.q2 = str(r.q2); s.q3 = str(r.q3);
       s.badgeNum = clamp(Math.round(num(r.badgeNum, 0)), 0, 10);
@@ -2963,14 +2973,68 @@
   /* =========================================================
      7. 카드 렌더러
      ========================================================= */
+  /* v6.1: 카드 비율과 사진 비율이 많이 다르면 확대·크롭을 줄인다.
+     'auto' = 비율 차이가 크면 원본 전체를 보여주고(맞춤), 'fill' = 카드에 꽉 채우기(예전 방식), 'fit' = 항상 전체.
+     잘리는 양(crop) = cover/contain 배율비 — 1이면 사진 비율이 카드와 같다. */
+  function photoFitOf(s, im, w, h){
+    const iw = im.naturalWidth || w, ih = im.naturalHeight || h;
+    const cover = Math.max(w / iw, h / ih);
+    const contain = Math.min(w / iw, h / ih);
+    const crop = contain > 0 ? cover / contain : 1;
+    const setting = (s && (s.fit === 'fit' || s.fit === 'fill')) ? s.fit : 'auto';
+    const limit = state.mode === 'reel' ? 1.25 : 2.0;
+    return { cover: cover, contain: contain, crop: crop, setting: setting,
+             useFit: setting === 'fit' || (setting === 'auto' && crop > limit) };
+  }
+  /* 맞춤으로 그릴 때 바탕에 까는 흐린 사진 — 카드 비율로 한 번만 만들어 캐시한다.
+     blur 필터가 없는 브라우저는 아주 작게 줄였다 늘리는 방식으로 대신한다. */
+  const blurCache = new WeakMap();
+  function blurPhotoCanvas(im){
+    let c = blurCache.get(im);
+    if (c) return c;
+    const iw = im.naturalWidth || 1, ih = im.naturalHeight || 1;
+    const W = 216, H = Math.max(120, Math.round(W * ih / iw));
+    c = document.createElement('canvas'); c.width = W; c.height = H;
+    const cx = c.getContext('2d');
+    if (typeof cx.filter === 'string'){
+      const bs = Math.max((W + 48) / iw, (H + 48) / ih);
+      const bw = iw * bs, bh = ih * bs;
+      cx.filter = 'blur(' + Math.round(W / 13) + 'px)';
+      cx.drawImage(im, (W - bw) / 2, (H - bh) / 2, bw, bh);
+      cx.filter = 'none';
+    } else {
+      const t = document.createElement('canvas');
+      t.width = 28; t.height = Math.max(14, Math.round(28 * ih / iw));
+      const tx = t.getContext('2d');
+      tx.imageSmoothingEnabled = true;
+      tx.drawImage(im, 0, 0, t.width, t.height);
+      cx.imageSmoothingEnabled = true;
+      if ('imageSmoothingQuality' in cx) cx.imageSmoothingQuality = 'high';
+      cx.drawImage(t, 0, 0, W, H);
+    }
+    blurCache.set(im, c);
+    return c;
+  }
   function drawPhoto(ctx, im, s, w, h){
     const zoom = clamp(num(s.zoom, 1), 1, 3);
-    const base = Math.max(w / im.naturalWidth, h / im.naturalHeight);
+    const fit = photoFitOf(s, im, w, h);
+    const base = fit.useFit ? fit.contain : fit.cover;
     const sc = base * zoom;
     const dw = im.naturalWidth * sc, dh = im.naturalHeight * sc;
     const maxX = Math.max(0, (dw - w) / 2), maxY = Math.max(0, (dh - h) / 2);
     const ox = clamp(num(s.offX, 0), -1, 1) * maxX;
     const oy = clamp(num(s.offY, 0), -1, 1) * maxY;
+    /* v6.1: 맞춤일 때 남는 자리는 같은 사진을 아주 작게 줄였다 늘린 흐린 배경으로 채운다 */
+    if (fit.useFit){
+      const bg = blurPhotoCanvas(im);
+      const bs = Math.max(w / bg.width, h / bg.height);
+      ctx.save();
+      ctx.globalAlpha = 0.94;
+      ctx.drawImage(bg, (w - bg.width * bs) / 2, (h - bg.height * bs) / 2, bg.width * bs, bg.height * bs);
+      ctx.fillStyle = 'rgba(12,11,9,.14)';
+      ctx.fillRect(0, 0, w, h);
+      ctx.restore();
+    }
     ctx.drawImage(im, w / 2 - dw / 2 + ox, h / 2 - dh / 2 + oy, dw, dh);
   }
 
@@ -6410,7 +6474,8 @@
       const dy = (e.clientY - prev.y) * (f.h / rect.height);
       const im = imgFor(s);
       if (!im) return;
-      const sc = Math.max(f.w / im.naturalWidth, f.h / im.naturalHeight) * clamp(num(s.zoom, 1), 1, 3);
+      const pf = photoFitOf(s, im, f.w, f.h);
+      const sc = (pf.useFit ? pf.contain : pf.cover) * clamp(num(s.zoom, 1), 1, 3);
       const maxX = Math.max(0, (im.naturalWidth * sc - f.w) / 2);
       const maxY = Math.max(0, (im.naturalHeight * sc - f.h) / 2);
       if (maxX > 0.5) s.offX = clamp(num(s.offX, 0) + dx / maxX, -1, 1);
@@ -6782,13 +6847,17 @@
     el('creditState').textContent = state.creditOn === false ? '숨김'
       : ((state.credit || '').trim() ? '표시 중' : '문구 없음');
 
-    /* v5.8: 업로드 칸 안의 작은 미리보기는 쓰지 않는다 (사진은 위 미리보기에서 확인) */
+    /* v6.1: 1단계 사진 올리기 칸에 작은 미리보기를 다시 보여준다 (v5.8에서 숨겼던 것) */
     const thumb = el('thumb');
-    if (thumb){ thumb.hidden = true; thumb.removeAttribute('src'); }
+    if (thumb){
+      if (s.photo){ thumb.src = s.photo; thumb.hidden = false; }
+      else { thumb.hidden = true; thumb.removeAttribute('src'); }
+    }
     el('drop').classList.toggle('has', !!s.photo);
-    el('dropEmpty').hidden = false;
+    el('dropEmpty').hidden = !!s.photo;
     el('photoClear').style.visibility = s.photo ? 'visible' : 'hidden';
     syncZoomUI();
+    syncFitUI();
     syncStyleUI();
     /* v5.8: 글씨 박스·숫자 위치 */
     const tbName = el('textBoxName');
@@ -6814,6 +6883,25 @@
     const z = clamp(num(s.zoom, 1), 1, 3);
     el('zoom').value = z;
     el('zoomVal').textContent = z.toFixed(2) + '×';
+  }
+
+  /* v6.1: 사진 맞춤(자동·꽉 채우기·사진 전체) — 사진이 있을 때만 보여준다 */
+  function syncFitUI(){
+    const s = cur(), row = el('fitRow');
+    if (!row) return;
+    row.hidden = !s.photo;
+    const setting = (s.fit === 'fit' || s.fit === 'fill') ? s.fit : 'auto';
+    document.querySelectorAll('#fitSeg button').forEach(function(b){
+      b.classList.toggle('on', b.dataset.fit === setting);
+    });
+    if (el('fitName')){
+      let eff = '';
+      const im = s.photo ? imgFor(s) : null;
+      if (im && im.naturalWidth) eff = photoFitOf(s, im, F().w, F().h).useFit ? '사진 전체' : '꽉 채우기';
+      el('fitName').textContent = setting === 'auto'
+        ? (eff ? ('자동 · ' + eff) : '자동')
+        : (setting === 'fit' ? '사진 전체' : '꽉 채우기');
+    }
   }
 
   function syncStyleUI(){
@@ -7695,6 +7783,16 @@
   el('zoom').addEventListener('input', (e)=>{
     cur().zoom = clamp(num(e.target.value, 1), 1, 3);
     el('zoomVal').textContent = cur().zoom.toFixed(2) + '×';
+    commit();
+  });
+
+  /* v6.1: 사진 맞춤 */
+  if (el('fitSeg')) el('fitSeg').addEventListener('click', (e)=>{
+    const b = e.target.closest('button[data-fit]');
+    if (!b) return;
+    const s = cur();
+    s.fit = ['auto','fill','fit'].indexOf(b.dataset.fit) >= 0 ? b.dataset.fit : 'auto';
+    syncZoomUI();
     commit();
   });
 
@@ -10531,6 +10629,15 @@
     window.__iming = {
       state: state,
       formats: FORMATS,
+      photoFit: function(){
+        const s = cur(), im = s.photo ? imgFor(s) : null;
+        if (!im || !im.naturalWidth) return { hasPhoto: !!s.photo, mode: state.mode, setting: s.fit || 'auto' };
+        const pf = photoFitOf(s, im, F().w, F().h);
+        return { hasPhoto: true, mode: state.mode, setting: s.fit || 'auto',
+                 iw: im.naturalWidth, ih: im.naturalHeight,
+                 cover: +pf.cover.toFixed(4), contain: +pf.contain.toFixed(4),
+                 crop: +pf.crop.toFixed(3), useFit: pf.useFit };
+      },
       themes: THEMES,
       fonts: FONTS,
       fontOrder: function(){ return fontOrder(); },
