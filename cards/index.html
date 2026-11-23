@@ -2222,7 +2222,7 @@
     if (!im){
       im = new Image();
       im.decoding = 'async';
-      im.onload = ()=>{ paintSoon(); };
+      im.onload = ()=>{ paintSoon(); try{ if (typeof syncFitUI === 'function') syncFitUI(); }catch(e){} };
       im.src = src;
       imgCache.set(src, im);
     }
@@ -6886,6 +6886,7 @@
   }
 
   /* v6.1: 사진 맞춤(자동·꽉 채우기·사진 전체) — 사진이 있을 때만 보여준다 */
+  let fitLabelTimer = null, fitLabelTries = 0;
   function syncFitUI(){
     const s = cur(), row = el('fitRow');
     if (!row) return;
@@ -6897,7 +6898,13 @@
     if (el('fitName')){
       let eff = '';
       const im = s.photo ? imgFor(s) : null;
-      if (im && im.naturalWidth) eff = photoFitOf(s, im, F().w, F().h).useFit ? '사진 전체' : '꽉 채우기';
+      if (im && im.naturalWidth){ eff = photoFitOf(s, im, F().w, F().h).useFit ? '사진 전체' : '꽉 채우기'; fitLabelTries = 0; }
+      else if (s.photo && fitLabelTries < 3){
+        /* 사진이 아직 디코딩 중이면 잠시 뒤 한 번 더 (라벨에 실제 결과를 보여주기 위해) */
+        fitLabelTries += 1;
+        clearTimeout(fitLabelTimer);
+        fitLabelTimer = setTimeout(syncFitUI, 350);
+      } else fitLabelTries = 0;
       el('fitName').textContent = setting === 'auto'
         ? (eff ? ('자동 · ' + eff) : '자동')
         : (setting === 'fit' ? '사진 전체' : '꽉 채우기');
