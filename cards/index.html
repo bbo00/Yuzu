@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>@IMING 카드 제작</title>
-<!-- v6.3 · 1단계 사진 통합(카드별 사진·4분할 멀티 업로드·칸 순서 ◀▶) · 2단계 글 모아쓰기/따로쓰기/비우기 3버튼 · 3단계 < > 카드 이동 + 중앙/왼쪽/기타 번호 버튼 + 본문 전체/이 카드만 적용(글씨 위치 유지) · 동기화 코드 입력·링크 정규화·Enter -->
+<!-- v6.4 · 모든 단계에서 카드 넘기기(‹ ›) 상시 노출 · 4분할 칸 사진 개별 보관(새로고침·동기화 후에도 4칸 유지) · 칸별 확대/좌우/상하 조절 · 본문 사진 높이 조절 + 전체 본문 일괄 적용 · 빈 칸 자동 숨김 · 🖼 전체배경+중앙박스 본문 디자인 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#FFFFFF">
@@ -333,12 +333,18 @@
   .stepbar button.on .n{background:var(--accent); color:#fff; box-shadow:none}
   .stepbar button.done{background:#F6EEE0; color:#6A5326}
   .stepbar button.done .n{background:#C9B68C; color:#fff; box-shadow:none}
-  body[data-step="2"] .modebar,
   body[data-step="2"] .sizebar,
   body[data-step="2"] .stage,
   body[data-step="2"] .actionbar{display:none}
   body[data-step="4"] #modeSeg{display:none}
   body[data-step="4"] .modebar{justify-content:center}
+  /* v6.4: 2단계(글쓰기)에서도 카드 넘기기 ‹ › 는 늘 보이게 — 오른쪽에 붙인다 */
+  body[data-step="2"] #modeSeg{display:none}
+  body[data-step="2"] .modebar{display:flex}
+  body[data-step="2"] .pager{margin-left:auto}
+  body[data-step="2"] .pager button{width:34px; height:32px; font-size:22px}
+  .modebar .pager button{cursor:pointer}
+  .modebar .pager button:disabled{opacity:.28; cursor:default}
   body.stagehide .stage{display:none}
   .sizebar .stageToggle{margin-left:auto}
   .editor{display:flex; flex-direction:column}
@@ -612,6 +618,16 @@
   .pcell .mv{position:absolute; left:4px; right:4px; bottom:4px; display:flex; gap:3px}
   .pcell .mv button{flex:1; height:22px; border:0; border-radius:6px; background:rgba(20,20,20,.62); color:#fff;
     font-size:9.5px; padding:0; line-height:1}
+  /* v6.4: 칸 맞추기 — 지금 고른 칸을 테두리로 표시 */
+  .pcell.sel{outline:3px solid #111; outline-offset:-3px}
+  .pcell.sel .idx{background:#111}
+  #cellAdj{margin-top:10px; padding-top:8px; border-top:1px dashed var(--line2)}
+  #cellPickSeg{display:flex; gap:5px; margin:6px 0 8px}
+  #cellPickSeg button{flex:1; height:30px; border:1px solid var(--line); background:#fff; border-radius:8px;
+    font-size:11.5px; font-weight:800; color:#3E3C36}
+  #cellPickSeg button.on{background:#111; color:#fff; border-color:#111}
+  /* v6.4: 글쓰기 빈 칸 — 카드에 안 그려진다는 걸 라벨에서 바로 알린다 */
+  .field.empty > label::after{content:' · 빈 칸은 카드에 안 나와요'; color:#B6B2A6; font-weight:600; letter-spacing:0}
   #photoCard.gridon .singlePhotoOnly{display:none!important}
   #photoCard.gridon .gridHint{display:block!important}
   #writeModeSeg button[data-wmode="clear"]{color:var(--danger)}
@@ -998,7 +1014,29 @@
     </div>
     <div class="cellGrid" id="cellGrid"></div>
     <input type="file" id="cellFile" accept="image/*" multiple hidden>
+    <div id="cellAdj" hidden>
+      <div class="cardHead" style="margin:0 0 2px"><span class="label">칸 맞추기</span><span class="count" id="cellAdjNow">1칸</span></div>
+      <div id="cellPickSeg"></div>
+      <div class="zoomRow"><span class="lab">확대</span><input type="range" id="czoom" min="1" max="3" step="0.01" value="1"><span class="tiny num" id="czoomVal">1.00×</span></div>
+      <div class="zoomRow"><span class="lab">좌우</span><input type="range" id="coffx" min="-1" max="1" step="0.01" value="0"><span class="tiny num" id="coffxVal">0</span></div>
+      <div class="zoomRow"><span class="lab">상하</span><input type="range" id="coffy" min="-1" max="1" step="0.01" value="0"><span class="tiny num" id="coffyVal">0</span></div>
+      <div class="nudge">
+        <button data-cnudge="left" aria-label="이 칸 사진 왼쪽">◀</button>
+        <button data-cnudge="up" aria-label="이 칸 사진 위">▲</button>
+        <button data-cnudge="center">가운데</button>
+        <button data-cnudge="down" aria-label="이 칸 사진 아래">▼</button>
+        <button data-cnudge="right" aria-label="이 칸 사진 오른쪽">▶</button>
+      </div>
+      <p class="hint">고른 <b>칸 사진만</b> 따로 맞춰요 · 위 카드 미리보기를 <b>끌어도</b> 같은 칸이 움직여요 · 저장·동기화·PNG에 그대로 들어가요</p>
+    </div>
     <p class="hint">2분할은 <b>위·아래</b>, 4분할은 <b>2×2</b>로 나눠요 · 칸을 누르면 <b>그 칸부터 여러 장을 한 번에</b> 넣을 수 있어요 · <b>◀ ▶</b>로 칸 순서를 바꾸고 ✕로 빼요</p>
+  </div>
+
+  <div class="card" id="photoSizeCard" data-steps="1">
+    <div class="cardHead"><span class="label">📐 본문 사진 크기</span><span class="count" id="bandNow">56%</span></div>
+    <div class="zoomRow"><span class="lab">사진 높이</span><input type="range" id="bandRange" min="0.30" max="1" step="0.01" value="0.56"><span class="tiny num" id="bandVal">56%</span></div>
+    <button class="mini primary" id="bandApplyAll" style="width:100%; height:40px; margin-top:8px; font-size:12.5px">전체 본문 카드에 적용</button>
+    <p class="hint">2분할·4분할 본문 카드에서 <b>사진이 차지하는 높이</b>예요 · [전체 적용]을 누르면 <b>모든 본문 카드</b>가 같은 사진 크기·위치로 깔끔하게 맞춰져요 · 100%는 사진이 카드 전체를 덮어요</p>
   </div>
 
   <div class="card" id="stickerCard" data-steps="1">
@@ -1618,7 +1656,7 @@
       id: 's' + Date.now() + Math.random().toString(36).slice(2,6),
       type: t,
       photo: null, zoom: 1, offX: 0, offY: 0, fit: 'auto',
-      photoGrid: 1, photoCells: [],
+      photoGrid: 1, photoCells: [], bandH: 0.56, cellAdj: [],
       badge: '', badgeNum: 0, title: '', subtitle: '', desc: '', q1: '', q2: '', q3: '',
       watermark: true, grad: false,
       pos: 'bottom', align: 'left', dx: 0, dy: 0, posSet: false, alignSet: false,
@@ -1652,11 +1690,12 @@
                         iming_yellow:'꾸불림체' };
   /* v5.7: 표지·본문 양쪽에서 모든 디자인을 고를 수 있다 */
   const BODY_IDS = ['classic', 'place_pin', 'chat_bubble', 'big_title', 'word_highlight', 'magazine_interview',
-                    'editorial', 'trend', 'question', 'iming_yellow'];
-  const BODY_DEFAULT = { classic:'기본 깔끔형', place_pin:'📍 여기 저장해 둬', chat_bubble:'💬 톡 말풍선형',
+                    'editorial', 'trend', 'question', 'iming_yellow', 'photobox'];
+  const BODY_DEFAULT = { classic:'기본 깔끔형', photobox:'🖼 전체배경 + 중앙박스', place_pin:'📍 여기 저장해 둬', chat_bubble:'💬 톡 말풍선형',
                          big_title:'🌊 빅 타이틀', word_highlight:'☁️ 한 단어 강조', magazine_interview:'🎙️ 매거진 인터뷰',
                          editorial:'✨ 에디토리얼', trend:'트렌드', question:'질문 박스형', iming_yellow:'꾸불림체' };
   const BODY_HELP = { classic:'사진 위에 배지·제목·본문을 깔끔하게',
+                      photobox:'사진(4분할 포함)을 카드 전체 배경으로 깔고 가운데 네모 박스에 글씨',
                       place_pin:'좌측 상단 배지 + 핀 제목 · 아래 부제·설명',
                       chat_bubble:'검색창 + 말풍선으로 제목·설명',
                       big_title:'카드 폭을 채우는 큰 민트 제목 + 라벨',
@@ -1671,14 +1710,14 @@
      왼쪽: 클래식·여기 저장해둬·톡 말풍선형·매거진 인터뷰 → 왼쪽
      기타: 질문박스형 → 중간 · 박스는 좌우 교차 */
   const TPL_POS = { iming_yellow:'middle', big_title:'middle', word_highlight:'middle', editorial:'middle',
-                    trend:'middle', question:'middle', chat_bubble:'middle', cat:'middle',
+                    trend:'middle', question:'middle', chat_bubble:'middle', cat:'middle', photobox:'middle',
                     classic:'bottom', place_pin:'bottom', magazine_interview:'bottom' };
   const TPL_ALIGN = { iming_yellow:'center', big_title:'center', word_highlight:'center', editorial:'center',
-                      trend:'center', question:'left', cat:'center',
+                      trend:'center', question:'left', cat:'center', photobox:'center',
                       classic:'left', place_pin:'left', chat_bubble:'left', magazine_interview:'left' };
   /* v6.0: 디자인 분류 — 기본 위치가 가운데인지 왼쪽인지로 묶어 보여준다 */
   const DESIGN_GROUP = { iming_yellow:'center', big_title:'center', word_highlight:'center',
-                         editorial:'center', trend:'center', cat:'center',
+                         editorial:'center', trend:'center', cat:'center', photobox:'center',
                          classic:'left', place_pin:'left', chat_bubble:'left', magazine_interview:'left',
                          question:'etc' };
   const GROUP_NAME = { center:'중앙', left:'왼쪽', etc:'기타' };
@@ -1736,12 +1775,12 @@
      본문을 볼 때는 본문 디자인만 떠요. 설정은 로컬 + 클라우드에 함께 저장돼요. */
   const ROLE_KEY = 'iming_cards_tplroles_v1';
   const ROLE_IDS = ['iming_yellow', 'editorial', 'chat_bubble', 'big_title', 'word_highlight',
-                    'question', 'trend', 'place_pin', 'magazine_interview', 'classic'];
+                    'question', 'trend', 'place_pin', 'magazine_interview', 'classic', 'photobox'];
   const ROLE_TXT = { cover:'표지', body:'본문', both:'둘 다' };
   const ROLE_DEFAULT = {
     iming_yellow:'cover', chat_bubble:'cover', big_title:'cover', word_highlight:'cover',
     question:'cover', trend:'cover',
-    classic:'both', editorial:'both', place_pin:'both', magazine_interview:'both'
+    classic:'both', editorial:'both', place_pin:'both', magazine_interview:'both', photobox:'body'
   };
   function normRole(v){ return (v === 'cover' || v === 'body' || v === 'both') ? v : ''; }
   function roleCfgLoad(){
@@ -2079,15 +2118,28 @@
         const cells = [];
         for (let ci = 0; ci < s.photoGrid; ci++){
           const v = rawCells[ci];
-          if (typeof v === 'string' && v.indexOf('data:image') === 0) cells.push(v);
-          else cells.push('');
+          let one = (typeof v === 'string' && v.indexOf('data:image') === 0) ? v : '';
+          /* v6.4: 본문 저장이 용량에 걸려 칸 사진만 따로 보관됐을 때 다시 붙인다 */
+          if (!one) one = photoCellLoadFor(s, ci);
+          cells.push(one);
         }
-        if (!cells[0] && s.photo) cells[0] = s.photo;
+        if (!cells.some(function(v){ return !!v; }) && s.photo) cells[0] = s.photo;
         s.photoCells = cells;
         s.photo = cells.filter(function(v){ return !!v; })[0] || null;
       } else {
         s.photoCells = [];
       }
+      /* v6.4: 칸별 확대·위치 */
+      const rawAdj = Array.isArray(r.cellAdj) ? r.cellAdj : [];
+      s.cellAdj = [];
+      for (let aj = 0; aj < (s.photoGrid > 1 ? s.photoGrid : 0); aj++){
+        const src = rawAdj[aj] || {};
+        s.cellAdj.push({ zoom: clamp(num(src.zoom, 1), 1, 3),
+                         offX: clamp(num(src.offX, 0), -1, 1),
+                         offY: clamp(num(src.offY, 0), -1, 1) });
+      }
+      /* v6.4: 본문 사진 높이(2분할·4분할 띠) */
+      s.bandH = clamp(num(r.bandH, 0.56), 0.30, 1);
       s.zoom = clamp(num(r.zoom, 1), 1, 3);
       s.offX = clamp(num(r.offX, 0), -1, 1);
       s.offY = clamp(num(r.offY, 0), -1, 1);
@@ -2168,20 +2220,38 @@
   let saveTimer = null, quotaWarned = false;
 
   /* v5.8: 사진은 슬라이드 id 별 키로 따로 보관한다
-     — 본문 저장이 용량에 걸려도 사진이 사라지지 않게 (사진 날아가는 문제) */
+     — 본문 저장이 용량에 걸려도 사진이 사라지지 않게 (사진 날아가는 문제)
+     v6.4: 2분할·4분할은 칸마다 따로 보관한다 (1번 칸만 남던 문제) */
   const PHOTO_PREFIX = 'iming_ph_';
+  const PHOTO_CELL_PREFIX = 'iming_phc_';
   function photoKeyOf(id){ return PHOTO_PREFIX + id; }
+  function photoCellKeyOf(id, i){ return PHOTO_CELL_PREFIX + id + '_' + i; }
   function photoStoreAll(){
-    if (!state || !Array.isArray(state.slides)) return;
+    if (!state || !Array.isArray(state.slides)) return true;
+    let ok = true;
     state.slides.forEach(function(sl){
-      if (!sl || !sl.id || !sl.photo) return;
-      try{ localStorage.setItem(photoKeyOf(sl.id), sl.photo); }catch(e){}
+      if (!sl || !sl.id) return;
+      try{
+        if (sl.photo) localStorage.setItem(photoKeyOf(sl.id), sl.photo);
+        const cells = photoCellsOf(sl);
+        for (let i = 0; i < cells.length; i++){
+          if (cells[i]) localStorage.setItem(photoCellKeyOf(sl.id, i), cells[i]);
+        }
+      }catch(e){ ok = false; }
     });
+    return ok;
   }
   function photoLoadFor(sl){
     if (!sl || !sl.id) return '';
     try{
       const v = localStorage.getItem(photoKeyOf(sl.id));
+      return (v && v.indexOf('data:image') === 0) ? v : '';
+    }catch(e){ return ''; }
+  }
+  function photoCellLoadFor(sl, i){
+    if (!sl || !sl.id) return '';
+    try{
+      const v = localStorage.getItem(photoCellKeyOf(sl.id, i));
       return (v && v.indexOf('data:image') === 0) ? v : '';
     }catch(e){ return ''; }
   }
@@ -2202,7 +2272,16 @@
       const del = [];
       for (let i = 0; i < localStorage.length; i++){
         const k = localStorage.key(i);
-        if (k && k.indexOf(PHOTO_PREFIX) === 0 && !keep[k]) del.push(k);
+        if (!k) continue;
+        if (k.indexOf(PHOTO_CELL_PREFIX) === 0){
+          /* v6.4: 칸 사진은 남길 슬라이드 id + 칸 번호만 보관 */
+          const rest = k.slice(PHOTO_CELL_PREFIX.length);
+          const cut = rest.lastIndexOf('_');
+          const id = cut > 0 ? rest.slice(0, cut) : rest;
+          if (!keep[photoKeyOf(id)]) del.push(k);
+        } else if (k.indexOf(PHOTO_PREFIX) === 0 && !keep[k]){
+          del.push(k);
+        }
       }
       del.forEach(function(k){ try{ localStorage.removeItem(k); }catch(e){} });
     }catch(e){}
@@ -2231,35 +2310,66 @@
   }
 
   function persistNow(){
-    const payload = payloadOf(state);
+    /* v6.4: 본문(문구·설정)과 사진을 따로 저장한다
+       — 사진은 슬라이드·칸별 키에 넣어 두므로 본문이 작아지고, 4칸 사진이 잘리지 않는다 */
+    let textSaved = false;
     try{
-      localStorage.setItem(STORE_KEY, JSON.stringify(payload));
-      /* 본문이 들어갔으면 사진 사본은 지워 공간을 아낀다 */
-      photoKeysClean([]);
+      const slim = payloadOf(state);
+      slim.slides = slim.slides.map(s=>Object.assign({}, s, { photo:null, photoCells:[] }));
+      localStorage.setItem(STORE_KEY, JSON.stringify(slim));
+      textSaved = true;
     }catch(err){
-      /* 본문(문구·설정)은 반드시 남기고, 사진은 따로 키에 보관한다 */
-      let textSaved = false;
       try{
-        const slim = payloadOf(state);
-        slim.slides = slim.slides.map(s=>Object.assign({}, s, { photo:null, photoCells:[] }));
-        localStorage.setItem(STORE_KEY, JSON.stringify(slim));
+        const slim2 = payloadOf(state);
+        slim2.slides = slim2.slides.map(s=>Object.assign({}, s, { photo:null, photoCells:[], stickers:[] }));
+        localStorage.setItem(STORE_KEY, JSON.stringify(slim2));
         textSaved = true;
-      }catch(e2){
-        try{
-          const slim2 = payloadOf(state);
-          slim2.slides = slim2.slides.map(s=>Object.assign({}, s, { photo:null, photoCells:[], stickers:[] }));
-          localStorage.setItem(STORE_KEY, JSON.stringify(slim2));
-          textSaved = true;
-        }catch(e3){ /* storage unavailable */ }
-      }
-      photoStoreAll();
-      photoKeysClean(state.slides.map(function(s){ return s.id; }));
+      }catch(e3){ /* storage unavailable */ }
+    }
+    const photosOk = photoStoreAll();
+    photoKeysClean(state.slides.map(function(s){ return s.id; }));
+    if (!photosOk){
+      schedulePhotoCompact();
       if (!quotaWarned){
         quotaWarned = true;
         toast(textSaved
-          ? '사진이 많아 문구 위주로 저장했어요 · 이 화면에서는 사진 그대로예요'
+          ? '사진이 많아 문구 위주로 저장했어요 · 사진은 곧 압축해 다시 저장할게요'
           : '저장 공간이 부족해요 · 저장함에서 오래된 덱을 지워주세요');
       }
+    }
+  }
+
+  /* v6.4: 공간이 모자라면 사진만 단계적으로 줄여서 칸별 키에 다시 넣는다 (한 칸도 잃지 않게) */
+  let photoCompactBusy = false;
+  function schedulePhotoCompact(){ setTimeout(photoCompactPass, 60); }
+  async function photoCompactPass(){
+    if (photoCompactBusy) return;
+    photoCompactBusy = true;
+    let n = 0;
+    const steps = [[1280, 0.64], [1080, 0.56], [900, 0.5], [760, 0.45]];
+    try{
+      for (let si = 0; si < state.slides.length; si++){
+        const sl = state.slides[si];
+        if (!sl || !sl.id) continue;
+        const cells = photoCellsOf(sl);
+        for (let i = 0; i < cells.length; i++){
+          const src = cells[i];
+          if (!src) continue;
+          const key = cells.length > 1 ? photoCellKeyOf(sl.id, i) : photoKeyOf(sl.id);
+          let have = '';
+          try{ have = localStorage.getItem(key) || ''; }catch(e){ have = ''; }
+          if (have) continue;
+          for (let k = 0; k < steps.length; k++){
+            const data = await compactImage(src, steps[k][0], steps[k][1]);
+            try{ localStorage.setItem(key, data); n++; break; }catch(e){}
+          }
+        }
+      }
+      if (n) toast('사진 ' + n + '장을 압축해 저장했어요');
+    }catch(e){ /* ignore */ }
+    finally{
+      photoCompactBusy = false;
+      photoKeysClean(state.slides.map(function(s){ return s.id; }));
     }
   }
 
@@ -3157,19 +3267,29 @@
     for (let i = 0; i < g; i++){
       let v = src[i];
       if (typeof v !== 'string' || v.indexOf('data:image') !== 0) v = '';
-      if (!v && i === 0 && s && s.photo) v = s.photo;
       out.push(v);
     }
+    /* v6.4: 칸이 하나도 없을 때만 예전 한 장짜리 사진을 1번 칸으로 올린다
+       (2~4번 칸이 비었는데 1번 칸 사진이 복사되던 문제) */
+    if (!out.some(function(v){ return !!v; }) && s && s.photo) out[0] = s.photo;
     return out;
   }
   /* 칸 하나를 카드에 꽉 차게(cover) 그린다 · 확대·이동은 슬라이드 값을 따른다 */
-  function drawPhotoCellCover(ctx, im, x, y, cw, ch, s){
-    const zoom = clamp(num(s.zoom, 1), 1, 3);
+  function cellAdjOf(s, i){
+    const arr = (s && Array.isArray(s.cellAdj)) ? s.cellAdj : [];
+    const a = arr[i] || {};
+    return { zoom: clamp(num(a.zoom, 1), 1, 3),
+             offX: clamp(num(a.offX, 0), -1, 1),
+             offY: clamp(num(a.offY, 0), -1, 1) };
+  }
+  function drawPhotoCellCover(ctx, im, x, y, cw, ch, s, i){
+    const adj = cellAdjOf(s, i);
+    const zoom = adj.zoom;
     const sc = Math.max(cw / (im.naturalWidth || 1), ch / (im.naturalHeight || 1)) * zoom;
     const dw = im.naturalWidth * sc, dh = im.naturalHeight * sc;
     const maxX = Math.max(0, (dw - cw) / 2), maxY = Math.max(0, (dh - ch) / 2);
-    const ox = clamp(num(s.offX, 0), -1, 1) * maxX;
-    const oy = clamp(num(s.offY, 0), -1, 1) * maxY;
+    const ox = adj.offX * maxX;
+    const oy = adj.offY * maxY;
     ctx.save();
     ctx.beginPath(); ctx.rect(x, y, cw, ch); ctx.clip();
     ctx.drawImage(im, x + cw / 2 - dw / 2 + ox, y + ch / 2 - dh / 2 + oy, dw, dh);
@@ -3190,7 +3310,7 @@
       const x = c * (cw + gap), y = r * (ch + gap);
       const src = cells[i];
       const im = src ? cachedImg(src) : null;
-      if (im) drawPhotoCellCover(ctx, im, x, y, cw, ch, s);
+      if (im) drawPhotoCellCover(ctx, im, x, y, cw, ch, s, i);
       else {
         ctx.fillStyle = '#EFEBE0';
         ctx.fillRect(x, y, cw, ch);
@@ -3210,7 +3330,9 @@
     const cols = g === 4 ? 2 : 1, rows = 2;
     const gap = Math.max(3, Math.round(Math.min(w, h) * 0.011));
     const ink = themeById(state.theme).ink.bg;
-    const bandH = Math.round(h * 0.56);
+    /* v6.4: 본문 사진 높이 — 슬라이드별 값(기본 56%) · 100%면 사진이 카드 전체를 덮는다 */
+    const ratio = clamp(num(s.bandH, 0.56), 0.30, 1);
+    const bandH = Math.round(h * ratio);
     const fadeH = Math.round(h * 0.09);
     ctx.save();
     /* 사진 칸 사이는 얇은 흰 여백, 아래는 글씨 자리(어두운 바탕) */
@@ -3222,7 +3344,7 @@
       const c = i % cols, r = Math.floor(i / cols);
       const x = c * (cw + gap), y = r * (chh + gap);
       const im = cells[i] ? cachedImg(cells[i]) : null;
-      if (im) drawPhotoCellCover(ctx, im, x, y, cw, chh, s);
+      if (im) drawPhotoCellCover(ctx, im, x, y, cw, chh, s, i);
       else {
         ctx.fillStyle = '#E9E5DA';
         ctx.fillRect(x, y, cw, chh);
@@ -3232,13 +3354,15 @@
         ctx.fillText('+', x + cw / 2, y + chh / 2);
       }
     }
-    ctx.fillStyle = ink;
-    ctx.fillRect(0, bandH, w, h - bandH);
-    const gd = ctx.createLinearGradient(0, bandH - fadeH, 0, bandH);
-    gd.addColorStop(0, 'rgba(0,0,0,0)');
-    gd.addColorStop(1, ink);
-    ctx.fillStyle = gd;
-    ctx.fillRect(0, bandH - fadeH, w, fadeH);
+    if (bandH < h - 2){
+      ctx.fillStyle = ink;
+      ctx.fillRect(0, bandH, w, h - bandH);
+      const gd = ctx.createLinearGradient(0, bandH - fadeH, 0, bandH);
+      gd.addColorStop(0, 'rgba(0,0,0,0)');
+      gd.addColorStop(1, ink);
+      ctx.fillStyle = gd;
+      ctx.fillRect(0, bandH - fadeH, w, fadeH);
+    }
     ctx.restore();
   }
 
@@ -4415,9 +4539,108 @@
   }
 
   /* =========================================================
-     v5.7  글씨 위치(상/중/하 · 좌/중/우 · 미세 이동) 공통 유틸
+     v6.4 🖼 전체배경 + 중앙박스 — 사진(2·4분할 포함)이 카드 전체 배경,
+     글씨는 가운데 네모 박스 안에만 들어간다. 비워둔 칸은 그리지 않는다.
      ========================================================= */
-  function tPos(s){
+  function drawBodyPhotoBox(ctx, s, f){
+    const w = f.w, h = f.h, pad = f.pad, T = TS();
+    const g = photoGridOf(s);
+    const cells = photoCellsOf(s);
+    const hasCells = cells.some(function(v){ return !!v; });
+    const im = imgFor(s);
+    if (g > 1 && hasCells) drawPhotoGrid(ctx, s, w, h);
+    else if (im) drawPhoto(ctx, im, s, w, h);
+    else drawSurface(ctx, w, h, surfacePal(), false);
+    /* 사진이든 단색이든 — 박스 밖은 살짝 가라앉혀 박스를 도드라지게 */
+    ctx.save();
+    ctx.fillStyle = 'rgba(10,9,8,.18)';
+    ctx.fillRect(0, 0, w, h);
+    ctx.restore();
+
+    const badgeTxt = badgeTextOf(s);
+    const num = s.badgeNum || 0;
+    const titleSrc = String(s.title || '').trim();
+    const descSrc = String(s.desc || '').trim();
+    if (!badgeTxt && !num && !titleSrc && !descSrc) return;
+
+    const boxW = Math.round(w - pad * 1.5);
+    const boxPadX = Math.round(w * 0.058);
+    const textMax = boxW - boxPadX * 2;
+    const badgeSize = Math.max(14, Math.round(T.badge * 0.94));
+    const badgeH = Math.round(badgeSize * 2.05);
+    const titleSize0 = Math.round(T.bodyTitle * 0.86);
+    const descSize0 = Math.round(T.bodyDesc * 1.02);
+    const richD = /\*\*/.test(descSrc);
+
+    function fitAll(ts, ds){
+      const tFit = titleSrc ? fitText(ctx, titleSrc, { maxWidth: textMax, size: ts, weight: 800, maxLines: 3, lineHeight: 1.22, minSize: ts * 0.55 }) : null;
+      const dFit = descSrc ? (richD
+        ? fitRich(ctx, descSrc, { maxWidth: textMax, size: ds, weight: 700, maxLines: 9, lineHeight: 1.58, minSize: ds * 0.62 })
+        : fitText(ctx, plainMarks(descSrc), { maxWidth: textMax, size: ds, weight: 700, maxLines: 9, lineHeight: 1.58, minSize: ds * 0.62 })) : null;
+      return { t: tFit, d: dFit };
+    }
+    const limitH = h - pad * 1.6;
+    let ts = titleSize0, ds = descSize0, fit = fitAll(ts, ds), boxH = 0;
+    for (let k = 0; k < 12; k++){
+      const gapB = badgeTxt || num ? Math.round(badgeH * 0.52) : 0;
+      const gapT = fit.t ? Math.round(badgeH * 0.30) : 0;
+      const gapD = (fit.t && fit.d) ? Math.round(badgeSize * 0.68) : 0;
+      const contentH = (badgeTxt || num ? badgeH : 0) + gapB + gapT +
+        (fit.t ? fit.t.lines.length * fit.t.lh : 0) + (fit.d ? gapD + fit.d.lines.length * fit.d.lh : 0);
+      boxH = contentH + Math.round(w * 0.052) * 2;
+      if (boxH <= limitH || (ts <= titleSize0 * 0.6 && ds <= descSize0 * 0.7)) break;
+      ts = Math.max(Math.round(titleSize0 * 0.6), Math.round(ts * 0.94));
+      ds = Math.max(Math.round(descSize0 * 0.7), Math.round(ds * 0.94));
+      fit = fitAll(ts, ds);
+    }
+
+    const P = tPos(s);
+    const bx = (w - boxW) / 2 + P.dx * w * 0.14;
+    const by = clamp((h - boxH) / 2 + P.dy * h * 0.14, pad * 0.4, h - boxH - pad * 0.4);
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,.34)';
+    ctx.shadowBlur = 34;
+    ctx.shadowOffsetY = 10;
+    roundRect(ctx, bx, by, boxW, boxH, 20);
+    ctx.fillStyle = 'rgba(255,255,255,.96)';
+    ctx.fill();
+    ctx.restore();
+
+    let y = by + Math.round(w * 0.052);
+    if (badgeTxt || num){
+      const label = num ? (badgeTxt ? numJoin(badgeTxt, num) : String(num)) : badgeTxt;
+      drawBadgeRect(ctx, {
+        text: label, cx: bx + boxW / 2, y: y, size: badgeSize, height: badgeH,
+        bg: PT().color, fg: PT().ink, padX: Math.round(badgeSize * 0.82), radius: 12,
+        fontStr: font(badgeSize, 800), shadow: false
+      });
+      y += badgeH + Math.round(badgeH * 0.52);
+    }
+    if (fit.t){
+      const richT = /\*\*/.test(titleSrc);
+      const pal = { fg:'#1C1E26', sub:'rgba(28,30,38,.76)', accent:PT().color, accentSoft:hexA(PT().color, .26), dark:false };
+      if (richT) drawRichLines(ctx, fit.t.lines, bx + boxW / 2, y, fit.t.lh, fit.t.size, 800, '#1C1E26', 'center', pal, false);
+      else drawLines(ctx, fit.t.lines, bx + boxW / 2, y, fit.t.lh, fit.t.size, 800, '#1C1E26', 'center');
+      y += fit.t.lines.length * fit.t.lh;
+    }
+    if (fit.d){
+      if (fit.t) y += Math.round(badgeSize * 0.68);
+      const pal2 = { fg:'#1C1E26', sub:'rgba(28,30,38,.78)', accent:PT().color, accentSoft:hexA(PT().color, .26), dark:false };
+      if (richD) drawRichLines(ctx, fit.d.lines, bx + boxW / 2, y, fit.d.lh, fit.d.size, 700, 'rgba(28,30,38,.80)', 'center', pal2, false);
+      else drawLines(ctx, fit.d.lines, bx + boxW / 2, y, fit.d.lh, fit.d.size, 700, 'rgba(28,30,38,.80)', 'center');
+    }
+
+    if (s.watermark !== false){
+      ctx.save();
+      ctx.globalAlpha = 0.62;
+      drawTracked(ctx, '@IMING', w - pad, h - pad * 0.62, Math.round(24 * T.k), 700, 2, '#FFFFFF', 'right');
+      ctx.restore();
+    }
+  }
+
+  /* =========================================================
+     v5.7  글씨 위치(상/중/하 · 좌/중/우 · 미세 이동) 공통 유틸
+     ========================================================= */  function tPos(s){
     return { pos: effPosOf(s),
              align: effAlignOf(s),
              dx: clamp(num(s.dx, 0), -1, 1), dy: clamp(num(s.dy, 0), -1, 1) };
@@ -5733,6 +5956,8 @@
 
   function drawBody(ctx, s, f){
     if (s.bodyStyle === 'editorial'){ drawBodyEditorial(ctx, s, f); return; }
+    /* v6.4: 사진 전체 배경 + 가운데 네모 박스 */
+    if (s.bodyStyle === 'photobox'){ drawBodyPhotoBox(ctx, s, f); return; }
     /* v5.7: 표지 디자인을 본문에서도 그대로 고를 수 있다 */
     if (s.bodyStyle === 'place_pin'){ drawPlacePin(ctx, s, f, TS(), null, 'body'); return; }
     if (s.bodyStyle === 'magazine_interview'){ drawMagazine(ctx, s, f, TS(), null, 'body'); return; }
@@ -6644,11 +6869,14 @@
       e.preventDefault();
       return;
     }
-    if (!s.photo) return;
+    if (!s.photo && !photoCellsOf(s).some(function(v){ return !!v; })) return;
     try{ preview.setPointerCapture(e.pointerId); }catch(err){}
     pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
-    if (pointers.size === 1) gesture = { mode:'pan' };
-    else if (pointers.size === 2) gesture = { mode:'pinch', d: dist2(), z: s.zoom || 1 };
+    const gridMode = photoGridOf(s) > 1;
+    if (pointers.size === 1) gesture = { mode: gridMode ? 'cellpan' : 'pan', cell: cellTarget };
+    else if (pointers.size === 2) gesture = gridMode
+      ? { mode:'cellpinch', d: dist2(), z: cellAdjOf(s, cellTarget).zoom, cell: cellTarget }
+      : { mode:'pinch', d: dist2(), z: s.zoom || 1 };
     e.preventDefault();
   });
 
@@ -6676,9 +6904,38 @@
       return;
     }
 
-    if (!s.photo) return;
+    if (!s.photo && !photoCellsOf(s).some(function(v){ return !!v; })) return;
 
-    if (pointers.size === 1 && gesture && gesture.mode === 'pan'){
+    if (pointers.size === 1 && gesture && gesture.mode === 'cellpan'){
+      /* v6.4: 분할 카드는 고른 칸 사진만 움직인다 */
+      const gi = clamp(gesture.cell == null ? cellTarget : gesture.cell, 0, photoGridOf(s) - 1);
+      const src = photoCellsOf(s)[gi];
+      const im = src ? cachedImg(src) : null;
+      if (!im) return;
+      const dx = (e.clientX - prev.x) * (f.w / rect.width);
+      const dy = (e.clientY - prev.y) * (f.h / rect.height);
+      const adj = cellAdjOf(s, gi);
+      const gNow = photoGridOf(s);
+      const cols = gNow === 4 ? 2 : 1, rows = 2;
+      const gapPx = Math.max(3, Math.round(Math.min(f.w, f.h) * 0.011));
+      const bandPx = (s.bodyStyle === 'photobox') ? f.h : Math.round(f.h * clamp(num(s.bandH, 0.56), 0.30, 1));
+      const cwPx = (f.w - gapPx * (cols - 1)) / cols;
+      const chPx = (bandPx - gapPx * (rows - 1)) / rows;
+      const sc = Math.max(cwPx / (im.naturalWidth || 1), chPx / (im.naturalHeight || 1)) * adj.zoom;
+      const maxX = Math.max(0, (im.naturalWidth * sc - cwPx) / 2);
+      const maxY = Math.max(0, (im.naturalHeight * sc - chPx) / 2);
+      if (maxX > 0.5) setCellAdj(s, gi, { offX: adj.offX + dx / maxX });
+      if (maxY > 0.5) setCellAdj(s, gi, { offY: adj.offY + dy / maxY });
+      syncCellAdjUI();
+      paintSoon(); persistSoon();
+    } else if (pointers.size === 2 && gesture && gesture.mode === 'cellpinch'){
+      const d = dist2();
+      if (gesture.d > 0 && d > 0){
+        setCellAdj(s, gesture.cell == null ? cellTarget : gesture.cell, { zoom: gesture.z * (d / gesture.d) });
+        syncCellAdjUI();
+        paintSoon();
+      }
+    } else if (pointers.size === 1 && gesture && gesture.mode === 'pan'){
       const dx = (e.clientX - prev.x) * (f.w / rect.width);
       const dy = (e.clientY - prev.y) * (f.h / rect.height);
       const im = imgFor(s);
@@ -6703,7 +6960,7 @@
 
   function endPointer(e){
     pointers.delete(e.pointerId);
-    if (pointers.size === 1) gesture = { mode:'pan' };
+    if (pointers.size === 1) gesture = { mode: photoGridOf(cur()) > 1 ? 'cellpan' : 'pan', cell: cellTarget };
     else if (pointers.size === 0){ gesture = null; persistSoon(); }
   }
   preview.addEventListener('pointerup', endPointer);
@@ -7084,6 +7341,11 @@
     if (el('numPlaceName')) el('numPlaceName').textContent = state.numPlace === 'back' ? '글씨 뒤' : '글씨 앞';
     el('saveAll').textContent = state.slides.length > 1 ? ('전체 저장 (' + state.slides.length + ')') : '전체 저장';
     el('saveTip').textContent = F().w + '×' + F().h + ' PNG · 아이폰은 공유 시트에서 \'이미지 저장\'';
+    /* v6.4: 비워둔 입력칸은 라벨에서 바로 알려준다 (카드에는 자동으로 안 그려짐) */
+    document.querySelectorAll('#fieldsCard [data-f]').forEach(function(inp){
+      const fw = inp.closest('.field');
+      if (fw) fw.classList.toggle('empty', !String(inp.value || '').trim());
+    });
     autoGrowAll();
   }
 
@@ -7147,6 +7409,7 @@
     renderCaption();
     renderPhotoMap();
     renderGridUI();
+    syncBandUI();
     syncRoleUI();
     applyStepUI();
     paintSoon();
@@ -8875,6 +9138,15 @@
     if (empty) { updateUndoBar(); return false; }
     let data;
     try{ data = JSON.stringify(payloadOf(state)); }catch(e){ return false; }
+    /* v6.4: 사진이 많은 덱은 백업이 커서 저장 공간을 먹고 칸 사진이 밀려나므로
+       너무 크면 문구·설정만 백업한다 (사진은 슬라이드·칸 키에 그대로 남아 있다) */
+    if (data.length > 2500000){
+      try{
+        const slim = payloadOf(state);
+        slim.slides = slim.slides.map(function(s){ return Object.assign({}, s, { photo:null, photoCells:[] }); });
+        data = JSON.stringify(slim);
+      }catch(e){}
+    }
     try{ localStorage.setItem(BACKUP_KEY, JSON.stringify({ at: Date.now(), label: label || '', data: data })); }
     catch(e){ return false; }
     updateUndoBar();
@@ -9912,7 +10184,7 @@
      ========================================================= */
   const STEP_ORDER = {
     /* v6.3: 사진은 1단계 한 곳에서 — 카드별 사진 목록까지 1단계로 모으고 2·4단계 중복을 없앤다 */
-    photoCard:{1:10}, gridCard:{1:15}, photoMapCard:{1:17}, stickerCard:{1:20}, creditCard:{1:30}, guideCard:{1:40},
+    photoCard:{1:10}, gridCard:{1:15}, photoSizeCard:{1:16}, photoMapCard:{1:17}, stickerCard:{1:20}, creditCard:{1:30}, guideCard:{1:40},
     writeCard:{2:10}, writeTogetherCard:{2:12}, roleCard:{2:15}, bodyWrite:{2:20}, fieldsCard:{2:30}, sumCard:{2:40},
     designHead:{3:5}, typeCard:{3:10}, roleSetCard:{3:11}, coverBgCard:{3:12}, sumBgCard:{3:14},
     designCard:{3:20}, posCard:{3:30, 4:30},
@@ -10566,17 +10838,21 @@
     if (g > 1){
       if (!Array.isArray(s.photoCells)) s.photoCells = [];
       while (s.photoCells.length < g) s.photoCells.push('');
-      s.photoCells[0] = data;
+      /* v6.4: 고른 칸에 넣는다 (예전에는 무조건 1번 칸을 덮었음) */
+      const idx = clamp(cellTarget, 0, g - 1);
+      s.photoCells[idx] = data;
       s.photo = s.photoCells.filter(function(v){ return !!v; })[0] || null;
+      setCellAdj(s, idx, { zoom:1, offX:0, offY:0 });
     } else {
       s.photo = data;
+      s.zoom = 1; s.offX = 0; s.offY = 0;
     }
-    s.zoom = 1; s.offX = 0; s.offY = 0;
   }
   function clearSlidePhoto(s){
     if (!s) return;
     s.photo = null; s.zoom = 1; s.offX = 0; s.offY = 0;
     s.photoCells = [];
+    s.cellAdj = [];
   }
   function renderGridUI(){
     const s = cur();
@@ -10593,10 +10869,11 @@
     if (!box) return;
     box.hidden = g === 1;
     box.classList.toggle('one', g === 2);
-    if (g === 1){ box.innerHTML = ''; return; }
+    if (g === 1){ box.innerHTML = ''; syncCellAdjUI(); return; }
     const cells = photoCellsOf(s);
+    if (cellTarget < 0 || cellTarget >= g) cellTarget = 0;
     box.innerHTML = cells.map(function(v, i){
-      return '<div class="pcell' + (v ? ' has' : '') + '" data-cell="' + i + '" role="button" tabindex="0" aria-label="' + (i + 1) + '칸 사진 넣기">' +
+      return '<div class="pcell' + (v ? ' has' : '') + (i === cellTarget ? ' sel' : '') + '" data-cell="' + i + '" role="button" tabindex="0" aria-label="' + (i + 1) + '칸 사진 넣기">' +
         (v ? '<img src="' + v + '" alt="">' : '<span class="ph"><b>＋</b>사진 ' + (i + 1) + '</span>') +
         '<span class="idx">' + (i + 1) + '칸</span>' +
         (v ? '<span class="clr" data-cellclear="' + i + '" role="button" aria-label="' + (i + 1) + '칸 사진 빼기">✕</span>' +
@@ -10604,7 +10881,101 @@
              '<button type="button" data-cellmv="' + i + ':1" aria-label="' + (i + 1) + '칸을 뒤 칸으로">▶</button></span>' : '') +
         '</div>';
     }).join('');
+    syncCellAdjUI();
   }
+  /* v6.4: 칸별 확대·좌우·상하 패널 */
+  function syncCellAdjUI(){
+    const panel = el('cellAdj');
+    if (!panel) return;
+    const s = cur();
+    const g = photoGridOf(s);
+    panel.hidden = g === 1;
+    if (g === 1) return;
+    if (cellTarget < 0 || cellTarget >= g) cellTarget = 0;
+    const seg = el('cellPickSeg');
+    if (seg){
+      let h = '';
+      for (let i = 0; i < g; i++) h += '<button type="button" data-cellpick="' + i + '"' + (i === cellTarget ? ' class="on"' : '') + '>' + (i + 1) + '칸</button>';
+      seg.innerHTML = h;
+    }
+    if (el('cellAdjNow')) el('cellAdjNow').textContent = (cellTarget + 1) + '칸 사진';
+    const a = cellAdjOf(s, cellTarget);
+    if (el('czoom')) el('czoom').value = a.zoom;
+    if (el('czoomVal')) el('czoomVal').textContent = a.zoom.toFixed(2) + '×';
+    if (el('coffx')) el('coffx').value = a.offX;
+    if (el('coffxVal')) el('coffxVal').textContent = a.offX.toFixed(2);
+    if (el('coffy')) el('coffy').value = a.offY;
+    if (el('coffyVal')) el('coffyVal').textContent = a.offY.toFixed(2);
+  }
+  function setCellAdj(s, i, patch){
+    if (!s) return;
+    const g = photoGridOf(s);
+    if (g === 1) return;
+    if (!Array.isArray(s.cellAdj)) s.cellAdj = [];
+    for (let k = 0; k < g; k++){
+      if (!s.cellAdj[k]) s.cellAdj[k] = { zoom:1, offX:0, offY:0 };
+    }
+    const a = s.cellAdj[i] || { zoom:1, offX:0, offY:0 };
+    if (patch.zoom != null) a.zoom = clamp(num(patch.zoom, 1), 1, 3);
+    if (patch.offX != null) a.offX = clamp(num(patch.offX, 0), -1, 1);
+    if (patch.offY != null) a.offY = clamp(num(patch.offY, 0), -1, 1);
+    s.cellAdj[i] = a;
+  }
+  /* v6.4: 본문 사진 높이 패널 */
+  function syncBandUI(){
+    const s = cur();
+    const r = clamp(num(s.bandH, 0.56), 0.30, 1);
+    if (el('bandRange')) el('bandRange').value = r;
+    if (el('bandVal')) el('bandVal').textContent = Math.round(r * 100) + '%';
+    if (el('bandNow')) el('bandNow').textContent = Math.round(r * 100) + '%';
+  }
+  if (el('bandRange')) el('bandRange').addEventListener('input', function(e){
+    const s = cur();
+    s.bandH = clamp(num(e.target.value, 0.56), 0.30, 1);
+    if (el('bandVal')) el('bandVal').textContent = Math.round(s.bandH * 100) + '%';
+    if (el('bandNow')) el('bandNow').textContent = Math.round(s.bandH * 100) + '%';
+    commit();
+  });
+  if (el('bandApplyAll')) el('bandApplyAll').addEventListener('click', function(){
+    const v = clamp(num(cur().bandH, 0.56), 0.30, 1);
+    let n = 0;
+    state.slides.forEach(function(sl){ if (sl.type === 'body'){ sl.bandH = v; n++; } });
+    renderAll(); persistNow();
+    toast(n + '장 본문 카드 사진 크기를 ' + Math.round(v * 100) + '%로 맞췄어요', { ms: 3200 });
+  });
+  if (el('cellPickSeg')) el('cellPickSeg').addEventListener('click', function(e){
+    const b = e.target.closest('[data-cellpick]');
+    if (!b) return;
+    cellTarget = clamp(parseInt(b.dataset.cellpick, 10) || 0, 0, photoGridOf(cur()) - 1);
+    renderGridUI();
+  });
+  ['czoom','coffx','coffy'].forEach(function(id){
+    const inp = el(id);
+    if (!inp) return;
+    inp.addEventListener('input', function(e){
+      const s = cur();
+      if (id === 'czoom') setCellAdj(s, cellTarget, { zoom: e.target.value });
+      else if (id === 'coffx') setCellAdj(s, cellTarget, { offX: e.target.value });
+      else setCellAdj(s, cellTarget, { offY: e.target.value });
+      syncCellAdjUI();
+      commit();
+    });
+  });
+  document.querySelectorAll('[data-cnudge]').forEach(function(b){
+    b.addEventListener('click', function(){
+      const s = cur();
+      const k = b.dataset.cnudge;
+      const a = cellAdjOf(s, cellTarget);
+      const step = 0.08;
+      if (k === 'center') setCellAdj(s, cellTarget, { offX:0, offY:0 });
+      if (k === 'left') setCellAdj(s, cellTarget, { offX: a.offX - step });
+      if (k === 'right') setCellAdj(s, cellTarget, { offX: a.offX + step });
+      if (k === 'up') setCellAdj(s, cellTarget, { offY: a.offY - step });
+      if (k === 'down') setCellAdj(s, cellTarget, { offY: a.offY + step });
+      syncCellAdjUI();
+      commit();
+    });
+  });
   if (el('gridSeg')) el('gridSeg').addEventListener('click', function(e){
     const b = e.target.closest('button[data-grid]');
     if (!b) return;
@@ -10644,6 +11015,11 @@
       compSnapshot('사진 순서 바꾸기 직전', { undo:true });
       const a = s.photoCells[i] || '', b = s.photoCells[j] || '';
       s.photoCells[i] = b; s.photoCells[j] = a;
+      /* v6.4: 칸을 옮기면 칸별 맞춤 값도 같이 따라간다 */
+      if (Array.isArray(s.cellAdj) && s.cellAdj.length){
+        const ca = s.cellAdj[i], cb = s.cellAdj[j];
+        s.cellAdj[i] = cb; s.cellAdj[j] = ca;
+      }
       s.photo = s.photoCells.filter(function(v){ return !!v; })[0] || null;
       renderAll(); persistNow();
       toast((i + 1) + '칸 ↔ ' + (j + 1) + '칸 순서를 바꿨어요', { undo: restoreBackup, ms: 5000 });
@@ -10662,6 +11038,10 @@
     const b = e.target.closest('[data-cell]');
     if (!b) return;
     cellTarget = parseInt(b.dataset.cell, 10) || 0;
+    syncCellAdjUI();
+    document.querySelectorAll('#cellGrid .pcell').forEach(function(c){
+      c.classList.toggle('sel', Number(c.dataset.cell) === cellTarget);
+    });
     if (el('cellFile')) el('cellFile').click();
   });
   if (el('cellFile')) el('cellFile').addEventListener('change', async function(){
