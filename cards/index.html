@@ -8860,7 +8860,12 @@
       if (!r || !r.id || !r.data) return;
       const cur = dmap[r.id];
       if (!cur){ dmap[r.id] = r; decks.push(r); stats.decks++; return; }
-      if (num(r.updatedAt, 0) > num(cur.updatedAt, 0)){ dmap[r.id] = r; stats.updated++; }
+      if (num(r.updatedAt, 0) > num(cur.updatedAt, 0)){
+        const idx = decks.indexOf(cur);
+        if (idx >= 0) decks[idx] = r;
+        dmap[r.id] = r;
+        stats.updated++;
+      }
     });
     const rs = (remoteData.settings && remoteData.settings.tplNames) ? remoteData.settings.tplNames : null;
     if (rs && num(rs.ts, 0) > tplTs()) stats.settings = rs;
