@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>@IMING 카드 제작</title>
-<!-- v6.2 · 사진 배치 1장 / 2분할 / 4분할(칸별 업로드·교체·삭제, 미리보기·PNG·클라우드 동기화) · 📋 기획 메모(상단 버튼·편집·저장·클라우드 동기화) -->
+<!-- v6.3 · 1단계 사진 통합(카드별 사진·4분할 멀티 업로드·칸 순서 ◀▶) · 2단계 글 모아쓰기/따로쓰기/비우기 3버튼 · 3단계 < > 카드 이동 + 중앙/왼쪽/기타 번호 버튼 + 본문 전체/이 카드만 적용(글씨 위치 유지) · 동기화 코드 입력·링크 정규화·Enter -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#FFFFFF">
@@ -594,8 +594,32 @@
   .pcell .ph b{font-size:17px; font-weight:700; line-height:1}
   .pcell .clr{position:absolute; right:4px; top:4px; width:22px; height:22px; border-radius:50%; border:0;
     background:rgba(20,20,20,.62); color:#fff; font-size:10px; display:grid; place-items:center; padding:0}
-  .pcell .idx{position:absolute; left:4px; bottom:4px; padding:1px 6px; border-radius:6px; font-size:9px;
+  .pcell .idx{position:absolute; left:4px; top:4px; padding:1px 6px; border-radius:6px; font-size:9px;
     font-weight:800; color:#fff; background:rgba(20,20,20,.55)}
+  /* v6.3 ---------- 디자인 번호 버튼 · 글쓰기 모드 · 칸 순서 */
+  .numGroups{display:flex; flex-direction:column; gap:6px}
+  .numGrp{display:flex; align-items:center; gap:7px; min-height:32px}
+  .numGrp .grpLab{flex:0 0 40px; font-size:10.5px; font-weight:800; color:#8B8880; letter-spacing:-.2px}
+  .numrow{display:flex; align-items:center; gap:5px; flex-wrap:wrap}
+  .numBtn{width:31px; height:31px; padding:0; border-radius:9px; border:1px solid var(--line); background:#fff;
+    font-size:12.5px; font-weight:800; color:#3E3C36; font-variant-numeric:tabular-nums; flex:none}
+  .numBtn.on{background:#111; color:#fff; border-color:#111; box-shadow:0 1px 3px rgba(0,0,0,.16)}
+  .numName{flex:1; min-width:0; font-size:10.5px; font-weight:700; color:#6d6b63;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .numGrp.presetGrp .chip.preset{flex:0 0 auto}
+  .numGrp.mygrp{align-items:flex-start}
+  .numGrp.mygrp .chips{flex:1; min-width:0}
+  .pcell .mv{position:absolute; left:4px; right:4px; bottom:4px; display:flex; gap:3px}
+  .pcell .mv button{flex:1; height:22px; border:0; border-radius:6px; background:rgba(20,20,20,.62); color:#fff;
+    font-size:9.5px; padding:0; line-height:1}
+  #photoCard.gridon .singlePhotoOnly{display:none!important}
+  #photoCard.gridon .gridHint{display:block!important}
+  #writeModeSeg button[data-wmode="clear"]{color:var(--danger)}
+  #writeModeSeg button[data-wmode="clear"].on{background:#FFF3F1}
+  #writeTogetherCard .bulkBtn{width:100%; height:auto; min-height:52px; padding:11px 12px; display:block; line-height:1.35}
+  #writeTogetherCard .bulkBtn b{display:block; font-size:13px}
+  #writeTogetherCard .bulkBtn span{display:block; font-size:10.5px; font-weight:600; color:rgba(255,255,255,.72); margin-top:3px}
+  .bodyScope button{font-size:11.5px}
   /* 기획 메모 */
   .memoArea{width:100%; min-height:44vh; border:1px solid var(--line); border-radius:12px; padding:11px 12px;
     font-size:12.5px; line-height:1.66; font-family:inherit; color:#26241F; background:#fff; resize:vertical;
@@ -706,17 +730,19 @@
   </div>
 
   <div class="card" id="writeCard" data-steps="2">
-    <div class="cardHead"><span class="label">스마트 일괄 작성</span><span class="count" id="writeMeta">본문 0장</span></div>
-    <div class="wtabseg" id="writeTabs">
-      <button data-wtab="cover">표지</button>
-      <button data-wtab="body">본문</button>
-      <button data-wtab="summary">요약</button>
+    <div class="cardHead"><span class="label">글쓰기</span><span class="count" id="writeMeta">본문 0장</span></div>
+    <div class="seg writeModes" id="writeModeSeg">
+      <button data-wmode="together">글 모아쓰기</button>
+      <button data-wmode="separate">글 따로쓰기</button>
+      <button data-wmode="clear" class="danger">글 비우기</button>
     </div>
     <p class="stepNote" id="writeNote">적은 내용은 바로 카드에 반영되고, 단계를 옮겨도 자동 저장돼요</p>
-    <div class="chipActions">
-      <button class="mini" id="bulkBtn">📝 모든 카드 글 한 번에</button>
-      <button class="mini danger" id="clearTextBtn">글만 비우기</button>
-    </div>
+  </div>
+
+  <div class="card" id="writeTogetherCard" data-steps="2">
+    <div class="cardHead"><span class="label">모든 카드 글 모아쓰기</span><span class="count" id="writeTogetherMeta">표지 1 · 본문 0 · 요약 0</span></div>
+    <button class="bulkBtn" id="writeTogetherOpen"><b>📝 전체 카드 글을 한 화면에서 쓰기</b><span>카드를 순서대로 넘기며 상단·중앙·하단 글을 써요</span></button>
+    <p class="hint">적는 즉시 그 카드에 반영돼요 · 이 모드에서는 카드별 입력칸을 숨겨 중복 입력을 막아요</p>
   </div>
 
   <div class="card" id="bodyWrite" data-steps="2">
@@ -743,11 +769,8 @@
   </div>
 
   <div class="card" id="designHead" data-steps="3 4">
-    <div class="wtabseg" id="designTargetSeg">
-      <button data-dtab="cover">표지</button>
-      <button data-dtab="body">본문</button>
-      <button data-dtab="summary">요약</button>
-    </div>
+    <div class="cardHead"><span class="label">디자인</span><span class="count" id="designHeadNow">표지 1</span></div>
+    <p class="hint" style="margin-top:0">위 <b>‹ ›</b>로 카드를 넘기면 그 카드 종류(표지·본문·요약)의 디자인만 보여요</p>
     <div class="chipActions" id="designTools">
       <button class="mini" id="tplRoleBtn">🏷️ 디자인 분류 설정</button>
       <button class="mini" id="tplEditBtn">✏️ 이름 수정</button>
@@ -765,13 +788,17 @@
   <div class="card" id="typeCard" data-steps="3">
     <div class="tplSec" id="coverSec">
       <div class="cardHead"><span class="secEm">🎨 표지 디자인</span><span class="count" id="tplNow">클래식</span></div>
-      <div class="chips" id="tplChips"></div>
-      <p class="secHelp">디자인마다 기본 글씨 위치가 달라 <b>중앙 · 왼쪽 · 기타</b>로 묶었어요 · 다른 디자인은 <b>🏷️ 디자인 분류 설정</b>에서 표지로 바꿔요</p>
+      <div class="numGroups" id="tplChips"></div>
+      <p class="secHelp">번호 버튼을 누르면 <b>모든 표지 카드</b>에 적용돼요 · 번호 옆에 그 디자인 이름이 보여요 · 다른 디자인은 <b>🏷️ 디자인 분류 설정</b>에서 표지로 바꿔요</p>
     </div>
     <div class="tplSec" id="bodySec">
       <div class="cardHead"><span class="secEm">📄 본문 디자인</span><span class="count" id="bodyNow">기본 깔끔형</span></div>
-      <div class="chips" id="bodyChips"></div>
-      <p class="secHelp" id="bodyHelp">본문으로 분류한 디자인만 모았어요 · 본문 카드 전체에 적용돼요 · 묶음 이름은 그 디자인의 기본 글씨 위치예요</p>
+      <div class="seg bodyScope" id="bodyScopeSeg" style="margin-bottom:7px">
+        <button data-bscope="all">본문 전체 적용</button>
+        <button data-bscope="one">이 카드만 적용</button>
+      </div>
+      <div class="numGroups" id="bodyChips"></div>
+      <p class="secHelp" id="bodyHelp">번호 버튼으로 본문 디자인을 바꿔요 · 이미 맞춰 둔 글씨 위치는 그대로 남아요</p>
     </div>
     <div class="chipActions" style="margin-top:8px">
       <button class="mini" id="myTplSaveBtn">+ 내 템플릿 저장</button>
@@ -919,30 +946,31 @@
     </div>
   </div>
 
-  <div class="card" id="photoCard" data-steps="1 4">
-    <div class="cardHead"><span class="label">사진 · 일괄 업로드</span><button class="linkBtn st1only" id="photoClear">이 카드 사진 빼기</button></div>
+  <div class="card" id="photoCard" data-steps="1">
+    <div class="cardHead"><span class="label">사진</span><span class="count" id="photoNavNow">표지 1</span><button class="linkBtn" id="photoClear">이 카드 사진 빼기</button></div>
     <div class="st1only">
-      <div class="drop" id="drop">
+      <div class="drop singlePhotoOnly" id="drop">
         <input type="file" id="file" accept="image/*" multiple hidden>
         <img id="thumb" alt="" hidden>
         <div class="dropEmpty" id="dropEmpty"><b>사진 올리기</b><span>여러 장 한 번에 · 끌어다 놓기</span></div>
       </div>
       <button class="mini primary" id="batchAdd" style="margin-top:7px; height:42px; width:100%; font-size:12.5px">📷 사진 여러 장 · 표지/본문/요약 한 번에</button>
+      <p class="hint gridHint" hidden>이 카드는 <b>분할</b>이에요 · 아래 <b>🧩 사진 배치</b>에서 칸마다 사진을 넣거나 바꿔요</p>
       <input type="file" id="batchFile" accept="image/*" multiple hidden>
     </div>
-    <div class="zoomRow">
+    <div class="zoomRow singlePhotoOnly">
       <span class="tiny">확대</span>
       <input type="range" id="zoom" min="1" max="3" step="0.01" value="1">
       <span class="tiny num" id="zoomVal">1.00×</span>
     </div>
-    <div class="nudge">
+    <div class="nudge singlePhotoOnly">
       <button data-nudge="left" aria-label="왼쪽">◀</button>
       <button data-nudge="up" aria-label="위">▲</button>
       <button data-nudge="reset">가운데</button>
       <button data-nudge="down" aria-label="아래">▼</button>
       <button data-nudge="right" aria-label="오른쪽">▶</button>
     </div>
-    <div id="fitRow" hidden>
+    <div id="fitRow" class="singlePhotoOnly" hidden>
       <div class="cardHead" style="margin:4px 0 6px"><span class="label">사진 맞춤</span><span class="count" id="fitName">자동</span></div>
       <div class="seg" id="fitSeg">
         <button data-fit="auto">자동</button>
@@ -951,7 +979,7 @@
       </div>
       <p class="hint" style="margin-top:5px">자동은 카드와 사진 비율이 많이 다를 때 <b>사진 전체</b>를 보여주고, 남는 자리는 같은 사진을 흐리게 채워요</p>
     </div>
-    <p class="hint">미리보기 사진을 <b>드래그</b>해 위치 조정 · <b>두 손가락</b>으로 확대</p>
+    <p class="hint singlePhotoOnly">미리보기 사진을 <b>드래그</b>해 위치 조정 · <b>두 손가락</b>으로 확대</p>
     <p class="hint st3only" style="margin-top:4px">사진 넣기·바꾸기·전체 삭제는 <b>1단계</b>에서 해요</p>
     <div class="st1only">
       <p class="hint summaryOnly" style="margin-top:3px">요약표는 배경 <b>‘사진’</b>일 때만 사진을 써요</p>
@@ -961,7 +989,7 @@
     </div>
   </div>
 
-  <div class="card" id="gridCard" data-steps="1 4">
+  <div class="card" id="gridCard" data-steps="1">
     <div class="cardHead"><span class="label">🧩 사진 배치</span><span class="count" id="gridNow">1장</span></div>
     <div class="seg" id="gridSeg">
       <button data-grid="1">1장</button>
@@ -969,8 +997,8 @@
       <button data-grid="4">4분할</button>
     </div>
     <div class="cellGrid" id="cellGrid"></div>
-    <input type="file" id="cellFile" accept="image/*" hidden>
-    <p class="hint">2분할은 <b>위·아래</b>, 4분할은 <b>2×2</b>로 나눠요 · 칸을 누르면 <b>그 칸 사진만</b> 바꾸고 ✕로 뺄 수 있어요 · 1장으로 되돌리면 첫 칸 사진을 써요</p>
+    <input type="file" id="cellFile" accept="image/*" multiple hidden>
+    <p class="hint">2분할은 <b>위·아래</b>, 4분할은 <b>2×2</b>로 나눠요 · 칸을 누르면 <b>그 칸부터 여러 장을 한 번에</b> 넣을 수 있어요 · <b>◀ ▶</b>로 칸 순서를 바꾸고 ✕로 빼요</p>
   </div>
 
   <div class="card" id="stickerCard" data-steps="1">
@@ -1030,10 +1058,10 @@
   </div>
 
 
-  <div class="card" id="photoMapCard" data-steps="2 4">
+  <div class="card" id="photoMapCard" data-steps="1">
     <div class="cardHead"><span class="label">카드별 사진</span><span class="count" id="photoMapCount">0/1장</span></div>
     <div class="photoMapList" id="photoMapList"></div>
-    <p class="hint">카드마다 바로 <b>사진 넣기·교체</b> · 올린 사진은 그 카드에만 붙어요 · 확대는 <b>1·4단계</b>에서</p>
+    <p class="hint">카드를 누르면 미리보기가 그 카드로 옮겨가요 · 위 <b>‹ ›</b>로도 카드를 넘길 수 있어요 · 확대·이동은 위 사진 칸에서</p>
     <input type="file" id="photoMapFile" accept="image/*" hidden>
   </div>
 
@@ -1917,7 +1945,8 @@
     }
     if (el('bodyHelp')){
       el('bodyHelp').textContent = (BODY_HELP[first] || BODY_HELP.classic) +
-        ' · 본문 카드 전체에 적용돼요';
+        (bodyScope === 'one' ? ' · 이 카드에만 적용해요' : ' · 본문 카드 전체에 적용돼요') +
+        ' · 글씨 위치는 그대로 남아요';
     }
   }
 
@@ -7131,6 +7160,11 @@
 
   function setCurrent(i){
     state.current = clamp(i, 0, state.slides.length - 1);
+    /* v6.3: 카드를 넘기면 글쓰기 탭도 그 카드 종류를 따라간다 */
+    if (state.step === 2){
+      const t = cur().type;
+      writeTab = t === 'summary' ? 'summary' : (t === 'body' ? 'body' : 'cover');
+    }
     renderAll();
     persistSoon();
   }
@@ -7223,9 +7257,7 @@
     state.slides.forEach(function(sl){
       if (sl.type !== 'cover') return;
       sl.coverStyle = v;
-      if (TPL_POS[v]) sl.pos = TPL_POS[v];
-      sl.align = TPL_ALIGN[v] || 'left';
-      sl.dx = 0; sl.dy = 0; sl.posSet = false; sl.alignSet = false;
+      applyDesignPos(sl, v);
     });
     if (v === 'editorial'){
       state.theme = EDITORIAL_PRESET.theme;
@@ -7236,20 +7268,39 @@
   });
 
   /* v5.6: 본문 디자인만 따로 고르기 (표지와 분리) */
+  /* v6.3: 디자인을 바꿔도 사용자가 맞춰 둔 글씨 위치(pos·align·dx·dy)는 그대로 둔다 */
+  function applyDesignPos(sl, v){
+    if (!sl) return;
+    if (sl.posSet !== true && TPL_POS[v]) sl.pos = TPL_POS[v];
+    if (sl.alignSet !== true) sl.align = TPL_ALIGN[v] || 'left';
+  }
+  if (el('bodyScopeSeg')) el('bodyScopeSeg').addEventListener('click', function(e){
+    const b = e.target.closest('button[data-bscope]');
+    if (!b) return;
+    bodyScope = b.dataset.bscope === 'one' ? 'one' : 'all';
+    document.querySelectorAll('#bodyScopeSeg button').forEach(function(x){
+      x.classList.toggle('on', (x.dataset.bscope === 'one') === (bodyScope === 'one'));
+    });
+    syncBodyStyleSeg();
+    toast(bodyScope === 'one' ? '이 카드에만 적용해요' : '본문 카드 전체에 적용해요');
+  });
   if (el('bodyChips')) el('bodyChips').addEventListener('click', function(e){
     const b = e.target.closest('button[data-bstyle]');
     if (!b) return;
     const v = BODY_IDS.indexOf(b.dataset.bstyle) >= 0 ? b.dataset.bstyle : 'classic';
+    const one = bodyScope === 'one';
+    const targets = one
+      ? [cur()].filter(function(x){ return x && x.type === 'body'; })
+      : state.slides.filter(function(sl){ return sl.type === 'body'; });
+    if (!targets.length){ toast('본문 카드가 없어요 · 4단계 슬라이드에서 본문 카드를 먼저 만들어 주세요'); return; }
     compSnapshot('본문 디자인 변경 직전');
-    state.slides.forEach(function(sl){
-      if (sl.type !== 'body') return;
+    targets.forEach(function(sl){
       sl.bodyStyle = v;
-      if (TPL_POS[v]) sl.pos = TPL_POS[v];
-      sl.align = TPL_ALIGN[v] || 'left';
-      sl.dx = 0; sl.dy = 0; sl.posSet = false; sl.alignSet = false;
+      applyDesignPos(sl, v);
     });
     renderAll(); persistNow(); setTimeout(paint, 30);
     syncBodyStyleSeg();
+    toast(one ? slideLabel(state.current) + '에만 적용했어요 · 글씨 위치는 그대로' : '본문 ' + targets.length + '장에 적용했어요 · 글씨 위치는 그대로');
   });
 
   /* v5.1: 템플릿 이름 수정 (localStorage + 클라우드) */
@@ -8003,6 +8054,8 @@
   async function handleFiles(fileList){
     const picked = Array.from(fileList).filter(f => f.type && f.type.indexOf('image/') === 0);
     if (!picked.length) return;
+    /* v6.3: 2분할·4분할 상태에서 여러 장을 고르면 칸에 순서대로 들어간다 */
+    if (picked.length > 1 && photoGridOf(cur()) > 1){ await fillCellsWithFiles(picked, 0); return; }
     if (picked.length > 1){ openBatch(picked); return; }
     if (uploading) return;
     uploading = true;
@@ -8654,7 +8707,7 @@
     }finally{
       syncBusy = false;
       renderSyncBar();
-      if (el('syncWrap') && el('syncWrap').classList.contains('open')) renderSyncSheet();
+      updateSyncSheetStatus();
       /* v6.2: 동기화 중에 저장된 변경이 있으면 한 번 더 올린다 (메모·격자 사진 유실 방지) */
       if (syncCfg && syncCfg.dirty && !syncCfg.lastError && !syncTimer){
         syncTimer = setTimeout(function(){ syncTimer = null; syncNow({ silent:true }); }, 900);
@@ -8692,9 +8745,48 @@
     renderSyncSheet();
     openSheetName('sync', true);
   }
+  /* v6.3: 링크·대문자·공백이 섞여 들어와도 코드만 뽑아낸다 */
+  function parseCardCode(raw){
+    let s = String(raw || '').replace(/\s+/g, '');
+    if (!s) return '';
+    const mq = s.match(/[?&#]k=([A-Za-z0-9_-]+)/);
+    if (mq) s = mq[1];
+    s = s.replace(/^https?:\/\/[^\/]+\//i, '').replace(/^cards\/?/i, '').replace(/^\/+/, '').replace(/\/+$/, '');
+    const m = s.match(/(imingcards-[a-z0-9]+)/i);
+    if (m) return m[1].toLowerCase();
+    return s.toLowerCase();
+  }
+  /* v6.3: 동기화가 끝나도 시트를 통째로 다시 그리지 않고 상태 줄만 바꿔준다
+     (입력 중인 코드 칸·포커스·글자가 사라지던 문제) */
+  function updateSyncSheetStatus(){
+    const wrap = el('syncWrap');
+    const body = el('syncBody');
+    if (!body || !wrap || !wrap.classList.contains('open')) return;
+    const on = syncOn();
+    const cls = !on ? '' : (syncBusy ? 'wait' : (syncCfg.lastError ? 'err' : 'on'));
+    const stTxt = !on ? '연결 안 됨' : (syncBusy ? '동기화 중…' : (syncCfg.lastError ? '오류: ' + syncCfg.lastError : '연결됨 · 자동 동기화'));
+    const bar = body.querySelector('.syncbar');
+    if (bar){
+      const d = bar.querySelector('.dot');
+      if (d) d.className = 'dot ' + cls;
+      const tx = bar.querySelector('.tx');
+      if (tx) tx.textContent = stTxt;
+    }
+    const stat = body.querySelector('.syncStat');
+    if (stat && on && lib){
+      stat.textContent = '마지막 동기화 ' + (syncCfg.lastSync ? fmtTime(syncCfg.lastSync) : '없음') +
+        ' · 덱 ' + lib.decks.length + '개 · 폴더 ' + lib.folders.length + '개';
+    }
+    const inp = body.querySelector('#syncCode');
+    /* 연결 코드가 바뀌었고 입력 중이 아니면 시트를 다시 그려 연결됨 화면으로 바꾼다 */
+    if ((syncCfg.ns || '') !== syncSheetNs && document.activeElement !== inp){ renderSyncSheet(); return; }
+    if (inp && document.activeElement !== inp && !inp.value.trim()) inp.value = syncCfg.ns;
+  }
+  let syncSheetNs = null;
   function renderSyncSheet(){
     const body = el('syncBody');
     if (!body) return;
+    syncSheetNs = syncCfg && syncCfg.ns ? syncCfg.ns : '';
     const on = syncOn();
     const cls = !on ? '' : (syncBusy ? 'wait' : (syncCfg.lastError ? 'err' : 'on'));
     const stTxt = !on ? '연결 안 됨' : (syncBusy ? '동기화 중…' : (syncCfg.lastError ? '오류: ' + syncCfg.lastError : '연결됨 · 자동 동기화'));
@@ -8702,14 +8794,15 @@
     if (on){
       h += '<p class="syncStat">마지막 동기화 ' + (syncCfg.lastSync ? fmtTime(syncCfg.lastSync) : '없음') +
            ' · 덱 ' + lib.decks.length + '개 · 폴더 ' + lib.folders.length + '개</p>';
-      h += '<div class="codebox"><input id="syncCode" readonly value="' + esc(syncCfg.ns) + '"><button data-syncact="copycode">복사</button></div>';
-      h += '<div class="syncacts"><button data-syncact="now">지금 동기화</button><button data-syncact="link">연결 링크 복사</button><button data-syncact="new">새 코드</button></div>';
-      h += '<div class="syncacts"><button class="ghost" data-syncact="join">다른 코드로 연결</button><button class="ghost" data-syncact="off">연결 해제</button></div>';
-      h += '<div class="codebox" id="joinBox" hidden><input id="joinCode" placeholder="받은 코드 (imingcards-…)"><button data-syncact="dojoin">연결</button></div>';
+      h += '<div class="codebox"><input id="syncCode" value="' + esc(syncCfg.ns) + '" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" placeholder="imingcards-… 또는 받은 링크"><button data-syncact="copycode">복사</button></div>';
+      h += '<div class="syncacts"><button class="primary" data-syncact="applycode">이 코드로 연결</button><button data-syncact="now">지금 동기화</button></div>';
+      h += '<div class="syncacts"><button data-syncact="link">연결 링크 복사</button><button data-syncact="new">새 코드</button></div>';
+      h += '<div class="syncacts"><button class="ghost" data-syncact="off">연결 해제</button></div>';
+      h += '<p class="syncStat">코드 칸을 직접 고쳐 <b>이 코드로 연결</b>을 누르면 그 코드로 바꿔요 · 링크를 통째로 붙여넣어도 되고 Enter로도 연결돼요</p>';
     } else {
       h += '<p class="syncStat">코드를 만들면 저장함의 폴더·덱이 다른 기기에서도 그대로 열려요. 가입이나 로그인은 없어요.</p>';
       h += '<div class="syncacts"><button class="primary" data-syncact="new">새 동기화 코드 만들기</button></div>';
-      h += '<div class="codebox"><input id="joinCode" placeholder="받은 코드 (imingcards-…)"><button data-syncact="dojoin">연결</button></div>';
+      h += '<div class="codebox"><input id="syncCode" placeholder="받은 코드나 링크 (imingcards-…)" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off"><button data-syncact="applycode">연결</button></div>';
     }
     h += '<p class="syncStat" style="margin-top:12px">· 사진은 WebP로 줄여 올려요(원본은 이 기기에 그대로).<br>' +
          '· 무료 저장소에 암호화 없이 보관돼요. 코드를 아는 사람은 내용을 볼 수 있어요.<br>' +
@@ -8749,8 +8842,9 @@
     let k = (p.get('k') || '').trim();
     if (!k){
       const h = String(location.hash || '').replace(/^#k=/, '');
-      if (/^imingcards-/.test(h)) k = h.trim();
+      if (/^imingcards-/i.test(h)) k = h.trim();
     }
+    k = parseCardCode(k);
     if (!/^imingcards-[a-z0-9]{6,}$/.test(k)) k = '';
     if (k && syncCfg.ns !== k){
       syncCfg.ns = k; syncCfg.rev = 0; syncCfg.lastRemoteRev = 0; syncCfg.lastPushTs = 0; syncCfg.lastError = '';
@@ -9238,6 +9332,24 @@
     for (let i = 0; i < COVER_BGS.length; i++) if (COVER_BGS[i].id === id) return COVER_BGS[i].name;
     return '사진';
   }
+  /* v6.3: 디자인 선택을 번호 버튼으로 — 중앙 1 2 3 4 / 왼쪽 1 2 3 4 / 기타 1 */
+  function numGroupsHtml(ids, nameOf, isOn, attr){
+    let out = '';
+    GROUP_ORDER.forEach(function(g){
+      const list = ids.filter(function(id){ return designGroupOf(id) === g; });
+      if (!list.length) return;
+      let curName = '';
+      const btns = list.map(function(id, k){
+        const on = !!isOn(id);
+        if (on) curName = (k + 1) + ' · ' + nameOf(id);
+        return '<button class="numBtn' + (on ? ' on' : '') + '" type="button" ' + attr + '="' + id + '"' +
+          ' aria-pressed="' + (on ? 'true' : 'false') + '" title="' + esc(nameOf(id)) + '">' + (k + 1) + '</button>';
+      }).join('');
+      out += '<div class="numGrp"><span class="grpLab">' + GROUP_NAME[g] + '</span><div class="numrow">' + btns +
+        '</div><span class="numName">' + esc(curName) + '</span></div>';
+    });
+    return out;
+  }
   function renderTplChips(){
     const box = el('tplChips');
     if (!box) return;
@@ -9246,45 +9358,35 @@
     const csVal = s.type === 'cover' ? (s.coverStyle || 'classic')
       : ((state.slides[ci >= 0 ? ci : 0] || {}).coverStyle || 'classic');
     const yellowOn = imingYellowOn();
-    /* v5.7.2: 사용자가 분류한 역할에 맞는 디자인만 보여준다 */
-    /* v6.0: 기본 위치에 따라 중앙 / 왼쪽 / 기타로 묶어서 보여준다 */
-    function chipHtml(id){
-      if (id === 'iming_yellow'){
-        return '<button class="chip preset' + (yellowOn ? ' on' : '') + '" data-preset="iming" aria-pressed="' + (yellowOn ? 'true' : 'false') + '">' +
-               '<span class="em">💛</span><span class="t">' + esc(tplName('iming_yellow')) + '</span></button>';
-      }
-      return '<button class="chip' + (id === csVal ? ' on' : '') + '" data-cstyle="' + id + '">' +
-             '<span class="t">' + esc(tplName(id)) + '</span></button>';
-    }
-    function groupHtml(ids, htmlOf){
-      let out = '';
-      GROUP_ORDER.forEach(function(g){
-        const list = ids.filter(function(id){ return designGroupOf(id) === g; });
-        if (!list.length) return;
-        out += '<div class="tplGrp"><span class="grpLab">' + GROUP_NAME[g] + '</span><div class="chips">' +
-               list.map(htmlOf).join('') + '</div></div>';
-      });
-      return out;
-    }
-    const coverIds = [];
-    if (roleShownIn('iming_yellow', 'cover')) coverIds.push('iming_yellow');
-    TPL_IDS.forEach(function(id){ if (roleShownIn(id, 'cover')) coverIds.push(id); });
-    box.innerHTML = groupHtml(coverIds, chipHtml) +
-      (MY_TPLS.list.length ? '<div class="tplGrp"><span class="grpLab">내 템플릿</span><div class="chips">' +
+    const preset = roleShownIn('iming_yellow', 'cover')
+      ? '<div class="numGrp presetGrp"><span class="grpLab">프리셋</span><button class="chip preset' + (yellowOn ? ' on' : '') +
+        '" data-preset="iming" aria-pressed="' + (yellowOn ? 'true' : 'false') + '"><span class="em">💛</span><span class="t">' +
+        esc(tplName('iming_yellow')) + '</span></button></div>'
+      : '';
+    const coverIds = TPL_IDS.filter(function(id){ return roleShownIn(id, 'cover'); });
+    const myTpl = MY_TPLS.list.length
+      ? '<div class="numGrp mygrp"><span class="grpLab">내 템플릿</span><div class="chips">' +
         MY_TPLS.list.map(function(t){
           return '<button class="chip mytpl" data-mytpl="' + esc(t.id) + '" title="내 템플릿">' +
                  '<span class="t">' + esc(t.name) + '</span>' +
                  '<span class="fdel" data-mytpldel="' + esc(t.id) + '" role="button" aria-label="' + esc(t.name) + ' 삭제">✕</span></button>';
-        }).join('') + '</div></div>' : '');
+        }).join('') + '</div></div>'
+      : '';
+    box.innerHTML = preset + numGroupsHtml(coverIds, tplName, function(id){ return id === csVal; }, 'data-cstyle') + myTpl;
     if (el('tplNow')) el('tplNow').textContent = yellowOn ? tplName('iming_yellow') : tplName(csVal);
     if (el('typeCard')) el('typeCard').dataset.cstyle = csVal;
     const bb = el('bodyChips');
     if (bb){
+      const curBody = s.type === 'body' ? (s.bodyStyle || 'classic') : '';
       const bodyIds = BODY_IDS.filter(function(id){ return roleShownIn(id, 'body'); });
-      bb.innerHTML = bodyIds.length ? groupHtml(bodyIds, function(id){
-        return '<button class="chip' + (id === (s.type === 'body' ? (s.bodyStyle || 'classic') : '') ? ' on' : '') + '" data-bstyle="' + id + '" aria-pressed="false"><span class="t">' +
-               esc(bodyStyleName(id) || id) + '</span></button>';
-      }) : '<span class="chipsEmpty">본문으로 분류된 디자인이 없어요 · 🏷️ 디자인 분류 설정에서 본문 디자인을 정해 주세요</span>';
+      bb.innerHTML = bodyIds.length
+        ? numGroupsHtml(bodyIds, function(id){ return bodyStyleName(id) || id; }, function(id){ return id === curBody; }, 'data-bstyle')
+        : '<span class="chipsEmpty">본문으로 분류된 디자인이 없어요 · 🏷️ 디자인 분류 설정에서 본문 디자인을 정해 주세요</span>';
+    }
+    if (el('bodyScopeSeg')){
+      document.querySelectorAll('#bodyScopeSeg button').forEach(function(b){
+        b.classList.toggle('on', (b.dataset.bscope === 'one') === (bodyScope === 'one'));
+      });
     }
     syncBodyStyleSeg();
     syncDesignSegs();
@@ -9694,6 +9796,12 @@
   el('slotSyncNow').addEventListener('click', ()=>{ syncNow({}); });
   el('slotSyncCfg').addEventListener('click', ()=>{ openSyncSheet(); });
   el('sheetSync').addEventListener('click', ()=>{ openSheet(false); openSyncSheet(); });
+  el('syncBody').addEventListener('keydown', function(e){
+    if (e.key !== 'Enter' || !e.target.closest('input')) return;
+    e.preventDefault();
+    const btn = document.querySelector('[data-syncact="applycode"]');
+    if (btn) btn.click();
+  });
   el('syncBody').addEventListener('click', function(e){
     const b = e.target.closest('[data-syncact]');
     if (!b) return;
@@ -9714,8 +9822,8 @@
       openSyncSheet();
       syncNow({}).then(function(){ openSyncSheetSafe(); });
     } else if (a === 'join'){
-      const box = el('joinBox');
-      if (box){ box.hidden = !box.hidden; if (!box.hidden) el('joinCode').focus(); }
+      const box = el('syncCode');
+      if (box){ box.focus(); box.select(); }
     } else if (a === 'off'){
       if (!confirm('이 기기의 저장함은 그대로 남고 자동 동기화만 멈춰요. 해제할까요?')) return;
       syncCfg.ns = '';
@@ -9725,14 +9833,18 @@
       renderSlots();
       openSyncSheet();
       toast('동기화를 해제했어요');
-    } else if (a === 'dojoin'){
-      const v = ((el('joinCode') && el('joinCode').value) || '').trim();
-      if (!/^imingcards-[a-z0-9]{6,}$/.test(v)){ toast('코드 형식이 맞지 않아요 (imingcards-…)'); return; }
+    } else if (a === 'dojoin' || a === 'applycode'){
+      const typed = ((el('syncCode') && el('syncCode').value) || '').trim();
+      const v = parseCardCode(typed) || (a === 'dojoin' ? '' : syncCfg.ns);
+      if (!/^imingcards-[a-z0-9]{6,}$/.test(v)){ toast('코드 형식이 맞지 않아요 (imingcards-… 또는 받은 링크)'); return; }
+      if (v === syncCfg.ns && syncOn()){ toast('이미 이 코드로 연결되어 있어요'); if (el('syncCode')) el('syncCode').blur(); syncNow({}); return; }
+      if (el('syncCode')) el('syncCode').blur();
       syncCfg.ns = v;
-      syncCfg.rev = 0; syncCfg.lastRemoteRev = 0; syncCfg.lastPushTs = 0; syncCfg.lastError = ''; syncCfg.dirty = true;
+      syncCfg.rev = 0; syncCfg.lastRemoteRev = 0; syncCfg.lastPushTs = 0; syncCfg.lastError = ''; syncCfg.dirty = true; syncCfg.fresh = false;
       syncSaveCfg();
       setUrlKey(v);
-      openSyncSheet();
+      updateSyncSheetStatus();
+      toast('코드를 확인하는 중…');
       syncNow({}).then(function(){ openSyncSheetSafe(); });
     }
   });
@@ -9754,7 +9866,7 @@
     if (l) loadSlot(l.dataset.slotload);
   });
   function openSyncSheetSafe(){
-    if (el('syncWrap') && el('syncWrap').classList.contains('open')) renderSyncSheet();
+    updateSyncSheetStatus();
     renderSlots();
   }
 
@@ -9799,9 +9911,9 @@
      v5 · 4단계 대시보드
      ========================================================= */
   const STEP_ORDER = {
-    /* v6.0: 1 사진·누끼 · 2 글쓰기 · 3 디자인 · 4 최종 — 단계마다 할 일만 남긴다 */
-    photoCard:{1:10, 4:70}, gridCard:{1:15, 4:65}, stickerCard:{1:20}, creditCard:{1:30}, guideCard:{1:40},
-    writeCard:{2:10}, roleCard:{2:15}, bodyWrite:{2:20}, fieldsCard:{2:30}, sumCard:{2:40}, photoMapCard:{2:50},
+    /* v6.3: 사진은 1단계 한 곳에서 — 카드별 사진 목록까지 1단계로 모으고 2·4단계 중복을 없앤다 */
+    photoCard:{1:10}, gridCard:{1:15}, photoMapCard:{1:17}, stickerCard:{1:20}, creditCard:{1:30}, guideCard:{1:40},
+    writeCard:{2:10}, writeTogetherCard:{2:12}, roleCard:{2:15}, bodyWrite:{2:20}, fieldsCard:{2:30}, sumCard:{2:40},
     designHead:{3:5}, typeCard:{3:10}, roleSetCard:{3:11}, coverBgCard:{3:12}, sumBgCard:{3:14},
     designCard:{3:20}, posCard:{3:30, 4:30},
     slideCard:{4:10}, captionCard:{4:80}
@@ -9809,6 +9921,14 @@
   /* v5.2: 3단계는 문구 칸이 맨 위, 사진(확대·위치)은 그 아래 */
   let stageTouched = false;
   let writeTab = 'cover';
+  /* v6.3: 글쓰기 모드(모아쓰기/따로쓰기)와 본문 디자인 적용 범위 */
+  let writeMode = (function(){ try{ return localStorage.getItem('iming_cards_wmode_v1') === 'together' ? 'together' : 'separate'; }catch(e){ return 'separate'; } })();
+  let bodyScope = 'all';
+  function setWriteMode(mode){
+    writeMode = (mode === 'together') ? 'together' : 'separate';
+    try{ localStorage.setItem('iming_cards_wmode_v1', writeMode); }catch(e){}
+    applyStepUI();
+  }
 
   function coverIndex(){
     for (let i = 0; i < state.slides.length; i++) if (state.slides[i].type === 'cover') return i;
@@ -9837,9 +9957,12 @@
       if (!node) return;
       const map = STEP_ORDER[id];
       let show = map[st] != null;
-      if (show && id === 'fieldsCard') show = (st === 2) ? (writeTab !== 'summary') : (type !== 'summary');
-      else if (show && id === 'sumCard') show = (st === 2) ? (writeTab === 'summary') : (type === 'summary');
-      else if (show && id === 'bodyWrite') show = (st === 2) && writeTab === 'body';
+      const sep = writeMode !== 'together';
+      if (show && id === 'writeTogetherCard') show = writeMode === 'together';
+      else if (show && id === 'roleCard') show = (st === 2) ? sep : true;
+      else if (show && id === 'fieldsCard') show = (st === 2) ? (sep && type !== 'summary') : (type !== 'summary');
+      else if (show && id === 'sumCard') show = (st === 2) ? (sep && (type === 'summary' || summaryIndex() < 0)) : (type === 'summary');
+      else if (show && id === 'bodyWrite') show = false;
       else if (show && id === 'posCard') show = (type !== 'summary');
       else if (show && id === 'coverBgCard') show = (type === 'cover');
       else if (show && id === 'sumBgCard') show = (type === 'summary');
@@ -9854,6 +9977,12 @@
     /* 표지/본문/요약 탭은 3단계에서만 · 지금 미리보기 카드에 불이 들어온다 */
     if (el('designTargetSeg')) el('designTargetSeg').hidden = (st !== 3);
     syncDesignSegs();
+    if (el('designHeadNow')) el('designHeadNow').textContent = slideLabel(state.current);
+    if (el('writeModeSeg')){
+      document.querySelectorAll('#writeModeSeg button').forEach(function(b){
+        b.classList.toggle('on', b.dataset.wmode === writeMode);
+      });
+    }
     const hasSum = summaryIndex() >= 0;
     if (el('sumEmpty')) el('sumEmpty').hidden = hasSum;
     if (el('sumBody')) el('sumBody').hidden = !hasSum;
@@ -9872,10 +10001,9 @@
     /* v5.8: 2단계(글쓰기)에서도 카드 사진·미리보기를 항상 보여준다 */
     if (st === 2) state.stageHide = false;
     if (st === 2){
+      /* v6.3: 위 < > 로 고른 카드의 종류에 맞춰 입력칸을 연다 (강제로 표지/요약으로 이동하지 않음) */
       const t = cur().type;
       writeTab = t === 'summary' ? 'summary' : (t === 'body' ? 'body' : 'cover');
-      if (writeTab === 'cover' && coverIndex() < 0) writeTab = 'body';
-      else if (writeTab === 'summary' && summaryIndex() < 0) writeTab = 'cover';
     }
     state.step = st;
     /* v5.7: 3단계(디자인)는 미리보기를 보통 크기로 */
@@ -9883,14 +10011,6 @@
     if (st === 1){
       const ci = coverIndex();
       if (ci >= 0) state.current = ci;
-    }
-    if (st === 2 && writeTab === 'cover'){
-      const ci = coverIndex();
-      if (ci >= 0) state.current = ci;
-    }
-    if (st === 2 && writeTab === 'summary'){
-      const si = summaryIndex();
-      if (si >= 0) state.current = si;
     }
     syncWriteTab();
     renderAll();
@@ -9916,7 +10036,20 @@
     setTimeout(paint, 60);
   });
 
-  el('writeTabs').addEventListener('click', function(e){
+  if (el('writeModeSeg')) el('writeModeSeg').addEventListener('click', function(e){
+    const b = e.target.closest('button[data-wmode]');
+    if (!b) return;
+    const m = b.dataset.wmode;
+    if (m === 'clear'){ clearAllText(); return; }
+    setWriteMode(m);
+    if (m === 'together'){ compSnapshot('글 한 번에 쓰기 직전'); openBulk(true); }
+    toast(m === 'together' ? '모든 카드 글을 한 화면에서 써요' : '카드를 넘기며 그 카드 글만 써요');
+  });
+  if (el('writeTogetherOpen')) el('writeTogetherOpen').addEventListener('click', function(){
+    compSnapshot('글 한 번에 쓰기 직전');
+    openBulk(true);
+  });
+  if (el('writeTabs')) el('writeTabs').addEventListener('click', function(e){
     const b = e.target.closest('button[data-wtab]');
     if (!b) return;
     const t = b.dataset.wtab;
@@ -9985,11 +10118,16 @@
     pill.textContent = '본문 ' + blocks.length + '장 카드로 인식됨';
     pill.classList.toggle('on', blocks.length > 0);
     el('writeMeta').textContent = '본문 ' + bodySlides().length + '장';
+    if (el('writeTogetherMeta')){
+      el('writeTogetherMeta').textContent = '표지 ' + (coverIndex() >= 0 ? 1 : 0) + ' · 본문 ' + bodySlides().length +
+        ' · 요약 ' + (summaryIndex() >= 0 ? 1 : 0);
+    }
     renderParsed(blocks);
-    el('writeNote').textContent =
-      writeTab === 'cover' ? '표지 문구를 큼직하게 적어보세요 · 입력한 그대로 표지 카드에 반영돼요'
-      : writeTab === 'body' ? '빈 줄(엔터 두 번)로 카드를 나눠 한 번에 적어요 · 아래에 인식 결과가 보여요'
-      : '행 수를 메뉴 개수에 맞춘 뒤 항목·금액을 채우세요';
+    el('writeNote').textContent = writeMode === 'together'
+      ? '모든 카드 글을 한 화면에서 순서대로 써요 · 적는 즉시 반영돼요'
+      : (writeTab === 'cover' ? '표지 카드의 배지 · 제목 · 부제를 적어요'
+        : writeTab === 'body' ? '이 본문 카드의 상단 · 중앙 · 하단 글을 적어요'
+        : '요약표 항목·금액을 채우세요 · 요약표 추가·삭제는 여기서만 보여요');
   }
 
   /* 본문 설명 1번째 줄(가격 정보)에서 금액만 뽑는다: "80,000동. 향이 진해" → "80,000동" */
@@ -10447,6 +10585,10 @@
       b.classList.toggle('on', Number(b.dataset.grid) === g);
     });
     if (el('gridNow')) el('gridNow').textContent = g === 1 ? '1장' : (g === 2 ? '2분할' : '4분할');
+    /* v6.3: 지금 사진을 만지는 카드를 위 < > 와 같이 보여준다 */
+    if (el('photoNavNow')) el('photoNavNow').textContent = slideLabel(state.current);
+    if (el('photoCard')) el('photoCard').classList.toggle('gridon', g > 1);
+    if (el('cellFile')) el('cellFile').multiple = true;
     const box = el('cellGrid');
     if (!box) return;
     box.hidden = g === 1;
@@ -10454,11 +10596,13 @@
     if (g === 1){ box.innerHTML = ''; return; }
     const cells = photoCellsOf(s);
     box.innerHTML = cells.map(function(v, i){
-      return '<button class="pcell' + (v ? ' has' : '') + '" data-cell="' + i + '" aria-label="' + (i + 1) + '칸 사진">' +
+      return '<div class="pcell' + (v ? ' has' : '') + '" data-cell="' + i + '" role="button" tabindex="0" aria-label="' + (i + 1) + '칸 사진 넣기">' +
         (v ? '<img src="' + v + '" alt="">' : '<span class="ph"><b>＋</b>사진 ' + (i + 1) + '</span>') +
         '<span class="idx">' + (i + 1) + '칸</span>' +
-        (v ? '<span class="clr" data-cellclear="' + i + '" role="button" aria-label="' + (i + 1) + '칸 사진 빼기">✕</span>' : '') +
-        '</button>';
+        (v ? '<span class="clr" data-cellclear="' + i + '" role="button" aria-label="' + (i + 1) + '칸 사진 빼기">✕</span>' +
+             '<span class="mv"><button type="button" data-cellmv="' + i + ':-1" aria-label="' + (i + 1) + '칸을 앞 칸으로">◀</button>' +
+             '<button type="button" data-cellmv="' + i + ':1" aria-label="' + (i + 1) + '칸을 뒤 칸으로">▶</button></span>' : '') +
+        '</div>';
     }).join('');
   }
   if (el('gridSeg')) el('gridSeg').addEventListener('click', function(e){
@@ -10488,6 +10632,23 @@
   });
   if (el('cellGrid')) el('cellGrid').addEventListener('click', function(e){
     const s = cur();
+    /* v6.3: ◀ ▶ 로 칸 순서 바꾸기 */
+    const mv = e.target.closest('[data-cellmv]');
+    if (mv){
+      const pr = String(mv.dataset.cellmv).split(':');
+      const i = parseInt(pr[0], 10) || 0;
+      const d = parseInt(pr[1], 10) || 0;
+      const g = photoGridOf(s);
+      const j = i + d;
+      if (j < 0 || j >= g || !Array.isArray(s.photoCells)) return;
+      compSnapshot('사진 순서 바꾸기 직전', { undo:true });
+      const a = s.photoCells[i] || '', b = s.photoCells[j] || '';
+      s.photoCells[i] = b; s.photoCells[j] = a;
+      s.photo = s.photoCells.filter(function(v){ return !!v; })[0] || null;
+      renderAll(); persistNow();
+      toast((i + 1) + '칸 ↔ ' + (j + 1) + '칸 순서를 바꿨어요', { undo: restoreBackup, ms: 5000 });
+      return;
+    }
     const clr = e.target.closest('[data-cellclear]');
     if (clr){
       const i = parseInt(clr.dataset.cellclear, 10) || 0;
@@ -10506,25 +10667,47 @@
   if (el('cellFile')) el('cellFile').addEventListener('change', async function(){
     const f = el('cellFile');
     if (!f || !f.files || !f.files.length) return;
-    const file = f.files[0];
+    const files = Array.from(f.files);
     f.value = '';
+    if (photoGridOf(cur()) === 1) return;
+    /* v6.3: 고른 칸부터 1→2→3→4 순서로 여러 장을 한 번에 */
+    await fillCellsWithFiles(files, cellTarget);
+  });
+  /* v6.3: 분할 칸에 여러 장을 순서대로 채운다 */
+  async function fillCellsWithFiles(files, startIdx){
+    const list = Array.from(files || []).filter(function(f){ return f && f.type && f.type.indexOf('image/') === 0; });
+    if (!list.length) return false;
     const s = cur();
     const g = photoGridOf(s);
-    if (g === 1) return;
-    const i = clamp(cellTarget, 0, g - 1);
+    if (g <= 1) return false;
+    if (uploading) return true;
+    uploading = true;
     try{
-      const data = await compressImage(file);
+      compSnapshot('사진 칸 채우기 직전', { undo:true });
       if (!Array.isArray(s.photoCells)) s.photoCells = [];
       while (s.photoCells.length < g) s.photoCells.push('');
-      s.photoCells[i] = data;
+      const start = clamp(parseInt(startIdx, 10) || 0, 0, g - 1);
+      const order = [];
+      for (let k = 0; k < g; k++) order.push((start + k) % g);
+      let n = 0;
+      for (let i = 0; i < list.length && i < g; i++){
+        const data = await compressImage(list[i]);
+        s.photoCells[order[i]] = data;
+        const im = new Image(); im.src = data; imgCache.set(data, im);
+        n++;
+      }
       s.photo = s.photoCells.filter(function(v){ return !!v; })[0] || null;
-      const im = new Image(); im.src = data; imgCache.set(data, im);
       renderAll(); persistNow();
-      toast((i + 1) + '칸에 사진을 넣었어요');
+      toast(n + '장을 ' + (g === 2 ? '2분할' : '4분할') + ' ' + (start + 1) + '칸부터 넣었어요' +
+        (list.length > g ? ' · ' + g + '칸까지만 넣어요' : ''), { undo: restoreBackup, ms: 5000 });
+      return true;
     }catch(err){
       toast(err && err.message ? err.message : '사진을 불러오지 못했어요');
+      return true;
+    }finally{
+      uploading = false;
     }
-  });
+  }
 
   document.addEventListener('keydown', function(e){
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && document.activeElement === el('bodyBulk')){
@@ -11209,7 +11392,7 @@
       bodyStyle: function(){ return bodyStylesOf(); },
       setBodyStyle: function(v){
         const id = BODY_IDS.indexOf(v) >= 0 ? v : 'classic';
-        state.slides.forEach(function(sl){ if (sl.type === 'body'){ sl.bodyStyle = id; if (TPL_POS[id]) sl.pos = TPL_POS[id]; sl.align = TPL_ALIGN[id] || 'left'; sl.posSet = false; sl.alignSet = false; } });
+        state.slides.forEach(function(sl){ if (sl.type === 'body'){ sl.bodyStyle = id; applyDesignPos(sl, id); } });
         renderAll(); persistNow(); setTimeout(paint, 30); return window.__iming.bodyStyle();
       },
       coverStyle: function(){
@@ -11219,7 +11402,7 @@
       setCoverStyle: function(v){
         const id = ['iming_yellow'].concat(TPL_IDS).indexOf(v) >= 0 ? v : 'classic';
         if (coverIndex() < 0) state.slides.unshift(blankSlide('cover'));
-        state.slides.forEach(function(sl){ if (sl.type === 'cover'){ sl.coverStyle = id; if (TPL_POS[id]) sl.pos = TPL_POS[id]; sl.align = TPL_ALIGN[id] || 'left'; sl.posSet = false; sl.alignSet = false; } });
+        state.slides.forEach(function(sl){ if (sl.type === 'cover'){ sl.coverStyle = id; applyDesignPos(sl, id); } });
         renderAll(); persistNow(); setTimeout(paint, 30); return window.__iming.coverStyle();
       },
       summaries: function(){ return summaryCount(); },
@@ -11289,10 +11472,20 @@
       step: function(){ return state.step; },
       writeTab: function(){ return writeTab; },
       setWriteTab: function(t){
+        /* v6.3: 탭이 없어졌으니 그 종류의 카드로 이동한다 */
         const b = document.querySelector('#writeTabs button[data-wtab="' + t + '"]');
-        if (b) b.click();
+        if (b){ b.click(); return writeTab; }
+        if (t === 'cover') jumpToKind('cover');
+        else if (t === 'summary') jumpToKind('summary');
+        else jumpToKind('body');
         return writeTab;
       },
+      setWriteMode: function(m){ setWriteMode(m); return writeMode; },
+      writeMode: function(){ return writeMode; },
+      setBodyScope: function(v){ bodyScope = v === 'one' ? 'one' : 'all'; renderTplChips(); return bodyScope; },
+      bodyScope: function(){ return bodyScope; },
+      slides: function(){ return state.slides; },
+      current: function(){ return state.current; },
       parseBody: parseBodyText,
       applyBody: function(t){ return applyBodyText(t); },
       bodyDraft: function(){ return state.bodyDraft; },

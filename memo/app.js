@@ -4,7 +4,7 @@
 
   /* ==================== 상수 ==================== */
   var APP_ID = 'yuzumemo';
-  var VERSION = 'v2.0';
+  var VERSION = 'v2.1';
   var LS_DATA = 'yuzumemo.v2.data';
   var LS_V1 = 'yuzumemo.data.v1';
   var LS_CFG = 'yuzumemo.sync.v1';
@@ -421,7 +421,8 @@
     var plain = textNoUrls.join('\n').trim();
     var inner = '';
     if (m.img) {
-      inner += '<div class="mimgwrap"><img src="' + m.img + '" alt="사진" data-photo="' + esc(m.id) + '" loading="lazy"></div>';
+      inner += '<div class="mimgwrap"><img src="' + m.img + '" alt="사진" data-photo="' + esc(m.id) + '" loading="lazy">' +
+        '<button class="mimgdl" type="button" data-dl-photo="' + esc(m.id) + '" aria-label="사진 저장">⬇ 저장</button></div>';
       if (plain) inner += '<div class="cap">' + linkifyEsc(plain) + '</div>';
     } else if (plain) {
       inner += '<div class="mtext">' + linkifyEsc(plain) + '</div>';
@@ -688,9 +689,10 @@
       return '<div class="pgroup"><div class="pghead">' + dayLabel(g.ts) + ' · ' + g.items.length + '장</div>' +
         '<div class="pgrid">' + g.items.map(function (m) {
           var r = findRoom(m.roomId);
-          return '<button class="pthumb" type="button" data-photo="' + esc(m.id) + '">' +
+          return '<div class="pthumbwrap"><button class="pthumb" type="button" data-photo="' + esc(m.id) + '">' +
             '<img src="' + m.img + '" alt="사진" loading="lazy">' +
-            '<span class="ptroom">' + esc(r ? r.title : '') + '</span></button>';
+            '<span class="ptroom">' + esc(r ? r.title : '') + '</span></button>' +
+            '<button class="pthumbdl" type="button" data-dl-photo="' + esc(m.id) + '" aria-label="사진 저장">⬇</button></div>';
         }).join('') + '</div></div>';
     }).join('');
   }
@@ -706,8 +708,10 @@
       '<small>' + mdLabel(m.createdAt) + ' ' + fmtTime(m.createdAt) + '</small></div>' +
       '<button class="vclose" type="button" id="vClose" aria-label="닫기">✕</button></div>' +
       '<div class="vimg"><img src="' + m.img + '" alt="사진"></div>' +
-      '<div class="vfoot"><button type="button" id="vGo">방 열기</button><button type="button" class="danger" id="vDel">삭제</button></div>';
+      '<div class="vfoot"><button type="button" class="save" id="vSave">⬇ 저장</button>' +
+      '<button type="button" id="vGo">방 열기</button><button type="button" class="danger" id="vDel">삭제</button></div>';
     $('#vClose').onclick = closeViewer;
+    $('#vSave').onclick = function () { savePhotoMsg(m); };
     $('#vGo').onclick = function () { closeViewer(); openRoom(m.roomId, { msgId: m.id }); };
     $('#vDel').onclick = function () {
       askConfirm({ title: '사진 삭제', message: '이 사진 메모를 휴지통으로 옮길까요?', okText: '삭제', danger: true }).then(function (ok) {
@@ -725,6 +729,66 @@
   function closeViewer() {
     var el = $('#viewer');
     el.hidden = true; el.innerHTML = '';
+  }
+
+  /* ==================== 사진 저장(다운로드) ==================== */
+  function photoFileName(m) {
+    var d = new Date((m && m.createdAt) || Date.now());
+    return 'yuzumemo_사진_' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '_' +
+      pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + '.jpg';
+  }
+  function dataUrlToBlob(u) {
+    try {
+      var s = String(u || ''), i = s.indexOf(',');
+      if (i < 0) return null;
+      var head = s.slice(0, i), body = s.slice(i + 1);
+      var mime = (head.match(/data:([^;]+)/) || [])[1] || 'image/jpeg';
+      if (/;base64/i.test(head)) {
+        var bin = atob(body), arr = new Uint8Array(bin.length);
+        for (var k = 0; k < bin.length; k++) arr[k] = bin.charCodeAt(k);
+        return new Blob([arr], { type: mime });
+      }
+      return new Blob([decodeURIComponent(body)], { type: mime });
+    } catch (e) { return null; }
+  }
+  function isIOS() {
+    var ua = navigator.userAgent || '';
+    return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }
+  function photoDownload(blob, name) {
+    if (!blob) { toast('사진을 꺼내지 못했어요'); return; }
+    try {
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = name; a.rel = 'noopener';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 5000);
+      toast(isIOS() ? '저장했어요 · 파일 앱 > 다운로드에서 확인' : '사진을 내려받았어요');
+    } catch (e) {
+      toast('이 브라우저에서는 저장이 안 돼요 · 사진을 길게 눌러 저장해 주세요');
+    }
+  }
+  function savePhotoMsg(m) {
+    if (!m || !m.img) { toast('저장할 사진이 없어요'); return; }
+    var name = photoFileName(m);
+    var blob = dataUrlToBlob(m.img);
+    /* 아이폰은 공유 창의 '사진에 저장'이 가장 확실하다 */
+    if (isIOS() && blob && navigator.canShare) {
+      try {
+        var file = new File([blob], name, { type: blob.type || 'image/jpeg' });
+        if (navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file], title: name }).then(function () {
+            toast('공유 창에서 저장을 골라 주세요');
+          }, function (err) {
+            if (err && err.name === 'AbortError') return;
+            photoDownload(blob, name);
+          });
+          return;
+        }
+      } catch (e) {}
+    }
+    photoDownload(blob, name);
   }
 
   /* ==================== 캘린더 ==================== */
@@ -823,6 +887,14 @@
   }
 
   /* ==================== 설정 ==================== */
+  function cloudGapHtml() {
+    var c = syncCfg.lastCount || null;
+    if (!c) return '';
+    var gap = (liveRooms().length > 0 && !(Number(c.rooms) > 0)) ||
+      (visibleMsgs().length > 0 && !(Number(c.msgs) > 0));
+    if (!gap) return '';
+    return '<p class="help warn">이 기기 기록이 클라우드에 아직 안 올라갔어요 · <b>지금 동기화</b>를 눌러 주세요</p>';
+  }
   function renderSyncSection() {
     var connected = syncConnected();
     var last = syncTimeText(syncCfg.lastSync);
@@ -837,6 +909,11 @@
         '<div class="codebox"><input id="syncLinkView" type="text" readonly value="' + esc(syncLinkText()) + '">' +
         '<button class="btn" type="button" id="copyLink">복사</button></div>' +
         '<p class="help">마지막 동기화 ' + esc(last) + (syncCfg.lastError ? ' · ⚠️ ' + esc(syncCfg.lastError) : '') + '</p>' +
+        cloudGapHtml() +
+        '<div class="srow"><span class="k">다른 코드로 연결</span></div>' +
+        '<div class="codebox"><input id="syncJoin" type="text" placeholder="코드 또는 링크 붙여넣기" autocomplete="off" autocapitalize="off" spellcheck="false">' +
+        '<button class="btn" type="button" id="syncJoinBtn">연결</button></div>' +
+        '<p class="help">지금 코드와 다른 코드를 넣으면 이 기기 기록을 그 코드에 합쳐요 (연결이 바뀝니다)</p>' +
         '<div class="srow"><span class="k">자동 동기화</span><button class="tg' + (syncCfg.auto ? ' on' : '') + '" type="button" id="tgAuto" aria-label="자동 동기화"></button></div>' +
         '<div class="btnrow"><button class="btn" type="button" id="syncNow">지금 동기화</button>' +
         '<button class="btn" type="button" id="syncNew">새 코드</button></div>' +
@@ -844,8 +921,9 @@
     } else {
       h += '<p class="help">이 기기 브라우저에만 저장되고 있어요. 동기화 코드를 만들면 PC·아이폰이 실시간으로 맞춰져요.</p>' +
         '<button class="btn primary block" type="button" id="syncNew">새 동기화 코드 만들기</button>' +
-        '<div class="codebox"><input id="syncJoin" type="text" placeholder="yuzumemo-xxxxxxxxxx" autocomplete="off" autocapitalize="off" spellcheck="false">' +
-        '<button class="btn" type="button" id="syncJoinBtn">연결</button></div>';
+        '<div class="codebox"><input id="syncJoin" type="text" placeholder="코드 또는 링크 붙여넣기 (예: yuzumemo-ab12cd34ef)" autocomplete="off" autocapitalize="off" spellcheck="false">' +
+        '<button class="btn" type="button" id="syncJoinBtn">연결</button></div>' +
+        '<p class="help">받은 링크를 그대로 붙여넣어도 돼요 · Enter로도 연결돼요</p>';
     }
     h += '<p class="help warn">링크를 아는 사람은 메모를 볼 수 있어요. 공개 페이지 소스에는 코드가 들어가지 않고, 이 기기 저장소에만 남습니다.</p>';
     h += '</section>';
@@ -853,6 +931,9 @@
   }
   function renderSet() {
     var el = $('#viewSet');
+    /* v2.1: 다시 그려도 입력 중이던 코드/링크는 그대로 둔다 (동기화가 끝나면 renderSet이 불린다) */
+    var keepJoin = ($('#syncJoin') ? $('#syncJoin').value : '');
+    var joinFocus = !!(document.activeElement && document.activeElement.id === 'syncJoin');
     var live = visibleMsgs().length;
     var rooms = liveRooms().length;
     var photos = visibleMsgs().filter(function (m) { return !!m.img; }).length;
@@ -889,6 +970,11 @@
         '<p class="help">카톡 채팅방처럼 쓰는 개인 메모장 · 사진·링크·캘린더 · 4자리 PIN · 클라우드 동기화</p>' +
       '</section></div>';
     el.innerHTML = html;
+    var jn = $('#syncJoin');
+    if (jn && keepJoin) {
+      jn.value = keepJoin;
+      if (joinFocus) { try { jn.focus(); jn.setSelectionRange(jn.value.length, jn.value.length); } catch (e) {} }
+    }
     wireSettings();
   }
   function wireSettings() {
@@ -906,6 +992,9 @@
       if (syncCfg.auto && syncConnected()) syncNow({ silent: true });
     };
     if ($('#syncJoinBtn')) $('#syncJoinBtn').onclick = joinSyncCode;
+    if ($('#syncJoin')) $('#syncJoin').onkeydown = function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); joinSyncCode(); }
+    };
     if ($('#pinSet')) $('#pinSet').onclick = function () { openPinSheet('set'); };
     if ($('#pinChange')) $('#pinChange').onclick = function () { openPinSheet('change'); };
     if ($('#pinRemove')) $('#pinRemove').onclick = function () { openPinSheet('remove'); };
@@ -1323,6 +1412,14 @@
     catch (e) { stats.changed = true; }
     return { data: L, stats: stats };
   }
+  /* v2.1: 클라우드가 비었는데 이 기기에만 기록이 있는지 */
+  function syncCloudLacksLocal(manifest) {
+    var c = (manifest && manifest.counts) || null;
+    if (!c) return false;
+    if (liveRooms().length > 0 && !(Number(c.rooms) > 0)) return true;
+    if (visibleMsgs().length > 0 && !(Number(c.msgs) > 0)) return true;
+    return false;
+  }
   function syncNow(opts) {
     var silent = opts && opts.silent;
     if (!syncConnected()) {
@@ -1341,7 +1438,10 @@
         var mRev = Number(manifest.rev) || 0;
         syncCfg.lastRemoteRev = Math.max(Number(syncCfg.lastRemoteRev) || 0, mRev);
         var upToDate = (mRev === Number(syncCfg.rev)) && (Number(manifest.ts || 0) <= Number(syncCfg.lastPushTs || 0));
-        if (upToDate || mRev < Number(syncCfg.rev)) return null;
+        /* v2.1: 클라우드 rev가 로컬보다 낮아도 그냥 건너뛰지 않는다.
+           예전엔 이 경로에서 아무것도 올리지 않고 lastSync만 갱신해 '연결됨'으로 보이는데
+           클라우드에는 기록이 없는 무음 미업로드가 됐다. 이제는 읽어서 병합한 뒤 올린다. */
+        if (upToDate && !syncCloudLacksLocal(manifest)) return null;
         return syncReadRemoteData(manifest).then(function (remoteDoc) {
           var m = mergeRemoteData(data, remoteDoc);
           acc.added += m.stats.added || 0;
@@ -1364,7 +1464,11 @@
       });
     }
     return step(0).then(function () {
-      var needPush = !lastManifest || !!syncCfg.dirty || acc.changed || acc.localOnly > 0 || acc.localNewer > 0;
+      var cloudEmpty = !!(lastManifest && lastManifest.counts &&
+        !(Number(lastManifest.counts.rooms) > 0) && !(Number(lastManifest.counts.msgs) > 0));
+      var localHasContent = liveRooms().length > 0 || visibleMsgs().length > 0;
+      var needPush = !lastManifest || !!syncCfg.dirty || acc.changed || acc.localOnly > 0 || acc.localNewer > 0 ||
+        (cloudEmpty && localHasContent);
       if (needPush) return syncPush();
       syncCfg.rev = Math.max(Number(syncCfg.rev) || 0, Number(lastManifest.rev) || 0);
       syncCfg.lastSync = Date.now(); syncCfg.lastError = '';
@@ -1411,11 +1515,11 @@
     return location.origin + location.pathname + '?k=' + syncCfg.ns;
   }
   function parseSyncCode(raw) {
-    var s = String(raw || '').trim();
+    var s = String(raw || '').replace(/\s+/g, '');
     if (!s) return '';
-    var mQ = s.match(/[?&]k=([A-Za-z0-9_-]+)/);
+    var mQ = s.match(/[?&#]k=([A-Za-z0-9_-]+)/);
     if (mQ) s = mQ[1];
-    s = s.replace(/^https?:\/\/[^\/]+\//i, '').replace(/^v2\//i, '').replace(/\/+$/, '');
+    s = s.replace(/^https?:\/\/[^\/]+\//i, '').replace(/^v2\//i, '').replace(/^\/+/, '').replace(/\/+$/, '');
     var m = s.match(/(yuzumemo-[a-z0-9]+)/i);
     if (m) return m[1].toLowerCase();
     return s.toLowerCase();
@@ -1448,8 +1552,9 @@
       toast('코드 형식이 올바르지 않아요. (예: yuzumemo-ab12cd34ef)');
       return;
     }
+    if (code === syncCfg.ns) { toast('이미 이 코드로 연결되어 있어요'); return; }
     var prev = syncCfg.ns;
-    syncCfg.ns = code; syncCfg.rev = 0; syncCfg.lastSync = 0; syncCfg.lastError = ''; syncCfg.dirty = false;
+    syncCfg.ns = code; syncCfg.rev = 0; syncCfg.lastRemoteRev = 0; syncCfg.lastPushTs = 0; syncCfg.lastSync = 0; syncCfg.lastError = ''; syncCfg.dirty = false;
     syncSaveCfg();
     toast('클라우드 기록을 확인하는 중…');
     syncReadManifest().then(function (manifest) {
@@ -1750,6 +1855,8 @@
       if (pj) { focusMsg(pj.dataset.mid, true); return; }
       if (e.target.closest('a')) return;
       var img = e.target.closest('img[data-photo]');
+      var dl = e.target.closest('[data-dl-photo]');
+      if (dl) { savePhotoMsg(findMsg(dl.dataset.dlPhoto)); return; }
       if (img) { openViewer(img.dataset.photo); return; }
       var b = e.target.closest('.bubble[data-mid]');
       if (b) { openMsgMenu(b.dataset.mid); return; }
@@ -1772,6 +1879,8 @@
       var f = e.target.closest('#photoRooms [data-room]');
       if (f) { ui.photoRoom = f.dataset.room || ''; saveUI(); renderPhotos(); return; }
       var th = e.target.closest('[data-photo]');
+      var dl2 = e.target.closest('[data-dl-photo]');
+      if (dl2) { savePhotoMsg(findMsg(dl2.dataset.dlPhoto)); return; }
       if (th) { openViewer(th.dataset.photo); }
     });
     $('#viewer').addEventListener('click', function (e) {
@@ -1866,7 +1975,10 @@
     ui: function () { return ui; },
     counts: syncDocCounts,
     sync: function () { return syncNow({ silent: true }); },
-    push: function () { return syncPush(); },
+    push: syncPush,
+    parse: parseSyncCode,
+    saveCfg: syncSaveCfg,
+    goTab: setTab,
     open: openRoom,
     setTab: setTab,
     addRoom: function (t, c) { var now = Date.now(); var r = { id: 'r-' + uid(), title: t, color: c || 'blue', pinned: false, createdAt: now, updatedAt: now, deleted: false, deletedAt: 0 }; data.rooms.push(r); saveData(); renderList(); return r.id; },
