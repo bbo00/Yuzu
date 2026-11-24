@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>@IMING 카드 제작</title>
-<!-- v6.4 · 모든 단계에서 카드 넘기기(‹ ›) 상시 노출 · 4분할 칸 사진 개별 보관(새로고침·동기화 후에도 4칸 유지) · 칸별 확대/좌우/상하 조절 · 본문 사진 높이 조절 + 전체 본문 일괄 적용 · 빈 칸 자동 숨김 · 🖼 전체배경+중앙박스 본문 디자인 -->
+<!-- v6.4 · 클라우드 rev가 같으면 조각을 다시 받지 않아 빨리 열림 · 1~4단계 카드 넘기기(‹ ›) 상시 노출 · 4분할 칸 사진 개별 보관(새로고침·동기화 후에도 4칸 유지) · 칸별 확대/좌우/상하 조절 · 본문 사진 높이 조절 + 전체 본문 일괄 적용 · 빈 칸 자동 숨김 · 🖼 전체배경+중앙박스 본문 디자인 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#FFFFFF">
@@ -8904,9 +8904,10 @@
     return manifest;
   }
 
-  async function syncPull(){
+  async function syncPull(preManifest){
     if (!syncOn()) return null;
-    const m = await syncGet(syncCfg.ns + '/v1/manifest');
+    /* v6.4: 매번 전부 내려받지 않도록, 이미 받은 manifest를 그대로 쓴다 */
+    const m = preManifest || await syncGet(syncCfg.ns + '/v1/manifest');
     if (!m || !m.parts || !m.parts.length) return null;
     let buf = '';
     for (let i = 0; i < m.parts.length; i++){
@@ -8929,7 +8930,21 @@
     syncBusy = true;
     renderSyncBar();
     try{
-      const res = syncCfg.fresh ? null : await syncPull();
+      /* v6.4: 이 기기 rev와 클라우드 rev가 같으면 조각을 받지 않고 바로 끝낸다
+         (덱이 많아져도 앱을 열 때 느려지지 않게) */
+      let res = null;
+      if (!syncCfg.fresh){
+        const pre = await syncGet(syncCfg.ns + '/v1/manifest');
+        if (pre && Number(pre.rev) === Number(syncCfg.rev) && !syncCfg.dirty && syncCfg.lastSync &&
+            Number(pre.ts) <= Number(syncCfg.lastPushTs || 0)){
+          syncCfg.lastSync = Date.now();
+          syncCfg.lastCount = pre.counts || syncCfg.lastCount;
+          syncCfg.lastError = '';
+          syncSaveCfg();
+          return null;
+        }
+        res = pre ? await syncPull(pre) : null;
+      }
       if (!res){
         syncCfg.rev = 0;
         await syncPush();
