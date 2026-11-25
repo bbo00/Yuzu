@@ -284,6 +284,11 @@
   .btn.small{padding:8px 12px; font-size:12.5px; border-radius:11px;}
   .btn.grow{flex:1;}
   .btn:active{transform:scale(.985);}
+  .btn:disabled{opacity:.6;}
+  /* v1.12: 현재 상태 저장 */
+  .btn.save{background:#fff7ef; border-color:#e0bda9; color:#8d5b45;}
+  .save-row{margin:0 0 10px;}
+  .save-row .btn{flex:1 1 100%;}
   .note-line{font-size:11.5px; color:var(--ink3); margin-top:9px; line-height:1.5;}
 
   .final-card{
@@ -860,7 +865,7 @@
   const SYNC_CFG_KEY = 'yujareview_sync_v1';
   const LS_KEY = 'yujareview_state_v2';
   const LS_UI = 'yujareview_ui_v1';
-  const VERSION = 'v1.11';
+  const VERSION = 'v1.12';
 
   /* =========================================================
      동기화 키 (v1.8)
@@ -1703,6 +1708,49 @@
     } catch (e) { }
   }
 
+  /* v1.12: 💾 현재 상태 저장 — 화면 그대로 로컬 저장 + 대기 중 변경까지 즉시 클라우드 업로드 */
+  function saveNow(btn) {
+    if (!state) return;
+    saveLocal();
+    const label = btn ? btn.textContent : '';
+    const restore = function () { if (btn) { btn.disabled = false; btn.textContent = label; } };
+    if (!syncNs) { toast('이 기기에 저장되었어요 (동기화 미연결)', true); return; }
+    if (!navigator.onLine) { toast('이 기기에 저장되었어요 (네트워크 연결 없음)', true); return; }
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ 저장 중…'; }
+    const ids = Object.keys(pushIds || {});
+    pushIds = {};
+    clearTimeout(pushTimer);
+    const cur = currentCampaign();
+    const list = state.campaigns.filter(function (c) { return ids.indexOf(String(c.id)) >= 0; });
+    if (cur && ids.indexOf(String(cur.id)) < 0) list.push(cur);
+    if (!list.length) list.push.apply(list, state.campaigns.slice());
+    if (!list.length) { restore(); toast('저장할 내용이 없어요'); return; }
+    const go = function () {
+      syncBusy = true;
+      setPill('syncing');
+      pushCampaigns(list).then(function () {
+        lastSyncAt = nowMs(); lastSyncErr = '';
+        setPill('ok');
+        restore();
+        toast('현재 상태가 저장 및 동기화되었어요', true);
+      }).catch(function (e) {
+        lastSyncErr = (e && e.message) ? e.message : String(e);
+        setPill('err', lastSyncErr);
+        restore();
+        toast('이 기기에는 저장됐지만 동기화에 실패했어요 · ' + lastSyncErr, true);
+      }).then(function () {
+        syncBusy = false;
+        if (pendingSync) { pendingSync = false; setTimeout(function () { syncNow(false); }, 400); }
+      });
+    };
+    const wait = function (n) {
+      if (!syncBusy) { go(); return; }
+      if (n > 40) { restore(); toast('동기화가 진행 중이에요 · 잠시 뒤 다시 눌러 주세요 (이 기기에는 저장됨)'); return; }
+      setTimeout(function () { wait(n + 1); }, 150);
+    };
+    wait(0);
+  }
+
   function retryPush(ids) {
     if (pushRetry >= 4) return;
     pushRetry++;
@@ -2486,8 +2534,9 @@
         secHtml +
         '<div class="actions">' +
           '<button class="btn primary grow" data-act="copy-draft">📋 AI에게 글 요청용 초안 복사</button>' +
+          '<button class="btn save" data-act="save-now">💾 현재 상태 저장</button>' +
         '</div>' +
-        '<div class="note-line">복사하면 최신 내용이 클라우드에도 바로 저장돼요. 메인 AI가 이 초안을 읽고 2,000자 원고를 써줍니다.</div>' +
+        '<div class="note-line">💾 현재 상태 저장을 누르면 지금 화면 그대로 이 기기에 저장되고, 동기화 코드가 연결돼 있으면 클라우드에도 바로 올라가요. 복사할 때도 최신 내용이 클라우드에 먼저 저장됩니다.</div>' +
       '</div>';
 
     const finalPane = '' +
@@ -2499,6 +2548,10 @@
             '<span class="badge ' + (mStat.withSpace >= 1900 ? 'st-done' : 'st-draft') + '" id="final-badge">' +
               (mStat.withSpace >= 1900 ? '분량 충족' : '목표 2,000자') + '</span>' +
           '</div>' +
+          '<div class="actions save-row">' +
+            '<button class="btn save" data-act="save-now">💾 현재 상태 저장</button>' +
+          '</div>' +
+          '<div class="note-line" style="margin:-4px 0 10px">제목·본문·해시태그까지 지금 화면 그대로 저장하고 바로 동기화해요.</div>' +
           '<div class="final-field">' +
             '<div class="ff-head">' +
               '<span class="ff-label">제목</span>' +
@@ -3062,6 +3115,7 @@
       case 'close-modal': closeModals(); break;
       case 'save-edit': saveEdit(); break;
       case 'copy-draft': copyDraft(); break;
+      case 'save-now': saveNow(t); break;
       case 'copy-final': copyFinal(); break;
       case 'copy-title': copyTitle(); break;
       case 'copy-tags': copyTags(); break;
