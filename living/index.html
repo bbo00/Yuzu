@@ -740,6 +740,21 @@ body.rvopen { overflow: hidden; }
     });
   }
 
+  /* 원격이 더 최신이어도 '비어 있는 칸'으로 이 기기에 쓴 내용을 지우지 않는다 */
+  function keepFilled(remote, local) {
+    if (!remote || !local || typeof remote !== 'object' || typeof local !== 'object') return remote;
+    var out = {};
+    for (var k in remote) if (Object.prototype.hasOwnProperty.call(remote, k)) out[k] = remote[k];
+    for (var k2 in local) {
+      if (!Object.prototype.hasOwnProperty.call(local, k2)) continue;
+      var rv = out[k2], lv = local[k2];
+      var rEmpty = (rv === undefined || rv === null || rv === '' || (Array.isArray(rv) && rv.length === 0));
+      var lFilled = !(lv === undefined || lv === null || lv === '' || (Array.isArray(lv) && lv.length === 0));
+      if (rEmpty && lFilled) out[k2] = lv;
+    }
+    return out;
+  }
+
   /* ---------- 병합: 클라우드(remote) + 이 기기(local) → 합친 문서 ---------- */
   function mergeRemote(remote) {
     var before = JSON.stringify(snapshotDoc());
@@ -766,7 +781,7 @@ body.rvopen { overflow: hidden; }
         var id = String(r.id), l = merged.get(id);
         if (!l) { merged.set(id, r); return; }
         var lt = Number(l.updatedAt || 0), rt = Number(r.updatedAt || 0);
-        if (rt > lt) merged.set(id, r);
+        if (rt > lt) merged.set(id, keepFilled(r, l));
         else if (lt > rt && !syncApplying) localAhead = true;
       });
       var kept = [];
@@ -1034,11 +1049,30 @@ body.rvopen { overflow: hidden; }
     if (a === 'copy-link') { copyText(syncLink()); return; }
   });
 
+  /* 화면을 닫거나 앱을 나갈 때 미업로드분을 바로 올린다 */
+  function flushDirtyOnHide() {
+    try {
+      if (!syncConnected() || !syncCfg || syncCfg.auto === false) return;
+      if (syncBusy || !syncCfg.dirty) return;
+      clearTimeout(syncTimer);
+      syncPush(null).catch(function () { });
+    } catch (e) { }
+  }
+
   function startSync() {
     syncLoadCfg();
     document.addEventListener('visibilitychange', function () {
-      if (document.visibilityState === 'visible' && syncConnected() && syncCfg.auto && (Date.now() - (syncCfg.lastSync || 0) > 20000)) syncNow({ silent: true });
+      if (document.visibilityState === 'visible') {
+        if (syncConnected() && syncCfg.auto && (Date.now() - (syncCfg.lastSync || 0) > 3000)) syncNow({ silent: true });
+      } else {
+        flushDirtyOnHide();
+      }
     });
+    window.addEventListener('focus', function () {
+      if (document.visibilityState !== 'visible' || syncBusy) return;
+      if (syncConnected() && syncCfg.auto && (Date.now() - (syncCfg.lastSync || 0) > 3000)) syncNow({ silent: true });
+    });
+    window.addEventListener('pagehide', flushDirtyOnHide);
     window.addEventListener('online', function () { if (syncConnected() && syncCfg.auto) syncNow({ silent: true }); });
     clearInterval(syncPoll);
     syncPoll = setInterval(function () {
@@ -1081,7 +1115,13 @@ body.rvopen { overflow: hidden; }
     setSync();
   }
 
-  function emptyOnboard() { return !syncConnected() || (loadingRemote && !items.size); }
+  /* v1.1: 코드가 끊겨도 이 기기에 기록이 남아 있으면 목록을 보여 준다 —
+     '동기화를 풀었다고 내 기록이 사라진 것처럼' 보이지 않게 */
+  function emptyOnboard() {
+    if (loadingRemote && !items.size) return true;
+    if (!syncConnected()) return !(items.size || shop.size || goods.size || sales.size);
+    return false;
+  }
   function onboardHTML() {
     if (loadingRemote) {
       return '<div class="onboard"><div class="obicon">☁️</div><p class="obt">클라우드에서 목록을 불러오는 중…</p></div>';

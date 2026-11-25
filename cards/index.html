@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>@IMING 카드 제작</title>
-<!-- v6.4 · 클라우드 rev가 같으면 조각을 다시 받지 않아 빨리 열림 · 1~4단계 카드 넘기기(‹ ›) 상시 노출 · 4분할 칸 사진 개별 보관(새로고침·동기화 후에도 4칸 유지) · 칸별 확대/좌우/상하 조절 · 본문 사진 높이 조절 + 전체 본문 일괄 적용 · 빈 칸 자동 숨김 · 🖼 전체배경+중앙박스 본문 디자인 -->
+<!-- v6.4.3 · 탭·창으로 돌아오면 다른 기기(휴대폰↔PC)의 최신 내용을 자동으로 받아온다 · v6.4 · 클라우드 rev가 같으면 조각을 다시 받지 않아 빨리 열림 · 1~4단계 카드 넘기기(‹ ›) 상시 노출 · 4분할 칸 사진 개별 보관(새로고침·동기화 후에도 4칸 유지) · 칸별 확대/좌우/상하 조절 · 본문 사진 높이 조절 + 전체 본문 일괄 적용 · 빈 칸 자동 숨김 · 🖼 전체배경+중앙박스 본문 디자인 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#FFFFFF">
@@ -8998,6 +8998,17 @@
     }
   }
 
+  /* v6.4.3: 휴대폰↔PC에서 고친 내용을 탭·창으로 돌아왔을 때 저절로 받아온다 */
+  function autoSyncOnReturn(){
+    try{
+      if (!syncOn() || !syncCfg || syncCfg.auto === false) return;
+      if (document.visibilityState !== 'visible') return;
+      if (syncBusy || syncTimer) return;
+      if (Date.now() - (syncCfg.lastSync || 0) < 3000) return;
+      syncNow({ silent:true });
+    }catch(e){}
+  }
+
   function scheduleSync(){
     if (!syncOn() || !syncCfg) return;
     syncCfg.dirty = true;
@@ -11628,7 +11639,9 @@
     window.addEventListener('pagehide', function(){ try{ persistNow(); }catch(e){} });
     document.addEventListener('visibilitychange', function(){
       if (document.visibilityState === 'hidden'){ try{ persistNow(); }catch(e){} }
+      else { autoSyncOnReturn(); }
     });
+    window.addEventListener('focus', autoSyncOnReturn);
     setTimeout(function(){ loadAllFontFaces(); }, 1200);
 
     window.__iming = {

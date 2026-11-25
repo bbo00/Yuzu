@@ -1056,6 +1056,21 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     });
   }
 
+  /* 원격이 더 최신이어도 '비어 있는 칸'으로 이 기기에 쓴 내용을 지우지 않는다 */
+  function keepFilled(remote, local) {
+    if (!remote || !local || typeof remote !== 'object' || typeof local !== 'object') return remote;
+    var out = {};
+    for (var k in remote) if (Object.prototype.hasOwnProperty.call(remote, k)) out[k] = remote[k];
+    for (var k2 in local) {
+      if (!Object.prototype.hasOwnProperty.call(local, k2)) continue;
+      var rv = out[k2], lv = local[k2];
+      var rEmpty = (rv === undefined || rv === null || rv === '' || (Array.isArray(rv) && rv.length === 0));
+      var lFilled = !(lv === undefined || lv === null || lv === '' || (Array.isArray(lv) && lv.length === 0));
+      if (rEmpty && lFilled) out[k2] = lv;
+    }
+    return out;
+  }
+
   /* 병합: 로컬을 지우지 않고 합집합. 같은 id는 updatedAt이 최신인 쪽, 삭제된 id는 양쪽 합집합으로 제외 */
   function mergeCollection(L, R, key, delKey, stats) {
     var byId = {};
@@ -1067,7 +1082,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       var r = byId[k];
       if (!r) { byId[k] = x; return; }
       var lt = Number(x.updatedAt || 0), rt = Number(r.updatedAt || 0);
-      if (rt > lt) { byId[k] = r; stats.updated++; }
+      if (rt > lt) { byId[k] = keepFilled(r, x); stats.updated++; }
       else byId[k] = x;
     });
     remoteIds.forEach(function (id) { if (!localIds[id]) stats.added++; });
@@ -1141,6 +1156,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     }).then(function () {
       syncBusy = false;
       syncApplying = false;
+      if (syncCfg.dirty && !syncCfg.lastError) { clearTimeout(syncTimer); syncTimer = setTimeout(function () { syncNow({ silent: true }); }, 900); }
       renderSyncUI();
       if (!silent) {
         var c = syncCfg.lastCount || {};
@@ -1160,13 +1176,32 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     });
   }
 
+  /* 화면을 닫거나 앱을 나갈 때 미업로드분을 바로 올린다 */
+  function flushDirtyOnHide() {
+    try {
+      if (!syncConnected() || !syncCfg || syncCfg.auto === false) return;
+      if (syncBusy || !syncCfg.dirty) return;
+      clearTimeout(syncTimer);
+      syncPush().catch(function () { });
+    } catch (e) { }
+  }
+
   function scheduleSyncPush() {
-    if (!syncConnected() || syncApplying) return;
+    if (!syncConnected()) return;
+    /* 동기화가 도는 중에 저장된 변경도 잃지 않도록 dirty 를 먼저 남기고, 끝난 뒤 한 번 더 올린다 */
     syncCfg.dirty = true;
     syncSaveCfg();
     if (!syncCfg.auto) return;
     clearTimeout(syncTimer);
-    syncTimer = setTimeout(function () { syncNow({ silent: true }); }, 1500);
+    syncTimer = setTimeout(function tryPush(n) {
+      if (!syncConnected()) return;
+      if (syncBusy || syncApplying) {
+        if (n < 8) syncTimer = setTimeout(function () { tryPush(n + 1); }, 1500);
+        return;
+      }
+      if (!syncCfg.dirty) return;
+      syncNow({ silent: true });
+    }, 1500);
   }
 
   function syncTimeText(ts) {
@@ -1443,13 +1478,20 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       /* 주소창에서 코드를 지워 화면 캡처·기록에 남지 않게 한다 */
       try { history.replaceState(null, '', location.pathname); } catch (e2) {}
     }
-    if (!syncConnected()) return;
-    if (syncCfg.auto) setTimeout(function () { syncNow({ silent: true }); }, 600);
+    /* 코드를 나중에 만들어도 돌아왔을 때 자동으로 맞춰지도록 이벤트 연결은 항상 건다 */
+    if (syncConnected() && syncCfg.auto) setTimeout(function () { syncNow({ silent: true }); }, 600);
     document.addEventListener('visibilitychange', function () {
-      if (document.visibilityState === 'visible' && syncCfg.auto && syncConnected() && (Date.now() - (syncCfg.lastSync || 0) > 60000)) {
-        syncNow({ silent: true });
+      if (document.visibilityState === 'visible') {
+        if (syncCfg.auto && syncConnected() && (Date.now() - (syncCfg.lastSync || 0) > 3000)) syncNow({ silent: true });
+      } else {
+        flushDirtyOnHide();
       }
     });
+    window.addEventListener('focus', function () {
+      if (document.visibilityState !== 'visible' || syncBusy) return;
+      if (syncCfg.auto && syncConnected() && (Date.now() - (syncCfg.lastSync || 0) > 3000)) syncNow({ silent: true });
+    });
+    window.addEventListener('pagehide', flushDirtyOnHide);
     window.addEventListener('online', function () {
       if (syncCfg.auto && syncConnected()) syncNow({ silent: true });
     });

@@ -2767,8 +2767,21 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   }
   window.addEventListener('pagehide', flushSync);
   document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'hidden') flushSync();
+    if (document.visibilityState === 'hidden') { flushSync(); return; }
+    autoPullOnReturn();
   });
+  window.addEventListener('focus', autoPullOnReturn);
+
+  /* v1.8: 다른 기기에서 고친 재고·거래를 탭·창으로 돌아오면 저절로 받아온다 */
+  function autoPullOnReturn() {
+    try {
+      if (!syncOn() || !syncCfg || syncCfg.auto === false) return;
+      if (document.visibilityState !== 'visible') return;
+      if (syncBusy || syncTimer) return;
+      if (Date.now() - (Number(syncCfg.lastSync) || 0) < 3000) return;
+      syncNow({ silent: true }).catch(function () { });
+    } catch (e) { }
+  }
 
   function syncPull() {
     if (!syncOn()) return Promise.resolve(null);
@@ -2792,6 +2805,21 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     });
   }
 
+  /* 원격이 더 최신이어도 '비어 있는 칸'으로 이 기기에 쓴 내용을 지우지 않는다 */
+  function keepFilled(remote, local) {
+    if (!remote || !local || typeof remote !== 'object' || typeof local !== 'object') return remote;
+    var out = {};
+    for (var k in remote) if (Object.prototype.hasOwnProperty.call(remote, k)) out[k] = remote[k];
+    for (var k2 in local) {
+      if (!Object.prototype.hasOwnProperty.call(local, k2)) continue;
+      var rv = out[k2], lv = local[k2];
+      var rEmpty = (rv === undefined || rv === null || rv === '' || (Array.isArray(rv) && rv.length === 0));
+      var lFilled = !(lv === undefined || lv === null || lv === '' || (Array.isArray(lv) && lv.length === 0));
+      if (rEmpty && lFilled) out[k2] = lv;
+    }
+    return out;
+  }
+
   function mergeData(local, remote) {
     var stats = { added: 0, updated: 0, deleted: 0 };
     var delIds = {};
@@ -2804,14 +2832,14 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     (remote.items || []).forEach(function (r) {
       var cur = items[r.id];
       if (!cur) { items[r.id] = r; order.push(r.id); stats.added++; return; }
-      if (Number(r.updatedAt || 0) > Number(cur.updatedAt || 0)) { items[r.id] = r; stats.updated++; }
+      if (Number(r.updatedAt || 0) > Number(cur.updatedAt || 0)) { items[r.id] = keepFilled(r, cur); stats.updated++; }
     });
     var txns = {}, torder = [];
     (local.txns || []).forEach(function (x) { if (!txns[x.id]) torder.push(x.id); txns[x.id] = x; });
     (remote.txns || []).forEach(function (r) {
       var cur = txns[r.id];
       if (!cur) { txns[r.id] = r; torder.push(r.id); stats.added++; return; }
-      if (Number(r.updatedAt || 0) > Number(cur.updatedAt || 0)) { txns[r.id] = r; stats.updated++; }
+      if (Number(r.updatedAt || 0) > Number(cur.updatedAt || 0)) { txns[r.id] = keepFilled(r, cur); stats.updated++; }
     });
     var merged = {
       v: 2,
@@ -3188,7 +3216,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     var inv = invStats();
     var sizeTxt = '—';
     try { sizeTxt = (JSON.stringify(state).length / 1024).toFixed(0) + 'KB'; } catch (e) { }
-    var body = '<div class="syncbox"><div class="ownername">📒 리셀북 <span style="color:var(--muted2)">v1.7</span></div>' +
+    var body = '<div class="syncbox"><div class="ownername">📒 리셀북 <span style="color:var(--muted2)">v1.8</span></div>' +
       '<p class="desc">재고 ' + state.items.length + '종 · 거래 ' + state.txns.length + '건 · 저장 ' + sizeTxt + '</p>' +
       '<div class="syncacts">' +
       '<button class="btn" data-mm="sync">🔄 동기화</button>' +
@@ -3401,7 +3429,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   /* expose a tiny hook for self-checks */
   window.__resellbook = {
     get state() { return state; },
-    version: '1.6'
+    version: '1.8'
   };
 })();
 

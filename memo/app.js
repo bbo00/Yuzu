@@ -4,7 +4,7 @@
 
   /* ==================== 상수 ==================== */
   var APP_ID = 'yuzumemo';
-  var VERSION = 'v2.1';
+  var VERSION = 'v2.2';
   var LS_DATA = 'yuzumemo.v2.data';
   var LS_V1 = 'yuzumemo.data.v1';
   var LS_CFG = 'yuzumemo.sync.v1';
@@ -1369,6 +1369,21 @@
       return doc;
     });
   }
+  /* 원격이 더 최신이어도 '비어 있는 칸'으로 이 기기에 쓴 내용을 지우지 않는다 */
+  function keepFilled(remote, local) {
+    if (!remote || !local || typeof remote !== 'object' || typeof local !== 'object') return remote;
+    var out = {};
+    for (var k in remote) if (Object.prototype.hasOwnProperty.call(remote, k)) out[k] = remote[k];
+    for (var k2 in local) {
+      if (!Object.prototype.hasOwnProperty.call(local, k2)) continue;
+      var rv = out[k2], lv = local[k2];
+      var rEmpty = (rv === undefined || rv === null || rv === '' || (Array.isArray(rv) && rv.length === 0));
+      var lFilled = !(lv === undefined || lv === null || lv === '' || (Array.isArray(lv) && lv.length === 0));
+      if (rEmpty && lFilled) out[k2] = lv;
+    }
+    return out;
+  }
+
   function mergeCollection(L, R, key, delKey, stats) {
     var byId = {};
     (R[key] || []).forEach(function (x) { byId[String(x.id)] = x; });
@@ -1379,7 +1394,7 @@
       var r = byId[k];
       if (!r) { byId[k] = x; stats.localOnly = (stats.localOnly || 0) + 1; return; }
       var lt = Number(x.updatedAt || 0), rt = Number(r.updatedAt || 0);
-      if (rt > lt) { byId[k] = r; stats.updated++; }
+      if (rt > lt) { byId[k] = keepFilled(r, x); stats.updated++; }
       else { byId[k] = x; if (rt < lt) stats.localNewer = (stats.localNewer || 0) + 1; }
     });
     remoteIds.forEach(function (id) { if (!localIds[id]) stats.added++; });
@@ -1476,6 +1491,7 @@
       return null;
     }).then(function () {
       syncBusy = false; syncApplying = false;
+      if (syncCfg.dirty && !syncCfg.lastError) { clearTimeout(syncTimer); syncTimer = setTimeout(function () { syncNow({ silent: true }); }, 900); }
       if (ui.tab === 'set') renderSet();
       if (!silent) {
         var c = syncCfg.lastCount || {};
@@ -1492,13 +1508,33 @@
       return null;
     });
   }
+  /* 화면을 닫거나 앱을 나갈 때 미업로드분을 바로 올린다 */
+  function flushDirtyOnHide() {
+    try {
+      if (!syncConnected() || !syncCfg || syncCfg.auto === false) return;
+      if (syncBusy || !syncCfg.dirty) return;
+      clearTimeout(syncTimer);
+      syncPush().catch(function () { });
+    } catch (e) { }
+  }
+
   function scheduleSyncPush() {
-    if (!syncConnected() || syncApplying) return;
+    if (!syncConnected()) return;
+    /* v2.2: 동기화가 도는 중에 저장된 변경도 잃지 않도록 dirty 를 먼저 남기고,
+       동기화가 끝난 뒤 반드시 한 번 더 올린다 */
     syncCfg.dirty = true;
     syncSaveCfg();
     if (!syncCfg.auto) return;
     clearTimeout(syncTimer);
-    syncTimer = setTimeout(function () { syncNow({ silent: true }); }, 1200);
+    syncTimer = setTimeout(function tryPush(n) {
+      if (!syncConnected()) return;
+      if (syncBusy || syncApplying) {
+        if (n < 8) syncTimer = setTimeout(function () { tryPush(n + 1); }, 1500);
+        return;
+      }
+      if (!syncCfg.dirty) return;
+      syncNow({ silent: true });
+    }, 1200);
   }
   function syncTimeText(ts) {
     if (!ts) return '아직 없음';
@@ -1603,8 +1639,9 @@
       syncSaveCfg();
       try { history.replaceState(null, '', location.pathname); } catch (e2) {}
     }
-    if (!syncConnected()) return;
-    if (syncCfg.auto) {
+    /* v2.2: 코드를 나중에 만들어도(설정 화면에서 생성·연결) 돌아왔을 때 자동으로 맞춰지도록
+       이벤트 연결은 코드 유무와 상관없이 항상 건다 */
+    if (syncConnected() && syncCfg.auto) {
       setTimeout(function () {
         syncNow({ silent: true }).then(function () {
           setTimeout(function () {
@@ -1614,10 +1651,17 @@
       }, 600);
     }
     document.addEventListener('visibilitychange', function () {
-      if (document.visibilityState === 'visible' && syncCfg.auto && syncConnected() && (Date.now() - (syncCfg.lastSync || 0) > 60000)) {
-        syncNow({ silent: true });
+      if (document.visibilityState === 'visible') {
+        if (syncCfg.auto && syncConnected() && (Date.now() - (syncCfg.lastSync || 0) > 3000)) syncNow({ silent: true });
+      } else {
+        flushDirtyOnHide();
       }
     });
+    window.addEventListener('focus', function () {
+      if (document.visibilityState !== 'visible' || syncBusy) return;
+      if (syncCfg.auto && syncConnected() && (Date.now() - (syncCfg.lastSync || 0) > 3000)) syncNow({ silent: true });
+    });
+    window.addEventListener('pagehide', flushDirtyOnHide);
     window.addEventListener('online', function () {
       if (syncCfg.auto && syncConnected()) syncNow({ silent: true });
     });

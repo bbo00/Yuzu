@@ -925,7 +925,7 @@
 
   <!-- Top Header -->
   <header>
-    <h1><svg class="brand-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.1 2.5h2l.9 2.4.9-2.4h2l-1.6 4.1 1.8 4.1 3 8.5c.28.8-.32 1.67-1.18 1.67H6.08c-.86 0-1.46-.87-1.18-1.67l3-8.5 1.8-4.1z"/></svg> 마이 스마트 옷장 <span class="ver-badge">v8.25</span></h1>
+    <h1><svg class="brand-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.1 2.5h2l.9 2.4.9-2.4h2l-1.6 4.1 1.8 4.1 3 8.5c.28.8-.32 1.67-1.18 1.67H6.08c-.86 0-1.46-.87-1.18-1.67l3-8.5 1.8-4.1z"/></svg> 마이 스마트 옷장 <span class="ver-badge">v8.26</span></h1>
     <div class="header-btns">
       <button class="icon-btn" onclick="exportBackup()" title="현재 옷장 상태를 JSON 파일로 다운로드합니다"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5v9.5"/><path d="M8.6 9.6 12 13l3.4-3.4"/><path d="M4.5 15v3.2A1.8 1.8 0 0 0 6.3 20h11.4a1.8 1.8 0 0 0 1.8-1.8V15"/></svg> 백업 저장</button>
       <button class="icon-btn" onclick="document.getElementById('backup-file-input').click()" title="모바일/PC 백업 파일을 불러와 동기화합니다"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 13.5V4"/><path d="M8.6 7.4 12 4l3.4 3.4"/><path d="M4.5 15v3.2A1.8 1.8 0 0 0 6.3 20h11.4a1.8 1.8 0 0 0 1.8-1.8V15"/></svg> 백업 불러오기</button>
@@ -5958,6 +5958,20 @@
       return doc;
     }
 
+    /* 원격이 더 최신이어도 '비어 있는 칸'으로 이 기기에 쓴 내용을 지우지 않는다 */
+    function keepFilled(remote, local) {
+      if (!remote || !local || typeof remote !== 'object' || typeof local !== 'object') return remote;
+      const out = Object.assign({}, remote);
+      Object.keys(local).forEach(k => {
+        const rv = out[k], lv = local[k];
+        const rEmpty = (rv === undefined || rv === null || rv === '' || (Array.isArray(rv) && rv.length === 0));
+        const lFilled = !(lv === undefined || lv === null || lv === '' || (Array.isArray(lv) && lv.length === 0));
+        if (rEmpty && lFilled) { out[k] = lv; return; }
+        if (rv && lv && typeof rv === 'object' && typeof lv === 'object' && !Array.isArray(rv) && !Array.isArray(lv)) out[k] = keepFilled(rv, lv);
+      });
+      return out;
+    }
+
     /* --- 병합: 로컬 데이터는 절대 지우지 않고 합집합으로 합친다 --- */
     function mergeRemoteData(local, remoteDoc) {
       const R = (remoteDoc && remoteDoc.data) ? remoteDoc.data : null;
@@ -5982,7 +5996,7 @@
         // v8.8: 한쪽에만 seasons 배열이 있으면 병합 과정에서 잃지 않도록 옮겨준다
         if (Array.isArray(c.seasons) && !Array.isArray(r.seasons)) r.seasons = c.seasons.slice();
         if (Array.isArray(r.seasons) && !Array.isArray(c.seasons)) c.seasons = r.seasons.slice();
-        if (rt > lt) { byId.set(key, r); stats.updated++; } else { byId.set(key, c); }
+        if (rt > lt) { byId.set(key, keepFilled(r, c)); stats.updated++; } else { byId.set(key, c); }
       });
       const remoteIds = new Set((R.clothes || []).map(c => String(c.id)));
       const localIds = new Set((L.clothes || []).map(c => String(c.id)));
@@ -6132,6 +6146,16 @@
         syncBusy = false;
         renderSyncStatus();   // v8.17: 동기화가 끝나면 버튼/진행 표시를 즉시 원래대로 되돌린다
       }
+    }
+
+    /* v8.26: 화면을 닫거나 앱을 나갈 때 남은 4초를 기다리지 않고 바로 올린다(실패해도 dirty가 남아 다음 실행 때 재전송) */
+    function flushDirtyOnHide() {
+      try {
+        if (!syncConnected() || !syncCfg || syncCfg.auto === false) return;
+        if (syncBusy || !syncCfg.dirty) return;
+        clearTimeout(syncTimer);
+        syncPush().catch(() => {});
+      } catch (e) {}
     }
 
     function scheduleSyncPush() {
@@ -6470,11 +6494,19 @@
       // v8.12: PC 백업을 이 기기에 반영했다면 클라우드 사본도 297벌로 갱신한다
       if (pcBackupJustApplied || hqImgJustApplied || backup1117JustApplied) { syncCfg.dirty = true; syncSaveCfg(); }
       renderSyncStatus();
+      /* v8.26: 탭/앱으로 돌아오거나 창이 다시 활성화되면 클라우드 최신 내용을 자동으로 받아온다 */
       document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible' && syncCfg.auto && syncConnected() && (Date.now() - (syncCfg.lastSync || 0) > 60000)) {
-          syncNow({ silent: true });
+        if (document.visibilityState === 'visible') {
+          if (syncCfg.auto && syncConnected() && (Date.now() - (syncCfg.lastSync || 0) > 3000)) syncNow({ silent: true });
+        } else {
+          flushDirtyOnHide();
         }
       });
+      window.addEventListener('focus', () => {
+        if (document.visibilityState !== 'visible') return;
+        if (syncCfg.auto && syncConnected() && (Date.now() - (syncCfg.lastSync || 0) > 3000) && !syncBusy) syncNow({ silent: true });
+      });
+      window.addEventListener('pagehide', flushDirtyOnHide);
       window.addEventListener('online', () => { if (syncCfg.auto && syncConnected()) syncNow({ silent: true }); });
 
       // v8.19: ?k=코드 링크면 사용자 조작 없이 바로 연결한다

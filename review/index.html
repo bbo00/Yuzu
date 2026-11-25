@@ -860,7 +860,7 @@
   const SYNC_CFG_KEY = 'yujareview_sync_v1';
   const LS_KEY = 'yujareview_state_v2';
   const LS_UI = 'yujareview_ui_v1';
-  const VERSION = 'v1.9';
+  const VERSION = 'v1.10';
 
   /* =========================================================
      동기화 키 (v1.8)
@@ -1120,6 +1120,53 @@
       '<p class="nk-note">코드를 모르면 <b>📤 백업 불러오기</b>로 백업 파일을 열 수 있어요.</p>' +
       '</div>';
   }
+  /* v1.10: 재연결은 '통째로 교체'가 아니라 최신 updatedAt 기준 병합 —
+     동기화를 끈 동안 이 기기에 쓴 초안이 사라지지 않게 한다 */
+  function mergePulledCampaigns(localList, pulled) {
+    const byId = new Map();
+    const stats = { added: 0, updated: 0, keptLocal: 0 };
+    (localList || []).forEach(function (c) { if (c && c.id) byId.set(String(c.id), c); });
+    (pulled || []).forEach(function (r) {
+      if (!r || !r.id) return;
+      const k = String(r.id);
+      const l = byId.get(k);
+      if (!l) { byId.set(k, r); stats.added++; return; }
+      const lt = Number(l.updatedAt || 0), rt = Number(r.updatedAt || 0);
+      if (rt > lt) { byId.set(k, Object.assign({}, l, keepFilled(r, l))); stats.updated++; }
+      else if (lt > rt) { stats.keptLocal++; }
+    });
+    const remoteIds = new Set((pulled || []).map(function (r) { return String(r.id); }));
+    const list = [];
+    byId.forEach(function (c) {
+      if (!c || (c.id && state && state.deleted && state.deleted[String(c.id)])) return;
+      list.push(c);
+    });
+    const needPush = list.filter(function (c) {
+      if (!remoteIds.has(String(c.id))) return true;
+      const r = (pulled || []).filter(function (x) { return String(x.id) === String(c.id); })[0];
+      return !!r && Number(c.updatedAt || 0) > Number(r.updatedAt || 0);
+    });
+    return { list: list, needPush: needPush, stats: stats };
+  }
+
+  /* 원격 사본이 더 최신이어도 '비어 있는 칸'으로 이 기기에 쓴 내용을 지우지 않는다 */
+  function keepFilled(remote, local) {
+    if (!remote || !local || typeof remote !== 'object' || typeof local !== 'object') return remote;
+    var out = {};
+    for (var k in remote) if (Object.prototype.hasOwnProperty.call(remote, k)) out[k] = remote[k];
+    for (var k2 in local) {
+      if (!Object.prototype.hasOwnProperty.call(local, k2)) continue;
+      var rv = out[k2], lv = local[k2];
+      var rEmpty = (rv === undefined || rv === null || rv === '' || (Array.isArray(rv) && rv.length === 0));
+      var lFilled = !(lv === undefined || lv === null || lv === '' || (Array.isArray(lv) && lv.length === 0));
+      if (rEmpty && lFilled) { out[k2] = lv; continue; }
+      if (rv && lv && typeof rv === 'object' && typeof lv === 'object' && !Array.isArray(rv) && !Array.isArray(lv)) {
+        out[k2] = keepFilled(rv, lv);
+      }
+    }
+    return out;
+  }
+
   function connectSyncCode(raw) {
     const code = parseSyncCode(raw);
     if (!code) { toast('동기화 코드를 입력해 주세요'); const i = $('nk-input') || $('sync-join-input'); if (i) i.focus(); return; }
@@ -1144,17 +1191,23 @@
           if (r && r.id) pulled.push(normalizeState({ campaigns: [r], deleted: {} }).campaigns[0]);
         }
         syncSaveCfg();
+        let mergedInfo = null;
         if (pulled.length) {
-          state.campaigns = pulled;
+          mergedInfo = mergePulledCampaigns(state.campaigns, pulled);
+          state.campaigns = mergedInfo.list;
           state.rev = Math.max(state.rev || 0, Number(idx.rev) || 0);
           state.provisional = false;
           saveLocal();
+          /* 클라우드에 없던 항목·이 기기가 더 최신인 항목은 그대로 올린다 */
+          if (mergedInfo.needPush.length) pushCampaigns(mergedInfo.needPush).catch(function () {});
         }
         renderAll();
         lastSyncAt = nowMs(); lastSyncErr = '';
         setPill('ok');
         closeModals();
-        toast('☁️ 연결됐어요 · ' + pulled.length + '건을 불러왔어요', true);
+        const keptTxt = mergedInfo && (mergedInfo.stats.keptLocal || mergedInfo.stats.added)
+          ? ' · 이 기기 기록 ' + (mergedInfo.stats.keptLocal + mergedInfo.stats.added) + '건도 함께' : '';
+        toast('☁️ 연결됐어요 · ' + pulled.length + '건을 불러왔어요' + keptTxt, true);
       } catch (e) {
         syncNs = prev; syncSaveCfg();
         setPill(prev ? 'ok' : 'idle');
@@ -1490,7 +1543,7 @@
             if (r && r.id) pulled.push(normalizeState({ campaigns: [r], deleted: {} }).campaigns[0]);
           }
           if (pulled.length) {
-            state.campaigns = pulled;
+            state.campaigns = mergePulledCampaigns(state.campaigns, pulled).list;
             state.rev = Math.max(state.rev || 0, Number(idx.rev) || 0);
             state.provisional = false;
             saveLocal();
@@ -1531,7 +1584,7 @@
           if (!r || !r.id) continue;
           const l = state.campaigns.find(function (c) { return String(c.id) === String(r.id); });
           if (!l) { state.campaigns.push(normalizeState({ campaigns: [r], deleted: {} }).campaigns[0]); pulled++; }
-          else if ((r.updatedAt || 0) > (l.updatedAt || 0)) { Object.assign(l, r); pulled++; }
+          else if ((r.updatedAt || 0) > (l.updatedAt || 0)) { Object.assign(l, keepFilled(r, l)); pulled++; }
         }
         state.rev = Math.max(state.rev || 0, Number(idx.rev) || 0);
       }
@@ -1601,6 +1654,19 @@
         if (pendingSync) { pendingSync = false; syncNow(false); }
       });
     }, delay || 1100);
+  }
+
+  /* v1.9: 화면을 닫을 때 1.1초 디바운스를 기다리지 않고 대기 중인 변경을 바로 올린다 */
+  function flushPendingPush() {
+    try {
+      if (!syncNs || !state) return;
+      var ids = Object.keys(pushIds || {});
+      if (!ids.length) return;
+      pushIds = {};
+      clearTimeout(pushTimer);
+      var list = state.campaigns.filter(function (c) { return ids.indexOf(String(c.id)) >= 0; });
+      if (list.length) pushCampaigns(list).catch(function () { });
+    } catch (e) { }
   }
 
   function retryPush(ids) {
@@ -3228,10 +3294,15 @@
 
   window.addEventListener('online', function () { syncNow(false); });
   document.addEventListener('visibilitychange', function () {
-    if (document.hidden) { voiceStop(true); return; }
+    if (document.hidden) { voiceStop(true); flushPendingPush(); return; }
     syncNow(false);
   });
-  window.addEventListener('pagehide', function () { voiceStop(true); if (state) saveLocal(); });
+  window.addEventListener('pagehide', function () { voiceStop(true); if (state) saveLocal(); flushPendingPush(); });
+  window.addEventListener('focus', function () {
+    if (document.hidden || !syncNs) return;
+    if (Date.now() - lastSyncAt < 3000) return;
+    syncNow(false);
+  });
 
   /* =========================================================
      부팅
