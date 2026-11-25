@@ -965,6 +965,39 @@ body.rvopen { overflow: hidden; }
   function syncLink() { return syncConnected() ? (location.origin + location.pathname + '?k=' + syncCfg.ns) : ''; }
 
   /* ---------- 상태 표시 ---------- */
+    /* 동기화가 끊긴 상태를 접속하자마자 알 수 있게 상단 배너를 띄운다 */
+    function syncOffOpen() {
+      try { var b = document.getElementById('syncBtn'); if (b) b.click(); } catch (e) {}
+    }
+    function ensureSyncOffBar() {
+      var bar = document.getElementById('sync-off-bar');
+      if (!bar) {
+        bar = document.createElement('div');
+        bar.id = 'sync-off-bar';
+        bar.setAttribute('role', 'button');
+        bar.setAttribute('tabindex', '0');
+        bar.style.cssText = 'display:none;position:sticky;top:0;z-index:2147483000;width:100%;box-sizing:border-box;' +
+          'background:#B45309;color:#fff;font:800 12.5px/1.35 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;' +
+          'padding:calc(7px + env(safe-area-inset-top)) 12px 7px;text-align:center;letter-spacing:-.2px;cursor:pointer;' +
+          'box-shadow:0 2px 8px rgba(0,0,0,.18);';
+        bar.textContent = '\u26A0\uFE0F  \uB3D9\uAE30\uD654 \uBBF8\uC5F0\uACB0 \u00B7 \uC774 \uAE30\uAE30\uC5D0\uB9CC \uC800\uC7A5 \uC911  \u00B7  \uB20C\uB7EC\uC11C \uC5F0\uACB0';
+        bar.addEventListener('click', syncOffOpen);
+        bar.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); syncOffOpen(); } });
+        var host = document.body;
+        if (host) host.insertBefore(bar, host.firstChild);
+      }
+      return bar;
+    }
+    function updateSyncOffBar() {
+      try {
+        var on = !!(syncCfg && syncCfg.ns);
+        var bar = ensureSyncOffBar();
+        if (!bar) return;
+        bar.style.display = on ? 'none' : 'block';
+        document.body.classList.toggle('sync-off-mode', !on);
+      } catch (e) {}
+    }
+    try { window.__syncOffBar = updateSyncOffBar; } catch (e) {}
   function syncAgo(ts) {
     if (!ts) return '아직 없음';
     var diff = Date.now() - ts, mm = Math.floor(diff / 60000);
@@ -994,8 +1027,9 @@ body.rvopen { overflow: hidden; }
       else foot.textContent = '☁️ 연결됨 · ' + syncAgo(syncCfg.lastSync) + ' 동기화 · 다른 기기의 수정도 자동으로 받아요';
     }
     var sb = $('#saveBar');
+    updateSyncOffBar();
     if (sb) {
-      /* 이 기기에는 늘 즉시 저장되므로, 클라우드 저장이 막혔을 때만 띄운다 */
+      /* 이 기기에는 즉시 저장되므로, 클라우드 저장이 막혔을 때만 띄운다 */
       sb.hidden = !(syncConnected() && syncCfg.lastError);
       var sm = $('#saveMsg');
       if (sm) sm.textContent = '이 기기에는 저장됐어요 · 클라우드 저장이 막혔어요';
@@ -2351,6 +2385,13 @@ body.rvopen { overflow: hidden; }
     if (ig) ig.addEventListener('input', function () { if (rvDraft) { rvDraft.ing = ig.value; paintReview(); } });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && rvDraft) { closeReview(); } });
   })();
+})();
+
+/* 동기화 미연결 배너: 접속 즉시 + 주기적으로 상태 반영 */
+(function () {
+  function tick() { try { if (window.__syncOffBar) window.__syncOffBar(); } catch (e) { } }
+  [0, 200, 600, 1200, 2500].forEach(function (ms) { setTimeout(tick, ms); });
+  setInterval(tick, 2500);
 })();
 </script>
 </body></html>

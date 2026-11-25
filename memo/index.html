@@ -352,6 +352,11 @@ img{max-width:100%}
   .pctabs{display:none!important}
 }
 </style>
+<style>
+/* 동기화 미연결 배너가 떠 있을 때 전체 높이를 배너만큼 줄인다 */
+body.sync-off-mode .app { height: calc(100dvh - 34px) !important; }
+@media (min-width: 760px) { body.sync-off-mode .app { height: calc(100vh - 34px) !important; } }
+</style>
 </head>
 <body>
 

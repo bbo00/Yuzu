@@ -4,7 +4,7 @@
 
   /* ==================== 상수 ==================== */
   var APP_ID = 'yuzumemo';
-  var VERSION = 'v2.2';
+  var VERSION = 'v2.3';
   var LS_DATA = 'yuzumemo.v2.data';
   var LS_V1 = 'yuzumemo.data.v1';
   var LS_CFG = 'yuzumemo.sync.v1';
@@ -930,6 +930,7 @@
     return h;
   }
   function renderSet() {
+    try { updateSyncOffBar(); } catch (e) {}
     var el = $('#viewSet');
     /* v2.1: 다시 그려도 입력 중이던 코드/링크는 그대로 둔다 (동기화가 끝나면 renderSet이 불린다) */
     var keepJoin = ($('#syncJoin') ? $('#syncJoin').value : '');
@@ -1536,6 +1537,39 @@
       syncNow({ silent: true });
     }, 1200);
   }
+    /* 동기화가 끊긴 상태를 접속하자마자 알 수 있게 상단 배너를 띄운다 */
+    function syncOffOpen() {
+      try { var b = document.getElementById('btnGoSet'); if (b) b.click(); setTimeout(function(){ var n = document.getElementById('syncNew'); if (n && n.scrollIntoView) n.scrollIntoView({ block: 'center' }); }, 200); } catch (e) {}
+    }
+    function ensureSyncOffBar() {
+      var bar = document.getElementById('sync-off-bar');
+      if (!bar) {
+        bar = document.createElement('div');
+        bar.id = 'sync-off-bar';
+        bar.setAttribute('role', 'button');
+        bar.setAttribute('tabindex', '0');
+        bar.style.cssText = 'display:none;position:sticky;top:0;z-index:2147483000;width:100%;box-sizing:border-box;' +
+          'background:#B45309;color:#fff;font:800 12.5px/1.35 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;' +
+          'padding:calc(7px + env(safe-area-inset-top)) 12px 7px;text-align:center;letter-spacing:-.2px;cursor:pointer;' +
+          'box-shadow:0 2px 8px rgba(0,0,0,.18);';
+        bar.textContent = '\u26A0\uFE0F  \uB3D9\uAE30\uD654 \uBBF8\uC5F0\uACB0 \u00B7 \uC774 \uAE30\uAE30\uC5D0\uB9CC \uC800\uC7A5 \uC911  \u00B7  \uB20C\uB7EC\uC11C \uC5F0\uACB0';
+        bar.addEventListener('click', syncOffOpen);
+        bar.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); syncOffOpen(); } });
+        var host = document.body;
+        if (host) host.insertBefore(bar, host.firstChild);
+      }
+      return bar;
+    }
+    function updateSyncOffBar() {
+      try {
+        var on = !!(syncCfg && syncCfg.ns);
+        var bar = ensureSyncOffBar();
+        if (!bar) return;
+        bar.style.display = on ? 'none' : 'block';
+        document.body.classList.toggle('sync-off-mode', !on);
+      } catch (e) {}
+    }
+    try { window.__syncOffBar = updateSyncOffBar; } catch (e) {}
   function syncTimeText(ts) {
     if (!ts) return '아직 없음';
     var diff = Date.now() - ts, mm = Math.floor(diff / 60000);
@@ -2030,4 +2064,11 @@
     hasPin: hasPin,
     version: VERSION
   };
+})();
+
+/* 동기화 미연결 배너: 접속 즉시 + 주기적으로 상태 반영 */
+(function () {
+  function tick() { try { if (window.__syncOffBar) window.__syncOffBar(); } catch (e) { } }
+  [0, 200, 600, 1200, 2500].forEach(function (ms) { setTimeout(tick, ms); });
+  setInterval(tick, 2500);
 })();
