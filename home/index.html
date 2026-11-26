@@ -254,7 +254,10 @@ body.searching main{padding-top:10px}
 .lg.sug{background:#fff;border:1px dashed var(--ink3);color:var(--ink3)}
 
 .rooms{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
-@media(min-width:940px){.rooms{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}}
+@media(min-width:940px){
+  .rooms{display:block;column-count:2;column-gap:16px}
+  .rooms .room{display:block;width:100%;margin:0 0 16px;break-inside:avoid;page-break-inside:avoid}
+}
 .rooms[data-room="r1"] .room,.rooms[data-room="r2"] .room,.rooms[data-room="r3"] .room,
 .rooms[data-room="r4"] .room,.rooms[data-room="r5"] .room,.rooms[data-room="r6"] .room{display:none}
 .rooms[data-room="r1"] #room-r1,.rooms[data-room="r2"] #room-r2,.rooms[data-room="r3"] #room-r3,
@@ -265,8 +268,8 @@ body.searching main{padding-top:10px}
   scroll-margin-top:calc(var(--sh) + 8px);min-width:0;
 }
 @media(min-width:940px){.room{padding:18px}}
-.rooms[data-room]:not([data-room="all"]){grid-template-columns:minmax(0,1fr)}
-.rooms[data-room]:not([data-room="all"]) .room{max-width:700px;margin:0 auto}
+.rooms[data-room]:not([data-room="all"]){column-count:1}
+.rooms[data-room]:not([data-room="all"]) .room{max-width:700px;margin:0 auto 16px}
 .room-head{display:flex;gap:10px;align-items:flex-start}
 .rno{
   flex:0 0 auto;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;
