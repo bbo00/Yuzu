@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>우리집 수납 지도 · 유자네 집</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="description" content="물건 이름을 검색하면 방 → 가구 → 칸까지 바로. 방별 사진에 숫자 핀, 택배 동선, 구조변경 체크리스트, 가구 규격표까지 한 장에.">
+<meta name="description" content="제품 사진 위 번호를 누르면 그 칸으로. 방 → 가구 → 칸까지 한 번에 찾는 우리집 수납 지도.">
 <meta name="theme-color" content="#FAF8F5">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -40,6 +40,7 @@ h1,h2,h3,h4,p,ul,ol{margin:0}
 ul,ol{padding:0;list-style:none}
 :focus-visible{outline:2px solid var(--terra);outline-offset:2px;border-radius:6px}
 mark{background:#FBE3A8;color:inherit;border-radius:3px;padding:0 1px}
+img{max-width:100%}
 
 .wrap{max-width:1180px;margin:0 auto;padding:0 16px 48px}
 @media(min-width:900px){.wrap{padding:0 28px 64px}}
@@ -48,7 +49,7 @@ mark{background:#FBE3A8;color:inherit;border-radius:3px;padding:0 1px}
 .hero{padding:18px 2px 10px}
 .eyebrow{font-size:11px;letter-spacing:.14em;color:var(--terra);font-weight:700;text-transform:uppercase}
 .hero h1{font-size:22px;line-height:1.25;letter-spacing:-.04em;font-weight:800;margin:5px 0 5px}
-.hero .lede{color:var(--ink2);font-size:12.5px;line-height:1.5;max-width:640px;word-break:keep-all;overflow-wrap:anywhere}
+.hero .lede{color:var(--ink2);font-size:12.5px;line-height:1.55;max-width:680px;word-break:keep-all;overflow-wrap:anywhere}
 .hero .lede b{color:var(--ink);font-weight:700}
 .stats{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
 .stats li{
@@ -59,7 +60,7 @@ mark{background:#FBE3A8;color:inherit;border-radius:3px;padding:0 1px}
 @media(min-width:900px){
   .hero{padding-top:34px}
   .hero h1{font-size:33px;margin:8px 0 9px}
-  .hero .lede{font-size:14.5px;line-height:1.6}
+  .hero .lede{font-size:14.5px;line-height:1.62}
   .stats{gap:7px;margin-top:14px}
   .stats li{font-size:12px;padding:5px 11px}
   .stats b{font-size:13px}
@@ -105,7 +106,7 @@ body.room-mode .chips{display:none}
 .chip:hover{border-color:var(--terra-b);color:var(--terra-d);background:var(--terra-s)}
 .chip.on{background:var(--terra);border-color:var(--terra);color:#fff}
 .tabs{
-  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;margin-top:8px;max-width:560px;
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;margin-top:8px;max-width:460px;
   background:#fff;border:1px solid var(--line);border-radius:12px;padding:3px;
   box-shadow:0 1px 2px rgba(46,39,33,.04);
 }
@@ -133,7 +134,7 @@ body.room-mode .chips{display:none}
 
 main{padding-top:12px}
 body.searching .hero{display:none}
-body[data-tab="delivery"] .hero,body[data-tab="check"] .hero,body[data-tab="spec"] .hero{display:none}
+body[data-tab="delivery"] .hero,body[data-tab="check"] .hero{display:none}
 body.searching main{padding-top:10px}
 
 /* ---------- search results ---------- */
@@ -180,12 +181,12 @@ body.searching main{padding-top:10px}
 .eval .ev-sum{font-size:12px;line-height:1.55;color:#7A4B37;margin-top:3px;word-break:keep-all;overflow-wrap:anywhere}
 .eval .chev{flex:0 0 auto;font-size:11px;color:#B98A74;transition:transform .15s;margin-top:3px}
 .eval[open] .chev{transform:rotate(180deg)}
-.eval .ev-body{padding:0 14px 14px;border-top:1px dashed var(--terra-b);margin:0 14px 0;padding-left:0;padding-right:0;padding-top:10px}
+.eval .ev-body{padding:10px 14px 14px;border-top:1px dashed var(--terra-b);margin:0 14px 0;padding-left:0;padding-right:0}
 .eval .ev-body li{display:flex;gap:7px;font-size:12.5px;line-height:1.6;color:#5C4638;margin-bottom:6px;word-break:keep-all;overflow-wrap:anywhere}
 .eval .ev-body li i{font-style:normal;color:var(--terra);flex:0 0 auto}
 .eval .ev-body li b{color:var(--terra-d)}
 
-/* ---------- floorplan card ---------- */
+/* ---------- floor plan ---------- */
 .plan-card{
   background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;
   box-shadow:0 1px 2px rgba(46,39,33,.04),0 18px 40px -34px rgba(46,39,33,.4);margin-bottom:12px;
@@ -194,8 +195,14 @@ body.searching main{padding-top:10px}
 .plan-head h2{font-size:14.5px;font-weight:800;letter-spacing:-.03em}
 .plan-head span{font-size:11.5px;color:var(--ink2)}
 .plan-flex{display:flex;flex-direction:column;gap:10px}
-.plan-img{position:relative;border-radius:12px;overflow:hidden;background:#F1EDE6;border:1px solid var(--line2);--c:#3A322B}
-.plan-img img{display:block;width:100%;height:auto}
+.plan-art{
+  border-radius:14px;overflow:hidden;background:#FBF8F3;border:1px solid var(--line2);
+  padding:4px 2px;
+}
+.plan-art svg{display:block;width:100%;height:auto}
+.plan-art .rm{cursor:pointer}
+.plan-art .rm:hover .chipbg{stroke-width:2}
+.plan-art .rm:active .chipbg{fill:#FFF3EC}
 .plan-list{display:grid;grid-template-columns:1fr 1fr;gap:5px}
 .pl{
   display:flex;align-items:center;gap:8px;text-align:left;font-size:12px;font-weight:650;color:var(--ink);
@@ -205,37 +212,39 @@ body.searching main{padding-top:10px}
 .pl:hover{border-color:var(--terra-b);background:var(--terra-s);color:var(--terra-d)}
 .pl-n{
   flex:0 0 auto;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;
-  font-size:10.5px;font-weight:800;color:#fff;background:#3A322B;line-height:1;
+  font-size:10.5px;font-weight:800;color:#fff;background:var(--c,#3A322B);line-height:1;
 }
 .pl small{display:block;font-size:10.5px;color:var(--ink3);font-weight:600;margin-top:1px}
 @media(min-width:900px){
-  .plan-card{padding:14px;max-width:760px;margin:0 auto 12px}
-  .plan-flex{flex-direction:row;align-items:flex-start;gap:16px}
-  .plan-img{flex:0 0 400px;max-width:400px}
+  .plan-card{padding:14px;max-width:820px;margin:0 auto 12px}
+  .plan-flex{flex-direction:row;align-items:stretch;gap:16px}
+  .plan-art{flex:0 0 420px;max-width:420px}
   .plan-list{grid-template-columns:1fr;flex:1 1 auto;align-content:start}
 }
 
 /* ---------- photo + pins ---------- */
-.ph-wrap{margin-top:11px}
-.ph-label{font-size:11px;font-weight:750;color:var(--ink3);margin:0 0 5px 2px;letter-spacing:.01em}
-.ph-wrap + .ph-wrap{margin-top:8px}
-.photo{position:relative;border-radius:13px;overflow:hidden;background:#EFE7DD;border:1px solid var(--line2);line-height:0}
+.ph-wrap{margin-top:10px}
+.ph-label{
+  font-size:11px;font-weight:750;color:var(--ink3);margin:0 0 5px 2px;letter-spacing:.01em;
+  display:flex;align-items:center;gap:5px;
+}
+.ph-label .dot{width:5px;height:5px;border-radius:50%;background:var(--c,var(--sage));display:inline-block}
+.photo{position:relative;border-radius:13px;overflow:hidden;background:#F0EAE2;border:1px solid var(--line2);line-height:0}
 .photo img{display:block;width:100%;height:auto}
 .pin{
   position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%);
-  width:26px;height:26px;border-radius:50%;display:grid;place-items:center;line-height:1;
+  width:28px;height:28px;border-radius:50%;display:grid;place-items:center;line-height:1;
   font-size:12px;font-weight:800;letter-spacing:-.02em;color:#fff;background:var(--c,#C86D51);
-  border:2px solid #fff;box-shadow:0 2px 7px rgba(0,0,0,.38);z-index:2;
-  transition:transform .12s ease;
+  border:2px solid #fff;box-shadow:0 2px 7px rgba(0,0,0,.4);z-index:2;
+  transition:transform .12s ease,box-shadow .12s ease;
 }
+.pin[data-2d]{font-size:11px}
 .pin:hover{transform:translate(-50%,-50%) scale(1.14)}
 .pin:active{transform:translate(-50%,-50%) scale(1.02)}
-.pin.in{background:#fff;color:var(--c);border:2px dashed var(--c);box-shadow:0 2px 6px rgba(0,0,0,.28)}
-.pin.out{width:21px;height:21px;background:#8A817A;border:1.5px solid #fff;font-size:11px;opacity:.95}
-.pin.big{width:30px;height:30px;font-size:13px}
-@media(max-width:520px){.pin{width:24px;height:24px;font-size:11.5px}.pin.out{width:20px;height:20px;font-size:10.5px}}
-.ph-legend{font-size:10.5px;color:var(--ink3);line-height:1.5;margin:5px 2px 0}
-.ph-legend i{font-style:normal;display:inline-grid;place-items:center;width:13px;height:13px;border-radius:50%;font-size:8.5px;font-weight:800;vertical-align:1px;margin-right:3px}
+.pin.hl{box-shadow:0 0 0 4px rgba(200,109,81,.5),0 2px 7px rgba(0,0,0,.4)}
+@media(max-width:520px){.pin{width:26px;height:26px;font-size:11.5px}.pin[data-2d]{font-size:10.5px}}
+.ph-hint{font-size:10.5px;color:var(--ink3);line-height:1.5;margin:6px 2px 0}
+.ph-hint b{color:var(--ink2)}
 
 /* ---------- rooms ---------- */
 .legend{display:flex;flex-wrap:wrap;gap:14px;margin:0 2px 10px;font-size:11.5px;color:var(--ink2)}
@@ -257,7 +266,7 @@ body.searching main{padding-top:10px}
 }
 @media(min-width:940px){.room{padding:18px}}
 .rooms[data-room]:not([data-room="all"]){grid-template-columns:minmax(0,1fr)}
-.rooms[data-room]:not([data-room="all"]) .room{max-width:660px;margin:0 auto}
+.rooms[data-room]:not([data-room="all"]) .room{max-width:700px;margin:0 auto}
 .room-head{display:flex;gap:10px;align-items:flex-start}
 .rno{
   flex:0 0 auto;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;
@@ -279,6 +288,7 @@ body.searching main{padding-top:10px}
   background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:11px 12px;
   scroll-margin-top:calc(var(--sh) + 8px);min-width:0;
 }
+.furn.has-photo .ph-wrap:first-of-type{margin-top:9px}
 .f-head{display:flex;align-items:flex-start;gap:7px;flex-wrap:wrap}
 .fnum{
   flex:0 0 auto;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;
@@ -286,16 +296,11 @@ body.searching main{padding-top:10px}
 }
 .f-head h3{font-size:14.5px;font-weight:780;letter-spacing:-.03em;line-height:1.35;flex:1 1 150px;min-width:0}
 .f-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-left:auto}
-.size{
-  font-size:11px;font-weight:650;color:var(--ink2);background:#fff;border:1px solid var(--line);
-  border-radius:6px;padding:2px 6px;white-space:nowrap;font-variant-numeric:tabular-nums;
-}
 .badge{font-size:10.5px;font-weight:800;border-radius:6px;padding:3px 7px;white-space:nowrap;letter-spacing:-.01em}
 .badge.keep{color:var(--sage);background:var(--sage-s)}
 .badge.move{color:var(--terra-d);background:var(--terra-s)}
 .badge.new{color:#7A5A18;background:#FBF0D4}
 .badge.out{color:#8A817A;background:#F1EDE7}
-.badge.nophoto{color:var(--ink3);background:#F4EFE8;font-weight:700}
 .f-note{font-size:12px;color:var(--ink2);line-height:1.55;margin-top:6px;word-break:keep-all;overflow-wrap:anywhere}
 
 /* 가구 내부 도식 */
@@ -315,14 +320,20 @@ body.searching main{padding-top:10px}
 .fig-cap b{display:block;font-size:11.5px;font-weight:800;color:var(--ink);letter-spacing:-.02em;margin-bottom:1px}
 .fig-hint{display:block;margin-top:5px;font-size:10.5px;color:var(--ink3)}
 .zn{
-  display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;
-  background:#fff;border:1px solid var(--line);font-size:9.5px;font-weight:800;
-  color:var(--ink2);margin-right:4px;vertical-align:1px;line-height:1;
+  display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;
+  background:#fff;border:1px solid var(--line);font-size:10px;font-weight:800;
+  color:var(--ink2);margin-right:5px;vertical-align:1px;line-height:1;
 }
+.zn[data-2d]{font-size:9px}
 .cells{margin-top:9px;display:grid;gap:6px}
-.cells.grid{grid-template-columns:repeat(auto-fit,minmax(132px,1fr))}
+.cells.grid{grid-template-columns:repeat(auto-fit,minmax(146px,1fr))}
 .cells.stack{grid-template-columns:minmax(0,1fr)}
-.cell{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 9px;min-width:0;scroll-margin-top:calc(var(--sh) + 60px)}
+.cell{
+  background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 9px;min-width:0;
+  scroll-margin-top:calc(var(--sh) + 60px);cursor:pointer;transition:background .12s,border-color .12s,box-shadow .12s;
+}
+.cell:hover{background:#FFFCF9;border-color:var(--terra-b)}
+.cell.hl{background:#FFF8F4;border-color:var(--terra);box-shadow:0 0 0 3px rgba(200,109,81,.14)}
 .stack .cell{display:block}
 .cl{font-size:11px;font-weight:750;color:var(--ink3);letter-spacing:.01em;line-height:1.4;word-break:keep-all;overflow-wrap:anywhere}
 .stack .cl{flex:none}
@@ -330,7 +341,7 @@ body.searching main{padding-top:10px}
 .stack .cell .items{margin-top:4px;flex:1 1 auto}
 .it{
   font-size:12.5px;line-height:1.35;color:var(--ink);background:#F7F2EA;border-radius:7px;
-  padding:3px 7px;letter-spacing:-.02em;max-width:100%;overflow-wrap:anywhere;
+  padding:3px 7px;letter-spacing:-.02em;max-width:100%;overflow-wrap:anywhere;word-break:keep-all;
 }
 .it.mv{background:var(--terra-s);color:var(--terra-d);box-shadow:inset 0 0 0 1px var(--terra-b)}
 .it.mv::before{content:"↔";font-size:10px;margin-right:4px;opacity:.8}
@@ -434,32 +445,6 @@ body.searching main{padding-top:10px}
 .ck input:checked ~ .c-t b{color:var(--ink3);text-decoration:line-through;text-decoration-color:var(--sage-b)}
 .note-small{font-size:11.5px;color:var(--ink3);margin:12px 4px 0;line-height:1.6}
 
-/* ---------- spec table ---------- */
-.spec-wrap{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:6px 4px;overflow:hidden}
-table.spec{width:100%;border-collapse:collapse;font-size:12.5px}
-table.spec th{
-  text-align:left;font-size:11px;font-weight:800;color:var(--ink3);letter-spacing:.02em;
-  padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap;
-}
-table.spec td{padding:10px;border-bottom:1px solid var(--line2);vertical-align:top;line-height:1.45}
-table.spec tr:last-child td{border-bottom:0}
-table.spec td.g{font-weight:700;letter-spacing:-.02em;color:var(--ink)}
-table.spec td.d{font-variant-numeric:tabular-nums;color:var(--ink2);white-space:nowrap}
-.st{font-size:10.5px;font-weight:800;border-radius:6px;padding:2px 6px;white-space:nowrap;display:inline-block}
-.st.keep{color:var(--sage);background:var(--sage-s)}
-.st.move{color:var(--terra-d);background:var(--terra-s)}
-.st.out{color:#8A817A;background:#F1EDE7}
-@media(max-width:760px){
-  table.spec, table.spec tbody, table.spec tr, table.spec td{display:block}
-  table.spec thead{display:none}
-  table.spec tr{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 8px}
-  table.spec td{border:0;padding:2px 0;display:flex;gap:9px;font-size:12.5px}
-  table.spec td::before{content:attr(data-l);flex:0 0 54px;color:var(--ink3);font-size:11px;font-weight:700;padding-top:1px}
-  table.spec td.g{font-size:13.5px;padding-bottom:4px}
-  table.spec td.g::before{content:none}
-  .spec-wrap{background:none;border:0;padding:0;overflow:visible}
-}
-
 footer{margin-top:26px;text-align:center;font-size:11.5px;color:var(--ink3);line-height:1.7}
 footer b{color:var(--ink2);font-weight:700}
 .flash{animation:flash 1.7s ease}
@@ -470,9 +455,9 @@ footer b{color:var(--ink2);font-weight:700}
 <body>
 <div class="wrap">
   <header class="hero">
-    <p class="eyebrow">유자네 집 · Home Storage Map v2</p>
+    <p class="eyebrow">유자네 집 · Home Storage Map v3</p>
     <h1>우리집 수납 지도</h1>
-    <p class="lede">방을 고르면 <b>그 방 사진 위 숫자 핀</b>이 바로 뜹니다. 문이 닫힌 가구는 <b>칸 구성 도식</b>으로 내부 번호까지 보여주고, 물건 이름을 검색하면 <b>방 → 가구 → 몇 번째 칸</b>까지 한 번에 나와요.</p>
+    <p class="lede">방을 고르면 그 방의 수납 가구가 <b>제품 사진</b>과 칸 구성으로 펼쳐집니다. 사진 위 <b>번호 핀</b>을 누르면 아래 그 칸으로 이동하고, 사진이 없는 가구는 칸 도식으로 보여줘요. 물건 이름을 검색하면 <b>방 → 가구 → 몇 번째 칸</b>까지 한 번에 나옵니다.</p>
     <ul class="stats" id="stats"></ul>
   </header>
 
@@ -488,7 +473,6 @@ footer b{color:var(--ink2);font-weight:700}
       <button class="tab" role="tab" data-tab="map" aria-selected="true">전체 지도</button>
       <button class="tab" role="tab" data-tab="delivery" aria-selected="false">택배·동선</button>
       <button class="tab" role="tab" data-tab="check" aria-selected="false">체크리스트</button>
-      <button class="tab" role="tab" data-tab="spec" aria-selected="false">규격표</button>
     </nav>
     <nav class="viewbar" id="viewbar" role="tablist" aria-label="방 선택"></nav>
   </div>
@@ -523,7 +507,7 @@ footer b{color:var(--ink2);font-weight:700}
         <section class="plan-card" id="planCard">
           <div class="plan-head">
             <h2>집 전체 도면</h2>
-            <span>번호를 누르면 그 방으로</span>
+            <span>방 번호를 누르면 그 방으로</span>
           </div>
           <div class="plan-body" id="planBody"></div>
         </section>
@@ -534,7 +518,7 @@ footer b{color:var(--ink2);font-weight:700}
           <span>배지 = 가구별 이동·처분 상태</span>
         </div>
         <div class="rooms" id="rooms" data-room="all"></div>
-        <p class="note-small">사진은 지금 상태이고, 카드에 적힌 배치는 이번 정리 뒤 모습입니다. 점선 핀은 이번에 들어오는 가구 자리예요.</p>
+        <p class="note-small">도면은 정리 뒤 배치를 기준으로 그린 그림입니다. 제품 사진 위 번호는 아래 칸 번호와 같아요.</p>
       </div>
     </section>
 
@@ -592,17 +576,6 @@ footer b{color:var(--ink2);font-weight:700}
       <div class="checklist" id="checklist"></div>
       <p class="note-small">체크 상태는 이 기기 브라우저에 자동 저장됩니다(localStorage). 다른 기기와는 따로 관리돼요.</p>
     </section>
-
-    <section id="panel-spec" role="tabpanel" aria-label="가구 규격 일람표" hidden>
-      <h2 class="sec-title"><span class="n">04</span>가구 규격 일람표 <small>현재 위치 → 권장 위치</small></h2>
-      <div class="spec-wrap">
-        <table class="spec">
-          <thead><tr><th>가구</th><th>규격(mm)</th><th>현재</th><th>권장</th><th>상태</th></tr></thead>
-          <tbody id="specBody"></tbody>
-        </table>
-      </div>
-      <p class="note-small">규격은 직접 알려주신 값만 적었습니다. <b>—</b> 는 규격을 받지 못한 가구예요.</p>
-    </section>
   </main>
 
   <footer>
@@ -616,19 +589,19 @@ footer b{color:var(--ink2);font-weight:700}
   "use strict";
 
   /* ============================================================
-     데이터 (사용자가 알려준 가구 · 규격 · 물품만)
+     데이터 (사용자가 알려준 가구 · 물품만)
      ============================================================ */
   var I = function(n, opt){ opt = opt || {}; return {n:n, mv:!!opt.mv, sug:!!opt.sug}; };
   var Z = function(label, items, hint){ return {label:label, items:items||[], hint:hint||''}; };
-  var HERE = 'here', IN = 'in', OUT = 'out';
-  var P = function(n, x, y, fid, t, name){ return {n:n, x:x, y:y, fid:fid, t:t||HERE, name:name||''}; };
-  var PG = function(x, y, goto, name){ return {x:x, y:y, goto:goto, t:OUT, name:name}; };
+  var PH = function(src, alt, label, pins){ return {src:src, alt:alt, label:label, pins:pins||[]}; };
+  var P = function(z, x, y){ return {z:z, x:x, y:y}; };
 
   var ROOMS = [
     /* ================= 방 1 ================= */
     {
       id:'r1', no:'1', name:'방 1', sub:'드레스룸', tab:'방 1 · 드레스룸', color:'#5F7A61',
-      tags:'드레스룸 옷방 세탁실 세탁베란다 베란다 건조기',
+      svgLabel:'방 1', svgSub:'드레스룸',
+      tags:'드레스룸 옷방 세탁실 세탁베란다 베란다 건조기 붙박이장',
       desc:'붙박이장이 있는 드레스룸. 매일 입는 옷 · 출장용품 · 리셀 재고만 두고, 비시즌 옷은 방 3으로 내려보냅니다.',
       notes:[
         {k:'↔', t:'방 3의 바지걸이 행거 · 바로방가구 수납장이 이 방으로 들어옴'},
@@ -636,71 +609,57 @@ footer b{color:var(--ink2);font-weight:700}
         {k:'↔', t:'제습기 → 방 3 안방 고정'},
         {k:'·', t:'붙박이는 넣을 수 있는 양이 정해져 있음 → 계절마다 순환 필수'}
       ],
-      photos:[{
-        src:'img/r1.jpg', alt:'방 1 드레스룸 현재 모습 — 붙박이장과 접이식 건조대', label:'방 1 · 지금 모습',
-        markers:[
-          P(1,30,30,'f-r1-1',HERE,'붙박이장'),
-          P(3,59,50,'f-r1-3',HERE,'접이식 건조대'),
-          PG(82,47,'f-r3-3','5단 서랍장 → 방 3'),
-          PG(60,68,'f-r3-6','제습기 → 방 3')
-        ]
-      }],
       furnitures:[
         {
-          id:'f-r1-1', n:1, name:'붙박이장', size:'3칸 · 좌 2단 봉 / 중앙 선반+행거+서랍 / 우측 세로분할', status:'keep',
-          note:'떼어낼 수 없는 붙박이라 옷 보관에 한계가 있음. 여름 배치 그대로라 겨울 기준으로 다시 나누고, 오른쪽 아래 깊은 수납은 "한 번 입고 말린 니트" 자리로 쓰면 딱 맞습니다.',
+          id:'f-r1-1', n:1, name:'붙박이장', status:'keep',
+          note:'3칸. 왼쪽 칸은 위 봉 + 가운데 선반, 가운데 칸은 맨 위 선반 + 긴 봉 + 아래 서랍, 오른쪽 칸은 위 긴 봉 + 아래 왼쪽 짧은 봉 + 오른쪽 3단 선반. 떼어낼 수 없는 붙박이라 넣을 수 있는 양이 정해져 있습니다.',
           layout:'grid',
+          photos:[
+            PH('img/closet-12.jpg','붙박이장 1·2칸 내부 — 위 봉과 가운데 선반, 긴 봉과 아래 서랍','붙박이장 · 1·2칸 (문 열었을 때)',
+               [P(0,31,33),P(1,31,66),P(2,49,22),P(3,49,44),P(4,49,68)]),
+            PH('img/closet-3.jpg','붙박이장 3칸 내부 — 위 긴 봉, 아래 왼쪽 짧은 봉과 오른쪽 3단 선반','붙박이장 · 3칸 (문 열었을 때)',
+               [P(5,50,38),P(6,40,70),P(7,57,70)])
+          ],
           zones:[
-            Z('좌 · 위 (거는 곳)', [I('가을 겉옷')]),
-            Z('좌 · 아래 (거는 곳)', [I('여름 반팔')]),
-            Z('가운데 · 맨 위 선반', [I('패딩')]),
-            Z('가운데 · 긴 거는 곳', [I('코트'), I('원피스')]),
-            Z('가운데 · 아래 서랍', [I('두꺼운 니트')]),
-            Z('우 · 위 (거는 곳)', [I('두꺼운 겨울 외투')]),
-            Z('우 · 아래 왼쪽 (거는 곳)', [I('니트'), I('겨울 바지')]),
-            Z('우 · 아래 오른쪽 (3등분 깊은 수납)', [I('한 번 입은 니트 (하루 말린 뒤)', {sug:true})], '지금까지 잘못 써 온 칸')
+            Z('칸 1 · 위 봉', [I('가을 겉옷')]),
+            Z('칸 1 · 선반 아래 넓은 칸', [I('여름 반팔')], '접는 옷 · 가방 자리'),
+            Z('칸 2 · 맨 위 선반', [I('패딩')]),
+            Z('칸 2 · 긴 봉', [I('코트'), I('원피스')]),
+            Z('칸 2 · 아래 서랍', [I('두꺼운 니트')]),
+            Z('칸 3 · 위 긴 봉', [I('두꺼운 겨울 외투')]),
+            Z('칸 3 · 아래 왼쪽 짧은 봉', [I('니트'), I('겨울 바지')]),
+            Z('칸 3 · 아래 오른쪽 3단 선반', [I('한 번 입은 니트 (하루 말린 뒤)', {sug:true})], '지금까지 잘못 써 온 칸')
           ]
         },
         {
-          id:'f-r1-2', n:2, name:'세탁기 · 건조기 · 세제 트롤리', size:'적층 · 규격 미확인', status:'keep',
-          note:'건조기를 세탁기 위에 올린 적층형. 세탁기 문이 완전히 열리므로 앞 60cm는 비워두기. 위 선반과 오른쪽 슬림 트롤리에 세제류를 모읍니다.',
+          id:'f-r1-2', n:2, name:'세탁기 · 건조기 · 세제 트롤리', status:'keep',
+          note:'건조기를 세탁기 위에 올린 적층형. 세탁기 문이 완전히 열리므로 문 앞자리는 비워두기. 위 선반과 오른쪽 슬림 트롤리에 세제류를 모읍니다.',
           layout:'grid',
           zones:[
             Z('위 · 건조기', [I('건조기')]),
             Z('아래 · 세탁기', [I('세탁기')], '문 열림 자리 확보'),
             Z('세탁기 위 선반', [I('세제'), I('섬유유연제'), I('빨래 바구니')]),
             Z('슬림 트롤리', [I('세제 여분'), I('청소포'), I('빨래집게')])
-          ],
-          photos:[
-            {src:'img/laundry1.jpg', alt:'세탁베란다 — 세탁기와 건조기 적층', label:'세탁베란다 · 세탁기 쪽',
-             markers:[
-               {n:2, x:35, y:22, z:0, t:HERE, name:'건조기'},
-               {n:2, x:38, y:68, z:1, t:HERE, name:'세탁기'}
-             ]}
           ]
         },
         {
-          id:'f-r1-3', n:3, name:'접이식 건조대', size:'—', status:'keep',
+          id:'f-r1-3', n:3, name:'접이식 건조대', status:'keep',
           note:'세울 때만 펼쳐 쓰고, 평소엔 접어서 세탁기 옆에. 방 1 안에 펼쳐 두면 드레스룸 동선을 막습니다.',
           layout:'stack',
           zones:[ Z('펼침', [I('접이식 건조대')], '쓸 때만 펼치기') ]
         },
         {
-          id:'f-r1-4', n:4, name:'보일러 앞 · 캐리어 · 캠핑가방', size:'—', status:'keep',
+          id:'f-r1-4', n:4, name:'보일러 앞 · 캐리어 · 캠핑가방', status:'keep',
           badge:'이미 꽉 참',
           note:'보일러 앞 바닥은 캐리어 3개 + 캠핑가방 + 빈 양동이 · 박스로 이미 가득. 주방 스피드랙의 캠핑용품을 이쪽으로 더 보낼 자리는 없습니다.',
           layout:'stack',
           zones:[
             Z('보일러 (벽면)', [I('보일러')], '선반 설치 불가 자리'),
             Z('보일러 앞 바닥', [I('캐리어 3개'), I('캠핑가방'), I('빈 양동이 · 박스')], '여기까지만 — 추가 수납 불가')
-          ],
-          photos:[
-            {src:'img/laundry2.jpg', alt:'세탁베란다 보일러 앞 — 캐리어와 캠핑가방', label:'세탁베란다 · 보일러 앞',
-             markers:[{n:4, x:47, y:33, z:1, t:HERE, name:'보일러 앞 바닥'}]}
           ]
         },
         {
-          id:'f-r1-5', n:5, name:'바지걸이 행거', size:'800×450×1800', status:'move',
+          id:'f-r1-5', n:5, name:'바지걸이 행거', status:'move',
           badge:'방 3에서 이동',
           note:'상단은 겨울에 부족하고 여름엔 남음 → 두꺼운 겉옷은 상단, 바지는 하단 고정.',
           layout:'stack',
@@ -710,11 +669,22 @@ footer b{color:var(--ink2);font-weight:700}
           ]
         },
         {
-          id:'f-r1-6', n:6, name:'바로방가구 수납장', size:'600×400×1800', status:'move',
+          id:'f-r1-6', n:6, name:'바로방가구 수납장', status:'move',
           badge:'방 3에서 이동',
-          note:'리셀북 판매용 옷 재고 전용. 더 이상 늘리지 않는 상한선을 지키는 칸.',
-          layout:'stack',
-          zones:[ Z('판매용 옷 재고', [I('리셀북 판매용 옷 재고'), I('파란 리셀 재고박스')]) ]
+          note:'리셀북 판매용 옷 재고 전용. 위 2칸 · 아래 4칸, 여섯 칸 전체가 재고 상한선입니다. 더 이상 늘리지 않는 선을 지키는 칸.',
+          layout:'grid',
+          photos:[
+            PH('img/barobang.jpg','바로방가구 수납장 — 위 2칸, 아래 4칸 선반','바로방가구 수납장 · 문 열었을 때',
+               [P(0,45,19),P(1,45,33),P(2,45,53),P(3,45,61),P(4,45,70),P(5,45,81)])
+          ],
+          zones:[
+            Z('위 1칸', [I('리셀북 판매용 옷 재고')]),
+            Z('위 2칸', [I('리셀북 판매용 옷 재고')]),
+            Z('아래 1칸', [I('파란 리셀 재고박스')]),
+            Z('아래 2칸', [], '재고 상한선 안'),
+            Z('아래 3칸', [], '재고 상한선 안'),
+            Z('아래 4칸', [], '재고 상한선 안')
+          ]
         }
       ]
     },
@@ -722,6 +692,7 @@ footer b{color:var(--ink2);font-weight:700}
     /* ================= 방 2 ================= */
     {
       id:'r2', no:'2', name:'방 2', sub:'팬트리 · 운동', tab:'방 2 · 팬트리/운동', color:'#C86D51',
+      svgLabel:'방 2', svgSub:'팬트리 · 운동',
       tags:'운동방 팬트리 재고 아기방 창고',
       desc:'지금은 안방, 구조 변경 뒤에는 운동방 겸 재고 팬트리. 아기가 생기면 이 방이 아기방.',
       notes:[
@@ -729,18 +700,9 @@ footer b{color:var(--ink2);font-weight:700}
         {k:'↔', t:'방 3 창 아래 3도어 수납장 → 이 방으로 들어와 재고 팬트리가 됨'},
         {k:'·', t:'재고는 3도어 장 안에서만 — 넘치면 재고를 줄이는 신호'}
       ],
-      photos:[{
-        src:'img/r2.jpg', alt:'방 2 현재 모습 — 퀸 침대와 창가 집기', label:'방 2 · 지금 모습',
-        markers:[
-          P(1,20,55,'f-r2-1',HERE,'작은 책장 · 장스탠드'),
-          P(1,85,55,'f-r2-1',HERE,'선풍기'),
-          P(3,32,84,'f-r2-3',IN,'운동 존 자리'),
-          PG(50,57,'f-r3-2','퀸 침대 → 방 3')
-        ]
-      }],
       furnitures:[
         {
-          id:'f-r2-1', n:1, name:'창가 집기', size:'—', status:'keep',
+          id:'f-r2-1', n:1, name:'창가 집기', status:'keep',
           note:'좌측 작은 책장과 장스탠드, 우측 선풍기. 운동 존을 만들면 선풍기는 이 자리에 그대로 두고 방향만 돌리면 됩니다.',
           layout:'grid',
           zones:[
@@ -749,19 +711,23 @@ footer b{color:var(--ink2);font-weight:700}
           ]
         },
         {
-          id:'f-r2-2', n:2, name:'높은선반수납장 (3도어)', size:'1200×420×794', status:'move',
+          id:'f-r2-2', n:2, name:'높은선반수납장 (3도어)', status:'move',
           badge:'방 3에서 이동',
           note:'지금 방 3 창 아래에 있는 흰색 3도어 수납장. 위아래 2칸, 좌측 2도어는 양옆으로 넓게 · 우측 1도어는 한쪽으로 열림. 주방 · 화장대에 흩어진 안 뜯은 재고를 전부 이 한 곳으로.',
           layout:'grid',
+          photos:[
+            PH('img/cabinet-3door.jpg','높은선반수납장 3도어 내부 — 위아래 2칸, 왼쪽 넓은 칸과 오른쪽 좁은 칸','높은선반수납장 (3도어) · 문 열었을 때',
+               [P(0,32,25),P(1,76,30),P(2,32,66),P(3,76,68)])
+          ],
           zones:[
-            Z('상단 좌 (2도어)', [I('바디워시 재고', {mv:true}), I('샴푸 재고', {mv:true}), I('화장품 재고', {mv:true})], '주방 · 화장대 재고 집결'),
-            Z('상단 우 (1도어)', [I('화장품 재고 (기초 · 색조)', {mv:true})], '안 뜯은 것만'),
-            Z('하단 좌', [I('일상 가방')]),
-            Z('하단 우', [I('여행용 가방')])
+            Z('위 · 왼쪽 넓은 칸 (2도어)', [I('바디워시 재고', {mv:true}), I('샴푸 재고', {mv:true}), I('화장품 재고', {mv:true})], '주방 · 화장대 재고 집결'),
+            Z('위 · 오른쪽 좁은 칸 (1도어)', [I('화장품 재고 (기초 · 색조)', {mv:true})], '안 뜯은 것만'),
+            Z('아래 · 왼쪽 넓은 칸', [I('일상 가방')]),
+            Z('아래 · 오른쪽 좁은 칸', [I('여행용 가방')])
           ]
         },
         {
-          id:'f-r2-3', n:3, name:'운동 존', size:'바닥', status:'new',
+          id:'f-r2-3', n:3, name:'운동 존', status:'new',
           badge:'새로 만드는 존',
           note:'거실 TV 밑 요가매트와 운동용품을 이쪽으로 모으면 거실이 비고, 운동은 한 자리에서.',
           layout:'grid',
@@ -773,7 +739,8 @@ footer b{color:var(--ink2);font-weight:700}
     /* ================= 방 3 ================= */
     {
       id:'r3', no:'3', name:'방 3', sub:'안방', tab:'방 3 · 안방', color:'#A9502F',
-      tags:'안방 침실 침대 화장실 매트리스 아래',
+      svgLabel:'방 3', svgSub:'안방',
+      tags:'안방 침실 침대 화장실 매트리스 아래 화장대',
       desc:'화장실 바로 맞은편. 구조 변경 뒤 안방. 샤워 → 잠옷 → 화장대 동선이 가장 짧은 방.',
       notes:[
         {k:'↔', t:'지금 이 방에 모여 있는 것: 3도어 수납장 → 방 2, 바로방가구 · 바지걸이 행거 → 방 1'},
@@ -781,34 +748,32 @@ footer b{color:var(--ink2);font-weight:700}
         {k:'·', t:'매트리스 아래는 부피 큰 캠핑용품 + 비시즌 옷 리빙박스 2개 자리'},
         {k:'·', t:'작은 흰색 행거 · 원목 스탠드 옷걸이 → 처분 검토'}
       ],
-      photos:[{
-        src:'img/r3.jpg', alt:'방 3 현재 모습 — 화장대와 창문 아래 수납장', label:'방 3 · 지금 모습',
-        markers:[
-          P(1,85,72,'f-r3-1',HERE,'샤르망 화장대'),
-          P(2,40,76,'f-r3-2',IN,'퀸 침대 들어올 자리'),
-          P(3,37,57,'f-r3-3',IN,'5단 서랍장 들어올 자리'),
-          P(4,16,40,'f-r3-4',HERE,'원목 스탠드 옷걸이'),
-          PG(25,52,'f-r2-2','3도어 수납장 → 방 2'),
-          PG(52,42,'f-r1-5','바지걸이 행거 → 방 1'),
-          PG(66,46,'f-r1-6','바로방가구 → 방 1')
-        ]
-      }],
       furnitures:[
         {
-          id:'f-r3-1', n:1, name:'샤르망 화장대', size:'1350×400×700', status:'keep',
-          note:'좌측 선반 2단 · 중앙 아래 서랍 · 정면 서랍 3칸 · 우측 서랍 3칸. 바퀴 스툴 포함. 여기엔 지금 쓰는 것만. 너무 크면 작은 화장대로 교체 검토.',
+          id:'f-r3-1', n:1, name:'샤르망 화장대', status:'keep',
+          note:'좌측 세로장 2칸(위 칸 + 아래 서랍) · 상판 아래 서랍 2개 · 우측 큰 서랍 3개 · 맨 끝 좁은 서랍 3개. 바퀴 스툴 포함. 여기엔 지금 쓰는 것만.',
           layout:'grid',
+          photos:[
+            PH('img/vanity.jpg','샤르망 화장대 전체 — 좌측 세로장, 상판 아래 서랍 2개, 우측 3단 서랍, 끝 좁은 3단 서랍','샤르망 화장대 · 전체',
+               [P(0,22.5,67),P(1,22.5,82),P(2,33,58.5),P(3,50,58.5),P(4,67,63),P(5,67,70.5),P(6,67,78),P(7,82,58),P(8,82,68),P(9,82,78)]),
+            PH('img/vanity-side.jpg','샤르망 화장대 좌측 세로장 — 위 칸과 아래 서랍을 연 모습','샤르망 화장대 · 좌측 세로장 (열었을 때)',
+               [P(0,58,26),P(1,54,63)])
+          ],
           zones:[
-            Z('좌측 선반 상단', [I('현재 쓰는 헤어제품')]),
-            Z('좌측 선반 하단', [I('소량 기초')], '재고는 방 2로'),
-            Z('중앙 아래 서랍', [I('샘플'), I('기초 화장품'), I('색조 화장품')]),
-            Z('정면 서랍 3칸', [I('부부 잠옷'), I('속옷'), I('양말')]),
-            Z('우측 서랍 3칸', [I('화장품 샘플'), I('배스밤'), I('화장솜'), I('마스크팩')]),
-            Z('바퀴 스툴', [I('바퀴 스툴')])
+            Z('좌측 · 위 칸', [I('현재 쓰는 헤어제품')]),
+            Z('좌측 · 아래 서랍', [I('소량 기초')], '재고는 방 2로'),
+            Z('상판 아래 · 왼쪽 서랍', [I('기초 화장품')]),
+            Z('상판 아래 · 오른쪽 서랍', [I('색조 화장품'), I('샘플')]),
+            Z('우측 · 1번째 서랍', [I('부부 속옷')]),
+            Z('우측 · 2번째 서랍', [I('양말')]),
+            Z('우측 · 3번째 서랍', [I('부부 잠옷')]),
+            Z('끝 좁은 · 위 서랍', [I('마스크팩')]),
+            Z('끝 좁은 · 가운데 서랍', [I('배스밤'), I('화장솜')]),
+            Z('끝 좁은 · 아래 서랍', [], '여유 칸으로 비워두기')
           ]
         },
         {
-          id:'f-r3-2', n:2, name:'퀸 침대 (프레임 + 매트리스)', size:'퀸', status:'move',
+          id:'f-r3-2', n:2, name:'퀸 침대 (프레임 + 매트리스)', status:'move',
           badge:'방 2에서 이동',
           note:'하부 서랍 3칸은 이미 통로 쪽을 보고 있어 재조립이 필요 없음. 새로 생기는 매트리스 아래 공간은 "계절이 지나야 꺼내는 것 + 부피 큰 캠핑용품" 자리.',
           layout:'grid',
@@ -821,10 +786,14 @@ footer b{color:var(--ink2);font-weight:700}
           ]
         },
         {
-          id:'f-r3-3', n:3, name:'5단 서랍장', size:'800×470×1200', status:'move',
+          id:'f-r3-3', n:3, name:'5단 서랍장', status:'move',
           badge:'방 1에서 이동',
           note:'지금 방 1에 있고 위에 압축백 2개와 이불이 얹혀 있음. 안방으로 오면 운동복 · 니트 · 여름잠옷이 화장대 속옷 · 잠옷과 한 동선에 모임. 창문 아래 자리로.',
           layout:'stack',
+          photos:[
+            PH('img/chest-5.jpg','5단 서랍장 — 위에서부터 1층부터 5층','5단 서랍장',
+               [P(0,53,22.5),P(1,53,38),P(2,53,53),P(3,53,68.5),P(4,53,82)])
+          ],
           zones:[
             Z('1층', [I('아내 운동복'), I('히트텍')]),
             Z('2층', [I('남편 운동복')]),
@@ -834,28 +803,28 @@ footer b{color:var(--ink2);font-weight:700}
           ]
         },
         {
-          id:'f-r3-4', n:4, name:'원목 스탠드 옷걸이 (1)', size:'—', status:'out',
+          id:'f-r3-4', n:4, name:'원목 스탠드 옷걸이 (1)', status:'out',
           badge:'처분 검토',
           note:'방 3에 있는 1개. 잠옷 벗을 때 쓰지만 2개 중 최소 1개는 정리 권장.',
           layout:'stack',
           zones:[ Z('걸이', [I('잠옷')]) ]
         },
         {
-          id:'f-r3-5', n:5, name:'작은 흰색 행거', size:'820×310×1600', status:'out',
+          id:'f-r3-5', n:5, name:'작은 흰색 행거', status:'out',
           badge:'처분 검토',
           note:'한 번 입은 옷 보관용. 지금 방 3에 있음 — 행거가 너무 많아 처분하면 방이 확 트임.',
           layout:'stack',
           zones:[ Z('걸이', [I('한 번 입은 옷')], '필요하면 방 1 바지행거 한쪽 끝에만') ]
         },
         {
-          id:'f-r3-6', n:6, name:'제습기', size:'—', status:'move',
+          id:'f-r3-6', n:6, name:'제습기', status:'move',
           badge:'방 1에서 이동',
           note:'지금은 방 1에 있음. 안방으로 옮겨 고정 배치.',
           layout:'stack',
           zones:[ Z('고정', [I('제습기')]) ]
         },
         {
-          id:'f-r3-7', n:7, name:'로봇청소기 스테이션', size:'—', status:'keep',
+          id:'f-r3-7', n:7, name:'로봇청소기 스테이션', status:'keep',
           note:'방 3 또는 거실에 유지. 충전 자리만 정해두면 됨.',
           layout:'stack',
           zones:[ Z('고정', [I('로봇청소기 스테이션')]) ]
@@ -865,24 +834,17 @@ footer b{color:var(--ink2);font-weight:700}
 
     /* ================= 거실 ================= */
     {
-      id:'r4', no:'거', name:'거실', sub:'소파 · TV', tab:'거실', color:'#7C8B6A',
+      id:'r4', no:'4', name:'거실', sub:'소파 · TV', tab:'거실', color:'#7C8B6A',
+      svgLabel:'거실', svgSub:'소파 · TV',
       tags:'거실 소파 티비 TV 상단장 캠핑 소품',
       desc:'소파 가로에 딱 맞는 소파, 벽걸이 TV. 운동용품이 방 2로 빠지면 TV 밑이 넓어지고, 상단 4칸 장은 계절 물건 + 가벼운 캠핑 소품 자리가 됩니다.',
       notes:[
         {k:'↔', t:'요가매트 · 운동용품 → 방 2 운동 존'},
         {k:'·', t:'상단 4칸 장: 물놀이 · 선풍기 · 보드게임 + 가벼운 캠핑 소품 여유분'}
       ],
-      photos:[{
-        src:'img/living.jpg', alt:'거실 현재 모습 — 소파와 벽걸이 TV', label:'거실 · 지금 모습',
-        markers:[
-          P(1,33,52,'f-r4-1',HERE,'TV 밑'),
-          P(2,63,68,'f-r4-2',HERE,'소파'),
-          P(5,78,34,'f-r4-5',HERE,'원목 스탠드 옷걸이')
-        ]
-      }],
       furnitures:[
         {
-          id:'f-r4-1', n:1, name:'TV 밑', size:'벽걸이 TV', status:'keep',
+          id:'f-r4-1', n:1, name:'TV 밑', status:'keep',
           note:'요가매트 · 헌터 박스 · 공기청정기 · 작은 스툴. 요가매트와 운동용품은 방 2 운동 존으로 빠지고, 남는 것은 공기청정기와 작은 스툴.',
           layout:'grid',
           zones:[
@@ -890,7 +852,7 @@ footer b{color:var(--ink2);font-weight:700}
           ]
         },
         {
-          id:'f-r4-2', n:2, name:'소파 · 사이드테이블', size:'거실 가로에 딱 맞음', status:'keep',
+          id:'f-r4-2', n:2, name:'소파 · 사이드테이블', status:'keep',
           note:'소파는 거실 가로 크기에 딱 맞음. 옆에 사이드테이블.',
           layout:'grid',
           zones:[
@@ -899,7 +861,7 @@ footer b{color:var(--ink2);font-weight:700}
           ]
         },
         {
-          id:'f-r4-3', n:3, name:'상단 4칸 장', size:'4칸 · 규격 미확인', status:'keep',
+          id:'f-r4-3', n:3, name:'상단 4칸 장', status:'keep',
           note:'계절 물건과 놀이 물건은 위쪽 한 곳에. 4번 칸은 가벼운 캠핑 소품 여유분으로 — 부피 큰 캠핑용품은 여기 말고 방 3 매트리스 아래로.',
           layout:'grid',
           zones:[
@@ -910,7 +872,7 @@ footer b{color:var(--ink2);font-weight:700}
           ]
         },
         {
-          id:'f-r4-4', n:4, name:'작은 6단 서랍장', size:'6칸 · 규격 미확인', status:'keep',
+          id:'f-r4-4', n:4, name:'작은 6단 서랍장', status:'keep',
           note:'소파 옆. 잡동사니는 전부 이 서랍 하나로.',
           layout:'stack',
           zones:[
@@ -921,7 +883,7 @@ footer b{color:var(--ink2);font-weight:700}
           ]
         },
         {
-          id:'f-r4-5', n:5, name:'원목 스탠드 옷걸이 (2)', size:'—', status:'out',
+          id:'f-r4-5', n:5, name:'원목 스탠드 옷걸이 (2)', status:'out',
           badge:'처분 검토',
           note:'거실에서 외투 벗을 때 쓰는 1개. 처분 검토.',
           layout:'stack',
@@ -932,7 +894,8 @@ footer b{color:var(--ink2);font-weight:700}
 
     /* ================= 주방 ================= */
     {
-      id:'r5', no:'주', name:'주방', sub:'거실과 이어진 주방', tab:'주방', color:'#B9855F',
+      id:'r5', no:'5', name:'주방', sub:'거실과 이어진 주방', tab:'주방', color:'#B9855F',
+      svgLabel:'주방', svgSub:'식탁 · 냉장고',
       tags:'주방 키친 냉장고 스피드랙 팬트리 캠핑',
       desc:'냉장고 옆 빌트인 공간의 스피드랙은 먹는 것 + 주방 소모품 전용. 맨 아래 한 칸만 자주 꺼내는 캠핑 소품.',
       notes:[
@@ -940,19 +903,9 @@ footer b{color:var(--ink2);font-weight:700}
         {k:'↔', t:'스피드랙에서 화장품 · 판매용 암튜브 · 파우치 · 택배봉투 빼기'},
         {k:'·', t:'캠핑용품은 맨 아래 1칸만 — 부피 큰 것은 방 3, 가벼운 소품은 거실 상단장'}
       ],
-      photos:[{
-        src:'img/kitchen.jpg', alt:'주방 현재 모습 — 스피드랙과 사다리 선반', label:'주방 · 지금 모습',
-        markers:[
-          P(1,21,44,'f-r5-1',HERE,'냉장고 옆 스피드랙'),
-          P(2,41,46,'f-r5-2',HERE,'냉장고'),
-          P(3,55,29,'f-r5-3',HERE,'상부장'),
-          P(4,72,45,'f-r5-4',HERE,'하부장 · 조리대'),
-          P(5,10,58,'f-r5-5',HERE,'이케아 사다리 선반')
-        ]
-      }],
       furnitures:[
         {
-          id:'f-r5-1', n:1, name:'냉장고 옆 스피드랙', size:'800×500×1800', status:'keep',
+          id:'f-r5-1', n:1, name:'냉장고 옆 스피드랙', status:'keep',
           badge:'먹는 것 전용화',
           note:'냉장고 옆 빌트인 공간 안, 위에는 빌트인 상부장. 식료품 · 술 · 휴지 · 물티슈가 기본이고, 캠핑용품은 맨 아래 한 칸만 남깁니다.',
           layout:'stack',
@@ -965,13 +918,13 @@ footer b{color:var(--ink2);font-weight:700}
           ]
         },
         {
-          id:'f-r5-2', n:2, name:'냉장고', size:'고정 자리', status:'keep',
+          id:'f-r5-2', n:2, name:'냉장고', status:'keep',
           note:'냉장고 옆 빌트인 공간에 스피드랙, 그 위에 빌트인 상부장.',
           layout:'stack',
           zones:[ Z('고정', [I('냉장고')]) ]
         },
         {
-          id:'f-r5-3', n:3, name:'상부장', size:'4칸 · 규격 미확인', status:'keep',
+          id:'f-r5-3', n:3, name:'상부장', status:'keep',
           note:'4번은 손이 잘 안 닿는 자리 → 재고품. 가장 아래는 시리얼 전용칸.',
           layout:'grid',
           zones:[
@@ -982,7 +935,7 @@ footer b{color:var(--ink2);font-weight:700}
           ]
         },
         {
-          id:'f-r5-4', n:4, name:'하부장', size:'규격 미확인', status:'keep',
+          id:'f-r5-4', n:4, name:'하부장', status:'keep',
           note:'싱크대 밑 · 코너장 · 3단 서랍 · 인덕션 밑 · 슬라이드장 · 우측 도어형.',
           layout:'grid',
           zones:[
@@ -998,7 +951,7 @@ footer b{color:var(--ink2);font-weight:700}
           ]
         },
         {
-          id:'f-r5-5', n:5, name:'이케아 4단 흰색 사다리 선반', size:'600×350×1480', status:'out',
+          id:'f-r5-5', n:5, name:'이케아 4단 흰색 사다리 선반', status:'out',
           badge:'동선 막힘 · 처분 검토',
           note:'스피드랙 바로 앞을 가로막고 있음. 치우거나 현관 쪽으로 빼면 스피드랙 접근이 훨씬 편해짐. 무거운 가전은 조리대 · 싱크대 쪽으로 내리기.',
           layout:'stack',
@@ -1013,20 +966,20 @@ footer b{color:var(--ink2);font-weight:700}
 
     /* ================= 현관 ================= */
     {
-      id:'r6', no:'현', name:'현관', sub:'신발장 · 택배 착지', tab:'현관', color:'#6E7C87',
+      id:'r6', no:'6', name:'현관', sub:'신발장 · 택배 착지', tab:'현관', color:'#6E7C87',
+      svgLabel:'현관', svgSub:'신발장 · 택배',
       tags:'현관 신발장 택배 외출',
       desc:'택배가 도착하는 곳. 여기서 2갈래로만 나누면 집 안에 택배가 안 쌓임.',
       notes:[ {k:'·', t:'바구니는 현관 문 옆, 박스 뜯는 자리 바로 옆에'} ],
-      photos:[],
       furnitures:[
         {
-          id:'f-r6-1', n:1, name:'신발장', size:'규격 미확인', status:'keep',
+          id:'f-r6-1', n:1, name:'신발장', status:'keep',
           note:'신발 수납. 문을 자주 열지 않으니 계절 신발은 위쪽 칸에.',
           layout:'grid',
           zones:[ Z('수납', [I('신발')]) ]
         },
         {
-          id:'f-r6-2', n:2, name:'택배 착지 바구니', size:'바구니 2개', status:'new',
+          id:'f-r6-2', n:2, name:'택배 착지 바구니', status:'new',
           badge:'새로 만드는 존',
           note:'택배 오면 현관에서 바로 뜯고, 내용물만 두 바구니에 나눠 담기.',
           layout:'grid',
@@ -1036,7 +989,7 @@ footer b{color:var(--ink2);font-weight:700}
           ]
         },
         {
-          id:'f-r6-3', n:3, name:'외출 필수템 존', size:'—', status:'new',
+          id:'f-r6-3', n:3, name:'외출 필수템 존', status:'new',
           badge:'이케아 선반에서 이동',
           note:'나가기 전에 확인하는 것만. 사다리 선반을 현관 쪽으로 뺀다면 그 자리를 이 존으로.',
           layout:'grid',
@@ -1054,31 +1007,16 @@ footer b{color:var(--ink2);font-weight:700}
      door 여닫이 / open 빈칸 / box 기기 / mattress 매트리스(번호 없음)
      ============================================================ */
   var FIGS = {
-    'f-r1-1': {h:120, note:'3칸 · 좌 2단 봉 / 중앙 선반·행거·서랍 / 우측 세로분할', cells:[
-      [0,0,33,40,'hang'],[0,40,33,60,'hang'],
-      [33,0,30,13,'shelf'],[33,13,30,45,'hang'],[33,58,30,42,'drawer'],
-      [63,0,37,34,'hang'],[63,34,19,66,'hang'],[82,34,18,66,'open']
-    ]},
     'f-r1-2': {h:100, note:'건조기 · 세탁기 적층 + 위 선반 · 옆 트롤리', cells:[
       [0,0,62,42,'box'],[0,42,62,58,'box'],[62,0,38,70,'shelf'],[62,70,38,30,'shelf']
     ]},
     'f-r1-5': {h:110, note:'상단 겉옷 · 하단 바지', cells:[
       [0,0,100,38,'hang'],[0,38,100,62,'hang']
     ]},
-    'f-r2-2': {h:70, note:'위 2칸 · 아래 2칸 (좌 2도어 / 우 1도어)', cells:[
-      [0,0,65,45,'door'],[65,0,35,45,'door'],[0,45,50,55,'door'],[50,45,50,55,'door']
-    ]},
-    'f-r3-1': {h:72, note:'좌측 선반 2단 · 중앙·우측 서랍 · 바퀴 스툴', cells:[
-      [0,0,25,50,'shelf'],[0,50,25,50,'shelf'],[25,0,32,26,'drawer'],[25,26,32,74,'drawer'],
-      [57,0,33,100,'drawer'],[92,58,8,42,'open']
-    ]},
     'f-r3-2': {h:58, note:'매트리스 아래 3서랍 + 매트리스 아래 수납', cells:[
       [0,0,100,34,'mattress'],
       [0,34,18,66,'drawer'],[18,34,18,66,'drawer'],[36,34,18,66,'drawer'],
       [54,34,24,66,'open'],[78,34,22,66,'open']
-    ]},
-    'f-r3-3': {h:110, note:'1~5층 서랍', cells:[
-      [0,0,100,20,'drawer'],[0,20,100,20,'drawer'],[0,40,100,20,'drawer'],[0,60,100,20,'drawer'],[0,80,100,20,'drawer']
     ]},
     'f-r4-3': {h:46, note:'1~4칸', cells:[
       [0,0,25,100,'door'],[25,0,25,100,'door'],[50,0,25,100,'door'],[75,0,25,100,'door']
@@ -1104,18 +1042,6 @@ footer b{color:var(--ink2);font-weight:700}
     ]}
   };
 
-  /* 도면 핀 (도면 이미지 기준 %) */
-  var PLAN = {src:'img/floorplan.jpg', alt:'집 전체 3D 도면',
-    pins:[
-      {room:'r1', n:1, x:35, y:30, name:'방 1 · 드레스룸'},
-      {room:'r2', n:2, x:68, y:22, name:'방 2 · 팬트리/운동'},
-      {room:'r3', n:3, x:52, y:86, name:'방 3 · 안방'},
-      {room:'r4', n:4, x:52, y:45, name:'거실'},
-      {room:'r5', n:5, x:16, y:44, name:'주방'},
-      {room:'r6', n:6, x:38, y:90, name:'현관'},
-      {room:'r1', n:7, x:23, y:6, name:'세탁베란다', goto:'f-r1-2'}
-    ]};
-
   var ADDRESSES = [
     {t:'먹는 것 · 휴지 · 물티슈', w:'주방 · 냉장고 옆 스피드랙', q:'휴지'},
     {t:'안 뜯은 샴푸 · 바디 · 화장품 재고 · 가방', w:'방 2 · 높은선반수납장 (3도어)', q:'샴푸'},
@@ -1139,43 +1065,19 @@ footer b{color:var(--ink2);font-weight:700}
   var CHECKS = [
     {t:'방 2 ↔ 방 3 안방 맞교환', h:'화장실 앞 방 3 = 안방, 방 2 = 운동방 · 팬트리'},
     {t:'방 3의 바로방가구 수납장 + 바지걸이 행거 → 방 1 드레스룸으로 이동', h:'옷은 한 방에 모으기'},
-    {t:'방 3 창 아래 3도어 수납장 → 방 2 재고 팬트리로 이동', h:'높은선반수납장 1200×420×794'},
-    {t:'방 1의 5단 서랍장(800×470×1200) → 방 3 안방으로 이동', h:'운동복 · 니트 · 여름잠옷'},
+    {t:'방 3 창 아래 3도어 수납장 → 방 2 재고 팬트리로 이동', h:'높은선반수납장'},
+    {t:'방 1의 5단 서랍장 → 방 3 안방으로 이동', h:'운동복 · 니트 · 여름잠옷'},
     {t:'5단 위 압축백 2개 + 이불 → 침대 매트리스 아래 · 하단서랍으로', h:'여름옷 1 · 겨울옷 1 · 이불'},
     {t:'매트리스 아래에 부피 큰 캠핑용품 + 비시즌 옷 리빙박스 2개 넣기', h:'세탁베란다는 자리가 없어 여기로'},
     {t:'주방 스피드랙에서 화장품 · 판매용 암튜브 · 파우치 · 택배봉투 빼기', h:'식료품 · 술 · 휴지 · 물티슈 전용화'},
     {t:'스피드랙 캠핑용품은 맨 아래 1칸만 남기기', h:'큰 것은 방 3, 가벼운 소품은 거실 상단장'},
     {t:'주방 · 화장대 화장품 · 바디 · 샴푸 재고 → 방 2 3도어 수납장 한 곳으로', h:'안 뜯은 것만'},
-    {t:'이케아 사다리 선반 치우기 — 스피드랙 앞 동선 확보', h:'600×350×1480 · 가전은 조리대 · 싱크대로'},
+    {t:'이케아 사다리 선반 치우기 — 스피드랙 앞 동선 확보', h:'가전은 조리대 · 싱크대로'},
     {t:'거실 TV 밑 요가매트 · 운동용품 → 방 2 운동 존으로 이동', h:'거실은 공기청정기 · 작은 스툴만'},
     {t:'거실 상단 4칸 장 4번 칸 = 가벼운 캠핑 소품 여유분', h:'부피 큰 캠핑용품은 여기 말고 방 3'},
-    {t:'작은 흰색 행거 · 원목 스탠드 옷걸이 2개 정리 · 처분', h:'820×310×1600 · 방 3과 거실'},
+    {t:'작은 흰색 행거 · 원목 스탠드 옷걸이 2개 정리 · 처분', h:'방 3과 거실'},
     {t:'로봇청소기 스테이션 자리 확정', h:'방 3 또는 거실 유지'},
     {t:'폴딩박스 · 서랍 앞면 마스킹테이프 + 네임펜 라벨링', h:'서랍 앞면 왼쪽 위, 큰 글씨'}
-  ];
-
-  var SPEC = [
-    ['붙박이장','3칸 · 좌 2단 봉 / 중앙 선반+행거+서랍 / 우측 세로분할','방 1','방 1','keep'],
-    ['바지걸이 행거','800×450×1800','방 3','방 1 (드레스룸)','move'],
-    ['바로방가구 수납장','600×400×1800','방 3','방 1 (리셀 재고 상한)','move'],
-    ['5단 서랍장','800×470×1200','방 1','방 3 (안방 · 창문 아래)','move'],
-    ['높은선반수납장 (3도어)','1200×420×794','방 3 (창 아래)','방 2 (재고 팬트리)','move'],
-    ['샤르망 화장대','1350×400×700','방 3','방 3','keep'],
-    ['퀸 침대 (프레임 + 매트리스)','퀸','방 2','방 3 (안방)','move'],
-    ['제습기','—','방 1','방 3 (고정)','move'],
-    ['로봇청소기 스테이션','—','방 3','방 3 또는 거실','keep'],
-    ['작은 흰색 행거','820×310×1600','방 3','—','out'],
-    ['원목 스탠드 옷걸이 × 2','—','방 3 · 거실','—','out'],
-    ['접이식 건조대','—','방 1 · 세탁베란다','방 1 · 세탁베란다','keep'],
-    ['세탁기 · 건조기 (적층)','—','방 1 세탁베란다','방 1 (고정)','keep'],
-    ['세탁기 위 선반 · 세제 트롤리','—','방 1 세탁베란다','방 1 (고정)','keep'],
-    ['주방 스피드랙','800×500×1800','주방 (냉장고 옆 빌트인)','주방 (식료품 전용 + 캠핑 1칸)','keep'],
-    ['이케아 4단 흰색 사다리 선반','600×350×1480','주방 (스피드랙 앞)','— (치우기 · 현관 대안)','out'],
-    ['상부장 · 하부장 · 냉장고','—','주방','주방','keep'],
-    ['소파 · 사이드테이블','거실 가로에 딱 맞음','거실','거실','keep'],
-    ['작은 6단 서랍장','—','거실','거실','keep'],
-    ['상단 4칸 장','—','거실','거실 (캠핑 소품 4번 칸)','keep'],
-    ['신발장','—','현관','현관','keep']
   ];
 
   var STATUS = {
@@ -1184,6 +1086,242 @@ footer b{color:var(--ink2);font-weight:700}
     new:{t:'새로 만드는 존', c:'new'},
     out:{t:'처분 검토', c:'out'}
   };
+
+  /* ============================================================
+     집 전체 도면 (직접 그린 SVG · 정리 뒤 배치 기준)
+     ============================================================ */
+  var COL = {
+    wallOut:'#93847A', wallIn:'#BFAF9E', ink:'#4A4036', ink2:'#8A7E72',
+    wood:'#FFFFFF', woodLine:'#DCCDB9', woodFill:'#FBF6EF',
+    glass:'#9FB2B8', soft:'#EFE7DB'
+  };
+
+  function rect(x,y,w,h,f,st,rx){ return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+f+'"'+(st?' stroke="'+st+'" stroke-width="1.1"':'')+' rx="'+(rx||0)+'"/>'; }
+  function ln(x1,y1,x2,y2,st,w,dash){ return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+st+'" stroke-width="'+(w||1)+'"'+(dash?' stroke-dasharray="'+dash+'"':'')+' stroke-linecap="round"/>'; }
+  function txt(x,y,s,size,fill,anchor,weight){ return '<text x="'+x+'" y="'+y+'" font-size="'+size+'" fill="'+fill+'" text-anchor="'+(anchor||'start')+'" font-weight="'+(weight||700)+'" letter-spacing="-.02em">'+s+'</text>'; }
+
+  /* 가구 아이콘 (모두 흰 몸통 + 따뜻한 테두리) */
+  function icBed(x,y,w,h){
+    return rect(x,y,w,h,COL.wood,COL.woodLine,3)
+      + rect(x+2,y+3,w-4,h-6,'#F7F1E8',null,2)
+      + rect(x+4,y+5,Math.min(9,w*0.14),h-10,'#FFFFFF',COL.woodLine,2)
+      + ln(x+w*0.34,y+4,x+w*0.34,y+h-4,COL.woodLine,1)
+      + '<path d="M'+(x+4)+' '+(y+h*0.78)+' L'+(x+w-6)+' '+(y+h*0.78)+'" stroke="'+COL.woodLine+'" stroke-width="1" fill="none"/>';
+  }
+  function icSofa(x,y,w,h,back){
+    var s = rect(x,y,w,h,COL.wood,COL.woodLine,7);
+    if (back==='right'){
+      s += rect(x+w-10,y+3,8,h-6,COL.woodFill,COL.woodLine,3);
+      s += rect(x+2,y+2,w-14,5,COL.woodFill,COL.woodLine,2);
+      s += rect(x+2,y+h-7,w-14,5,COL.woodFill,COL.woodLine,2);
+      s += ln(x+4,y+h/2,x+w-12,y+h/2,COL.woodLine,0.9);
+    } else {
+      s += rect(x+3,y+3,w-6,9,COL.woodFill,COL.woodLine,3);
+      s += rect(x+2,y+2,5,h-4,COL.woodFill,COL.woodLine,2);
+      s += rect(x+w-7,y+2,5,h-4,COL.woodFill,COL.woodLine,2);
+      s += ln(x+w/2,y+5,x+w/2,y+h-4,COL.woodLine,0.9);
+    }
+    return s;
+  }
+  function icTable(x,y,w,h){
+    var s = rect(x,y,w,h,COL.wood,COL.woodLine,5) + rect(x+4,y+4,w-8,h-8,COL.woodFill,null,3);
+    var cw = 9, gap = 4;
+    s += rect(x+(w/2)-cw/2, y-gap-cw, cw, cw, COL.woodFill, COL.woodLine, 2);
+    s += rect(x+(w/2)-cw/2, y+h+gap, cw, cw, COL.woodFill, COL.woodLine, 2);
+    s += rect(x-gap-cw, y+(h/2)-cw/2, cw, cw, COL.woodFill, COL.woodLine, 2);
+    s += rect(x+w+gap, y+(h/2)-cw/2, cw, cw, COL.woodFill, COL.woodLine, 2);
+    return s;
+  }
+  function icBox(x,y,w,h,label){
+    return rect(x,y,w,h,COL.wood,COL.woodLine,2.5) + rect(x+2.5,y+2.5,w-5,h-5,COL.woodFill,null,1.5)
+      + (label?txt(x+4,y+h-5,label,7.2,COL.ink2,'start',700):'');
+  }
+  function icCloset(x,y,w,h,div){
+    var s = rect(x,y,w,h,COL.wood,COL.woodLine,2.5) + rect(x+2.5,y+2.5,w-5,h-5,COL.woodFill,null,1.5);
+    for(var i=1;i<div;i++){ var cx=x+(w/div)*i; s += ln(cx,y+2.5,cx,y+h-2.5,COL.woodLine,1); }
+    s += '<path d="M'+(x+4)+' '+(y+h*0.55)+' L'+(x+w-4)+' '+(y+h*0.55)+'" stroke="'+COL.woodLine+'" stroke-width="0.8" stroke-dasharray="2 2" fill="none"/>';
+    return s;
+  }
+  function icVanity(x,y,w,h){
+    return rect(x,y,w,h,COL.wood,COL.woodLine,2.5) + rect(x+3,y+3,w-6,h*0.42,COL.woodFill,null,1.5)
+      + ln(x+3,y+h*0.52,x+w-3,y+h*0.52,COL.woodLine,1)
+      + '<circle cx="'+(x+w/2)+'" cy="'+(y+h+h*0.16)+'" r="'+(Math.min(w,h)*0.16)+'" fill="'+COL.wood+'" stroke="'+COL.woodLine+'" stroke-width="1"/>';
+  }
+  function icWasher(x,y,w,h,dryer){
+    var s = rect(x,y,w,h,COL.wood,COL.woodLine,3);
+    s += '<circle cx="'+(x+w/2)+'" cy="'+(y+h/2)+'" r="'+(Math.min(w,h)*0.3)+'" fill="'+COL.woodFill+'" stroke="'+COL.woodLine+'" stroke-width="1.2"/>';
+    if(dryer) s += '<circle cx="'+(x+w/2)+'" cy="'+(y+h/2)+'" r="'+(Math.min(w,h)*0.15)+'" fill="none" stroke="'+COL.woodLine+'" stroke-width="1"/>';
+    return s;
+  }
+  function icToilet(x,y){
+    return '<ellipse cx="'+x+'" cy="'+(y+8)+'" rx="9" ry="11" fill="'+COL.wood+'" stroke="'+COL.woodLine+'" stroke-width="1.1"/>'
+      + rect(x-8,y-10,16,6,COL.woodFill,COL.woodLine,2);
+  }
+  function icBasin(x,y){
+    return rect(x,y,26,16,COL.wood,COL.woodLine,2) + '<ellipse cx="'+(x+13)+'" cy="'+(y+8)+'" rx="8" ry="5.5" fill="'+COL.woodFill+'" stroke="'+COL.woodLine+'" stroke-width="1"/>';
+  }
+  function icShoe(x,y,w,h){
+    var s = rect(x,y,w,h,COL.wood,COL.woodLine,2);
+    for(var i=1;i<4;i++){ s += ln(x,y+(h/4)*i,x+w,y+(h/4)*i,COL.woodLine,0.9); }
+    return s;
+  }
+  function icTV(x,y,w,h){ return rect(x,y,w,h,'#F0EAE1',COL.woodLine,1.5) + ln(x+w*0.1,y+h*0.5,x+w*0.9,y+h*0.5,'#D6C6B2',1.4); }
+  function icMat(x,y,w,h){ return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="3" fill="#FBF3F0" stroke="#E4C9BE" stroke-width="1.2" stroke-dasharray="4 3"/>'; }
+  function icFan(x,y,r){ return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+COL.wood+'" stroke="'+COL.woodLine+'" stroke-width="1.1"/><circle cx="'+x+'" cy="'+y+'" r="'+(r*0.25)+'" fill="'+COL.woodFill+'" stroke="'+COL.woodLine+'" stroke-width="0.9"/>'; }
+
+  function winH(x1,x2,y){
+    return ln(x1,y,x2,y,'#FFFFFF',7) + ln(x1,y,x2,y,COL.glass,1.5) + ln(x1,y,x2,y,'#FFFFFF',0.7);
+  }
+  function winV(x,y1,y2){
+    return ln(x,y1,x,y2,'#FFFFFF',7) + ln(x,y1,x,y2,COL.glass,1.5) + ln(x,y1,x,y2,'#FFFFFF',0.7);
+  }
+  function doorArc(x,y,r,a0,a1,sweep){
+    var p = function(a){ var rad=a*Math.PI/180; return [x+r*Math.cos(rad), y+r*Math.sin(rad)]; };
+    var p0=p(a0), p1=p(a1);
+    return '<path d="M'+p0[0].toFixed(1)+' '+p0[1].toFixed(1)+' A'+r+' '+r+' 0 0 '+(sweep||1)+' '+p1[0].toFixed(1)+' '+p1[1].toFixed(1)+'" fill="none" stroke="#C9BCAD" stroke-width="1.1" stroke-dasharray="3 2.5"/>'
+      + ln(p0[0],p0[1],p0[0]+(p1[0]-p0[0])*0.02+ (a0===0||a0===180?0:(p1[0]-p0[0])), p0[1], '#C9BCAD',0);
+  }
+  function doorLeaf(x1,y1,x2,y2){ return ln(x1,y1,x2,y2,'#C9BCAD',1.2); }
+
+  function planSVG(){
+    var s = '<svg viewBox="0 0 620 860" role="img" aria-label="집 전체 평면도 — 방 7곳과 주요 가구 배치">';
+    s += '<defs><pattern id="tile" width="9" height="9" patternUnits="userSpaceOnUse"><path d="M0 0H9V9" fill="none" stroke="#D7E2E5" stroke-width="0.7"/></pattern></defs>';
+
+    /* 바닥 */
+    s += rect(30,30,270,85,'#F5F3EB',null,2);        /* 세탁베란다 */
+    s += rect(30,115,270,225,'#EFF3EB',null,2);      /* 방 1 */
+    s += rect(300,30,270,220,'#FBEFE8',null,2);      /* 방 2 */
+    s += rect(30,340,270,280,'#F9F2E6',null,2);      /* 주방 */
+    s += rect(300,250,270,330,'#F5F4EC',null,2);     /* 거실 */
+    s += rect(300,580,270,240,'#FAEEE7',null,2);     /* 방 3 */
+    s += rect(30,625,140,135,'#EAF1F3',null,2);      /* 욕실 */
+    s += '<rect x="35" y="630" width="130" height="125" fill="url(#tile)" opacity=".5"/>';
+    s += rect(170,620,130,200,'#F3F0E9',null,2);     /* 복도 */
+    s += rect(30,760,140,60,'#F3F0E9',null,2);       /* 현관 */
+
+    /* 외벽 */
+    s += '<rect x="20" y="20" width="560" height="820" fill="none" stroke="'+COL.wallOut+'" stroke-width="9" stroke-linejoin="round"/>';
+    s += '<rect x="29" y="29" width="542" height="802" fill="none" stroke="#DCCFBE" stroke-width="1"/>';
+
+    /* 내벽 */
+    var wi = COL.wallIn, ww = 4.4;
+    var walls = [
+      [30,115,44,115],[96,115,300,115],         /* 베란다 | 방 1 */
+      [30,340,244,340],[296,340,300,340],       /* 방 1 | 주방 */
+      [300,250,418,250],[482,250,570,250],      /* 방 2 | 거실 */
+      [300,580,318,580],[382,580,570,580],      /* 거실 | 방 3 */
+      [30,625,170,625],                          /* 주방 | 욕실 */
+      [30,760,170,760],                          /* 욕실 | 현관 */
+      [170,625,170,698],[170,757,170,820],      /* 욕실 | 복도 */
+      [300,30,300,392],[300,468,300,820]         /* 좌 | 우 */
+    ];
+    walls.forEach(function(w){ s += ln(w[0],w[1],w[2],w[3],wi,ww); });
+
+    /* 문 — 경첩 + 문짝 + 회전 호 */
+    function door(hx,hy,len,dir){
+      var tip, jamb;
+      if (dir==='down'){ tip = [hx, hy+len]; jamb = [hx+len, hy]; }
+      else if (dir==='up'){ tip = [hx, hy-len]; jamb = [hx+len, hy]; }
+      else if (dir==='right'){ tip = [hx+len, hy]; jamb = [hx, hy+len]; }
+      else { tip = [hx-len, hy]; jamb = [hx, hy+len]; }
+      var sweep = (dir==='down'||dir==='left') ? 1 : 0;
+      return ln(hx,hy,tip[0],tip[1],'#C6B7A6',1.5)
+        + '<path d="M'+tip[0]+' '+tip[1]+' A'+len+' '+len+' 0 0 '+sweep+' '+jamb[0]+' '+jamb[1]+'" fill="none" stroke="#C6B7A6" stroke-width="1.1" stroke-dasharray="3 2.5"/>';
+    }
+    s += door(62,838,62,'up');      /* 현관 (문이 안으로) */
+    s += door(46,115,50,'down');    /* 베란다 → 방 1 */
+    s += door(244,340,50,'down');   /* 방 1 → 주방 */
+    s += door(418,250,60,'down');   /* 방 2 → 거실 */
+    s += door(318,580,60,'up');     /* 거실 → 방 3 */
+    s += door(170,700,45,'right');  /* 복도 → 욕실 */
+
+    /* 창 */
+    s += winH(70,190,20);
+    s += winH(350,465,20);
+    s += winV(580,92,176);
+    s += winV(580,330,430);
+    s += winV(580,642,736);
+    s += winH(452,548,840);
+    s += winV(20,660,708);
+
+    /* ---- 세탁베란다 ---- */
+    s += icWasher(198,42,44,44,false);
+    s += icWasher(248,42,42,44,true);
+
+    /* ---- 방 1 드레스룸 ---- */
+    s += icCloset(100,122,194,30,3);
+    s += icCloset(266,166,30,64,2);
+    s += rect(34,206,26,74,'#FFFFFF',COL.woodLine,2) + ln(36,243,58,243,'#D9C6AE',1.4);
+    s += icMat(112,246,66,16);
+
+    /* ---- 방 2 ---- */
+    s += icBox(316,80,26,46);
+    s += icFan(526,102,10);
+    s += icCloset(322,196,100,30,3);
+    s += icMat(424,110,100,74);
+
+    /* ---- 주방 ---- */
+    s += icBox(34,350,54,46);
+    s += ln(36,372,86,372,'#E4D5C0',1);
+    s += rect(34,402,30,54,'#FFFFFF',COL.woodLine,2);
+    for(var k=1;k<4;k++) s += ln(35,402+(54/4)*k,63,402+(54/4)*k,'#E4D5C0',0.9);
+    s += rect(92,344,116,30,'#FFFFFF',COL.woodLine,2) + rect(96,347,34,24,COL.woodFill,COL.woodLine,2);
+    s += '<circle cx="113" cy="359" r="7" fill="'+COL.woodFill+'" stroke="'+COL.woodLine+'" stroke-width="1"/>';
+    s += rect(176,347,28,24,COL.woodFill,COL.woodLine,2);
+    s += '<circle cx="183" cy="354" r="2.4" fill="none" stroke="'+COL.woodLine+'" stroke-width=".9"/><circle cx="196" cy="354" r="2.4" fill="none" stroke="'+COL.woodLine+'" stroke-width=".9"/><circle cx="183" cy="365" r="2.4" fill="none" stroke="'+COL.woodLine+'" stroke-width=".9"/><circle cx="196" cy="365" r="2.4" fill="none" stroke="'+COL.woodLine+'" stroke-width=".9"/>';
+    s += icTable(150,446,92,68);
+
+    /* ---- 거실 ---- */
+    s += icTV(306,300,9,74);
+    s += icSofa(400,414,118,58,'right');
+    s += rect(346,428,34,56,'#FFFFFF',COL.woodLine,6);
+    s += '<circle cx="348" cy="428" r="12" fill="#FFFFFF" stroke="'+COL.woodLine+'" stroke-width="1.1"/>';
+    s += icCloset(486,258,72,26,4);
+    s += icCloset(516,532,40,30,3);
+
+    /* ---- 방 3 ---- */
+    s += icBed(320,614,146,150);
+    s += icVanity(498,626,54,110);
+    s += icBox(424,786,96,26);
+    for(var j=1;j<5;j++) s += ln(424,786+(26/5)*j,520,786+(26/5)*j,'#E4D5C0',0.9);
+    s += '<circle cx="452" cy="762" r="7" fill="#FFFFFF" stroke="'+COL.woodLine+'" stroke-width="1"/>';
+
+    /* ---- 욕실 ---- */
+    s += icToilet(58,664);
+    s += icBasin(38,704);
+    s += '<rect x="106" y="688" width="50" height="60" rx="3" fill="none" stroke="#C6DBDF" stroke-width="1.2" stroke-dasharray="4 3"/>';
+
+    /* ---- 현관 ---- */
+    s += icShoe(174,758,17,56);
+    s += rect(206,776,22,20,'#FFFFFF',COL.woodLine,2) + rect(232,776,22,20,'#FFFFFF',COL.woodLine,2);
+    s += rect(46,806,44,16,'#FFFFFF',COL.woodLine,2) + ln(50,814,86,814,'#E4D5C0',1);
+
+    /* ---- 방 이름 + 번호 칩 ---- */
+    var chips = [
+      {room:'r7', no:7, label:'베란다', x:74, y:66, w:98},
+      {room:'r1', no:1, label:'방 1', x:46, y:296, w:92},
+      {room:'r2', no:2, label:'방 2', x:366, y:56, w:92},
+      {room:'r3', no:3, label:'방 3', x:470, y:588, w:92},
+      {room:'r4', no:4, label:'거실', x:330, y:330, w:74},
+      {room:'r5', no:5, label:'주방', x:206, y:562, w:74},
+      {room:'r6', no:6, label:'현관', x:186, y:644, w:74}
+    ];
+    chips.forEach(function(c){
+      var col = '#5F7A61';
+      for (var q=0;q<ROOMS.length;q++){ if (ROOMS[q].id === c.room) col = ROOMS[q].color; }
+      var attrs = c.room==='r7' ? ' data-goto="f-r1-2"' : ' data-room-go="'+c.room+'"';
+      var h = 38, cy = c.y + h/2;
+      s += '<g class="rm" role="button" tabindex="0" '+attrs+' aria-label="'+c.label+' 보기">';
+      s += '<rect class="chipbg" x="'+c.x+'" y="'+c.y+'" width="'+c.w+'" height="'+h+'" rx="'+(h/2)+'" fill="#FFFFFF" fill-opacity=".95" stroke="'+col+'" stroke-width="1.4"/>';
+      s += '<circle cx="'+(c.x+19)+'" cy="'+cy+'" r="13" fill="'+col+'"/>';
+      s += '<text x="'+(c.x+19)+'" y="'+(cy+5.2)+'" font-size="14.5" fill="#FFFFFF" text-anchor="middle" font-weight="800">'+c.no+'</text>';
+      s += '<text x="'+(c.x+38)+'" y="'+(cy+6)+'" font-size="17" fill="#3C342C" font-weight="800" letter-spacing="-.04em">'+c.label+'</text>';
+      s += '</g>';
+    });
+
+    s += '</svg>';
+    return s;
+  }
 
   /* ============================================================
      유틸
@@ -1196,41 +1334,31 @@ footer b{color:var(--ink2);font-weight:700}
     });
   };
   var norm = function(s){ return String(s).toLowerCase().replace(/\s+/g,''); };
-  var stats = {furn:0, cells:0, items:0};
-  var CARD = {};   /* fid -> {room, furn, order} */
+  var stats = {furn:0, cells:0, items:0, photos:0};
+  var CARD = {};   /* fid -> {room, f} */
 
   /* ============================================================
-     렌더 · 핀 / 사진
+     렌더 · 사진 + 번호 핀
      ============================================================ */
-  function pinsHTML(markers){
-    return markers.map(function(m){
-      var cls = 'pin' + (m.t === IN ? ' in' : (m.t === OUT ? ' out' : ''));
-      var attrs = ' style="--x:' + m.x + '%;--y:' + m.y + '%"';
-      var label = esc(m.name || '');
-      var txt = (m.t === OUT && !m.n) ? '↗' : esc(String(m.n || ''));
-      if (m.fid) attrs += ' data-fid="' + m.fid + '"';
-      if (m.z || m.z === 0) attrs += ' data-z="' + m.z + '" data-zone-of="' + (m.zoneOf || '') + '"';
-      if (m.goto) attrs += ' data-goto="' + m.goto + '"';
-      if (m.room) attrs += ' data-room-go="' + m.room + '"';
-      return '<button class="' + cls + '" type="button"' + attrs +
-        ' aria-label="' + label + '" title="' + label + '">' + txt + '</button>';
+  function photoHTML(ph, f, color){
+    var pins = (ph.pins||[]).map(function(p){
+      var n = p.z + 1;
+      return '<button class="pin" type="button" data-fid="'+f.id+'" data-z="'+p.z+'"'+(n>9?' data-2d="1"':'')+
+        ' style="--x:'+p.x+'%;--y:'+p.y+'%;--c:'+color+'" aria-label="'+esc(f.name)+' '+n+'번 칸" title="'+esc(f.name)+' '+n+'번 칸">'+n+'</button>';
     }).join('');
-  }
-
-  function photoHTML(ph){
-    return '<div class="ph-wrap">' +
-      (ph.label ? '<p class="ph-label">' + esc(ph.label) + '</p>' : '') +
-      '<div class="photo">' +
-        '<img src="' + esc(ph.src) + '" alt="' + esc(ph.alt || '') + '" loading="lazy" decoding="async">' +
-        pinsHTML(ph.markers || []) +
-      '</div>' +
+    return '<div class="ph-wrap">'+
+      (ph.label ? '<p class="ph-label" style="--c:'+color+'"><span class="dot"></span>'+esc(ph.label)+'</p>' : '')+
+      '<div class="photo">'+
+        '<img src="'+esc(ph.src)+'" alt="'+esc(ph.alt||'')+'" loading="lazy" decoding="async">'+
+        pins+
+      '</div>'+
       '</div>';
   }
 
   function itemHTML(it){
     var cls = 'it' + (it.mv ? ' mv' : '') + (it.sug ? ' sug' : '');
     var title = it.mv ? '이번에 옮기는 물건' : (it.sug ? '제안 배치' : '');
-    return '<span class="' + cls + '"' + (title ? ' title="' + title + '"' : '') + '>' + esc(it.n) + '</span>';
+    return '<span class="'+cls+'"'+(title ? ' title="'+title+'"' : '')+'>'+esc(it.n)+'</span>';
   }
 
   function figHTML(f){
@@ -1271,38 +1399,30 @@ footer b{color:var(--ink2);font-weight:700}
   function furnHTML(f, room){
     var s = STATUS[f.status] || STATUS.keep;
     var badge = f.badge || s.t;
-    var pinned = (room.photos||[]).some(function(ph){
-      return (ph.markers||[]).some(function(m){ return m.fid === f.id; });
-    }) || (f.photos||[]).some(function(ph){ return (ph.markers||[]).length > 0; });
-    var noPhotoLabel = (f.status === 'move') ? '사진엔 아직 없음' : '사진 핀 없음';
-    var h = '<section class="furn" id="' + f.id + '" style="--c:' + room.color + '">' +
-      '<div class="f-head"><span class="fnum" aria-hidden="true">' + f.n + '</span>' +
+    var hasPhoto = !!(f.photos && f.photos.length);
+    var h = '<section class="furn' + (hasPhoto ? ' has-photo' : '') + '" id="' + f.id + '" style="--c:' + room.color + '">';
+    h += '<div class="f-head"><span class="fnum" aria-hidden="true">' + f.n + '</span>' +
       '<h3>' + esc(f.name) + '</h3>' +
-      '<div class="f-meta">' +
-      (f.size && f.size !== '—' ? '<span class="size">' + esc(f.size) + '</span>' : '') +
-      '<span class="badge ' + s.c + '">' + esc(badge) + '</span>' +
-      (!pinned && room.photos && room.photos.length ? '<span class="badge nophoto" title="이 방 사진에서 위치를 확인하지 못한 가구예요">' + noPhotoLabel + '</span>' : '') +
-      '</div></div>';
+      '<div class="f-meta"><span class="badge ' + s.c + '">' + esc(badge) + '</span></div></div>';
+    if (hasPhoto){
+      stats.photos += f.photos.length;
+      f.photos.forEach(function(ph){ h += photoHTML(ph, f, room.color); });
+      h += '<p class="ph-hint">사진 위 <b>번호</b>를 누르면 아래 그 칸으로 이동해요.</p>';
+    }
     if (f.note) h += '<p class="f-note">' + esc(f.note) + '</p>';
     h += figHTML(f);
     if (f.zones && f.zones.length){
       h += '<div class="cells ' + (f.layout === 'grid' ? 'grid' : 'stack') + '">';
       f.zones.forEach(function(z, i){
         var inner = z.items.map(itemHTML).join('');
-        h += '<div class="cell" id="' + f.id + '-z' + i + '"><div class="cl"><span class="zn">' + (i + 1) + '</span>' + esc(z.label) + '</div>' +
+        var n = i + 1;
+        h += '<div class="cell" id="' + f.id + '-z' + i + '" data-fid="' + f.id + '" data-z="' + i + '">' +
+             '<div class="cl"><span class="zn"'+(n>9?' data-2d="1"':'')+'>' + n + '</span>' + esc(z.label) + '</div>' +
              '<div class="items">' + (inner || '<span class="none">—</span>') + '</div>' +
              (z.hint ? '<div class="hint">' + esc(z.hint) + '</div>' : '') +
              '</div>';
       });
       h += '</div>';
-    }
-    if (f.photos && f.photos.length){
-      f.photos.forEach(function(ph){
-        (ph.markers||[]).forEach(function(m){
-          if (m.z || m.z === 0){ m.zoneOf = f.id; m.fid = null; }
-        });
-        h += photoHTML(ph);
-      });
     }
     return h + '</section>';
   }
@@ -1317,20 +1437,11 @@ footer b{color:var(--ink2);font-weight:700}
       r.notes.forEach(function(n){ h += '<li><i>' + esc(n.k) + '</i>' + esc(n.t) + '</li>'; });
       h += '</ul>';
     }
-    (r.photos||[]).forEach(function(ph){
-      h += photoHTML(ph);
-      h += '<p class="ph-legend"><i style="background:' + r.color + '"></i>지금 있는 가구 · ' +
-           '<i style="background:#fff;border:1.5px dashed ' + r.color + '"></i>이번에 들어오는 자리 · ' +
-           '<i style="background:#8A817A;color:#fff">↗</i>다른 방으로 나가는 것</p>';
-    });
     h += '<div class="furns">';
     r.furnitures.forEach(function(f){
       (f.zones || []).forEach(function(z){
         stats.cells++;
         stats.items += z.items.length;
-      });
-      (f.photos||[]).forEach(function(ph){
-        (ph.markers||[]).forEach(function(m){ if (m.z || m.z === 0) m.fid = null; });
       });
       h += furnHTML(f, r);
     });
@@ -1350,27 +1461,29 @@ footer b{color:var(--ink2);font-weight:700}
     });
     host.innerHTML = h;
 
-    /* 도면 카드 */
-    var pins = PLAN.pins.map(function(p){
-      return '<button class="pin big" type="button" style="--x:' + p.x + '%;--y:' + p.y + '%" ' +
-        'data-room-go="' + p.room + '"' + (p.goto ? ' data-goto="' + p.goto + '"' : '') +
-        ' aria-label="' + esc(p.name) + '" title="' + esc(p.name) + '">' + p.n + '</button>';
+    /* 도면 */
+    var plist = [
+      {room:'r1', n:1, name:'방 1', sub:'드레스룸'},
+      {room:'r2', n:2, name:'방 2', sub:'팬트리 · 운동'},
+      {room:'r3', n:3, name:'방 3', sub:'안방'},
+      {room:'r4', n:4, name:'거실', sub:'소파 · TV'},
+      {room:'r5', n:5, name:'주방', sub:'식탁 · 냉장고'},
+      {room:'r6', n:6, name:'현관', sub:'신발장 · 택배'},
+      {room:'r7', n:7, name:'세탁베란다', sub:'세탁기 · 건조기', goto:'f-r1-2'}
+    ];
+    var pl = plist.map(function(p){
+      var col = (ROOMS.filter(function(r){return r.id===p.room;})[0]||{}).color || '#5F7A61';
+      return '<button class="pl" type="button" data-room-go="'+p.room+'"'+(p.goto?' data-goto="'+p.goto+'"':'')+' style="--c:'+col+'">'+
+        '<span class="pl-n">'+p.n+'</span>'+
+        '<span>'+esc(p.name)+(p.sub?'<small>'+esc(p.sub)+'</small>':'')+'</span></button>';
     }).join('');
-    var plist = PLAN.pins.map(function(p){
-      var nm = p.name.split(' · ');
-      return '<button class="pl" type="button" data-room-go="' + p.room + '"' + (p.goto ? ' data-goto="' + p.goto + '"' : '') + '>' +
-        '<span class="pl-n">' + p.n + '</span>' +
-        '<span>' + esc(nm[0]) + (nm[1] ? '<small>' + esc(nm.slice(1).join(' · ')) + '</small>' : '') + '</span></button>';
-    }).join('');
-    $('#planBody').innerHTML = '<div class="plan-flex"><div class="plan-img">' +
-      '<img src="' + PLAN.src + '" alt="' + esc(PLAN.alt) + '" loading="lazy" decoding="async">' + pins +
-      '</div><div class="plan-list">' + plist + '</div></div>';
+    $('#planBody').innerHTML = '<div class="plan-flex"><div class="plan-art">'+planSVG()+'</div><div class="plan-list">'+pl+'</div></div>';
 
     /* 방 필터 바 */
     var vb = '<button class="vb" role="tab" data-room="all" aria-selected="true">전체 보기</button>';
     ROOMS.forEach(function(r){
       vb += '<button class="vb" role="tab" data-room="' + r.id + '" aria-selected="false">' +
-        '<span class="vno">' + esc(r.no) + '</span>' + esc(r.tab.replace(/^[^·]+·\s*/, '')) + '</button>';
+        '<span class="vno">' + esc(r.no) + '</span>' + esc(r.sub) + '</button>';
     });
     $('#viewbar').innerHTML = vb;
 
@@ -1379,6 +1492,7 @@ footer b{color:var(--ink2);font-weight:700}
 
   function renderStats(){
     $('#stats').innerHTML =
+      '<li><b>' + stats.photos + '</b> 제품 사진</li>' +
       '<li><b>' + stats.furn + '</b> 가구 · 수납공간</li>' +
       '<li><b>' + stats.cells + '</b> 수납칸</li>' +
       '<li><b>' + stats.items + '</b> 물품</li>' +
@@ -1396,7 +1510,7 @@ footer b{color:var(--ink2);font-weight:700}
           z.items.forEach(function(it){
             INDEX.push({
               r:r, f:f, z:z, it:it,
-              hay:[norm(r.name), norm(r.no), norm(r.sub), norm(r.tags), norm(f.name), norm(f.size || ''),
+              hay:[norm(r.name), norm(r.no), norm(r.sub), norm(r.tags), norm(f.name),
                    norm(z.label), norm(it.n)].join(' ')
             });
           });
@@ -1469,7 +1583,7 @@ footer b{color:var(--ink2);font-weight:700}
 
     var h = '';
     list.forEach(function(e){
-      h += '<button class="result" data-fid="' + e.f.id + '" data-rid="' + e.r.id + '" style="--c:' + e.r.color + '">' +
+      h += '<button class="result" data-fid="' + e.f.id + '" data-rid="' + e.r.id + '" data-z="' + e.f.zones.indexOf(e.z) + '" style="--c:' + e.r.color + '">' +
         '<span class="r-room">' + esc(e.r.name) + '</span>' +
         '<span class="r-body"><span class="r-item">' + hl(e.it.n, tokens) + '</span>' +
         '<span class="r-path">' + esc(e.f.name) + '<span class="sep">›</span>' + hl(e.z.label, tokens) + '</span></span>' +
@@ -1521,7 +1635,23 @@ footer b{color:var(--ink2);font-weight:700}
     setTimeout(function(){ el.classList.remove('flash'); }, 1800);
   }
 
-  function goToCard(fid, rid){
+  function markCell(fid, z){
+    var cell = document.getElementById(fid + '-z' + z);
+    if (!cell) return;
+    $$('.cell.hl').forEach(function(c){ if (c !== cell) c.classList.remove('hl'); });
+    cell.classList.add('hl');
+    setTimeout(function(){ cell.classList.remove('hl'); }, 2600);
+    /* 같은 번호 핀 표시 */
+    $$('.pin').forEach(function(p){
+      var same = p.getAttribute('data-fid') === fid && p.getAttribute('data-z') === String(z);
+      p.classList.toggle('hl', same);
+    });
+    setTimeout(function(){
+      $$('.pin').forEach(function(p){ p.classList.remove('hl'); });
+    }, 2600);
+  }
+
+  function goToCard(fid, rid, z){
     var info = CARD[fid];
     var room = rid || (info ? info.room.id : null);
     if (room) setRoom(room, {noScroll:true});
@@ -1530,6 +1660,7 @@ footer b{color:var(--ink2);font-weight:700}
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){
         flashEl(document.getElementById(fid));
+        if (z !== null && z !== undefined && z !== '' ) markCell(fid, z);
       });
     });
   }
@@ -1537,7 +1668,7 @@ footer b{color:var(--ink2);font-weight:700}
   /* ============================================================
      탭
      ============================================================ */
-  var TABS = ['map','delivery','check','spec'];
+  var TABS = ['map','delivery','check'];
   function setTab(name, noScroll){
     state.tab = name;
     document.body.setAttribute('data-tab', name);
@@ -1564,7 +1695,7 @@ footer b{color:var(--ink2);font-weight:700}
   }
 
   /* ============================================================
-     택배 · 규격표
+     택배
      ============================================================ */
   function renderDelivery(){
     $('#addresses').innerHTML = ADDRESSES.map(function(a, i){
@@ -1587,17 +1718,6 @@ footer b{color:var(--ink2);font-weight:700}
     var text = lines.join('\n');
     $('#shareText').textContent = text;
     window.__shareText = text;
-  }
-
-  function renderSpec(){
-    $('#specBody').innerHTML = SPEC.map(function(row){
-      var s = STATUS[row[4]] || STATUS.keep;
-      return '<tr><td class="g" data-l="가구">' + esc(row[0]) + '</td>' +
-        '<td class="d" data-l="규격">' + esc(row[1]) + '</td>' +
-        '<td data-l="현재">' + esc(row[2]) + '</td>' +
-        '<td data-l="권장">' + esc(row[3]) + '</td>' +
-        '<td data-l="상태"><span class="st ' + s.c + '">' + esc(s.t) + '</span></td></tr>';
-    }).join('');
   }
 
   function copyText(t){
@@ -1694,38 +1814,29 @@ footer b{color:var(--ink2);font-weight:700}
         return;
       }
       var pin = e.target.closest('.pin');
-      var fcell = e.target.closest('.fcell');
-      if (fcell){
-        flashEl(document.getElementById(fcell.getAttribute('data-zone')));
-        return;
-      }
       if (pin){
         var fid = pin.getAttribute('data-fid');
         var z = pin.getAttribute('data-z');
-        var zoneOf = pin.getAttribute('data-zone-of');
-        var go = pin.getAttribute('data-goto');
-        var rgo = pin.getAttribute('data-room-go');
-        if (fid){
-          goToCard(fid);
-          return;
-        }
-        if (go){
-          var dest = CARD[go];
-          goToCard(go, dest ? dest.room.id : null);
-          return;
-        }
-        if (z !== null && zoneOf){
-          flashEl(document.getElementById(zoneOf + '-z' + z));
-          return;
-        }
-        if (rgo){
-          setRoom(rgo, {smooth:true});
-        }
+        var cell = document.getElementById(fid + '-z' + z);
+        if (cell){ flashEl(cell); markCell(fid, z); }
+        return;
+      }
+      var cellEl = e.target.closest('.cell[data-fid]');
+      if (cellEl){
+        markCell(cellEl.getAttribute('data-fid'), cellEl.getAttribute('data-z'));
+        return;
+      }
+      var fcell = e.target.closest('.fcell');
+      if (fcell){
+        var zoneId = fcell.getAttribute('data-zone');
+        flashEl(document.getElementById(zoneId));
+        var m = /^(f-.+)-z(\d+)$/.exec(zoneId);
+        if (m) markCell(m[1], m[2]);
         return;
       }
       var res = e.target.closest('.result[data-fid]');
       if (res){
-        goToCard(res.getAttribute('data-fid'), res.getAttribute('data-rid'));
+        goToCard(res.getAttribute('data-fid'), res.getAttribute('data-rid'), res.getAttribute('data-z'));
         return;
       }
       var find = e.target.closest('.find[data-q]');
@@ -1743,14 +1854,22 @@ footer b{color:var(--ink2);font-weight:700}
         else setRoom(pl.getAttribute('data-room-go'), {smooth:true});
         return;
       }
+      var rm = e.target.closest('.rm');
+      if (rm){
+        var gg = rm.getAttribute('data-goto');
+        if (gg){ var dd = CARD[gg]; goToCard(gg, dd ? dd.room.id : null); }
+        else setRoom(rm.getAttribute('data-room-go'), {smooth:true});
+        return;
+      }
       var vb = e.target.closest('.vb[data-room]');
       if (vb){ setRoom(vb.getAttribute('data-room'), {smooth:true}); return; }
     });
 
     document.addEventListener('keydown', function(e){
-      if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('fcell')){
+      var t = e.target;
+      if ((e.key === 'Enter' || e.key === ' ') && t.classList && (t.classList.contains('fcell') || t.classList.contains('rm'))){
         e.preventDefault();
-        flashEl(document.getElementById(e.target.getAttribute('data-zone')));
+        t.dispatchEvent(new MouseEvent('click', {bubbles:true}));
         return;
       }
       if (e.key === 'Escape' && document.activeElement === $('#q')){
@@ -1758,6 +1877,38 @@ footer b{color:var(--ink2);font-weight:700}
       }
       if (e.key === '/' && document.activeElement !== $('#q') && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)){
         e.preventDefault(); $('#q').focus();
+      }
+    });
+
+    /* 호버 시 연결 */
+    document.addEventListener('pointerover', function(e){
+      var pin = e.target.closest('.pin');
+      if (pin){
+        var c = document.getElementById(pin.getAttribute('data-fid') + '-z' + pin.getAttribute('data-z'));
+        if (c) c.classList.add('hl');
+        return;
+      }
+      var cell = e.target.closest('.cell[data-fid]');
+      if (cell){
+        $$('.pin').forEach(function(p){
+          if (p.getAttribute('data-fid') === cell.getAttribute('data-fid') &&
+              p.getAttribute('data-z') === cell.getAttribute('data-z')) p.classList.add('hl');
+        });
+      }
+    });
+    document.addEventListener('pointerout', function(e){
+      var pin = e.target.closest('.pin');
+      if (pin){
+        var c = document.getElementById(pin.getAttribute('data-fid') + '-z' + pin.getAttribute('data-z'));
+        if (c && !c.classList.contains('flash')) c.classList.remove('hl');
+        return;
+      }
+      var cell = e.target.closest('.cell[data-fid]');
+      if (cell){
+        $$('.pin').forEach(function(p){
+          if (p.getAttribute('data-fid') === cell.getAttribute('data-fid') &&
+              p.getAttribute('data-z') === cell.getAttribute('data-z')) p.classList.remove('hl');
+        });
       }
     });
 
@@ -1803,7 +1954,6 @@ footer b{color:var(--ink2);font-weight:700}
   renderMap();
   buildIndex();
   renderDelivery();
-  renderSpec();
   renderChecks();
   bind();
   setTab('map', true);
