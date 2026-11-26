@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>우리집 수납 지도 · 유자네 집</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="description" content="원본 3D 도면에서 방을 확대해 가구를 고르고, 칸마다 무엇을 넣었는지 확인하는 우리집 수납 지도. 어느 줄이든 눌러 바로 고치고, 바닥·이동 여부까지 저장할 수 있어요.">
+<meta name="description" content="원본 3D 도면에서 방을 확대해 가구를 고르고, 칸마다 무엇을 넣었는지 확인하는 우리집 수납 지도. 겨울·여름 배치를 따로 저장하고, 가구와 칸을 직접 늘리고, 도면 위 번호 위치까지 옮길 수 있어요.">
 <meta name="theme-color" content="#FAF8F5">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -14,6 +14,14 @@
 <meta name="format-detection" content="telephone=no">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
+
+
+
+
+
+
+
+
 :root{
   color-scheme:light;
   --bg:#FAF8F5; --card:#FFFFFF; --ink:#2E2721; --ink2:#7A7068; --ink3:#A79C92;
@@ -416,18 +424,108 @@ footer b{color:var(--ink2);font-weight:700}
 .flash{animation:flash 1.7s ease}
 @keyframes flash{0%{box-shadow:0 0 0 0 rgba(200,109,81,0)}16%{box-shadow:0 0 0 4px rgba(200,109,81,.5)}100%{box-shadow:0 0 0 0 rgba(200,109,81,0)}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+
+
+
+
+
+
+
+/* ===== v6 추가 ===== */
+input,textarea,select{font-size:16px!important}
+#q{font-size:16px!important;font-weight:600}
+.searchbar{height:46px}
+.ef input{height:42px;padding:0 11px}
+.esub select{height:40px;padding:0 6px}
+.esub input[type=text]{height:40px;padding:0 9px}
+.ckadd input{height:44px}
+.ck-edit input[type=text]{height:42px}
+@media(max-width:520px){.esub .sels{grid-template-columns:1fr 1fr}}
+
+/* 계절 전환 줄 */
+.seasonrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:7px;max-width:900px}
+.seasons{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:11px;padding:2px;gap:2px}
+.season{font-size:12.5px;font-weight:750;color:var(--ink2);border-radius:8px;padding:6px 10px;line-height:1.15;white-space:nowrap;letter-spacing:-.02em}
+.season[aria-selected="true"]{background:var(--ink);color:#fff;box-shadow:0 2px 6px -3px rgba(46,39,33,.6)}
+.season small{font-size:10px;font-weight:700;opacity:.75;margin-left:3px}
+.savechip{margin-left:auto;flex:0 0 auto;font-size:11px;font-weight:750;color:var(--sage-d);background:var(--sage-s);
+  border:1px solid var(--sage-b);border-radius:999px;padding:5px 9px;line-height:1.1;white-space:nowrap;
+  transition:background .15s,color .15s,border-color .15s}
+.savechip.saving{color:#8A6A20;background:#FBF2DC;border-color:#EEDFB4}
+.savechip.err{color:#A9502F;background:var(--terra-s);border-color:var(--terra-b)}
+
+/* 도구 줄 */
+.toolrow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;max-width:860px;margin:0 auto 10px}
+.toolrow p{flex:1 1 150px;min-width:0;font-size:11.5px;color:var(--ink2);line-height:1.45}
+.toolrow p b{color:var(--ink);font-weight:750}
+.mini-btn{flex:0 0 auto;font-size:11.5px;font-weight:750;color:var(--ink2);background:#fff;border:1px solid var(--line);
+  border-radius:9px;padding:6px 9px;line-height:1.2;white-space:nowrap}
+.mini-btn:hover{border-color:var(--terra-b);color:var(--terra-d)}
+.mini-btn.danger:hover{border-color:var(--terra-b);color:var(--terra-d);background:var(--terra-s)}
+
+/* 방 · 가구 도면 위 핀 옮기기 */
+.plbar{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:0 0 7px}
+.plbar .hint{flex:1 1 120px;min-width:0;font-size:10.5px;color:var(--ink3);line-height:1.4}
+.pinmode-btn{flex:0 0 auto;font-size:11.5px;font-weight:750;color:var(--ink2);background:#fff;border:1px solid var(--line);
+  border-radius:9px;padding:6px 9px;line-height:1.2;white-space:nowrap}
+.pinmode-btn[aria-pressed="true"]{background:var(--terra);border-color:var(--terra);color:#fff}
+body.pinmode .pin{cursor:grab;touch-action:none;box-shadow:0 0 0 3px rgba(200,109,81,.35),0 2px 7px rgba(0,0,0,.4)}
+body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
+.pin.dragging{cursor:grabbing!important;transform:translate(-50%,-50%) scale(1.25)!important;box-shadow:0 0 0 5px rgba(200,109,81,.4),0 6px 16px rgba(0,0,0,.5)!important}
+.planbox{position:relative;overflow:hidden;border-radius:12px;background:#F7F5F1;border:1px solid var(--line2);line-height:0;touch-action:pan-y}
+.planbox img{display:block;width:100%;height:auto}
+.planbox.cropped img{position:absolute;max-width:none;height:auto}
+
+/* 칸 삭제 · 추가 */
+.rowdel{flex:0 0 auto;font-size:12px;color:var(--ink3);padding:3px 5px;line-height:1;border-radius:6px;align-self:flex-start;margin-top:2px}
+.rowdel:hover{color:var(--terra-d);background:var(--terra-s)}
+.addrow{display:flex;justify-content:center;margin-top:9px}
+.addcell{font-size:12px;font-weight:800;color:var(--sage-d);background:var(--sage-s);border:1px dashed var(--sage-b);
+  border-radius:9px;padding:8px 14px;line-height:1.2}
+.addcell:hover{background:#DFE9DA}
+.addbtn{font-size:12.5px;font-weight:800;color:#fff;background:var(--sage);border-radius:10px;padding:9px 14px;line-height:1.2}
+.addbtn:hover{background:var(--sage-d)}
+.addbtn.ghost{color:var(--sage-d);background:var(--sage-s);border:1px dashed var(--sage-b)}
+.addbox{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:9px}
+.addbox .arow{display:flex;gap:6px;flex-wrap:wrap}
+.addbox label{display:block;font-size:10.5px;font-weight:750;color:var(--ink3);margin-bottom:3px}
+.addbox .f1{flex:1 1 180px;min-width:0}
+.addbox .f2{flex:0 0 92px}
+.addbox input{width:100%;height:42px;border:1px solid var(--line);border-radius:9px;padding:0 10px;background:#fff;outline:none;font-weight:650}
+.addbox input:focus{border-color:var(--terra);box-shadow:0 0 0 3px var(--terra-s)}
+.addbox .abtns{display:flex;gap:6px;margin-top:8px}
+.addbox .abtns button{font-size:12.5px;font-weight:800;border-radius:9px;padding:8px 14px;line-height:1.2}
+.addbox .ok{background:var(--terra);color:#fff}
+.addbox .no{background:#fff;color:var(--ink2);border:1px solid var(--line)}
+
+/* 가구 이름 수정 */
+.fvtitle input.fname{font-size:17px;font-weight:800;letter-spacing:-.03em;border:1px solid var(--terra);
+  border-radius:9px;padding:4px 8px;background:#fff;outline:none;width:min(280px,60vw);height:40px}
+.fvtools{display:flex;gap:5px;flex-wrap:wrap;margin-left:auto}
+.photo.small{max-width:245px}
+.fbody.has-media .fmedia .photo.small{max-width:245px}
+@media(max-width:520px){.photo.small,.fbody.has-media .fmedia .photo.small{max-width:215px}}
 </style>
 </head>
 <body data-tab="map" data-view="overview">
 <div class="wrap">
   <header class="hero">
-    <p class="eyebrow">유자네 집 · Home Storage Map v5</p>
+    <p class="eyebrow">유자네 집 · Home Storage Map v6</p>
     <h1>우리집 수납 지도</h1>
-    <p class="lede">방을 누르면 <b>그 방만 확대한 도면</b>이 열리고, 가구를 누르면 <b>칸 구성도</b>로 들어갑니다. 어느 줄이든 <b>바로 눌러</b> 물건을 고치고, 바닥·이동 여부까지 저장할 수 있어요.</p>
+    <p class="lede">방을 누르면 <b>그 방만 확대한 도면</b>이 열리고, 가구를 누르면 <b>칸 구성도</b>로 들어갑니다. 어느 줄이든 <b>바로 눌러</b> 고치면 자동으로 저장되고, <b>겨울·여름 배치</b>를 따로 저장해 바꿔 볼 수 있어요.</p>
     <ul class="stats" id="stats"></ul>
   </header>
 
   <div class="sticky" id="sticky">
+    <div class="seasonrow">
+      <div class="seasons" role="tablist" aria-label="계절 배치">
+        <button class="season" type="button" role="tab" data-season="winter" aria-selected="true">❄️ 겨울<small>현재</small></button>
+        <button class="season" type="button" role="tab" data-season="summer" aria-selected="false">☀️ 여름</button>
+      </div>
+      <button class="mini-btn" type="button" data-act="copy-season" id="copySeason">지금 배치를 여름으로 복사</button>
+      <span class="savechip" id="saveChip" role="status">저장됨 ✓</span>
+    </div>
     <div class="searchbar">
       <span class="s-ico" aria-hidden="true">🔍</span>
       <input id="q" type="search" inputmode="search" autocomplete="off" spellcheck="false"
@@ -453,9 +551,12 @@ footer b{color:var(--ink2);font-weight:700}
         <div class="results" id="results"></div>
       </div>
       <div id="mapArea">
-        <div class="toolbar">
-          <p><b>줄을 누르면 바로 수정</b> · 자동 저장됩니다 (이 기기)</p>
-          <button class="ghost-btn" type="button" data-act="reset-all">전체 초기화</button>
+        <div class="toolrow">
+          <p><b>줄을 누르면 바로 수정</b> · 자동 저장 (이 기기)</p>
+          <button class="mini-btn" type="button" data-act="export">JSON 내보내기</button>
+          <button class="mini-btn" type="button" data-act="import">JSON 가져오기</button>
+          <button class="mini-btn danger" type="button" data-act="reset-all">전체 초기화</button>
+          <input id="importFile" type="file" accept="application/json,.json" hidden aria-hidden="true">
         </div>
         <div id="viewOverview"></div>
         <div id="viewRoom" hidden></div>
@@ -491,8 +592,8 @@ footer b{color:var(--ink2);font-weight:700}
   </main>
 
   <footer>
-    <b>유자네 집 · 우리집 수납 지도 v5</b><br>
-    2026년 11월 26일 정리 계획 기준 · 검색은 띄어쓰기 없이도 됩니다.
+    <b>유자네 집 · 우리집 수납 지도 v6</b><br>
+    2026년 11월 26일 기준 · 검색은 띄어쓰기 없이도 됩니다.
   </footer>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -502,117 +603,96 @@ footer b{color:var(--ink2);font-weight:700}
   "use strict";
 
   /* ============================================================
-     공간 · 가구 · 칸 데이터
-     zones = 칸마다 지금 들어 있는 물건 (라벨 없이 번호 + 물건만)
-     plan = 원본 도면 위 핀 위치 (도면 전체 기준 %)
+     상수
      ============================================================ */
+  var FW = 481, FH = 696;                     /* 전체 도면 크기(px) */
+  var FLOORPLAN = 'img/floorplan.jpg';
+  var DBKEY = 'homeMap.v6.db';
+  var OLDZKEY = 'homeMap.v5.zones', OLDCKKEY = 'homeMap.v5.checklist', OLDDBKEY = 'homeMap.v5.db';
+  var SEASONS = {winter:{emoji:'❄️', name:'겨울'}, summer:{emoji:'☀️', name:'여름'}};
+
   var P = function(z,x,y){ return [z,x,y]; };
 
-  var SPACES = [
+  /* ============================================================
+     기본 데이터 (두 계절 모두 여기서 시작)
+     zones = 칸마다 지금 들어 있는 물건
+     plan  = 그 방 확대 도면 안에서의 핀 위치 (%)
+     ============================================================ */
+  var BASE_SPACES = [
     {
       id:'s1', key:'1', name:'1 드레스룸', short:'드레스룸', color:'#5F7A61',
       sub:'붙박이장 · 바지걸이 행거 · 재고 수납장',
-      crop:{x:1,y:8,w:47,h:35}, pin:{x:27,y:25,label:'1'},
+      crop:{x:1,y:11,w:39,h:29}, pin:{x:20,y:25,label:'1'},
       advice:[
         ['순환','붙박이장은 넣을 수 있는 양이 정해져 있습니다. 계절마다 돌리는 것이 조건이고, 비시즌 옷은 아래층으로 내려보내는 순환이 필요합니다.'],
         ['덜어내기','5단 서랍장과 그 위 압축백 2개·이불은 안방으로 내리면 옷장 압박이 바로 줄어듭니다.'],
-        ['한 곳으로','방 3의 바지걸이 행거와 바로방가구 수납장이 이 방으로 들어옵니다. 옷은 방 1 한 곳에 모으는 것이 아침 동선에 유리합니다.'],
+        ['한 곳으로','옷은 방 1 한 곳에 모으는 것이 아침 동선에 유리합니다.'],
         ['재고 상한','바로방가구 수납장은 판매용 재고 전용 상한선입니다. 넘치면 새 수납장이 아니라 재고를 줄이는 신호로 보세요.']
       ],
       furnitures:[
         {
-          id:'f-closet', n:1, name:'붙박이장', art:'closet',
-          plan:{x:13,y:23},
+          id:'f-closet', name:'붙박이장', art:'closet', plan:{x:23,y:62},
           zones:[
-            ['가을 겉옷'],
-            ['여름 반팔'],
-            ['패딩'],
-            ['코트','원피스'],
-            ['두꺼운 니트'],
-            ['두꺼운 겨울 외투'],
-            ['니트','겨울 바지'],
-            ['한 번 입은 니트 (하루 말린 뒤)'],
-            [],
-            []
+            ['가을 겉옷'], ['여름 반팔'], ['패딩'], ['코트','원피스'], ['두꺼운 니트'],
+            ['두꺼운 겨울 외투'], ['니트','겨울 바지'], ['한 번 입은 니트 (하루 말린 뒤)'], [], []
           ]
         },
         {
-          id:'f-hanger', n:2, name:'바지걸이 행거',
-          plan:{x:33,y:20},
-          photos:[{src:'img/hanger-pants.jpg',alt:'흰색 바지걸이 행거 — 상단 봉, 하단 바지걸이, 우측 걸이판',
+          id:'f-hanger', name:'바지걸이 행거', plan:{x:85,y:45},
+          photos:[{src:'img/hanger-pants.jpg', alt:'흰색 바지걸이 행거 — 상단 봉, 하단 바지걸이, 우측 걸이판',
             pins:[P(0,52,16.3),P(1,59,66.5),P(2,74.5,38)]}],
-          zones:[ ['자주 입는 두꺼운 겉옷'], ['계절 바지'], ['가방'] ]
+          zones:[['자주 입는 두꺼운 겉옷'],['계절 바지'],['가방']]
         },
         {
-          id:'f-barobang', n:3, name:'바로방가구 수납장',
-          plan:{x:32,y:33},
-          photos:[{src:'img/barobang.jpg',alt:'바로방가구 수납장 — 위 2칸, 아래 4칸의 빈 선반',
+          id:'f-barobang', name:'바로방가구 수납장', plan:{x:85,y:76},
+          photos:[{src:'img/barobang.jpg', alt:'바로방가구 수납장 — 위 2칸, 아래 4칸의 빈 선반',
             pins:[P(0,48,17),P(1,48,32.5),P(2,48,46),P(3,48,56.5),P(4,48,68.5),P(5,48,82.5)]}],
-          zones:[
-            ['리셀북 판매용 옷 재고'],
-            ['리셀북 판매용 옷 재고'],
-            ['파란 리셀 재고박스'],
-            [],
-            [],
-            []
-          ]
+          zones:[['리셀북 판매용 옷 재고'],['리셀북 판매용 옷 재고'],['파란 리셀 재고박스'],[],[],[]]
         }
       ]
     },
     {
       id:'s0', key:'', name:'베란다', short:'베란다', color:'#7C8B6A',
-      sub:'세탁기 · 건조기 · 보일러',
-      crop:{x:1,y:0,w:47,h:12}, pin:{x:22,y:5,label:'베'},
+      sub:'건조기 · 세탁기 · 트롤리 · 빨래바구니',
+      crop:{x:1,y:0,w:41,h:13}, pin:{x:20,y:6,label:'베'},
       advice:[
-        ['자리 없음','보일러 앞 바닥은 캐리어 3개 + 캠핑가방 + 빈 양동이·박스로 이미 가득합니다. 여기에 더 넣을 자리는 없습니다.'],
-        ['부피 큰 것','부피 큰 캠핑용품은 베란다가 아니라 방 3 침대 벙커로 보냅니다. 가벼운 소품만 거실 상단장과 주방 맨 아래 1칸으로 나눕니다.'],
-        ['선반 불가','보일러가 있는 자리에는 선반을 달 수 없습니다.'],
-        ['문 앞 비우기','세탁기 문이 완전히 열려야 하므로 문 앞자리는 비워두고, 접이식 건조대는 쓸 때만 펼칩니다.']
+        ['두 칸 나란히','건조기와 세탁기를 같은 크기 두 칸으로 나란히 두고, 그 옆에 얇은 4단 트롤리를 붙입니다.'],
+        ['세제','세탁기 위에는 쓰는 세제만, 부피 큰 세제 통은 바닥에 둡니다.'],
+        ['빨래 분류','빨래바구니는 3단(빨래망·속옷·수건)으로 나누고, 벗어 둔 외투류는 따로 한 단에 둡니다.'],
+        ['캐리어','캐리어 3개는 이 자리에 두고, 같이 넣을 물건은 칸을 늘려 적습니다.']
       ],
       furnitures:[
-        {
-          id:'f-laundry', n:1, name:'세탁기 · 건조기 · 세제 트롤리',
-          plan:{x:12,y:6.5},
-          fig:{h:100, cells:[[0,0,62,42,'box'],[0,42,62,58,'box'],[62,0,38,70,'shelf'],[62,70,38,30,'shelf']]},
-          zones:[
-            ['건조기'],
-            ['세탁기'],
-            ['세제','섬유유연제','빨래 바구니'],
-            ['세제 여분','청소포','빨래집게']
-          ]
-        },
-        {
-          id:'f-rack', n:2, name:'접이식 건조대',
-          plan:{x:28,y:7},
-          zones:[ ['접이식 건조대'] ]
-        },
-        {
-          id:'f-boiler', n:3, name:'보일러 앞 · 캐리어 · 캠핑가방',
-          plan:{x:39,y:5.5},
-          zones:[ ['보일러'], ['캐리어 3개','캠핑가방','빈 양동이 · 박스'] ]
-        }
+        {id:'f-dryer', name:'건조기', plan:{x:22,y:45},
+          fig:{h:100, cells:[[0,0,100,100,'door']]},
+          zones:[['건조기']]},
+        {id:'f-washer', name:'세탁기', plan:{x:33,y:53},
+          fig:{h:100, cells:[[0,0,100,100,'door']]},
+          zones:[{items:['세탁기'], floor:'세제(윗면 보관) · 부피 큰 세제(바닥 보관)'}]},
+        {id:'f-trolley', name:'4단 얇은 트롤리', plan:{x:52,y:68},
+          fig:{h:118, cells:[[0,0,100,25,'drawer'],[0,25,100,25,'drawer'],[0,50,100,25,'drawer'],[0,75,100,25,'drawer']]},
+          zones:[[],[],[],[]]},
+        {id:'f-lbasket', name:'빨래바구니', plan:{x:26,y:73},
+          fig:{h:120, cells:[[0,0,100,25,'open'],[0,25,100,25,'open'],[0,50,100,25,'open'],[0,75,100,25,'open']]},
+          zones:[['빨래망'],['속옷'],['수건'],['벗어 둔 외투류 (교체 고민 중)']]},
+        {id:'f-carry', name:'캐리어 자리', plan:{x:70,y:69},
+          fig:{h:74, cells:[[0,0,100,100,'box']]},
+          zones:[['캐리어 3개']]}
       ]
     },
     {
       id:'s2', key:'2', name:'2 팬트리·운동', short:'팬트리·운동', color:'#C86D51',
-      sub:'3도어 수납장 · 운동 존',
-      crop:{x:42,y:0,w:44,h:29}, pin:{x:64,y:13,label:'2'},
+      sub:'3도어 수납장',
+      crop:{x:41,y:1,w:37,h:28}, pin:{x:60,y:16,label:'2'},
       advice:[
         ['재고 상한','재고는 3도어 장 안에서만. 넘치면 새 수납장을 사는 게 아니라 재고를 줄이는 신호로 보세요.'],
         ['모으기','주방·화장대에 흩어진 안 뜯은 샴푸·바디·화장품 재고를 이 방 한 곳으로 모읍니다.'],
-        ['운동 존','거실 TV 밑 요가매트와 운동용품이 이쪽으로 오면 거실이 비고 운동은 한 자리에서 됩니다.'],
-        ['아기방 대비','아기가 생기면 이 방이 아기방이 되므로, 문이 닫히는 수납으로 유지하는 것이 좋습니다.']
+        ['문 닫는 수납','아기가 생기면 이 방이 아기방이 되므로, 문이 닫히는 수납으로 유지하는 것이 좋습니다.'],
+        ['가구는 하나','지금은 높은 선반장 하나만 둡니다. 자리를 비워야 아기방으로 돌리기 쉽습니다.']
       ],
       furnitures:[
         {
-          id:'f-window', n:1, name:'창가 집기',
-          plan:{x:78,y:10},
-          zones:[ ['작은 책장','장스탠드'], ['선풍기'] ]
-        },
-        {
-          id:'f-cab3', n:2, name:'높은선반수납장 (3도어)',
-          plan:{x:55,y:6},
-          photos:[{src:'img/cabinet-3door.jpg',alt:'높은선반수납장 3도어 내부 — 위아래 2칸, 왼쪽 넓은 칸과 오른쪽 좁은 칸',
+          id:'f-cab3', name:'높은선반수납장 (3도어)', plan:{x:27,y:27},
+          photos:[{src:'img/cabinet-3door.jpg', alt:'높은선반수납장 3도어 내부 — 위아래 2칸, 왼쪽 넓은 칸과 오른쪽 좁은 칸',
             pins:[P(0,36,21),P(1,80.5,21),P(2,36,61),P(3,80.5,61)]}],
           zones:[
             ['바디워시 재고','샴푸 재고','화장품 재고'],
@@ -620,140 +700,89 @@ footer b{color:var(--ink2);font-weight:700}
             ['일상 가방'],
             ['여행용 가방']
           ]
-        },
-        {
-          id:'f-workout', n:3, name:'운동 존', badge:'new',
-          plan:{x:63,y:20},
-          zones:[ ['운동용품','요가매트'] ]
         }
       ]
     },
     {
       id:'s3', key:'3', name:'3 안방', short:'안방', color:'#A9502F',
-      sub:'화장대 · 퀸 침대 · 5단 서랍장',
-      crop:{x:44,y:67,w:39,h:33}, pin:{x:62,y:79,label:'3'},
+      sub:'화장대 · 퀸 침대 · 5단 서랍장 · 스탠드 옷걸이',
+      planImg:{src:'img/room3-plan.jpg', w:686, h:563},
+      pin:{x:60,y:82,label:'3'},
       advice:[
-        ['동선','화장실 바로 맞은편이라 샤워 → 잠옷 → 화장대 동선이 가장 짧습니다. 안방으로 쓰기 좋은 자리입니다.'],
+        ['동선','화장실 바로 맞은편이라 샤워 → 잠옷 → 화장대 동선이 가장 짧습니다.'],
         ['쓰는 것만','화장대에는 지금 쓰는 것만. 안 뜯은 재고는 방 2 3도어 장으로 보냅니다.'],
-        ['벙커','침대 벙커 2단은 계절이 지나야 꺼내는 옷 리빙박스와 부피 큰 캠핑용품 자리입니다. 서랍은 통로 쪽이라 재조립이 필요 없습니다.'],
-        ['행거 정리','작은 흰색 행거와 원목 스탠드 옷걸이는 처분을 검토하세요. 행거가 많으면 방이 좁아집니다.']
+        ['벙커 4칸','침대 아래는 2×2 네 칸입니다. 안쪽 두 칸은 계절 지난 옷·이불, 앞쪽 두 칸은 자주 꺼내는 침구로 나눕니다.'],
+        ['서랍 4개','측면은 큰 서랍 둘과 가운데 작은 서랍 둘입니다. 작은 서랍은 속옷·양말처럼 자주 쓰는 것에 쓰세요.'],
+        ['제습기','제습기는 이 방에 고정해 둡니다.']
       ],
       furnitures:[
         {
-          id:'f-vanity', n:1, name:'샤르망 화장대',
-          plan:{x:76,y:88},
+          id:'f-vanity', name:'샤르망 화장대', plan:{x:58,y:22},
           photos:[
-            {src:'img/vanity.jpg',alt:'샤르망 화장대 전체 — 좌측 세로장, 상판 아래 서랍 2개, 우측 3단 서랍, 끝 좁은 3단 서랍',
+            {src:'img/vanity.jpg', alt:'샤르망 화장대 전체 — 좌측 세로장, 상판 아래 서랍 2개, 우측 3단 서랍, 끝 좁은 3단 서랍',
              pins:[P(0,21,65),P(1,21,82),P(2,37,53),P(3,57,53),P(4,70,59),P(5,70,70),P(6,70,81),P(7,90.5,59),P(8,90.5,70),P(9,90.5,81)]},
-            {src:'img/vanity-side.jpg',alt:'샤르망 화장대 좌측 서랍 2개를 비운 모습',
+            {src:'img/vanity-side.jpg', alt:'샤르망 화장대 좌측 서랍 2개를 비운 모습',
              pins:[P(0,56,24),P(1,56,68)]}
           ],
           zones:[
-            ['현재 쓰는 헤어제품'],
-            ['소량 기초'],
-            ['기초 화장품'],
-            ['색조 화장품','샘플'],
-            ['부부 속옷'],
-            ['양말'],
-            ['부부 잠옷'],
-            ['마스크팩'],
-            ['배스밤','화장솜'],
-            []
+            ['현재 쓰는 헤어제품'], ['소량 기초'], ['기초 화장품'], ['색조 화장품','샘플'],
+            ['부부 속옷'], ['양말'], ['부부 잠옷'], ['마스크팩'], ['배스밤','화장솜'], []
           ]
         },
         {
-          id:'f-bed', n:2, name:'퀸 침대 (프레임 + 매트리스)', art:'bed',
-          plan:{x:63,y:79},
-          photos:[{src:'img/bed-queen.jpg',alt:'퀸 침대 — 열린 2단 벙커 수납공간과 하부 서랍',
-            pins:[P(0,36,66),P(1,63,57)]}],
+          id:'f-bed', name:'퀸 침대 (프레임 + 매트리스)', art:'bed', plan:{x:31,y:61},
+          photos:[{src:'img/bed-queen.jpg', alt:'퀸 침대 — 매트리스 아래 2×2 벙커 수납 네 칸과 측면 서랍 네 개',
+            pins:[P(0,35,60),P(1,48,55),P(2,38,73),P(3,52,67),P(4,57,85),P(5,71,67),P(6,70,74),P(7,82,59)]}],
           zones:[
             ['비시즌 옷 리빙박스 2개'],
-            ['자주 안 쓰는 부피 큰 캠핑용품','이불'],
+            ['부피 큰 캠핑용품','이불'],
             ['계절 이불커버'],
             ['여분 수건'],
-            [],
-            []
+            [], [], [], []
           ]
         },
         {
-          id:'f-chest5', n:3, name:'5단 서랍장',
-          plan:{x:75,y:73},
-          photos:[{src:'img/chest-5.jpg',alt:'5단 서랍장 — 위에서부터 1층부터 5층',
+          id:'f-chest5', name:'5단 서랍장', plan:{x:71,y:79},
+          photos:[{src:'img/chest-5.jpg', alt:'5단 서랍장 — 위에서부터 1층부터 5층',
             pins:[P(0,53.5,24),P(1,53.5,38.5),P(2,53.5,53.5),P(3,53.5,68.5),P(4,53.5,83)]}],
-          zones:[
-            ['아내 운동복','히트텍'],
-            ['남편 운동복'],
-            ['니트'],
-            ['니트'],
-            ['여름잠옷']
-          ]
+          zones:[['아내 운동복','히트텍'],['남편 운동복'],['니트'],['니트'],['여름잠옷']]
         },
-        {
-          id:'f-stand3', n:4, name:'원목 스탠드 옷걸이 (1)', badge:'out',
-          plan:{x:50,y:90},
-          zones:[ ['잠옷'] ]
-        },
-        {
-          id:'f-whitehanger', n:5, name:'작은 흰색 행거', badge:'out',
-          plan:{x:68,y:96},
-          zones:[ ['한 번 입은 옷'] ]
-        },
-        {
-          id:'f-dehum', n:6, name:'제습기',
-          plan:{x:55,y:96},
-          zones:[ ['제습기'] ]
-        },
-        {
-          id:'f-robot', n:7, name:'로봇청소기 스테이션',
-          plan:{x:50,y:80},
-          zones:[ ['로봇청소기 스테이션'] ]
-        }
+        {id:'f-stand3', name:'원목 스탠드 옷걸이', plan:{x:20,y:30}, zones:[['잠옷']]}
       ]
     },
     {
       id:'s4', key:'', name:'거실', short:'거실', color:'#7C8B6A',
-      sub:'소파 · TV · 6단 서랍장',
-      crop:{x:45,y:24,w:55,h:46}, pin:{x:66,y:50,label:'거'},
+      sub:'소파 · TV · 6단 서랍장 · 로봇청소기',
+      crop:{x:41,y:28,w:48,h:42}, pin:{x:66,y:50,label:'거'},
       advice:[
         ['비우기','요가매트와 운동용품이 방 2로 빠지면 TV 밑이 넓어지고 거실이 한결 정돈됩니다.'],
-        ['상단장','4칸 장은 계절 물건과 놀이 물건 위주로. 4번 칸은 가벼운 캠핑 소품 여유분으로 두고 부피 큰 것은 방 3으로 보냅니다.'],
+        ['상단장','상단 4칸 장은 계절 물건과 놀이 물건 위주로. 4번 칸은 가벼운 캠핑 소품 여유분으로 둡니다.'],
         ['한 서랍','사무용품·건전지·공구·청소용품은 소파 옆 6단 서랍장 하나로 모읍니다.'],
-        ['행거','거실 원목 스탠드 옷걸이는 처분 검토 대상입니다.']
+        ['로봇','로봇청소기 스테이션은 안방에서 거실로 옮겼습니다. 도면의 핀을 실제 자리에 맞춰 두세요.']
       ],
       furnitures:[
-        {
-          id:'f-tv', n:1, name:'TV 밑',
-          plan:{x:62,y:30},
-          zones:[ ['요가매트','헌터 박스','공기청정기','작은 스툴'] ]
-        },
-        {
-          id:'f-sofa', n:2, name:'소파 · 사이드테이블',
-          plan:{x:67,y:61},
-          zones:[ ['소파'], ['사이드테이블'] ]
-        },
-        {
-          id:'f-top4', n:3, name:'상단 4칸 장',
-          plan:{x:52,y:40},
+        {id:'f-top4', name:'상단 4칸 장', plan:{x:13,y:10},
           fig:{h:46, cells:[[0,0,25,100,'door'],[25,0,25,100,'door'],[50,0,25,100,'door'],[75,0,25,100,'door']]},
-          zones:[ ['여름 물놀이'], ['선풍기'], ['보드게임'], ['가벼운 캠핑 소품 여유분'] ]
-        },
+          zones:[['여름 물놀이'],['선풍기'],['보드게임'],['가벼운 캠핑 소품 여유분']]},
+        {id:'f-tv', name:'TV 밑', plan:{x:33,y:17},
+          zones:[['요가매트','헌터 박스','공기청정기','작은 스툴']]},
         {
-          id:'f-draw6', n:4, name:'작은 6단 서랍장',
-          plan:{x:77,y:47},
-          fig:{h:100, cells:[[0,0,100,25,'drawer'],[0,25,100,25,'drawer'],[0,50,100,25,'drawer'],[0,75,100,25,'drawer']]},
-          zones:[ ['사무용품'], ['건전지'], ['공구'], ['청소용품'] ]
+          id:'f-draw6', name:'작은 6단 서랍장', plan:{x:81,y:55},
+          photos:[{src:'img/drawer-6.jpg', alt:'작은 흰색 6단 서랍장 — 위에서부터 1단부터 6단',
+            pins:[P(0,48,21),P(1,48,34),P(2,48,47),P(3,48,61),P(4,48,75),P(5,48,88)], small:true}],
+          fig:{h:130, cells:[[0,0,100,16.6,'drawer'],[0,16.6,100,16.6,'drawer'],[0,33.2,100,16.6,'drawer'],
+                             [0,49.8,100,16.6,'drawer'],[0,66.4,100,16.6,'drawer'],[0,83,100,17,'drawer']]},
+          zones:[['사무용품'],['건전지'],['공구'],['청소용품'],[],[]]
         },
-        {
-          id:'f-stand4', n:5, name:'원목 스탠드 옷걸이 (2)', badge:'out',
-          plan:{x:80,y:34},
-          zones:[ ['외투'] ]
-        }
+        {id:'f-sofa', name:'소파 · 사이드테이블', plan:{x:52,y:79}, zones:[['소파'],['사이드테이블']]},
+        {id:'f-stand4', name:'원목 스탠드 옷걸이 (2)', plan:{x:72,y:33}, badge:'out', zones:[['외투']]},
+        {id:'f-robot', name:'로봇청소기 스테이션', badge:'new', plan:{x:81,y:86}, zones:[['로봇청소기 스테이션']]}
       ]
     },
     {
       id:'s5', key:'', name:'주방', short:'주방', color:'#B9855F',
       sub:'스피드랙 · 냉장고 · 상하부장',
-      crop:{x:4,y:35,w:44,h:40}, pin:{x:31,y:53,label:'주'},
+      crop:{x:1,y:38,w:40,h:33}, pin:{x:22,y:54,label:'주'},
       advice:[
         ['먹는 것 전용','스피드랙은 식료품·술·휴지·물티슈 전용으로. 화장품과 판매용품, 택배봉투는 여기서 빼세요.'],
         ['캠핑 1칸','캠핑용품은 스피드랙 맨 아래 1칸만. 부피 큰 것은 방 3, 가벼운 소품은 거실 상단장으로 나눕니다.'],
@@ -761,63 +790,35 @@ footer b{color:var(--ink2);font-weight:700}
         ['손 안 닿는 곳','상부장 오른쪽 끝은 손이 잘 안 닿는 자리라 재고품, 가장 아래는 시리얼 전용칸으로 쓰면 좋습니다.']
       ],
       furnitures:[
-        {
-          id:'f-speedrack', n:1, name:'냉장고 옆 스피드랙',
-          plan:{x:20,y:58},
+        {id:'f-speedrack', name:'냉장고 옆 스피드랙', plan:{x:40,y:79},
           fig:{h:125, cells:[[0,0,100,16,'door'],[0,16,100,26,'shelf'],[0,42,100,26,'shelf'],[0,68,100,20,'shelf'],[0,88,100,12,'shelf']]},
           zones:[
-            ['여분 휴지','물티슈'],
-            ['큰 음료','간단 식품','과자','소스'],
-            ['작은 음료','술 (양주)','디퓨저'],
-            ['라면','참치','여분 음료 재고'],
-            ['자주 꺼내는 캠핑 소품']
-          ]
-        },
-        {
-          id:'f-fridge', n:2, name:'냉장고',
-          plan:{x:16,y:61},
-          zones:[ ['냉장고'] ]
-        },
-        {
-          id:'f-upper', n:3, name:'상부장',
-          plan:{x:26,y:42},
+            ['여분 휴지','물티슈'], ['큰 음료','간단 식품','과자','소스'], ['작은 음료','술 (양주)','디퓨저'],
+            ['라면','참치','여분 음료 재고'], ['자주 꺼내는 캠핑 소품']
+          ]},
+        {id:'f-fridge', name:'냉장고', plan:{x:30,y:67}, zones:[['냉장고']]},
+        {id:'f-upper', name:'상부장', plan:{x:58,y:9},
           fig:{h:46, cells:[[0,0,25,100,'door'],[25,0,25,100,'door'],[50,0,25,100,'door'],[75,0,25,100,'door']]},
           zones:[
-            ['아래 그릇','위 베이킹 재료'],
-            ['아래 그릇','위 베이킹 재료'],
-            ['먹거리','반찬통'],
+            ['아래 그릇','위 베이킹 재료'], ['아래 그릇','위 베이킹 재료'], ['먹거리','반찬통'],
             ['먹거리','반찬통','손 안 닿는 곳 재고품','시리얼']
-          ]
-        },
-        {
-          id:'f-lower', n:4, name:'하부장',
-          plan:{x:10,y:50},
+          ]},
+        {id:'f-lower', name:'하부장', plan:{x:20,y:36},
           fig:{h:80, cells:[[0,0,20,50,'door'],[20,0,20,50,'door'],[40,0,20,50,'door'],[60,0,20,50,'door'],[80,0,20,50,'door'],
                             [0,50,25,50,'door'],[25,50,25,50,'door'],[50,50,25,50,'door'],[75,50,25,50,'door']]},
           zones:[
-            ['청소용품','세제 여분'],
-            ['후라이팬','냄비'],
-            ['커트러리'],
-            ['위생백','호일'],
-            ['냄비뚜껑','큰 냄비','찜기'],
-            ['쓰봉','일회용품','압축봉투','비닐류'],
-            ['양념','그 아래 선반 약'],
-            ['반찬그릇'],
-            ['과자']
-          ]
-        },
-        {
-          id:'f-ikea', n:5, name:'이케아 4단 흰색 사다리 선반', badge:'out',
-          plan:{x:27,y:69},
+            ['청소용품','세제 여분'], ['후라이팬','냄비'], ['커트러리'], ['위생백','호일'], ['냄비뚜껑','큰 냄비','찜기'],
+            ['쓰봉','일회용품','압축봉투','비닐류'], ['양념','그 아래 선반 약'], ['반찬그릇'], ['과자']
+          ]},
+        {id:'f-ikea', name:'이케아 4단 흰색 사다리 선반', badge:'out', plan:{x:53,y:88},
           fig:{h:110, cells:[[0,0,100,37,'shelf'],[0,37,100,33,'shelf'],[0,70,100,30,'shelf']]},
-          zones:[ ['에어프라이어','전자레인지'], ['외출 필수템 (마스크 · 향수)'], ['마스크'] ]
-        }
+          zones:[['에어프라이어','전자레인지'],['외출 필수템 (마스크 · 향수)'],['마스크']]}
       ]
     },
     {
       id:'s6', key:'', name:'현관', short:'현관', color:'#6E7C87',
-      sub:'신발장 · 택배 착지 · 외출존',
-      crop:{x:18,y:68,w:35,h:32}, pin:{x:41,y:91,label:'현'},
+      sub:'신발장 · 택배 착지 · 외출존 (욕실 앞)',
+      crop:{x:18,y:64,w:30,h:35}, pin:{x:34,y:89,label:'현'},
       advice:[
         ['2분류','택배는 현관에서 바로 뜯고 내용물만 주방용 / 방 2 재고용 두 바구니에 나눕니다. 박스는 그 자리에서 분리수거.'],
         ['하루 한 번','바구니가 차면 하루 한 번만 제자리에 넣으면 거실에 택배가 쌓이지 않습니다.'],
@@ -825,28 +826,17 @@ footer b{color:var(--ink2);font-weight:700}
         ['자리','바구니는 현관 문 옆, 박스 뜯는 자리 바로 옆에 둡니다.']
       ],
       furnitures:[
-        {
-          id:'f-shoes', n:1, name:'신발장',
-          plan:{x:37,y:88},
-          zones:[ ['신발'] ]
-        },
-        {
-          id:'f-basket', n:2, name:'택배 착지 바구니', badge:'new',
-          plan:{x:43,y:94},
+        {id:'f-shoes', name:'신발장', plan:{x:47,y:71}, zones:[['신발']]},
+        {id:'f-basket', name:'택배 착지 바구니', badge:'new', plan:{x:67,y:83},
           fig:{h:46, cells:[[0,0,48,100,'open'],[52,0,48,100,'open']]},
-          zones:[ ['식료품','주방 소모품'], ['샴푸 재고','바디워시 재고','화장품 재고'] ]
-        },
-        {
-          id:'f-out', n:3, name:'외출 필수템 존', badge:'new',
-          plan:{x:33,y:83},
-          zones:[ ['마스크 3박스','향수','택배 포장봉투'] ]
-        }
+          zones:[['식료품','주방 소모품'],['샴푸 재고','바디워시 재고','화장품 재고']]},
+        {id:'f-out', name:'외출 필수템 존', badge:'new', plan:{x:40,y:40}, zones:[['마스크 3박스','향수','택배 포장봉투']]}
       ]
     }
   ];
 
   /* ============================================================
-     구조 그림 (직접 그린 SVG) — 붙박이장 10칸 / 퀸 침대
+     구조 그림 (직접 그린 SVG)
      ============================================================ */
   var ART = {
     closet:{
@@ -875,20 +865,17 @@ footer b{color:var(--ink2);font-weight:700}
         function shelf(x,w,y){ return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="5" rx="1" fill="#EDE1CF" stroke="#DFCDB4" stroke-width=".8"/>'; }
         function divider(x,y,h){ return '<rect x="' + x + '" y="' + y + '" width="4" height="' + h + '" fill="#EDE1CF" stroke="#DFCDB4" stroke-width=".6"/>'; }
 
-        /* 1칸: 위아래 50:50 옷 거는 칸 */
         s += body(4);
         s += shelf(8,84,176);
         s += rod(12,88,46);
         s += rod(12,88,224);
 
-        /* 2칸: 맨 위 선반 + 긴 봉 + 아래 서랍 */
         s += body(104);
         s += shelf(108,84,56);
         s += rod(112,188,88);
         s += '<rect x="110" y="296" width="80" height="52" rx="2" fill="#F6EDE0" stroke="#DFCBB0" stroke-width="1.1"/>'
            + '<line x1="126" y1="322" x2="174" y2="322" stroke="#D2BC9F" stroke-width="2" stroke-linecap="round"/>';
 
-        /* 3칸: 위 긴 봉 + 아래 왼쪽 짧은 봉 + 오른쪽 3단 선반 */
         s += body(204);
         s += rod(212,292,86,3);
         s += divider(250,96,256);
@@ -901,24 +888,39 @@ footer b{color:var(--ink2);font-weight:700}
       pins:[[50,112],[50,262],[150,30],[150,190],[150,322],[250,46],[222,196],[273,148],[273,237],[273,311]]
     },
     bed:{
-      W:300, H:210, TOP:0,
+      W:300, H:252, TOP:0,
       svg:function(){
-        var s = '<svg viewBox="0 0 300 210" role="img" aria-label="퀸 침대 정면 구조 — 벙커 2단과 큰 서랍 2개, 작은 서랍 2개">';
-        s += '<rect x="0" y="0" width="300" height="42" rx="3" fill="#F4EBDF" stroke="#DCC9B2" stroke-width="1.2"/>';
-        s += '<text x="150" y="25" font-size="10.5" fill="#B3A697" text-anchor="middle">매트리스</text>';
-        s += '<rect x="0" y="48" width="300" height="52" rx="3" fill="#FCF7EF" stroke="#E2D2BC" stroke-width="1.2" stroke-dasharray="4 3"/>';
-        s += '<text x="9" y="78" font-size="9.5" fill="#B3A697">벙커 1</text>';
-        s += '<rect x="0" y="106" width="300" height="52" rx="3" fill="#FCF7EF" stroke="#E2D2BC" stroke-width="1.2" stroke-dasharray="4 3"/>';
-        s += '<text x="9" y="136" font-size="9.5" fill="#B3A697">벙커 2</text>';
-        var cells = [[0,90],[92,88],[182,56],[240,60]];
-        cells.forEach(function(c){
-          s += '<rect x="' + c[0] + '" y="164" width="' + c[1] + '" height="44" rx="3" fill="#F7EFE3" stroke="#DFCBB0" stroke-width="1.2"/>'
-             + '<line x1="' + (c[0] + c[1]/2 - 12) + '" y1="180" x2="' + (c[0] + c[1]/2 + 12) + '" y2="180" stroke="#D2BC9F" stroke-width="1.8" stroke-linecap="round"/>';
-        });
+        var s = '<svg viewBox="0 0 300 252" role="img" aria-label="퀸 침대 정면 구조 — 매트리스 아래 벙커 수납 2×2 네 칸(1·2 안쪽, 3·4 앞쪽)과 측면 서랍 네 개(5·8 큰 서랍, 6·7 가운데 작은 서랍)">';
+        function cell(x,y,w,h,dash){
+          return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="3" fill="' + (dash ? '#FCF7EF' : '#F7EFE3') + '" stroke="' + (dash ? '#E2D2BC' : '#DFCBB0') + '" stroke-width="1.2"' + (dash ? ' stroke-dasharray="4 3"' : '') + '/>';
+        }
+        /* 매트리스 */
+        s += '<rect x="0" y="0" width="300" height="38" rx="3" fill="#F4EBDF" stroke="#DCC9B2" stroke-width="1.2"/>';
+        s += '<text x="150" y="23" font-size="10.5" fill="#B3A697" text-anchor="middle" letter-spacing="-.02em">매트리스</text>';
+        /* 벙커 2×2 */
+        s += '<text x="6" y="50" font-size="9" fill="#B3A697" letter-spacing="-.02em">안쪽</text>';
+        s += '<text x="6" y="102" font-size="9" fill="#B3A697" letter-spacing="-.02em">앞쪽</text>';
+        s += cell(26,42,128,46,true);
+        s += cell(158,42,136,46,true);
+        s += cell(26,92,128,46,true);
+        s += cell(158,92,136,46,true);
+        s += '<line x1="154" y1="40" x2="154" y2="140" stroke="#E2D2BC" stroke-width="1.2" stroke-dasharray="3 3"/>';
+        s += '<line x1="24" y1="90" x2="296" y2="90" stroke="#E2D2BC" stroke-width="1.2" stroke-dasharray="3 3"/>';
+        s += '<text x="150" y="152" font-size="9" fill="#B3A697" text-anchor="middle" letter-spacing="-.02em">벙커 수납 4칸 (2×2)</text>';
+        /* 서랍 4개 */
+        s += '<text x="150" y="170" font-size="9" fill="#B3A697" text-anchor="middle" letter-spacing="-.02em">측면 서랍 4개</text>';
+        function drawer(x,y,w,h){
+          return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="3" fill="#F7EFE3" stroke="#DFCBB0" stroke-width="1.2"/>'
+               + '<line x1="' + (x + w/2 - 13) + '" y1="' + (y + 14) + '" x2="' + (x + w/2 + 13) + '" y2="' + (y + 14) + '" stroke="#D2BC9F" stroke-width="1.8" stroke-linecap="round"/>';
+        }
+        s += drawer(0,176,94,72);
+        s += drawer(98,176,88,34);
+        s += drawer(98,214,88,34);
+        s += drawer(190,176,110,72);
         s += '</svg>';
         return s;
       },
-      pins:[[150,74],[150,132],[45,186],[136,186],[210,186],[270,186]]
+      pins:[[90,65],[226,65],[90,115],[226,115],[47,212],[142,193],[142,231],[245,212]]
     }
   };
 
@@ -933,93 +935,190 @@ footer b{color:var(--ink2);font-weight:700}
     });
   };
   var norm = function(s){ return String(s).toLowerCase().replace(/\s+/g,''); };
-  var clone = function(o){ return JSON.parse(JSON.stringify(o)); };
+  var deep = function(o){ return JSON.parse(JSON.stringify(o)); };
+  var clampPct = function(v){ v = parseFloat(v); if (!isFinite(v)) return 50; return Math.max(2, Math.min(98, v)); };
 
-  var SMAP = {};   /* spaceId -> space */
-  var FMAP = {};   /* fid -> {space, f, idx} */
-  var ZS = {};     /* fid -> [{items:[], floor:'', move:null}] */
-  var STAT = {furn:0, rows:0, items:0, photos:0, arts:0};
-
-  SPACES.forEach(function(sp){
-    SMAP[sp.id] = sp;
-    sp.furnitures.forEach(function(f, i){
-      FMAP[f.id] = {space:sp, f:f, idx:i};
-      f._n = i + 1;
-      ZS[f.id] = (f.zones || []).map(function(z){
-        return {items: z.slice(), floor:'', move:null};
-      });
-      STAT.furn++;
-      if (f.photos) STAT.photos += f.photos.length;
-      if (f.art) STAT.arts++;
-    });
-  });
-
-  function zone(fid, z){ return (ZS[fid] || [])[z]; }
-  function spaceOf(fid){ return FMAP[fid] ? FMAP[fid].space : null; }
-
-  /* ============================================================
-     저장 (localStorage)
-     ============================================================ */
-  var ZKEY = 'homeMap.v5.zones';
-  var CKKEY = 'homeMap.v5.checklist';
-
-  function loadZones(){
-    var raw;
-    try{ raw = JSON.parse(localStorage.getItem(ZKEY) || '{}'); }catch(e){ raw = {}; }
-    if (!raw || typeof raw !== 'object') return;
-    Object.keys(raw).forEach(function(fid){
-      if (!ZS[fid]) return;
-      Object.keys(raw[fid] || {}).forEach(function(zi){
-        var z = parseInt(zi, 10), s = ZS[fid][z], e = raw[fid][zi];
-        if (!s || !e) return;
-        if (Array.isArray(e.items)) s.items = e.items.filter(function(t){ return typeof t === 'string'; });
-        s.floor = typeof e.floor === 'string' ? e.floor : '';
-        s.move = (e.move && FMAP[e.move.fid] && ZS[e.move.fid][e.move.z]) ? {
-          rid: String(e.move.rid || ''), fid: e.move.fid, z: parseInt(e.move.z, 10) || 0,
-          memo: typeof e.move.memo === 'string' ? e.move.memo : ''
-        } : null;
-      });
-    });
-  }
-
-  function saveZones(){
-    var o = {};
-    Object.keys(ZS).forEach(function(fid){
-      o[fid] = {};
-      ZS[fid].forEach(function(s, i){
-        if (!s.items.length && !s.floor && !s.move) return;
-        o[fid][i] = {items:s.items, floor:s.floor, move:s.move};
-      });
-    });
-    try{ localStorage.setItem(ZKEY, JSON.stringify(o)); }catch(e){}
-  }
-
-  /* ============================================================
-     상태
-     ============================================================ */
   var state = {tab:'map', space:'all', view:'overview', fid:null, q:''};
-  var pending = null;   /* {fid, z} 저장 후 강조 */
+  var DB = null;          /* {v:6, active, seasons:{winter:{spaces}, summer:{spaces}}, ck:[...]} */
+  var SPACES = [];        /* 현재 계절 공간 목록 */
+  var SMAP = {}, FMAP = {};
+  var STAT = {furn:0, rows:0, items:0};
 
-  function setViewAttr(){ document.body.setAttribute('data-view', state.view); }
+  /* ---------- 정규화 ---------- */
+  function nzone(z){
+    if (Array.isArray(z)) return {items: z.filter(function(t){ return typeof t === 'string'; }), floor:'', move:null};
+    if (z && typeof z === 'object'){
+      return {
+        items: Array.isArray(z.items) ? z.items.filter(function(t){ return typeof t === 'string'; }) : [],
+        floor: typeof z.floor === 'string' ? z.floor : '',
+        move: (z.move && typeof z.move === 'object') ? {rid:String(z.move.rid||''), fid:String(z.move.fid||''), z:parseInt(z.move.z,10)||0, memo:String(z.move.memo||'')} : null
+      };
+    }
+    return {items:[], floor:'', move:null};
+  }
+  function nfurn(f, i){
+    var o = {
+      id: String(f.id || ('f' + Date.now() + i)),
+      name: String(f.name || '이름 없는 가구'),
+      plan: {x: clampPct(f.plan && f.plan.x), y: clampPct(f.plan && f.plan.y)},
+      zones: (Array.isArray(f.zones) && f.zones.length ? f.zones : [[]]).map(nzone)
+    };
+    if (f.art && ART[f.art]) o.art = f.art;
+    if (Array.isArray(f.photos) && f.photos.length){
+      o.photos = f.photos.filter(function(p){ return p && p.src; }).map(function(p){
+        return {src:String(p.src), alt:String(p.alt||''), small:!!p.small,
+          pins:(Array.isArray(p.pins)?p.pins:[]).filter(function(q){ return Array.isArray(q) && q.length>=3; })
+            .map(function(q){ return [parseInt(q[0],10)||0, clampPct(q[1]), clampPct(q[2])]; })};
+      });
+    }
+    if (f.fig && Array.isArray(f.fig.cells) && f.fig.cells.length) o.fig = {h: +f.fig.h || 100, cells: f.fig.cells};
+    if (f.badge) o.badge = f.badge;
+    return o;
+  }
+  function nspace(sp){
+    var o = {
+      id: String(sp.id), key: String(sp.key||''), name: String(sp.name||''), short: String(sp.short||sp.name||''),
+      color: String(sp.color||'#5F7A61'), sub: String(sp.sub||''),
+      pin: {x: clampPct(sp.pin && sp.pin.x), y: clampPct(sp.pin && sp.pin.y), label: String((sp.pin&&sp.pin.label)||'')},
+      advice: Array.isArray(sp.advice) ? sp.advice.filter(function(a){return Array.isArray(a)&&a.length>=2;}).map(function(a){return [String(a[0]), String(a[1])];}) : [],
+      furnitures: (Array.isArray(sp.furnitures)?sp.furnitures:[]).map(nfurn)
+    };
+    if (sp.planImg && sp.planImg.src) o.planImg = {src:String(sp.planImg.src), w:+sp.planImg.w||689, h:+sp.planImg.h||563};
+    else if (sp.crop) o.crop = {x:+sp.crop.x, y:+sp.crop.y, w:+sp.crop.w, h:+sp.crop.h};
+    return o;
+  }
 
-  /* ============================================================
-     통계
-     ============================================================ */
-  function recount(){
-    STAT.rows = 0; STAT.items = 0;
-    Object.keys(ZS).forEach(function(fid){
-      ZS[fid].forEach(function(s){ STAT.rows++; STAT.items += s.items.length; });
+  /* ---------- DB ---------- */
+  function buildDB(){
+    var winter = deep(BASE_SPACES).map(nspace);
+    var summer = deep(winter);
+    return {v:6, active:'winter', seasons:{winter:{spaces:winter}, summer:{spaces:summer}}, ck:null};
+  }
+
+  function migrateV5(){
+    var raw = null;
+    try{ raw = JSON.parse(localStorage.getItem(OLDZKEY) || 'null'); }catch(e){}
+    if (!raw || typeof raw !== 'object') return 0;
+    var n = 0;
+    var w = DB.seasons.winter.spaces;
+    Object.keys(raw).forEach(function(fid){
+      var sp = null;
+      w.forEach(function(s){ s.furnitures.forEach(function(f){ if (f.id === fid) sp = f; }); });
+      if (!sp) return;
+      Object.keys(raw[fid] || {}).forEach(function(zi){
+        var i = parseInt(zi, 10), zz = sp.zones[i], e = raw[fid][zi];
+        if (!zz || !e || typeof e !== 'object') return;
+        if (Array.isArray(e.items)) zz.items = e.items.filter(function(t){ return typeof t === 'string'; });
+        zz.floor = typeof e.floor === 'string' ? e.floor : '';
+        if (e.move && typeof e.move === 'object') zz.move = {rid:String(e.move.rid||''), fid:String(e.move.fid||''), z:parseInt(e.move.z,10)||0, memo:String(e.move.memo||'')};
+        n++;
+      });
     });
-    $('#stats').innerHTML =
+    /* v5에서 보일러·로봇청소기 등 사라진 가구의 이동 참조는 정리 */
+    cleanMoves();
+    return n;
+  }
+
+  function loadDB(){
+    var raw = null;
+    try{ raw = JSON.parse(localStorage.getItem(DBKEY) || 'null'); }catch(e){}
+    if (raw && raw.seasons && raw.seasons.winter && Array.isArray(raw.seasons.winter.spaces)){
+      DB = raw;
+      DB.v = 6;
+      DB.active = raw.active === 'summer' ? 'summer' : 'winter';
+      DB.seasons.winter.spaces = DB.seasons.winter.spaces.map(nspace);
+      if (!DB.seasons.summer || !Array.isArray(DB.seasons.summer.spaces)) DB.seasons.summer = {spaces: deep(DB.seasons.winter.spaces)};
+      else DB.seasons.summer.spaces = DB.seasons.summer.spaces.map(nspace);
+      if (!Array.isArray(DB.ck)) DB.ck = null;
+    } else {
+      DB = buildDB();
+      var moved = migrateV5();
+      if (moved){ DB.seasons.summer.spaces = deep(DB.seasons.winter.spaces); }
+      if (!DB.ck){
+        var old = null;
+        try{ old = JSON.parse(localStorage.getItem(OLDCKKEY) || 'null'); }catch(e){}
+        if (Array.isArray(old) && old.length) DB.ck = old;
+      }
+      saveDB(true);
+      return;
+    }
+  }
+
+  var saveT = null;
+  function saveDB(quiet){
+    var chip = $('#saveChip');
+    try{ localStorage.setItem(DBKEY, JSON.stringify(DB)); }
+    catch(e){
+      if (chip){ chip.textContent = '저장 실패'; chip.className = 'savechip err'; }
+      toast('저장 공간이 부족해 저장하지 못했어요');
+      return false;
+    }
+    if (chip && !quiet){
+      chip.className = 'savechip saving';
+      chip.textContent = '저장 중…';
+      clearTimeout(saveT);
+      saveT = setTimeout(function(){
+        chip.className = 'savechip';
+        chip.textContent = '저장됨 ✓';
+        chip.title = '마지막 저장 ' + hhmm();
+      }, 320);
+    } else if (chip){
+      chip.title = '마지막 저장 ' + hhmm();
+    }
+    return true;
+  }
+  function hhmm(){
+    var d = new Date();
+    return ('0'+d.getHours()).slice(-2) + ':' + ('0'+d.getMinutes()).slice(-2);
+  }
+
+  /* ---------- 인덱스 ---------- */
+  function rebuild(){
+    SPACES = DB.seasons[DB.active].spaces;
+    SMAP = {}; FMAP = {};
+    SPACES.forEach(function(sp){
+      SMAP[sp.id] = sp;
+      sp.furnitures.forEach(function(f, i){
+        f._n = i + 1;
+        FMAP[f.id] = {space:sp, f:f, idx:i};
+      });
+    });
+    buildIndex();
+    recount();
+  }
+
+  function recount(){
+    STAT.furn = 0; STAT.rows = 0; STAT.items = 0;
+    SPACES.forEach(function(sp){
+      sp.furnitures.forEach(function(f){
+        STAT.furn++;
+        f.zones.forEach(function(z){ STAT.rows++; STAT.items += z.items.length; });
+      });
+    });
+    var el = $('#stats');
+    if (el) el.innerHTML =
       '<li><b>' + STAT.furn + '</b> 가구 · 수납공간</li>' +
       '<li><b>' + STAT.rows + '</b> 수납칸</li>' +
       '<li><b>' + STAT.items + '</b> 물품</li>' +
       '<li><b>' + SPACES.length + '</b> 공간</li>';
   }
 
-  /* ============================================================
-     공통 조각
-     ============================================================ */
+  function cleanMoves(){
+    SPACES = DB.seasons[DB.active].spaces;
+    var ids = {};
+    SPACES.forEach(function(sp){ sp.furnitures.forEach(function(f){ ids[f.id] = f; }); });
+    SPACES.forEach(function(sp){ sp.furnitures.forEach(function(f){
+      f.zones.forEach(function(z){
+        if (z.move && (!z.move.fid || !ids[z.move.fid])) z.move = null;
+        else if (z.move){
+          var t = ids[z.move.fid];
+          if (!t || !t.zones[z.move.z]) z.move = t ? (t.zones.length ? Object.assign(z.move, {z:0}) : null) : null;
+        }
+      });
+    }); });
+  }
+
+  /* ---------- 공통 조각 ---------- */
   function pinBtn(x, y, color, text, aria, attr, twoDigit){
     return '<button class="pin" type="button" ' + attr +
       ' style="--x:' + x.toFixed(2) + '%;--y:' + y.toFixed(2) + '%;--c:' + color + '"' +
@@ -1027,13 +1126,13 @@ footer b{color:var(--ink2);font-weight:700}
       ' aria-label="' + esc(aria) + '" title="' + esc(aria) + '">' + esc(text) + '</button>';
   }
 
-  function photoHTML(ph, f, color){
+  function photoHTML(ph, f, color, idx){
     var pins = (ph.pins || []).map(function(p){
       var n = p[0] + 1;
       return pinBtn(p[1], p[2], color, n, f._n + '번 가구 ' + n + '번 칸',
-        'data-fid="' + f.id + '" data-z="' + p[0] + '"', n > 9);
+        'data-fid="' + f.id + '" data-ph="' + idx + '" data-z="' + p[0] + '"', n > 9);
     }).join('');
-    return '<div class="ph-wrap"><div class="photo">' +
+    return '<div class="ph-wrap"><div class="photo' + (ph.small ? ' small' : '') + '" data-photo="' + f.id + ':' + idx + '">' +
       '<img src="' + esc(ph.src) + '" alt="' + esc(ph.alt || '') + '" loading="lazy" decoding="async">' +
       pins + '</div></div>';
   }
@@ -1041,6 +1140,7 @@ footer b{color:var(--ink2);font-weight:700}
   function artHTML(f, color){
     var a = ART[f.art];
     if (!a) return '';
+    if (f.zones.length !== a.pins.length) return '';   /* 칸 수가 바뀌면 도식으로 대신해 번호를 맞춘다 */
     var pins = a.pins.map(function(p, i){
       var n = i + 1;
       var x = p[0] / a.W * 100, y = (p[1] - a.TOP) / (a.H - a.TOP) * 100;
@@ -1077,6 +1177,24 @@ footer b{color:var(--ink2);font-weight:700}
         cells + '</svg></div>';
   }
 
+  function autoFig(n){
+    var rows = Math.max(1, Math.min(12, n));
+    var h = Math.max(40, rows * 26);
+    var cells = [];
+    for (var i = 0; i < rows; i++) cells.push([0, i * (100 / rows), 100, 100 / rows, 'drawer']);
+    return {h: h, cells: cells};
+  }
+  function figOf(f){
+    if (f.fig) return f.fig;
+    if (f.art){
+      var a = ART[f.art];
+      /* 구조 그림과 칸 수가 다르면 칸 도식으로 대신한다 */
+      return (a && f.zones.length === a.pins.length) ? null : autoFig(f.zones.length);
+    }
+    if (f.photos && f.photos.length) return null;
+    return autoFig(f.zones.length);
+  }
+
   /* ============================================================
      개요 (전체 지도)
      ============================================================ */
@@ -1086,7 +1204,7 @@ footer b{color:var(--ink2);font-weight:700}
       return '<button class="pin" type="button" data-space="' + sp.id + '"' +
         ' style="--x:' + sp.pin.x + '%;--y:' + sp.pin.y + '%;--c:' + sp.color + '"' +
         (wide ? ' data-2d="1"' : '') +
-        ' aria-label="' + esc(sp.name) + ' 확대" title="' + esc(sp.name) + '">' + esc(sp.pin.label) + '</button>';  /* overview pin */
+        ' aria-label="' + esc(sp.name) + ' 확대" title="' + esc(sp.name) + '">' + esc(sp.pin.label) + '</button>';
     }).join('');
 
     var list = SPACES.map(function(sp){
@@ -1108,36 +1226,46 @@ footer b{color:var(--ink2);font-weight:700}
         '<div class="plan-head"><h2>집 전체 도면</h2><span>번호를 누르면 그 방이 확대됩니다</span></div>' +
         '<div class="plan-flex">' +
           '<div class="plan-art" id="planArt">' +
-            '<img src="img/floorplan.jpg" alt="우리집 3D 도면 — 방 3개와 거실, 주방, 욕실, 현관, 베란다 배치" decoding="async">' +
+            '<img src="' + FLOORPLAN + '" alt="우리집 3D 도면 — 방 3개와 거실, 주방, 욕실, 현관, 베란다 배치" decoding="async">' +
             pins +
           '</div>' +
           '<div class="plan-list">' + list + '</div>' +
         '</div>' +
       '</section>' +
       '<div class="spgrid">' + cards + '</div>' +
-      '<p class="note-small">도면은 정리 뒤 배치를 기준으로 그린 원본 3D 도면입니다. 제품 사진은 실제 사진에서 내용물과 배경을 지운 편집본이고, 치수 숫자는 넣지 않았어요.</p>' +
-      '<div class="toolbar" style="margin-top:12px"><p>직접 고친 내용과 체크리스트를 처음 상태로 되돌립니다.</p>' +
-        '<button class="ghost-btn" type="button" data-act="reset-all">전체 초기화</button></div>';
+      '<p class="note-small">' + SEASONS[DB.active].emoji + ' ' + SEASONS[DB.active].name + ' 배치입니다. 도면은 원본 3D 도면이고, 제품 사진은 배경과 안내 문구를 지운 편집본입니다.</p>';
   }
 
   /* ============================================================
      방 확대 뷰
      ============================================================ */
+  function roomPlanBox(sp){
+    /* 반환: {html, aspect} */
+    var pins = sp.furnitures.map(function(f){
+      return pinBtn(f.plan.x, f.plan.y, sp.color, f._n, f._n + ' ' + f.name + ' 구성도 열기',
+        'data-furn="' + f.id + '"', f._n > 9);
+    }).join('');
+    if (sp.planImg){
+      return {aspect: sp.planImg.w / sp.planImg.h,
+        html: '<div class="planbox" data-plan="' + sp.id + '"><img src="' + esc(sp.planImg.src) + '" alt="' + esc(sp.name) + ' 확대 도면" decoding="async">' + pins + '</div>'};
+    }
+    var c = sp.crop || {x:0,y:0,w:100,h:100};
+    var w = 100 / c.w * 100;
+    var aspect = (FW * c.w) / (FH * c.h);
+    return {aspect: aspect,
+      html: '<div class="planbox cropped" data-plan="' + sp.id + '" style="aspect-ratio:' + aspect.toFixed(4) + '">' +
+        '<img src="' + FLOORPLAN + '" alt="' + esc(sp.name) + ' 확대 도면" ' +
+        'style="width:' + w.toFixed(2) + '%;left:' + (-c.x * w / 100).toFixed(2) + '%;top:' + (-c.y * 100 / c.h).toFixed(2) + '%" decoding="async">' +
+        pins + '</div>'};
+  }
+
   function renderRoom(){
     var sp = SMAP[state.space];
     if (!sp){ state.view = 'overview'; renderOverview(); return; }
-    var c = sp.crop;
-    var w = 100 / c.w * 100;
-    var ratio = (605 * c.w) / (841 * c.h);
-    var pins = sp.furnitures.map(function(f){
-      var x = (f.plan.x - c.x) / c.w * 100;
-      var y = (f.plan.y - c.y) / c.h * 100;
-      return pinBtn(x, y, sp.color, f._n, f._n + ' ' + f.name + ' 구성도 열기',
-        'data-furn="' + f.id + '"', f._n > 9);
-    }).join('');
+    var box = roomPlanBox(sp);
 
     var btns = sp.furnitures.map(function(f){
-      var cnt = ZS[f.id].length;
+      var cnt = f.zones.length;
       return '<button class="fb" type="button" data-furn="' + f.id + '" style="--c:' + sp.color + '">' +
         '<span class="fb-n">' + f._n + '</span>' +
         '<span class="fb-t">' + esc(f.name) + (cnt ? '<small>' + cnt + '칸</small>' : '') + '</span>' +
@@ -1154,34 +1282,48 @@ footer b{color:var(--ink2);font-weight:700}
       '</div>' +
       '<div class="rvbody">' +
       '<div class="zoomwrap">' +
-        '<div class="zoom" style="aspect-ratio:' + ratio.toFixed(3) + '">' +
-          '<img src="img/floorplan.jpg" alt="' + esc(sp.name) + ' 확대 도면" ' +
-            'style="width:' + w.toFixed(2) + '%;left:' + (-c.x * w / 100).toFixed(2) + '%;top:' + (-c.y * 100 / c.h).toFixed(2) + '%" decoding="async">' +
-          pins +
+        '<div class="plbar">' +
+          '<button class="pinmode-btn" type="button" data-act="pinmode-room" aria-pressed="' + (pinMode.room ? 'true' : 'false') + '">📌 번호 위치 옮기기</button>' +
+          '<button class="mini-btn" type="button" data-act="reset-pins-room">초기화</button>' +
+          '<span class="hint">' + (pinMode.room ? '번호를 끌어서 실제 위치로 옮기세요. 자동 저장됩니다.' : '번호 위치가 실제와 다르면 옮기기로 조정하세요.') + '</span>' +
         '</div>' +
-        '<p class="zhint">원본 도면에서 ' + esc(sp.name) + ' 영역만 확대했어요. 번호를 누르면 그 가구 구성도로 들어갑니다.</p>' +
+        box.html +
+        '<p class="zhint">' + (sp.planImg ? '이 방 전용 확대 도면입니다.' : '원본 도면에서 ' + esc(sp.name) + ' 영역만 확대했어요.') + ' 번호를 누르면 그 가구 구성도로 들어갑니다.</p>' +
       '</div>' +
-      '<div class="fbtns">' + btns + '</div>' +
+      '<div class="fbtns">' + btns +
+        '<div class="addrow"><button class="addbtn ghost" type="button" data-act="add-furn">+ 가구 추가</button></div>' +
+        '<div class="addbox" id="addFurnBox" hidden>' +
+          '<div class="arow"><div class="f1"><label>가구 이름</label>' +
+            '<input class="af-name" type="text" placeholder="예: 5단 서랍장" autocomplete="off"></div>' +
+          '<div class="f2"><label>칸 수</label><input class="af-cells" type="number" min="1" max="40" step="1" value="4" inputmode="numeric"></div></div>' +
+          '<div class="abtns"><button class="ok" type="button" data-act="add-furn-ok">추가</button>' +
+          '<button class="no" type="button" data-act="add-furn-no">취소</button></div>' +
+        '</div>' +
+      '</div>' +
       '</div>';
+    applyPinMode();
   }
 
   /* ============================================================
      가구 구성도 뷰
      ============================================================ */
   function rowHTML(fid, zi){
-    var s = zone(fid, zi);
+    var info = FMAP[fid];
+    if (!info) return '';
+    var f = info.f, sp = info.space;
+    var s = f.zones[zi];
+    if (!s) return '';
     var n = zi + 1;
-    var sp = spaceOf(fid);
     var items = s.items.length
       ? s.items.map(function(t){ return '<span class="it">' + esc(t) + '</span>'; }).join('<span class="sep">·</span>')
       : '<span class="none">비어 있음</span>';
     var floor = s.floor ? '<span class="floor"><b>바닥</b> : ' + esc(s.floor) + '</span>' : '';
     var mv = '';
-    if (s.move){
+    if (s.move && FMAP[s.move.fid]){
       var tf = FMAP[s.move.fid];
-      var tgt = (SMAP[s.move.rid] || (tf ? tf.space : null));
+      var tgt = (SMAP[s.move.rid] || tf.space);
       var tname = tgt ? tgt.name : '';
-      mv = '<span class="mvline">이동 예정 → <b>' + esc(tname) + ' · ' + esc(tf ? tf.f.name : '') + ' · ' + (s.move.z + 1) + '</b>' +
+      mv = '<span class="mvline">이동 예정 → <b>' + esc(tname) + ' · ' + esc(tf.f.name) + ' · ' + (s.move.z + 1) + '</b>' +
         (s.move.memo ? '<small>— ' + esc(s.move.memo) + '</small>' : '') + '</span>';
       if (s.items.length){
         mv += '<button class="mvgo" type="button" data-mvgo="' + fid + '" data-z="' + zi + '">실제 옮기기</button>';
@@ -1189,7 +1331,8 @@ footer b{color:var(--ink2);font-weight:700}
     }
     return '<div class="row" id="' + fid + '-z' + zi + '" data-fid="' + fid + '" data-z="' + zi + '" style="--c:' + sp.color + '">' +
       '<span class="rn"' + (n > 9 ? ' data-2d="1"' : '') + '>' + n + '</span>' +
-      '<div class="rb"><span class="it-wrap">' + items + '</span>' + floor + mv + '</div></div>';
+      '<div class="rb"><span class="it-wrap">' + items + '</span>' + floor + mv + '</div>' +
+      '<button class="rowdel" type="button" data-del-row="' + fid + '" data-z="' + zi + '" aria-label="' + n + '번 칸 삭제">✕</button></div>';
   }
 
   function renderFurn(){
@@ -1198,33 +1341,47 @@ footer b{color:var(--ink2);font-weight:700}
     var f = info.f, sp = info.space;
     var media = '';
     if (f.photos && f.photos.length){
-      f.photos.forEach(function(ph){ media += photoHTML(ph, f, sp.color); });
+      f.photos.forEach(function(ph, i){ media += photoHTML(ph, f, sp.color, i); });
     }
     if (f.art) media += artHTML(f, sp.color);
-    if (f.fig) media += figHTML(f, sp.color);
+    var fg = figOf(f);
+    if (fg) media += figHTML({fig:fg, name:f.name, _n:f._n, id:f.id}, sp.color);
 
     var badge = f.badge === 'out' ? '<span class="badge out">처분 검토</span>'
               : f.badge === 'new' ? '<span class="badge new">새로 만드는 존</span>' : '';
 
-    var rows = ZS[f.id].map(function(_, i){ return rowHTML(f.id, i); }).join('');
+    var rows = f.zones.map(function(_, i){ return rowHTML(f.id, i); }).join('');
+
+    var pinbar = '';
+    if ((f.photos && f.photos.length) || f.art){
+      pinbar = '<div class="plbar">' +
+        '<button class="pinmode-btn" type="button" data-act="pinmode-furn" aria-pressed="' + (pinMode.furn ? 'true' : 'false') + '">📌 번호 위치 옮기기</button>' +
+        '<button class="mini-btn" type="button" data-act="reset-pins-furn">초기화</button>' +
+        '<span class="hint">' + (pinMode.furn ? '사진 위 번호를 끌어서 옮기세요. 자동 저장됩니다.' : '사진 속 번호가 물건과 다르면 옮기기로 조정하세요.') + '</span>' +
+        '</div>';
+    }
 
     var body = media
-      ? '<div class="fbody has-media"><div class="fmedia">' + media + '</div><div class="frows"><div class="rows">' + rows + '</div></div></div>'
-      : '<div class="rows">' + rows + '</div>';
+      ? '<div class="fbody has-media"><div class="fmedia">' + pinbar + media + '</div><div class="frows"><div class="rows">' + rows + '</div>' +
+        '<div class="addrow"><button class="addcell" type="button" data-act="add-cell">+ 칸 추가</button></div></div></div>'
+      : '<div class="rows">' + rows + '</div><div class="addrow"><button class="addcell" type="button" data-act="add-cell">+ 칸 추가</button></div>';
 
     $('#viewFurn').innerHTML =
       '<div class="fvhead">' +
         '<button class="back" type="button" data-act="room">← 방으로 돌아가기</button>' +
         '<div class="fvtitle" style="--c:' + sp.color + '">' +
           '<span class="rno">' + f._n + '</span>' +
-          '<h2>' + esc(f.name) + '</h2>' +
+          '<h2 class="fname-h">' + esc(f.name) + '</h2>' +
           '<span class="fvroom">' + esc(sp.name) + '</span>' + badge +
+        '</div>' +
+        '<div class="fvtools">' +
+          '<button class="mini-btn" type="button" data-act="rename-furn">✎ 이름 수정</button>' +
+          '<button class="mini-btn danger" type="button" data-act="del-furn">가구 삭제</button>' +
         '</div>' +
       '</div>' +
       '<div class="fcard">' + body + '</div>' +
-      '<p class="note-small">줄을 누르면 그 자리에서 고칠 수 있어요. 번호는 위 사진·구성도의 번호와 같습니다.</p>' +
-      '<div class="toolbar" style="margin-top:12px"><p>직접 고친 내용을 처음 상태로 되돌립니다.</p>' +
-        '<button class="ghost-btn" type="button" data-act="reset-all">전체 초기화</button></div>';
+      '<p class="note-small">줄을 누르면 그 자리에서 고칠 수 있고, 다른 곳을 누르면 자동으로 저장됩니다. 번호는 위 사진·구성도의 번호와 같습니다.</p>';
+    applyPinMode();
   }
 
   /* ============================================================
@@ -1246,8 +1403,9 @@ footer b{color:var(--ink2);font-weight:700}
     if (state.view === 'overview') renderOverview();
     else if (state.view === 'room') renderRoom();
     else renderFurn();
-    setViewAttr();
+    document.body.setAttribute('data-view', state.view);
     syncBar();
+    setVarSh();
   }
 
   function syncBar(){
@@ -1265,23 +1423,13 @@ footer b{color:var(--ink2);font-weight:700}
     }
   }
 
-  function scrollTop(smooth){
-    window.scrollTo({top: 0, behavior: smooth ? 'smooth' : 'auto'});
-  }
-
-  function goOverview(smooth){
-    state.view = 'overview'; state.fid = null; state.space = 'all';
-    showMap(); scrollTop(smooth);
-  }
-  function goRoom(sid, smooth){
-    state.space = sid; state.view = 'room'; state.fid = null;
-    showMap(); scrollTop(smooth);
-  }
+  function scrollTop(smooth){ window.scrollTo({top: 0, behavior: smooth ? 'smooth' : 'auto'}); }
+  function goOverview(smooth){ state.view='overview'; state.fid=null; state.space='all'; showMap(); scrollTop(smooth); }
+  function goRoom(sid, smooth){ state.space=sid; state.view='room'; state.fid=null; showMap(); scrollTop(smooth); }
   function goFurn(fid, smooth){
     var info = FMAP[fid];
     if (!info) return;
-    state.space = info.space.id; state.view = 'furn'; state.fid = fid;
-    showMap(); scrollTop(smooth);
+    state.space = info.space.id; state.view='furn'; state.fid=fid; showMap(); scrollTop(smooth);
   }
 
   /* ============================================================
@@ -1292,12 +1440,10 @@ footer b{color:var(--ink2);font-weight:700}
     INDEX = [];
     SPACES.forEach(function(sp){
       sp.furnitures.forEach(function(f){
-        ZS[f.id].forEach(function(z, zi){
+        f.zones.forEach(function(z, zi){
           z.items.forEach(function(name){
-            INDEX.push({
-              sp:sp, f:f, zi:zi, name:name,
-              hay:[norm(sp.name), norm(sp.short), norm(sp.sub), norm(f.name), norm(name)].join(' ')
-            });
+            INDEX.push({sp:sp, f:f, zi:zi, name:name,
+              hay:[norm(sp.name), norm(sp.short), norm(sp.sub), norm(f.name), norm(name)].join(' ')});
           });
         });
       });
@@ -1353,16 +1499,8 @@ footer b{color:var(--ink2);font-weight:700}
   }
 
   /* ============================================================
-     인라인 편집
+     인라인 편집 (자동 저장)
      ============================================================ */
-  function mvSelectsHTML(cur){
-    return '<div class="sels">' +
-      '<div><label>방</label><select class="e-room">' + roomOptions(cur ? cur.rid : '') + '</select></div>' +
-      '<div><label>가구</label><select class="e-furn"></select></div>' +
-      '<div><label>칸</label><select class="e-cell"></select></div>' +
-      '</div>' +
-      '<input class="e-memo" type="text" value="' + esc(cur && cur.memo ? cur.memo : '') + '" placeholder="메모 (선택)">';
-  }
   function roomOptions(curRid){
     return SPACES.map(function(sp){
       return '<option value="' + sp.id + '"' + (sp.id === curRid ? ' selected' : '') + '>' + esc(sp.name) + '</option>';
@@ -1376,18 +1514,27 @@ footer b{color:var(--ink2);font-weight:700}
     }).join('');
   }
   function cellOptions(fid, curZ){
-    var n = (ZS[fid] || []).length;
+    var info = FMAP[fid];
+    var n = info ? info.f.zones.length : 0;
     var o = '';
-    for (var i = 0; i < n; i++){
-      o += '<option value="' + i + '"' + (i === curZ ? ' selected' : '') + '>' + (i + 1) + '번 칸</option>';
-    }
+    for (var i = 0; i < n; i++) o += '<option value="' + i + '"' + (i === curZ ? ' selected' : '') + '>' + (i + 1) + '번 칸</option>';
     return o;
+  }
+  function mvSelectsHTML(cur){
+    return '<div class="sels">' +
+      '<div><label>방</label><select class="e-room">' + roomOptions(cur ? cur.rid : '') + '</select></div>' +
+      '<div><label>가구</label><select class="e-furn"></select></div>' +
+      '<div><label>칸</label><select class="e-cell"></select></div>' +
+      '</div>' +
+      '<input class="e-memo" type="text" value="' + esc(cur && cur.memo ? cur.memo : '') + '" placeholder="메모 (선택)" autocomplete="off">';
   }
 
   function editorHTML(fid, zi){
-    var s = zone(fid, zi);
+    var info = FMAP[fid];
+    if (!info) return '';
+    var s = info.f.zones[zi];
     var cur = s.move;
-    var rid = cur ? cur.rid : (FMAP[fid] ? FMAP[fid].space.id : SPACES[0].id);
+    var rid = cur ? cur.rid : info.space.id;
     var fsel = cur ? cur.fid : (SMAP[rid] && SMAP[rid].furnitures[0] ? SMAP[rid].furnitures[0].id : '');
     var zsel = cur ? cur.z : 0;
     return '<div class="ed">' +
@@ -1397,8 +1544,8 @@ footer b{color:var(--ink2);font-weight:700}
       '<div class="esub" data-for="floor"' + (s.floor ? '' : ' hidden') + '>' +
         '<input class="e-floor" type="text" value="' + esc(s.floor) + '" placeholder="바닥 어디에 있는지 (예: 창고 바닥 왼쪽)"></div>' +
       '<label class="eck"><input type="checkbox" class="e-mvck"' + (cur ? ' checked' : '') + '><span class="cbox"></span>이동 고려</label>' +
-      '<div class="esub" data-for="mv"' + (cur ? '' : ' hidden') + '>' + mvSelectsHTML(cur) + '</div>' +
-      '<p class="none" style="font-size:11px;margin:0 0 6px">저장하면 이 줄에 ‘이동 예정 →’ 으로 표시됩니다.</p>' +
+      '<div class="esub" data-for="mv"' + (cur ? '' : ' hidden') + '>' + (fsel ? mvSelectsHTML(cur) : '<p class="none" style="font-size:11.5px">옮길 수 있는 다른 가구가 없습니다.</p>') + '</div>' +
+      '<p class="none" style="font-size:11px;margin:0 0 6px">다른 곳을 누르면 자동 저장됩니다. 취소를 누르면 되돌아갑니다.</p>' +
       '<div class="ebtns"><button class="e-save" type="button">저장</button><button class="e-cancel" type="button">취소</button></div>' +
       '</div>';
   }
@@ -1418,11 +1565,13 @@ footer b{color:var(--ink2);font-weight:700}
   function openEditor(fid, zi){
     var row = document.getElementById(fid + '-z' + zi);
     if (!row || row.classList.contains('editing')) return;
+    var old = document.querySelector('.row.editing');
+    if (old) saveEditor(old, true);
     var rb = row.querySelector('.rb');
     row.classList.add('editing');
-    row.insertAdjacentHTML('beforeend', '<div style="flex:1 1 auto;min-width:0;margin-left:29px" class="edhost"></div>');
+    row.insertAdjacentHTML('beforeend', '<div style="flex:1 1 auto;min-width:0" class="edhost"></div>');
     row.querySelector('.edhost').innerHTML = editorHTML(fid, zi);
-    rb.hidden = true;
+    if (rb) rb.hidden = true;
     var ed = row.querySelector('.ed');
     fillSelects(ed);
     var inp = ed.querySelector('.e-items');
@@ -1438,63 +1587,349 @@ footer b{color:var(--ink2);font-weight:700}
   }
 
   function readEditor(ed, fid, zi){
-    var items = ed.querySelector('.e-items').value.split(/[,，]/)
+    var itemsEl = ed.querySelector('.e-items');
+    if (!itemsEl) return null;
+    var items = itemsEl.value.split(/[,，;]/)
       .map(function(t){ return t.replace(/\s+/g,' ').trim(); })
       .filter(Boolean)
       .filter(function(t, i, a){ return a.indexOf(t) === i; });
     var floorck = ed.querySelector('.e-floorck').checked;
     var floor = floorck ? (ed.querySelector('.e-floor').value.trim()) : '';
-    if (floorck && !floor && !items.length) floor = '';
     var mvck = ed.querySelector('.e-mvck').checked;
     var move = null;
     if (mvck){
       var roomSel = ed.querySelector('.e-room'), furnSel = ed.querySelector('.e-furn'), cellSel = ed.querySelector('.e-cell');
-      var tf = furnSel.value, tz = parseInt(cellSel.value, 10) || 0;
-      if (tf && !(tf === fid && tz === zi)){
-        move = {rid: roomSel.value, fid: tf, z: tz, memo: ed.querySelector('.e-memo').value.trim()};
+      if (furnSel && cellSel){
+        var tf = furnSel.value, tz = parseInt(cellSel.value, 10) || 0;
+        if (tf && !(tf === fid && tz === zi)){
+          move = {rid: roomSel.value, fid: tf, z: tz, memo: (ed.querySelector('.e-memo') || {value:''}).value.trim()};
+        }
       }
     }
     return {items: items, floor: floor, move: move};
   }
 
-  function saveEditor(row){
+  function saveEditor(row, quiet){
+    if (!row || !row.classList.contains('editing')) return;
     var fid = row.getAttribute('data-fid'), zi = parseInt(row.getAttribute('data-z'), 10);
     var ed = row.querySelector('.ed');
     var v = readEditor(ed, fid, zi);
-    var s = zone(fid, zi);
+    if (!v) return;
+    var info = FMAP[fid];
+    if (!info || !info.f.zones[zi]) return;
+    var s = info.f.zones[zi];
     s.items = v.items; s.floor = v.floor; s.move = v.move;
-    saveZones(); buildIndex(); recount();
+    saveDB(quiet);
+    buildIndex(); recount();
     var sy = window.scrollY;
     row.outerHTML = rowHTML(fid, zi);
     window.scrollTo(0, sy);
-    toast('저장했어요');
+    if (!quiet) toast('저장했어요');
+  }
+
+  function autoSaveRow(row){
+    if (!row || !row.classList.contains('editing')) return;
+    saveEditor(row, true);
+    toast('자동 저장 ✓');
   }
 
   /* ============================================================
      실제 옮기기
      ============================================================ */
   function doMove(fid, zi){
-    var s = zone(fid, zi);
+    var info = FMAP[fid];
+    if (!info) return;
+    var s = info.f.zones[zi];
     if (!s || !s.move) return;
-    var t = zone(s.move.fid, s.move.z);
+    var tf = FMAP[s.move.fid];
+    if (!tf) { toast('옮길 곳이 사라졌어요'); s.move = null; saveDB(); renderFurn(); return; }
+    var t = tf.f.zones[s.move.z];
     if (!t) return;
     if (!s.items.length){ toast('옮길 물건이 없어요'); return; }
     var moved = s.items.slice();
     moved.forEach(function(n){ if (t.items.indexOf(n) < 0) t.items.push(n); });
     if (!t.floor && s.floor) t.floor = s.floor;
     s.items = []; s.floor = ''; s.move = null;
-    saveZones(); buildIndex(); recount();
-    state.fid = fid;
+    saveDB(); buildIndex(); recount();
     showMap();
     var row = document.getElementById(fid + '-z' + zi);
     if (row){ row.classList.add('flash'); setTimeout(function(){ row.classList.remove('flash'); }, 1800); }
     toast('옮겼어요 → ' + moved.slice(0, 2).join(', ') + (moved.length > 2 ? ' 외 ' + (moved.length - 2) + '개' : ''));
   }
 
+  /* ============================================================
+     핀 위치 옮기기
+     ============================================================ */
+  var pinMode = {room:false, furn:false};
+  var drag = null;
+
+  function applyPinMode(){
+    document.body.classList.toggle('pinmode', pinMode.room || pinMode.furn);
+  }
+  function togglePinMode(which){
+    pinMode[which] = !pinMode[which];
+    if (which === 'room') renderRoom(); else renderFurn();
+    toast(pinMode[which] ? '번호를 끌어서 옮기세요' : '번호 위치 옮기기를 껐어요');
+  }
+
+  function startPinDrag(e, pin, box){
+    if (!(pinMode.room || pinMode.furn) || !box) return;
+    drag = {el:pin, box:box, moved:false, sx:e.clientX, sy:e.clientY};
+    pin.classList.add('dragging');
+    if (pin.setPointerCapture){
+      try{ pin.setPointerCapture(e.pointerId); }catch(err){}
+    }
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  function movePinDrag(e){
+    if (!drag) return;
+    var r = drag.box.getBoundingClientRect();
+    if (r.width < 10 || r.height < 10) return;
+    var x = Math.max(2, Math.min(98, (e.clientX - r.left) / r.width * 100));
+    var y = Math.max(2, Math.min(98, (e.clientY - r.top) / r.height * 100));
+    if (Math.abs(e.clientX - drag.sx) + Math.abs(e.clientY - drag.sy) > 3) drag.moved = true;
+    drag.el.style.setProperty('--x', x.toFixed(2) + '%');
+    drag.el.style.setProperty('--y', y.toFixed(2) + '%');
+    drag.x = x; drag.y = y;
+    e.preventDefault();
+  }
+  function endPinDrag(){
+    if (!drag) return;
+    var d = drag; drag = null;
+    d.el.classList.remove('dragging');
+    if (!d.moved) return;
+    var el = d.el;
+    var x = d.x, y = d.y;
+    var furnId = el.getAttribute('data-furn');
+    if (furnId && FMAP[furnId]){
+      FMAP[furnId].f.plan = {x: x, y: y};
+      saveDB(); toast('번호 위치를 저장했어요');
+      return;
+    }
+    var fid = el.getAttribute('data-fid'), ph = parseInt(el.getAttribute('data-ph'), 10) || 0;
+    var zi = parseInt(el.getAttribute('data-z'), 10);
+    if (fid && FMAP[fid]){
+      var photos = FMAP[fid].f.photos || [];
+      var p = photos[ph];
+      if (p && p.pins){
+        p.pins.forEach(function(q){ if (q[0] === zi){ q[1] = x; q[2] = y; } });
+        saveDB(); toast('번호 위치를 저장했어요');
+      }
+    }
+  }
+
+  function resetPinsRoom(){
+    var sp = SMAP[state.space];
+    if (!sp) return;
+    var b = BASE_SPACES.filter(function(s){ return s.id === sp.id; })[0];
+    if (!b){ toast('기준 위치가 없어요'); return; }
+    if (!window.confirm(sp.name + '의 번호 위치를 처음 위치로 되돌릴까요?')) return;
+    var byId = {};
+    b.furnitures.forEach(function(f){ byId[f.id] = f; });
+    sp.furnitures.forEach(function(f){
+      if (byId[f.id] && byId[f.id].plan) f.plan = {x: byId[f.id].plan.x, y: byId[f.id].plan.y};
+      if (byId[f.id] && byId[f.id].photos && f.photos){
+        byId[f.id].photos.forEach(function(bp, i){
+          if (f.photos[i] && bp.pins) f.photos[i].pins = deep(bp.pins);
+        });
+      }
+    });
+    saveDB(); renderRoom();
+    toast('번호 위치를 처음으로 되돌렸어요');
+  }
+
+  function resetPinsFurn(){
+    var info = FMAP[state.fid];
+    if (!info) return;
+    var b = null;
+    BASE_SPACES.forEach(function(s){ s.furnitures.forEach(function(f){ if (f.id === info.f.id) b = f; }); });
+    if (!b){ toast('기준 위치가 없어요'); return; }
+    if (!window.confirm('이 가구 사진의 번호 위치를 처음 위치로 되돌릴까요?')) return;
+    if (b.photos && info.f.photos){
+      b.photos.forEach(function(bp, i){ if (info.f.photos[i] && bp.pins) info.f.photos[i].pins = deep(bp.pins); });
+    }
+    if (b.plan) info.f.plan = {x: b.plan.x, y: b.plan.y};
+    saveDB(); renderFurn();
+    toast('번호 위치를 처음으로 되돌렸어요');
+  }
+
+  /* ============================================================
+     가구 · 칸 추가/삭제
+     ============================================================ */
+  function openAddFurn(){
+    var box = $('#addFurnBox');
+    if (!box) return;
+    box.hidden = false;
+    var inp = box.querySelector('.af-name');
+    if (inp) inp.focus({preventScroll:true});
+  }
+  function closeAddFurn(){
+    var box = $('#addFurnBox');
+    if (box) box.hidden = true;
+  }
+  function addFurniture(){
+    var sp = SMAP[state.space];
+    var box = $('#addFurnBox');
+    if (!sp || !box) return;
+    var name = box.querySelector('.af-name').value.trim();
+    var raw = parseInt(box.querySelector('.af-cells').value, 10);
+    var cells = (isFinite(raw) && raw > 0) ? Math.min(40, raw) : 1;
+    if (!name){ toast('가구 이름을 적어 주세요'); box.querySelector('.af-name').focus(); return; }
+    var id = 'f-u' + Date.now().toString(36);
+    var zones = [];
+    for (var i = 0; i < cells; i++) zones.push([]);
+    var f = nfurn({id:id, name:name, plan:{x:50, y:50}, zones:zones}, sp.furnitures.length);
+    /* 새 가구는 도면 가운데에서 조금씩 비껴 놓는다 */
+    var n = sp.furnitures.length;
+    f.plan = {x: 50, y: 46 + (n % 5) * 4};
+    sp.furnitures.push(f);
+    saveDB(); rebuild(); renderRoom();
+    toast('"' + name + '" 가구를 추가했어요');
+  }
+  function delFurniture(){
+    var info = FMAP[state.fid];
+    if (!info) return;
+    var sp = info.space, f = info.f;
+    if (sp.furnitures.length <= 1){ toast('방에 가구가 하나뿐이라 지울 수 없어요'); return; }
+    if (!window.confirm('"' + f.name + '" 가구를 지울까요?\n\n이 가구의 ' + f.zones.length + '칸에 적힌 내용도 함께 사라집니다.')) return;
+    sp.furnitures = sp.furnitures.filter(function(x){ return x.id !== f.id; });
+    /* 이 가구를 가리키던 이동 예정 정리 */
+    SPACES.forEach(function(s){ s.furnitures.forEach(function(x){
+      x.zones.forEach(function(z){ if (z.move && z.move.fid === f.id) z.move = null; });
+    }); });
+    saveDB(); rebuild();
+    state.fid = null; state.view = 'room'; showMap();
+    toast('가구를 지웠어요');
+  }
+  function renameFurniture(){
+    var info = FMAP[state.fid];
+    if (!info) return;
+    var h = $('#viewFurn .fname-h');
+    if (!h || h.tagName === 'INPUT') return;
+    var cur = info.f.name;
+    h.outerHTML = '<input class="fname" type="text" value="' + esc(cur) + '" aria-label="가구 이름" autocomplete="off">';
+    var inp = $('#viewFurn .fname');
+    inp.focus(); inp.select();
+    var done = function(commit){
+      var v = inp.value.trim();
+      var f = FMAP[state.fid] && FMAP[state.fid].f;
+      if (commit && v && f && v !== cur){ f.name = v; saveDB(); toast('이름을 바꿨어요'); }
+      renderFurn();
+    };
+    inp.addEventListener('keydown', function(e){
+      if (e.key === 'Enter'){ e.preventDefault(); done(true); }
+      else if (e.key === 'Escape'){ e.preventDefault(); done(false); }
+    });
+    inp.addEventListener('blur', function(){ setTimeout(function(){ if (document.body.contains(inp)) done(true); }, 120); });
+  }
+
+  function addCell(){
+    var info = FMAP[state.fid];
+    if (!info) return;
+    var f = info.f;
+    if (f.zones.length >= 40){ toast('칸은 40개까지 만들 수 있어요'); return; }
+    f.zones.push({items:[], floor:'', move:null});
+    saveDB(); rebuild(); renderFurn();
+    var last = document.getElementById(f.id + '-z' + (f.zones.length - 1));
+    if (last) flashEl(last);
+    toast((f.zones.length) + '번 칸을 추가했어요');
+  }
+  function delCell(fid, zi){
+    var info = FMAP[fid];
+    if (!info) return;
+    var f = info.f;
+    if (f.zones.length <= 1){ toast('칸이 하나뿐이라 지울 수 없어요'); return; }
+    var s = f.zones[zi];
+    if (s && s.items.length && !window.confirm((zi + 1) + '번 칸을 지울까요?\n\n' + s.items.join(', ') + ' 내용도 함께 사라집니다.')) return;
+    f.zones.splice(zi, 1);
+    /* 이동 예정 인덱스 조정 */
+    SPACES.forEach(function(sp){
+      sp.furnitures.forEach(function(x){
+        x.zones.forEach(function(z){
+          if (!z.move || z.move.fid !== f.id) return;
+          if (z.move.z === zi) z.move = null;
+          else if (z.move.z > zi) z.move.z = z.move.z - 1;
+        });
+      });
+    });
+    saveDB(); rebuild(); renderFurn();
+    var sy = window.scrollY;
+    renderFurn(); window.scrollTo(0, sy);
+    toast((zi + 1) + '번 칸을 지웠어요');
+  }
+
+  /* ============================================================
+     계절 · 복사 · JSON
+     ============================================================ */
+  function renderSeasonBar(){
+    $$('.season').forEach(function(b){
+      b.setAttribute('aria-selected', b.getAttribute('data-season') === DB.active ? 'true' : 'false');
+      var sm = b.querySelector('small');
+      if (sm) sm.textContent = b.getAttribute('data-season') === DB.active ? '현재' : '';
+    });
+    var other = DB.active === 'winter' ? 'summer' : 'winter';
+    var btn = $('#copySeason');
+    if (btn) btn.textContent = '지금 배치를 ' + SEASONS[other].name + '으로 복사';
+  }
+  function setSeason(s){
+    if (!SEASONS[s] || s === DB.active) return;
+    DB.active = s;
+    saveDB();
+    rebuild(); renderSeasonBar();
+    state.view = 'overview'; state.space = 'all'; state.fid = null;
+    showMap();
+    toast(SEASONS[s].emoji + ' ' + SEASONS[s].name + ' 배치로 바꿨어요');
+  }
+  function copySeason(){
+    var other = DB.active === 'winter' ? 'summer' : 'winter';
+    if (!window.confirm('지금 ' + SEASONS[DB.active].name + ' 배치를 ' + SEASONS[other].name + ' 배치로 덮어쓸까요?\n\n' + SEASONS[other].name + ' 쪽에 저장해 둔 내용은 사라집니다.')) return;
+    DB.seasons[other].spaces = deep(DB.seasons[DB.active].spaces);
+    saveDB();
+    toast(SEASONS[DB.active].name + ' 배치를 ' + SEASONS[other].name + '으로 복사했어요');
+  }
+
+  function exportJSON(){
+    var data = {app:'우리집 수납 지도', v:6, exportedAt: new Date().toISOString(), active: DB.active, seasons: DB.seasons, ck: CK};
+    var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    var d = new Date();
+    a.href = url;
+    a.download = '우리집-수납지도-' + d.getFullYear() + ('0'+(d.getMonth()+1)).slice(-2) + ('0'+d.getDate()).slice(-2) + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 5000);
+    toast('JSON 파일을 내려받았어요');
+  }
+  function importJSON(file){
+    if (!file) return;
+    var fr = new FileReader();
+    fr.onload = function(){
+      var data = null;
+      try{ data = JSON.parse(String(fr.result)); }catch(e){}
+      if (!data || !data.seasons || !data.seasons.winter || !Array.isArray(data.seasons.winter.spaces)){
+        toast('수납 지도 JSON 파일이 아니에요');
+        return;
+      }
+      if (!window.confirm('지금 이 기기의 수납 내용을 파일 내용으로 바꿀까요?\n\n지금 내용은 덮어써집니다.')) return;
+      DB.seasons.winter = {spaces: data.seasons.winter.spaces.map(nspace)};
+      DB.seasons.summer = (data.seasons && data.seasons.summer && Array.isArray(data.seasons.summer.spaces))
+        ? {spaces: data.seasons.summer.spaces.map(nspace)} : {spaces: deep(DB.seasons.winter.spaces)};
+      DB.active = data.active === 'summer' ? 'summer' : 'winter';
+      if (Array.isArray(data.ck)) CK = data.ck.filter(function(c){ return c && typeof c.t === 'string'; }).map(function(c, i){
+        return {id:String(c.id||('c'+i)), t:String(c.t), h:typeof c.h==='string'?c.h:'', done:!!c.done};
+      });
+      DB.ck = CK;
+      saveDB();
+      location.reload();
+    };
+    fr.readAsText(file);
+  }
+
   function resetAll(){
-    if (!window.confirm('직접 고친 수납 내용과 체크리스트를 모두 처음 상태로 되돌릴까요? 되돌릴 수 없습니다.')) return;
-    try{ localStorage.removeItem(ZKEY); }catch(e){}
-    try{ localStorage.removeItem(CKKEY); }catch(e){}
+    if (!window.confirm('이 기기에 저장한 수납 내용과 체크리스트를 처음 상태로 되돌릴까요?\n되돌릴 수 없습니다.')) return;
+    try{ localStorage.removeItem(DBKEY); }catch(e){}
+    try{ localStorage.removeItem(OLDZKEY); }catch(e){}
     location.reload();
   }
 
@@ -1515,35 +1950,34 @@ footer b{color:var(--ink2);font-weight:700}
      체크리스트
      ============================================================ */
   var CK_DEFAULT = [
-    {t:'방 2 ↔ 방 3 안방 맞교환', h:'화장실 앞 방 3 = 안방, 방 2 = 운동방 · 팬트리'},
+    {t:'방 2 ↔ 방 3 안방 맞교환', h:'화장실 앞 방 3 = 안방, 방 2 = 재고실'},
     {t:'방 3의 바로방가구 수납장 + 바지걸이 행거 → 방 1 드레스룸으로 이동', h:'옷은 한 방에 모으기'},
     {t:'방 3 창 아래 3도어 수납장 → 방 2 재고 팬트리로 이동', h:'높은선반수납장'},
     {t:'방 1의 5단 서랍장 → 방 3 안방으로 이동', h:'운동복 · 니트 · 여름잠옷'},
-    {t:'5단 위 압축백 2개 + 이불 → 침대 벙커 1로', h:'여름옷 1 · 겨울옷 1 · 이불'},
-    {t:'침대 벙커 2에 부피 큰 캠핑용품 넣기', h:'베란다는 자리가 없어 여기로'},
-    {t:'주방 스피드랙에서 화장품 · 판매용 암튜브 · 파우치 · 택배봉투 빼기', h:'식료품 · 술 · 휴지 · 물티슈 전용화'},
+    {t:'5단 위 압축백 2개 + 이불 → 침대 벙커 안쪽 2칸으로', h:'여름옷 1 · 겨울옷 1 · 이불'},
+    {t:'침대 벙커 앞쪽 2칸에 자주 쓰는 침구 넣기', h:'계절 이불커버 · 여분 수건'},
+    {t:'로봇청소기 스테이션을 거실로 옮기기', h:'안방에서 거실 쪽으로'},
+    {t:'주방 스피드랙에서 화장품 · 판매용품 · 파우치 · 택배봉투 빼기', h:'식료품 · 술 · 휴지 · 물티슈 전용화'},
     {t:'스피드랙 캠핑용품은 맨 아래 1칸만 남기기', h:'큰 것은 방 3, 가벼운 소품은 거실 상단장'},
     {t:'주방 · 화장대 화장품 · 바디 · 샴푸 재고 → 방 2 3도어 수납장 한 곳으로', h:'안 뜯은 것만'},
     {t:'이케아 사다리 선반 치우기 — 스피드랙 앞 동선 확보', h:'가전은 조리대 · 싱크대로'},
-    {t:'거실 TV 밑 요가매트 · 운동용품 → 방 2 운동 존으로 이동', h:'거실은 공기청정기 · 작은 스툴만'},
+    {t:'거실 TV 밑 요가매트 · 운동용품 → 방 2 재고실로 이동', h:'거실은 공기청정기 · 작은 스툴만'},
     {t:'거실 상단 4칸 장 4번 칸 = 가벼운 캠핑 소품 여유분', h:'부피 큰 캠핑용품은 여기 말고 방 3'},
-    {t:'작은 흰색 행거 · 원목 스탠드 옷걸이 2개 정리 · 처분', h:'방 3과 거실'},
-    {t:'로봇청소기 스테이션 자리 확정', h:'방 3 또는 거실 유지'},
+    {t:'원목 스탠드 옷걸이 정리 · 처분', h:'방 3과 거실'},
     {t:'폴딩박스 · 서랍 앞면 마스킹테이프 + 네임펜 라벨링', h:'서랍 앞면 왼쪽 위, 큰 글씨'}
   ];
   var CK = [];
   function loadCk(){
-    var raw;
-    try{ raw = JSON.parse(localStorage.getItem(CKKEY) || 'null'); }catch(e){ raw = null; }
-    if (Array.isArray(raw) && raw.length){
-      CK = raw.filter(function(c){ return c && typeof c.t === 'string'; }).map(function(c, i){
-        return {id: String(c.id || ('c' + i)), t: c.t, h: typeof c.h === 'string' ? c.h : '', done: !!c.done};
+    if (Array.isArray(DB.ck) && DB.ck.length){
+      CK = DB.ck.filter(function(c){ return c && typeof c.t === 'string'; }).map(function(c, i){
+        return {id:String(c.id || ('c'+i)), t:c.t, h: typeof c.h === 'string' ? c.h : '', done:!!c.done};
       });
-      if (CK.length) return;
+      return;
     }
-    CK = CK_DEFAULT.map(function(c, i){ return {id:'c' + (i + 1), t:c.t, h:c.h, done:false}; });
+    CK = CK_DEFAULT.map(function(c, i){ return {id:'c'+(i+1), t:c.t, h:c.h, done:false}; });
+    DB.ck = CK;
   }
-  function saveCk(){ try{ localStorage.setItem(CKKEY, JSON.stringify(CK)); }catch(e){} }
+  function saveCk(){ DB.ck = CK; saveDB(true); }
 
   function renderChecks(){
     $('#checklist').innerHTML = CK.map(function(c){
@@ -1664,7 +2098,7 @@ footer b{color:var(--ink2);font-weight:700}
      이벤트
      ============================================================ */
   function bind(){
-    var chips = ['건전지','샴푸','잠옷','출장','시리얼','캠핑','리셀','마스크','약','휴지'];
+    var chips = ['건전지','샴푸','잠옷','세제','시리얼','캠핑','리셀','마스크','캐리어','휴지'];
     $('#chips').innerHTML = chips.map(function(c){
       return '<button class="chip" type="button" data-q="' + c + '">' + c + '</button>';
     }).join('');
@@ -1688,6 +2122,36 @@ footer b{color:var(--ink2);font-weight:700}
       $('#q').focus();
     });
 
+    /* 계절 버튼 */
+    $$('.season').forEach(function(b){
+      b.addEventListener('click', function(){ setSeason(b.getAttribute('data-season')); });
+    });
+
+    /* 핀 드래그 */
+    document.addEventListener('pointerdown', function(e){
+      var pin = e.target.closest ? e.target.closest('.pin') : null;
+      if (!pin) return;
+      if (!(pinMode.room || pinMode.furn)) return;
+      var box = pin.closest('.planbox') || pin.closest('.photo');
+      startPinDrag(e, pin, box);
+    }, {passive:false});
+    document.addEventListener('pointermove', movePinDrag, {passive:false});
+    document.addEventListener('pointerup', endPinDrag);
+    document.addEventListener('pointercancel', endPinDrag);
+
+    /* 인라인 편집 자동 저장: 포커스가 편집기 밖으로 나갈 때 */
+    document.addEventListener('focusout', function(e){
+      var row = e.target.closest ? e.target.closest('.row.editing') : null;
+      if (!row) return;
+      setTimeout(function(){
+        if (!document.body.contains(row) || !row.classList.contains('editing')) return;
+        var a = document.activeElement;
+        if (a && row.contains(a)) return;
+        if (row.getAttribute('data-cancel') === '1') return;
+        autoSaveRow(row);
+      }, 90);
+    });
+
     document.addEventListener('click', function(e){
       var t = e.target;
 
@@ -1697,6 +2161,7 @@ footer b{color:var(--ink2);font-weight:700}
       var cancel = t.closest('.e-cancel');
       if (cancel){
         var crow = cancel.closest('.row');
+        crow.setAttribute('data-cancel', '1');
         closeEditor(crow.getAttribute('data-fid'), parseInt(crow.getAttribute('data-z'), 10));
         return;
       }
@@ -1706,7 +2171,18 @@ footer b{color:var(--ink2);font-weight:700}
         doMove(mvgo.getAttribute('data-mvgo'), parseInt(mvgo.getAttribute('data-z'), 10));
         return;
       }
+      /* 칸 삭제 */
+      var delRow = t.closest('[data-del-row]');
+      if (delRow){
+        e.stopPropagation();
+        delCell(delRow.getAttribute('data-del-row'), parseInt(delRow.getAttribute('data-z'), 10));
+        return;
+      }
       if (t.closest('.row.editing')) return;
+
+      /* 편집 중인 줄이 있으면 먼저 저장 */
+      var editing = document.querySelector('.row.editing');
+      if (editing){ saveEditor(editing, true); }
 
       /* 검색어 칩 */
       var chip = t.closest('.chip[data-q]');
@@ -1717,9 +2193,10 @@ footer b{color:var(--ink2);font-weight:700}
         return;
       }
 
-      /* 도면 핀 */
+      /* 핀 (옮기기 모드에서는 클릭 무시) */
       var pin = t.closest('.pin');
       if (pin){
+        if (pinMode.room || pinMode.furn) return;
         var f2 = pin.getAttribute('data-furn');
         if (f2){ state.fid = f2; state.view = 'furn'; showMap(); scrollTop(false); return; }
         var sp2 = pin.getAttribute('data-space');
@@ -1759,26 +2236,37 @@ footer b{color:var(--ink2);font-weight:700}
       /* 검색 결과 */
       var res = t.closest('.result[data-fid]');
       if (res){
-        pending = {fid: res.getAttribute('data-fid'), z: parseInt(res.getAttribute('data-z'), 10)};
+        var pfid = res.getAttribute('data-fid'), pz = parseInt(res.getAttribute('data-z'), 10);
         setQuery('');
         $('#q').value = '';
-        $('body').classList.remove('searching');
-        goFurn(pending.fid, false);
+        document.body.classList.remove('searching');
+        goFurn(pfid, false);
         requestAnimationFrame(function(){
-          requestAnimationFrame(function(){
-            if (pending){ markRow(pending.fid, pending.z); pending = null; }
-          });
+          requestAnimationFrame(function(){ markRow(pfid, pz); });
         });
         return;
       }
 
-      /* 뒤로 / 초기화 */
-      var back = t.closest('[data-act]');
-      if (back){
-        var act = back.getAttribute('data-act');
-        if (act === 'overview') goOverview(false);
-        else if (act === 'room') goRoom(state.space, false);
-        else if (act === 'reset-all') resetAll();
+      /* 동작 버튼 */
+      var act = t.closest('[data-act]');
+      if (act){
+        var a = act.getAttribute('data-act');
+        if (a === 'overview') goOverview(false);
+        else if (a === 'room') goRoom(state.space, false);
+        else if (a === 'reset-all') resetAll();
+        else if (a === 'export') exportJSON();
+        else if (a === 'import'){ var fi = $('#importFile'); if (fi) fi.click(); }
+        else if (a === 'copy-season') copySeason();
+        else if (a === 'pinmode-room') togglePinMode('room');
+        else if (a === 'pinmode-furn') togglePinMode('furn');
+        else if (a === 'reset-pins-room') resetPinsRoom();
+        else if (a === 'reset-pins-furn') resetPinsFurn();
+        else if (a === 'add-furn') openAddFurn();
+        else if (a === 'add-furn-no') closeAddFurn();
+        else if (a === 'add-furn-ok') addFurniture();
+        else if (a === 'add-cell') addCell();
+        else if (a === 'del-furn') delFurniture();
+        else if (a === 'rename-furn') renameFurniture();
         return;
       }
 
@@ -1787,29 +2275,36 @@ footer b{color:var(--ink2);font-weight:700}
       if (tab){ setTab(tab.getAttribute('data-tab')); return; }
     });
 
+    /* 파일 가져오기 */
+    var fi2 = $('#importFile');
+    if (fi2) fi2.addEventListener('change', function(e){
+      var f = e.target.files && e.target.files[0];
+      importJSON(f);
+      e.target.value = '';
+    });
+
     /* 편집기 체크박스 → 하위 입력 토글 */
     document.addEventListener('change', function(e){
       var t = e.target;
       if (t.classList.contains('e-floorck')){
         var host = t.closest('.ed');
         var box = host.querySelector('[data-for="floor"]');
-        box.hidden = !t.checked;
-        if (t.checked) host.querySelector('.e-floor').focus({preventScroll:true});
+        if (box) box.hidden = !t.checked;
+        if (t.checked && host.querySelector('.e-floor')) host.querySelector('.e-floor').focus({preventScroll:true});
       }
       if (t.classList.contains('e-mvck')){
         var ed = t.closest('.ed');
         var mbox = ed.querySelector('[data-for="mv"]');
-        mbox.hidden = !t.checked;
+        if (mbox) mbox.hidden = !t.checked;
         if (t.checked) fillSelects(ed);
       }
       if (t.classList.contains('e-room')){
-        var ed2 = t.closest('.ed');
-        fillSelects(ed2);
+        fillSelects(t.closest('.ed'));
       }
       if (t.classList.contains('e-furn')){
         var ed3 = t.closest('.ed');
         var cellSel = ed3.querySelector('.e-cell');
-        cellSel.innerHTML = cellOptions(t.value, 0);
+        if (cellSel) cellSel.innerHTML = cellOptions(t.value, 0);
       }
     });
 
@@ -1853,9 +2348,13 @@ footer b{color:var(--ink2);font-weight:700}
       if (e.key === 'Enter' && t.classList && t.classList.contains('e-items')){
         e.preventDefault(); saveEditor(t.closest('.row')); return;
       }
+      if (e.key === 'Enter' && t.classList && t.classList.contains('af-name')){
+        e.preventDefault(); addFurniture(); return;
+      }
       if (e.key === 'Escape' && t.classList && (t.classList.contains('e-items') || t.classList.contains('e-floor') || t.classList.contains('e-memo'))){
         e.preventDefault();
         var r = t.closest('.row');
+        r.setAttribute('data-cancel', '1');
         closeEditor(r.getAttribute('data-fid'), parseInt(r.getAttribute('data-z'), 10));
         return;
       }
@@ -1919,10 +2418,11 @@ footer b{color:var(--ink2);font-weight:700}
   /* ============================================================
      시작
      ============================================================ */
-  loadZones();
+  loadDB();
+  rebuild();
   loadCk();
-  recount();
-  buildIndex();
+  saveDB(true);
+  renderSeasonBar();
   setTab('map', true);
   renderAdvice();
   renderChecks();
