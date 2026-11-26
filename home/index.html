@@ -283,6 +283,28 @@ body.searching main{padding-top:10px}
 .badge.out{color:#8A817A;background:#F1EDE7}
 .badge.nophoto{color:var(--ink3);background:#F4EFE8;font-weight:700}
 .f-note{font-size:12px;color:var(--ink2);line-height:1.55;margin-top:6px;word-break:keep-all;overflow-wrap:anywhere}
+
+/* 가구 내부 도식 */
+.figbox{
+  display:flex;gap:13px;align-items:center;flex-wrap:wrap;margin-top:9px;
+  padding:10px 11px;background:#fff;border:1px solid var(--line2);border-radius:12px;
+}
+.fig{height:148px;width:auto;max-width:100%;flex:0 0 auto;display:block}
+@media(max-width:520px){.fig{height:122px}.figbox{gap:10px;padding:9px 10px}.fig-cap{flex:1 1 130px}}
+.fig text{font-family:var(--font);font-weight:800}
+.fcell{cursor:pointer}
+.fcell .c{transition:fill .12s}
+.fcell:hover .c{fill:#FBEADF}
+.fcell:focus{outline:none}
+.fcell:focus .c{fill:#FBEADF}
+.fig-cap{flex:1 1 140px;min-width:0;font-size:11.5px;color:var(--ink2);line-height:1.55;word-break:keep-all;overflow-wrap:anywhere}
+.fig-cap b{display:block;font-size:11.5px;font-weight:800;color:var(--ink);letter-spacing:-.02em;margin-bottom:1px}
+.fig-hint{display:block;margin-top:5px;font-size:10.5px;color:var(--ink3)}
+.zn{
+  display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;
+  background:#fff;border:1px solid var(--line);font-size:9.5px;font-weight:800;
+  color:var(--ink2);margin-right:4px;vertical-align:1px;line-height:1;
+}
 .cells{margin-top:9px;display:grid;gap:6px}
 .cells.grid{grid-template-columns:repeat(auto-fit,minmax(132px,1fr))}
 .cells.stack{grid-template-columns:minmax(0,1fr)}
@@ -436,7 +458,7 @@ footer b{color:var(--ink2);font-weight:700}
   <header class="hero">
     <p class="eyebrow">유자네 집 · Home Storage Map v2</p>
     <h1>우리집 수납 지도</h1>
-    <p class="lede">방을 고르면 <b>그 방 사진 위 숫자 핀</b>이 바로 뜹니다. 핀을 누르면 아래 카드로 이동하고, 물건 이름을 검색하면 <b>방 → 가구 → 몇 번째 칸</b>까지 한 번에 나와요.</p>
+    <p class="lede">방을 고르면 <b>그 방 사진 위 숫자 핀</b>이 바로 뜹니다. 문이 닫힌 가구는 <b>칸 구성 도식</b>으로 내부 번호까지 보여주고, 물건 이름을 검색하면 <b>방 → 가구 → 몇 번째 칸</b>까지 한 번에 나와요.</p>
     <ul class="stats" id="stats"></ul>
   </header>
 
@@ -1016,6 +1038,62 @@ footer b{color:var(--ink2);font-weight:700}
     }
   ];
 
+  /* ============================================================
+     가구 내부 도식 (정면 기준 · 칸 번호는 카드의 칸 번호와 1:1)
+     [x, y, 폭, 높이, 종류] — 종류: hang 걸이 / shelf 선반 / drawer 서랍 /
+     door 여닫이 / open 빈칸 / box 기기 / mattress 매트리스(번호 없음)
+     ============================================================ */
+  var FIGS = {
+    'f-r1-1': {h:120, note:'3칸 · 좌 2단 봉 / 중앙 선반·행거·서랍 / 우측 세로분할', cells:[
+      [0,0,33,40,'hang'],[0,40,33,60,'hang'],
+      [33,0,30,13,'shelf'],[33,13,30,45,'hang'],[33,58,30,42,'drawer'],
+      [63,0,37,34,'hang'],[63,34,19,66,'hang'],[82,34,18,66,'open']
+    ]},
+    'f-r1-2': {h:100, note:'건조기 · 세탁기 적층 + 위 선반 · 옆 트롤리', cells:[
+      [0,0,62,42,'box'],[0,42,62,58,'box'],[62,0,38,70,'shelf'],[62,70,38,30,'shelf']
+    ]},
+    'f-r1-5': {h:110, note:'상단 겉옷 · 하단 바지', cells:[
+      [0,0,100,38,'hang'],[0,38,100,62,'hang']
+    ]},
+    'f-r2-2': {h:70, note:'위 2칸 · 아래 2칸 (좌 2도어 / 우 1도어)', cells:[
+      [0,0,65,45,'door'],[65,0,35,45,'door'],[0,45,50,55,'door'],[50,45,50,55,'door']
+    ]},
+    'f-r3-1': {h:72, note:'좌측 선반 2단 · 중앙·우측 서랍 · 바퀴 스툴', cells:[
+      [0,0,25,50,'shelf'],[0,50,25,50,'shelf'],[25,0,32,26,'drawer'],[25,26,32,74,'drawer'],
+      [57,0,33,100,'drawer'],[92,58,8,42,'open']
+    ]},
+    'f-r3-2': {h:58, note:'매트리스 아래 3서랍 + 매트리스 아래 수납', cells:[
+      [0,0,100,34,'mattress'],
+      [0,34,18,66,'drawer'],[18,34,18,66,'drawer'],[36,34,18,66,'drawer'],
+      [54,34,24,66,'open'],[78,34,22,66,'open']
+    ]},
+    'f-r3-3': {h:110, note:'1~5층 서랍', cells:[
+      [0,0,100,20,'drawer'],[0,20,100,20,'drawer'],[0,40,100,20,'drawer'],[0,60,100,20,'drawer'],[0,80,100,20,'drawer']
+    ]},
+    'f-r4-3': {h:46, note:'1~4칸', cells:[
+      [0,0,25,100,'door'],[25,0,25,100,'door'],[50,0,25,100,'door'],[75,0,25,100,'door']
+    ]},
+    'f-r4-4': {h:100, note:'1~4번 서랍', cells:[
+      [0,0,100,25,'drawer'],[0,25,100,25,'drawer'],[0,50,100,25,'drawer'],[0,75,100,25,'drawer']
+    ]},
+    'f-r5-1': {h:125, note:'빌트인 상부장 · 상단 · 중앙 · 하단 · 맨 아래', cells:[
+      [0,0,100,16,'door'],[0,16,100,26,'shelf'],[0,42,100,26,'shelf'],[0,68,100,20,'shelf'],[0,88,100,12,'shelf']
+    ]},
+    'f-r5-3': {h:46, note:'1~4칸', cells:[
+      [0,0,25,100,'door'],[25,0,25,100,'door'],[50,0,25,100,'door'],[75,0,25,100,'door']
+    ]},
+    'f-r5-4': {h:80, note:'윗줄 5칸 · 아랫줄 4칸', cells:[
+      [0,0,20,50,'door'],[20,0,20,50,'door'],[40,0,20,50,'door'],[60,0,20,50,'door'],[80,0,20,50,'door'],
+      [0,50,25,50,'door'],[25,50,25,50,'door'],[50,50,25,50,'door'],[75,50,25,50,'door']
+    ]},
+    'f-r5-5': {h:110, note:'4단 사다리 선반', cells:[
+      [0,0,100,37,'shelf'],[0,37,100,33,'shelf'],[0,70,100,30,'shelf']
+    ]},
+    'f-r6-2': {h:46, note:'바구니 2개', cells:[
+      [0,0,48,100,'open'],[52,0,48,100,'open']
+    ]}
+  };
+
   /* 도면 핀 (도면 이미지 기준 %) */
   var PLAN = {src:'img/floorplan.jpg', alt:'집 전체 3D 도면',
     pins:[
@@ -1145,6 +1223,41 @@ footer b{color:var(--ink2);font-weight:700}
     return '<span class="' + cls + '"' + (title ? ' title="' + title + '"' : '') + '>' + esc(it.n) + '</span>';
   }
 
+  function figHTML(f){
+    var g = f.fig;
+    if (!g) return '';
+    var H = g.h || 100, SY = H / 100, k = 0;
+    var fs = Math.max(3.4, Math.min(11, H * 0.085));
+    var cells = g.cells.map(function(c){
+      var x = c[0], y = c[1] * SY, w = c[2], h = c[3] * SY, t = c[4];
+      var n = (t === 'mattress') ? 0 : ++k;
+      var fill = '#FCFAF6', stroke = '#E2D7C7', extra = '', dash = '';
+      if (t === 'hang'){ fill = '#F7F0E7'; extra = '<line x1="' + (x + w * .22) + '" y1="' + (y + h * .2) + '" x2="' + (x + w * .78) + '" y2="' + (y + h * .2) + '" stroke="#C9B79B" stroke-width="1" stroke-linecap="round"/>'; }
+      else if (t === 'shelf'){ fill = '#FCFAF5'; }
+      else if (t === 'drawer'){ fill = '#F4EDE2'; extra = '<line x1="' + (x + w * .33) + '" y1="' + (y + h * .68) + '" x2="' + (x + w * .67) + '" y2="' + (y + h * .68) + '" stroke="#C6B49A" stroke-width="1.4" stroke-linecap="round"/>'; }
+      else if (t === 'door'){ fill = '#F7F1E9'; extra = '<line x1="' + (x + w * .5) + '" y1="' + (y + h * .6) + '" x2="' + (x + w * .5) + '" y2="' + (y + h - 2) + '" stroke="#DCCFBE" stroke-width="1"/>'; }
+      else if (t === 'open'){ fill = '#FFFDF9'; dash = ' stroke-dasharray="2.5 2.5"'; }
+      else if (t === 'box'){ fill = '#F1EAE0'; }
+      else if (t === 'mattress'){ fill = '#F6EFE6'; }
+      var nY = (t === 'drawer' || t === 'door') ? (y + h * 0.36) : (y + h / 2 + fs * 0.35);
+      nY = Math.max(y + fs * 0.95, Math.min(y + h - fs * 0.3, nY));
+      var lbl = (t === 'mattress')
+        ? '<text x="' + (x + w / 2) + '" y="' + (y + h / 2 + fs * .3) + '" text-anchor="middle" font-size="' + (fs * .62).toFixed(1) + '" fill="#B3A697">매트리스</text>'
+        : '<text x="' + (x + w / 2) + '" y="' + nY + '" text-anchor="middle" font-size="' + fs.toFixed(1) + '" fill="#5E5348">' + n + '</text>';
+      var inner = '<rect class="c" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="2" fill="' + fill + '" stroke="' + stroke + '" stroke-width=".8"' + dash + '/>' + extra + lbl;
+      if (!n) return '<g>' + inner + '</g>';
+      return '<g class="fcell" data-zone="' + f.id + '-z' + (n - 1) + '" role="button" tabindex="0" aria-label="' + esc(f.name) + ' ' + n + '번 칸">' + inner + '</g>';
+    }).join('');
+    return '<div class="figbox">' +
+      '<svg class="fig" viewBox="-3 -3 106 ' + (H + 6) + '" role="img" aria-label="' + esc(f.name) + ' 칸 구성 도식">' +
+        '<rect x="0" y="0" width="100" height="' + H + '" rx="2.5" fill="#FFFDF9" stroke="#D8C9B6" stroke-width="1.4"/>' +
+        cells +
+      '</svg>' +
+      '<div class="fig-cap"><b>칸 구성 도식</b>' + esc(g.note || '') +
+        '<span class="fig-hint">번호를 누르면 아래 그 칸으로 이동해요.</span></div>' +
+      '</div>';
+  }
+
   function furnHTML(f, room){
     var s = STATUS[f.status] || STATUS.keep;
     var badge = f.badge || s.t;
@@ -1161,11 +1274,12 @@ footer b{color:var(--ink2);font-weight:700}
       (!pinned && room.photos && room.photos.length ? '<span class="badge nophoto" title="이 방 사진에서 위치를 확인하지 못한 가구예요">' + noPhotoLabel + '</span>' : '') +
       '</div></div>';
     if (f.note) h += '<p class="f-note">' + esc(f.note) + '</p>';
+    h += figHTML(f);
     if (f.zones && f.zones.length){
       h += '<div class="cells ' + (f.layout === 'grid' ? 'grid' : 'stack') + '">';
       f.zones.forEach(function(z, i){
         var inner = z.items.map(itemHTML).join('');
-        h += '<div class="cell" id="' + f.id + '-z' + i + '"><div class="cl">' + esc(z.label) + '</div>' +
+        h += '<div class="cell" id="' + f.id + '-z' + i + '"><div class="cl"><span class="zn">' + (i + 1) + '</span>' + esc(z.label) + '</div>' +
              '<div class="items">' + (inner || '<span class="none">—</span>') + '</div>' +
              (z.hint ? '<div class="hint">' + esc(z.hint) + '</div>' : '') +
              '</div>';
@@ -1217,8 +1331,11 @@ footer b{color:var(--ink2);font-weight:700}
   function renderMap(){
     var host = $('#rooms'), h = '';
     ROOMS.forEach(function(r){
-      stats.furn += r.furnitures.length;
-      r.furnitures.forEach(function(f){ CARD[f.id] = {room:r, f:f}; });
+      r.furnitures.forEach(function(f){
+        if (FIGS[f.id]) f.fig = FIGS[f.id];
+        CARD[f.id] = {room:r, f:f};
+        stats.furn++;
+      });
       h += roomHTML(r);
     });
     host.innerHTML = h;
@@ -1559,6 +1676,11 @@ footer b{color:var(--ink2);font-weight:700}
         return;
       }
       var pin = e.target.closest('.pin');
+      var fcell = e.target.closest('.fcell');
+      if (fcell){
+        flashEl(document.getElementById(fcell.getAttribute('data-zone')));
+        return;
+      }
       if (pin){
         var fid = pin.getAttribute('data-fid');
         var z = pin.getAttribute('data-z');
@@ -1601,6 +1723,11 @@ footer b{color:var(--ink2);font-weight:700}
     });
 
     document.addEventListener('keydown', function(e){
+      if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('fcell')){
+        e.preventDefault();
+        flashEl(document.getElementById(e.target.getAttribute('data-zone')));
+        return;
+      }
       if (e.key === 'Escape' && document.activeElement === $('#q')){
         setQuery(''); $('#q').value = ''; $('#q').blur();
       }
