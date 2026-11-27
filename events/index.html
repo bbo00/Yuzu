@@ -1,0 +1,2087 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>경조사비 수첩 · 유자</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="축의금·조의금·축하금을 보낸 돈과 받은 돈으로 기록하고, 사람별 주고받은 내역과 갚아야 할 마음을 한눈에 보는 개인용 수첩">
+<meta name="theme-color" content="#fbfaf7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="경조사비 수첩">
+<meta name="format-detection" content="telephone=no">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#fbfaf7;
+  --bg-2:#f5f6fa;
+  --surface:#ffffff;
+  --surface-2:#fcfbf8;
+  --ink:#1e2329;
+  --ink-2:#6d757d;
+  --ink-3:#a2a8b0;
+  --line:#ecebe6;
+  --line-2:#f4f3ef;
+  --track:#f0efe9;
+  --out:#bf5f3f;
+  --out-soft:#fbeee8;
+  --out-line:#f0d7ca;
+  --in:#2c7a62;
+  --in-soft:#e8f4ee;
+  --in-line:#cfe7dc;
+  --warn:#95671a;
+  --warn-soft:#faf1da;
+  --warn-line:#eee0ba;
+  --bad:#ae4238;
+  --bad-soft:#fbeae7;
+  --accent:#2f6f5f;
+  --accent-soft:#e9f3ef;
+  --radius:16px;
+  --font:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+html,body{margin:0;padding:0;max-width:100%;overflow-x:hidden}
+body{
+  background:linear-gradient(180deg,#fbfaf7 0%,#f6f7fb 62%,#f4f6fa 100%) no-repeat;
+  background-attachment:fixed;
+  color:var(--ink);
+  font-family:var(--font);font-size:15px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:calc(92px + env(safe-area-inset-bottom,0px));
+}
+body.lock{overflow:hidden}
+.wrap{max-width:520px;margin:0 auto;padding:10px 16px 4px}
+@media(min-width:740px){ .wrap{max-width:600px;padding-left:20px;padding-right:20px} }
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit;min-width:0}
+input,textarea,select{font-size:16px}
+a{color:inherit}
+img{max-width:100%}
+
+/* ---------- 헤더 ---------- */
+.app-head{display:flex;align-items:flex-start;gap:10px;justify-content:space-between;padding:4px 0 13px}
+h1{margin:0;font-size:20px;font-weight:800;letter-spacing:-.5px;line-height:1.3}
+.sub{margin:4px 0 0;font-size:12.5px;color:var(--ink-2);letter-spacing:-.1px}
+.sync-pill{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-size:12px;padding:7px 11px;border-radius:999px;cursor:pointer;white-space:nowrap;letter-spacing:-.2px;box-shadow:0 1px 2px rgba(30,35,41,.03)}
+.sync-pill.on{color:var(--accent);border-color:var(--in-line);background:var(--accent-soft)}
+.sync-pill.busy{opacity:.72}
+
+/* ---------- 카드 ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin:0 0 12px;box-shadow:0 1px 2px rgba(30,35,41,.025)}
+.card-tight{padding:12px}
+.card-title{margin:0 0 10px;font-size:12.5px;font-weight:700;color:var(--ink-2);letter-spacing:-.1px}
+.card-foot{margin:9px 0 0;font-size:11.5px;color:var(--ink-3);line-height:1.6}
+
+/* ---------- 잔액 카드 ---------- */
+.bal{background:linear-gradient(135deg,#ffffff 0%,#fdf5f0 58%,#f6f4fb 100%);border:1px solid #f0e6dd;border-radius:18px;padding:14px 15px 13px;margin:0 0 12px;box-shadow:0 2px 10px rgba(191,95,63,.05)}
+.bal-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:11.5px;color:var(--ink-2)}
+.bal-top b{font-size:12px;color:#8a6a56;font-weight:700;letter-spacing:-.1px}
+.bal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:9px}
+.bal-cell{min-width:0}
+.bal-cell + .bal-cell{border-left:1px solid #f1e8e0;padding-left:9px}
+.bal-label{display:block;font-size:11px;color:var(--ink-2);letter-spacing:-.2px;white-space:nowrap}
+.bal-val{display:block;margin-top:2px;font-size:15.5px;font-weight:800;letter-spacing:-.7px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bal-val.out{color:var(--out)}
+.bal-val.in{color:var(--in)}
+.bal-val.net{color:var(--ink)}
+.bal-note{margin:9px 0 0;font-size:11.5px;color:var(--ink-2);letter-spacing:-.1px;line-height:1.55}
+.bal-note b{color:var(--ink);font-weight:700}
+
+/* ---------- 검색·필터 ---------- */
+.input{width:100%;height:44px;padding:0 12px;border:1px solid var(--line);border-radius:11px;background:var(--surface);font-size:16px;letter-spacing:-.2px;outline:none;-webkit-appearance:none;appearance:none}
+textarea.input{height:auto;padding:11px 12px;line-height:1.55;resize:vertical;min-height:80px}
+select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3) 50%),linear-gradient(135deg,var(--ink-3) 50%,transparent 50%);background-position:calc(100% - 17px) 19px,calc(100% - 12px) 19px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:32px;text-overflow:ellipsis}
+.input:focus{border-color:var(--in-line);box-shadow:0 0 0 3px var(--accent-soft)}
+.search-row{margin-bottom:9px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:0 0 9px;margin:0 -2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-size:12.5px;padding:7px 12px;border-radius:999px;letter-spacing:-.2px;white-space:nowrap;transition:background .12s,border-color .12s,color .12s}
+.chip.on{background:#23282e;border-color:#23282e;color:#fff;font-weight:700}
+.chip.quick{font-weight:600}
+.chip.quick.on{background:var(--in-soft);border-color:var(--in-line);color:var(--in);font-weight:700}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.filters .input{height:40px;font-size:16px}
+.filters .input.wide{grid-column:1 / -1}
+.row-sum{display:flex;align-items:center;gap:8px;justify-content:space-between;margin:2px 2px 10px;font-size:12px;color:var(--ink-2)}
+.row-sum b{color:var(--ink);font-weight:700}
+.reset-link{border:0;background:none;color:var(--accent);font-size:12px;text-decoration:underline;padding:2px}
+
+/* ---------- 버튼 ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:45px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-size:14.5px;font-weight:700;letter-spacing:-.2px;cursor:pointer;white-space:nowrap}
+.btn.primary{background:#23282e;border-color:#23282e;color:#fff}
+.btn.ghost{background:var(--surface-2)}
+.btn.soft{background:var(--in-soft);border-color:var(--in-line);color:var(--in)}
+.btn.danger{color:var(--bad);border-color:#eccfc9;background:var(--bad-soft)}
+.btn.block{display:flex;width:100%}
+.btn.sm{height:38px;font-size:13px;padding:0 13px;border-radius:10px}
+.btn.xs{height:32px;font-size:12.5px;padding:0 11px;border-radius:9px}
+.btn:active{transform:translateY(.5px)}
+.btn:disabled{opacity:.5}
+.link-btn{border:0;background:none;color:var(--accent);font-size:12.5px;text-decoration:underline;padding:4px;cursor:pointer}
+.link-btn.danger{color:var(--bad)}
+.add-row{margin:0 0 12px;display:flex;gap:8px}
+.add-row .btn{flex:1 1 auto}
+
+/* ---------- 기록 카드 ---------- */
+.rec{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:12px 13px;margin:0 0 9px;cursor:pointer;box-shadow:0 1px 2px rgba(30,35,41,.02);transition:border-color .12s}
+.rec:active{background:var(--surface-2)}
+.rec-top{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-2)}
+.dir-badge{font-size:11px;font-weight:700;padding:2.5px 8px;border-radius:999px;letter-spacing:-.2px;white-space:nowrap}
+.dir-badge.out{background:var(--out-soft);color:var(--out)}
+.dir-badge.in{background:var(--in-soft);color:var(--in)}
+.rec-date{letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rec-amt{margin-left:auto;font-size:14.5px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rec-amt.out{color:var(--out)}
+.rec-amt.in{color:var(--in)}
+.rec-main{display:flex;align-items:baseline;gap:7px;margin-top:5px;flex-wrap:wrap}
+.name-btn{font-size:16px;font-weight:750;letter-spacing:-.4px;color:var(--ink);padding:0 0 1px;border-bottom:1px dashed #d9d4c9;line-height:1.3}
+.name-btn:active{color:var(--accent);border-bottom-color:var(--accent)}
+.rec-meta{font-size:12px;color:var(--ink-2);letter-spacing:-.1px;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.tag{font-size:11px;color:#5f666d;background:#f6f5f1;border:1px solid #eceae4;padding:1.5px 7px;border-radius:999px;white-space:nowrap;letter-spacing:-.1px}
+.tag.need{background:var(--warn-soft);border-color:var(--warn-line);color:var(--warn);font-weight:700}
+.tag.done{background:#eff4f2;border-color:#dde8e4;color:#3f6d5f}
+.rec-memo{margin:7px 0 0;font-size:12.5px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.rec-act{display:flex;justify-content:flex-end;margin-top:8px}
+
+/* ---------- 빈 상태 ---------- */
+.empty{background:var(--surface);border:1px dashed #e2dfd7;border-radius:var(--radius);padding:24px 18px;text-align:center;margin:0 0 12px}
+.empty .big{font-size:26px;display:block;margin-bottom:8px}
+.empty h3{margin:0 0 7px;font-size:15px;font-weight:750;letter-spacing:-.3px}
+.empty p{margin:0 0 15px;font-size:12.8px;color:var(--ink-2);line-height:1.65}
+.empty.small{padding:20px 16px}
+.empty .tips{list-style:none;margin:14px 0 0;padding:12px 0 0;border-top:1px solid var(--line-2);text-align:left}
+.empty .tips li{font-size:12px;color:var(--ink-2);line-height:1.6;padding-left:13px;position:relative;margin-top:4px}
+.empty .tips li::before{content:"·";position:absolute;left:3px;color:var(--ink-3);font-weight:800}
+
+/* ---------- 세그먼트 ---------- */
+.seg{display:flex;gap:3px;padding:3px;background:#efeee8;border-radius:12px;margin:0 0 12px}
+.seg button{flex:1 1 0;height:36px;border-radius:9px;background:transparent;color:var(--ink-2);font-size:12.5px;font-weight:700;letter-spacing:-.2px;white-space:nowrap}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(30,35,41,.08)}
+.seg.big{margin-bottom:14px}
+.seg.big button{height:48px;font-size:14px;border-radius:11px}
+.seg.big button.on.d-out{color:var(--out);background:var(--out-soft);box-shadow:none}
+.seg.big button.on.d-in{color:var(--in);background:var(--in-soft);box-shadow:none}
+
+/* ---------- 요약 ---------- */
+.kpi-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:0 0 12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:11px 10px;min-width:0}
+.kpi-label{display:block;font-size:11px;color:var(--ink-2);letter-spacing:-.2px;white-space:nowrap}
+.kpi-value{display:block;margin-top:3px;font-size:15.5px;font-weight:800;letter-spacing:-.6px;font-variant-numeric:tabular-nums;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi-value.out{color:var(--out)}
+.kpi-value.in{color:var(--in)}
+.kpi-sub{display:block;margin-top:2px;font-size:11px;color:var(--ink-3);letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat-row{margin:0 0 11px}
+.sr-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:5px}
+.sr-name{font-size:12.5px;font-weight:700;letter-spacing:-.2px;white-space:nowrap}
+.sr-val{font-size:11.5px;color:var(--ink-2);font-variant-numeric:tabular-nums;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{display:block;height:10px;background:var(--track);border-radius:6px;overflow:hidden}
+.bar-duo{display:flex;height:10px;border-radius:6px;overflow:hidden;min-width:3px}
+.bar-duo i{display:block;height:100%;min-width:0}
+.bar-duo .bo{background:var(--out)}
+.bar-duo .bi{background:var(--in)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;margin:10px 0 0;font-size:11px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+.legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+.prow{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 0;border-top:1px solid var(--line-2)}
+.prow:first-child{border-top:0}
+.pname{flex:0 0 auto;font-size:13.5px;font-weight:700;letter-spacing:-.2px;max-width:38%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pmeta{flex:1 1 auto;min-width:0;font-size:11.5px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pdiff{flex:0 0 auto;font-size:12.5px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.pdiff.in{color:var(--in)}
+.pdiff.out{color:var(--out)}
+.pdiff.zero{color:var(--ink-3)}
+.yrow{display:flex;align-items:baseline;gap:8px;padding:7px 0;border-top:1px solid var(--line-2);font-size:12.5px}
+.yrow:first-child{border-top:0}
+.yrow .yr{flex:0 0 44px;font-weight:700;font-variant-numeric:tabular-nums}
+.yrow .yo{flex:1 1 0;min-width:0;color:var(--out);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.yrow .yi{flex:1 1 0;min-width:0;color:var(--in);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.yrow .yn{flex:0 0 auto;font-weight:700;color:var(--ink-2);font-variant-numeric:tabular-nums}
+
+/* ---------- 사람별 시트 ---------- */
+.psum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;background:var(--surface-2);border:1px solid var(--line-2);border-radius:12px;padding:11px;margin:0 0 12px}
+.psum div{min-width:0}
+.psum .lb{display:block;font-size:10.5px;color:var(--ink-2)}
+.psum .vl{display:block;margin-top:2px;font-size:14px;font-weight:800;letter-spacing:-.4px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.psum .vl.out{color:var(--out)}
+.psum .vl.in{color:var(--in)}
+
+/* ---------- 상세 ---------- */
+.dl{margin:0}
+.dl div{display:flex;gap:10px;padding:9px 0;border-top:1px solid var(--line-2)}
+.dl div:first-child{border-top:0;padding-top:0}
+.dl dt{flex:0 0 72px;font-size:12px;color:var(--ink-2)}
+.dl dd{flex:1 1 auto;margin:0;font-size:13.5px;letter-spacing:-.2px;word-break:break-word;min-width:0}
+.dl dd.money{font-weight:800;font-variant-numeric:tabular-nums}
+.dl dd.money.out{color:var(--out)}
+.dl dd.money.in{color:var(--in)}
+
+/* ---------- 폼 ---------- */
+.field{display:block;margin:0 0 14px}
+.field > span{display:block;font-size:12px;font-weight:700;color:var(--ink-2);margin:0 0 6px;letter-spacing:-.2px}
+.field .hint{display:block;margin:5px 2px 0;font-size:11.5px;color:var(--ink-3);font-style:normal;line-height:1.5}
+.field .hint b{color:var(--accent);font-weight:700}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.date-row{display:flex;gap:7px;align-items:center}
+.date-row .input{flex:1 1 auto}
+.date-row .btn{flex:0 0 auto;height:44px}
+.chipset{display:flex;flex-wrap:wrap;gap:6px}
+.chipset .chip{padding:8px 12px;font-size:13px}
+.amt-row{display:flex;gap:7px;align-items:center}
+.amt-row .input{flex:1 1 auto;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;padding-right:12px}
+.amt-row .unit{flex:0 0 auto;font-size:13px;color:var(--ink-2);font-weight:600}
+.quick-amt{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.name-wrap{position:relative}
+.sugg{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.sugg button{font-size:12px;color:var(--accent);background:var(--accent-soft);border:1px solid var(--in-line);padding:4px 9px;border-radius:999px}
+
+/* ---------- 동기화 ---------- */
+.sync-state{font-size:13px;margin:0 0 10px}
+.sync-state.on{color:var(--in);font-weight:700}
+.sync-state.off{color:var(--ink-2)}
+.sync-help{font-size:12.5px;color:var(--ink-2);line-height:1.7;margin:0 0 13px}
+.copy-row{display:flex;gap:6px;align-items:center;margin:0 0 9px}
+.copy-row .input{height:40px;font-size:16px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;flex:1 1 auto;min-width:0;background:var(--surface-2);letter-spacing:-.3px}
+.copy-row .btn{flex:0 0 auto;height:40px;font-size:12.5px;padding:0 11px}
+.sync-counts{font-size:12px;color:var(--ink-2);line-height:1.75;background:var(--surface-2);border:1px solid var(--line-2);border-radius:11px;padding:10px 11px;margin:0 0 12px}
+.sync-counts b{color:var(--ink)}
+.sync-err{font-size:11.5px;color:var(--bad);margin:9px 0 0;line-height:1.55}
+.switch{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ink-2);margin:2px 0 13px;line-height:1.5}
+.switch input{width:19px;height:19px;accent-color:var(--in);flex:0 0 auto}
+.warn-note{font-size:11.5px;color:var(--ink-3);line-height:1.65;margin:11px 0 0}
+.sheet-actions .btn{flex:1 1 0}
+.sheet-actions .btn.primary{flex:1.5 1 0}
+
+/* ---------- 하단 탭 ---------- */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(255,255,255,.95);-webkit-backdrop-filter:saturate(180%) blur(12px);backdrop-filter:saturate(180%) blur(12px);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));display:flex;gap:2px;max-width:600px;margin:0 auto}
+.tabbar button{flex:1 1 0;position:relative;border:0;background:none;padding:5px 2px 4px;border-radius:11px;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--ink-3);cursor:pointer}
+.tabbar .ic{font-size:17px;line-height:1.2;filter:grayscale(.4);opacity:.85}
+.tabbar .lb{font-size:10.5px;letter-spacing:-.2px}
+.tabbar button.on{color:var(--ink)}
+.tabbar button.on .ic{filter:none;opacity:1}
+.tabbar button.on .lb{font-weight:800}
+.navbadge{position:absolute;top:1px;right:calc(50% - 22px);min-width:16px;height:16px;border-radius:8px;background:var(--out);color:#fff;font-size:10px;font-weight:800;line-height:16px;padding:0 4px;text-align:center}
+
+/* ---------- 시트 ---------- */
+.sheet{position:fixed;inset:0;z-index:60;display:none;align-items:flex-end;justify-content:center}
+.sheet.open{display:flex}
+.sheet .veil{position:absolute;inset:0;background:rgba(24,28,32,.36)}
+.sheet .panel{position:relative;width:100%;max-width:520px;max-height:92vh;display:flex;flex-direction:column;background:var(--surface);border-radius:20px 20px 0 0;box-shadow:0 -8px 30px rgba(20,26,23,.14);animation:up .18s ease-out}
+@keyframes up{from{transform:translateY(16px);opacity:.7}to{transform:none;opacity:1}}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 16px 10px;flex:0 0 auto}
+.sheet-head h2{margin:0;font-size:16.5px;font-weight:800;letter-spacing:-.4px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.x{border:0;background:none;font-size:17px;color:var(--ink-3);padding:4px 6px;cursor:pointer;line-height:1;flex:0 0 auto}
+.sheet-body{padding:0 16px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1 1 auto;min-height:0}
+.sheet .panel > form{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
+.sheet-actions{display:flex;gap:8px;padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line-2);background:var(--surface);flex:0 0 auto}
+
+/* ---------- 토스트 ---------- */
+#toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom,0px));transform:translate(-50%,8px);z-index:90;background:rgba(30,35,41,.95);color:#fff;font-size:12.5px;padding:9px 14px;border-radius:999px;max-width:calc(100% - 40px);text-align:center;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;line-height:1.45}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- 데스크톱 ---------- */
+@media(min-width:740px){
+  .tabbar{border:1px solid var(--line);border-radius:16px;bottom:12px;left:50%;right:auto;transform:translateX(-50%);width:100%;max-width:600px;box-shadow:0 4px 18px rgba(30,35,41,.06);padding-bottom:6px}
+  body{padding-bottom:110px}
+  .sheet .panel{border-radius:20px;margin-bottom:16px;max-height:88vh}
+  .sheet{align-items:center;padding:20px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="app-head">
+    <div>
+      <h1>경조사비 수첩</h1>
+      <p class="sub" id="hdr-sub">오간 마음을 한 곳에</p>
+    </div>
+    <button class="sync-pill" id="btn-sync" type="button" data-act="open-sync">☁️ 미연결</button>
+  </header>
+
+  <!-- ============ 탭 1. 내역 ============ -->
+  <section id="tab-list">
+    <div class="bal" id="bal"></div>
+
+    <div class="card card-tight">
+      <div class="search-row">
+        <input class="input" id="q" type="search" placeholder="이름 · 관계 · 경조사 · 메모 검색" autocomplete="off" aria-label="검색">
+      </div>
+      <div class="chips" id="dir-chips"></div>
+      <div class="filters">
+        <select class="input" id="f-year" aria-label="연도"></select>
+        <select class="input" id="f-owner" aria-label="주체"></select>
+        <select class="input" id="f-rel" aria-label="관계"></select>
+        <select class="input" id="f-kind" aria-label="경조사"></select>
+      </div>
+    </div>
+
+    <div class="row-sum" id="list-sum"></div>
+    <div class="add-row"><button class="btn primary block" type="button" data-act="add">＋ 경조사비 기록하기</button></div>
+    <div id="sugg-row"></div>
+    <div id="list-wrap"></div>
+  </section>
+
+  <!-- ============ 탭 2. 요약 ============ -->
+  <section id="tab-stats" hidden>
+    <div class="seg" id="st-range">
+      <button type="button" data-act="range" data-val="month">이번 달</button>
+      <button type="button" data-act="range" data-val="year">올해</button>
+      <button type="button" data-act="range" data-val="all">전체</button>
+    </div>
+    <div id="st-body"></div>
+  </section>
+
+  <!-- ============ 탭 3. 미답례 ============ -->
+  <section id="tab-pending" hidden>
+    <div class="seg" id="pend-view">
+      <button type="button" data-act="pend" data-val="owe">갚아야 함</button>
+      <button type="button" data-act="pend" data-val="due">받을 예정</button>
+    </div>
+    <div id="pend-sum"></div>
+    <div id="pend-list"></div>
+  </section>
+
+  <!-- ============ 탭 4. 설정 ============ -->
+  <section id="tab-setup" hidden>
+    <div class="card">
+      <h2 class="card-title">☁️ 기기 간 동기화</h2>
+      <p class="sync-state" id="setup-sync-state">—</p>
+      <div class="add-row" style="margin-bottom:0">
+        <button class="btn ghost" type="button" data-act="open-sync">동기화 설정</button>
+        <button class="btn ghost" type="button" data-act="sync-now">지금 동기화</button>
+      </div>
+      <p class="card-foot">휴대폰과 PC에서 같은 기록을 보려면 동기화 코드를 만들어 두 기기에서 같은 링크를 여세요.</p>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">💾 백업 · 내보내기</h2>
+      <div class="add-row">
+        <button class="btn ghost" type="button" data-act="export-json">JSON 백업 저장</button>
+        <button class="btn ghost" type="button" data-act="import-json">JSON 불러오기</button>
+      </div>
+      <button class="btn soft block" type="button" data-act="export-csv">📊 엑셀용 CSV 내보내기</button>
+      <p class="card-foot">CSV는 한글이 깨지지 않도록 UTF-8(BOM)로 저장되고, 엑셀·구글 스프레드시트에서 바로 열립니다. JSON은 그대로 복원할 수 있는 백업 파일이에요.</p>
+      <input type="file" id="import-file" accept=".json,application/json" hidden aria-label="JSON 백업 파일 선택">
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">📌 기록 규칙</h2>
+      <dl class="dl">
+        <div><dt>보낸 돈</dt><dd>축의금·조의금·축하금 등 내가 낸 돈</dd></div>
+        <div><dt>받은 돈</dt><dd>내 경조사에 받은 돈 · 나중에 갚아야 할 마음</dd></div>
+        <div><dt>주체</dt><dd>유자(나) · 남편 · 공동 중 고르면 부부 기록을 나눠 볼 수 있어요</dd></div>
+        <div><dt>답례 상태</dt><dd>받은 돈은 ‘갚아야 함’, 보낸 돈은 ‘받을 예정’으로 남겨두면 미답례 탭에 모입니다</dd></div>
+      </dl>
+      <p class="card-foot">입력한 기록은 이 기기 브라우저(그리고 연결했다면 전용 클라우드)에만 저장됩니다. 페이지 소스에는 어떤 기록도 들어 있지 않아요.</p>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">🧹 데이터 관리</h2>
+      <button class="btn danger block" type="button" data-act="wipe">모든 기록 지우기</button>
+      <p class="card-foot">지우기 전에 JSON 백업을 받아두면 안전해요.</p>
+    </div>
+
+    <p class="card-foot" style="text-align:center;margin:18px 0 8px">경조사비 수첩 · <a href="../index.html">유자 홈</a> · <a href="../health/">건강 수첩</a></p>
+  </section>
+</div>
+
+<nav class="tabbar" id="tabbar">
+  <button type="button" data-act="tab" data-val="list"><span class="ic">📋</span><span class="lb">내역</span></button>
+  <button type="button" data-act="tab" data-val="stats"><span class="ic">📊</span><span class="lb">요약</span></button>
+  <button type="button" data-act="tab" data-val="pending"><span class="ic">🎁</span><span class="lb">미답례</span><span class="navbadge" id="tab-badge" hidden></span></button>
+  <button type="button" data-act="tab" data-val="setup"><span class="ic">⚙️</span><span class="lb">설정</span></button>
+</nav>
+
+<div class="sheet" id="modal-record"><div class="veil" data-act="close" data-target="modal-record"></div><div class="panel" id="rec-panel"></div></div>
+<div class="sheet" id="modal-detail"><div class="veil" data-act="close" data-target="modal-detail"></div><div class="panel" id="detail-panel"></div></div>
+<div class="sheet" id="modal-person"><div class="veil" data-act="close" data-target="modal-person"></div><div class="panel" id="person-panel"></div></div>
+<div class="sheet" id="modal-sync"><div class="veil" data-act="close" data-target="modal-sync"></div><div class="panel">
+  <div class="sheet-head"><h2>☁️ 기기 간 동기화</h2><button class="x" type="button" data-act="close" data-target="modal-sync">✕</button></div>
+  <div class="sheet-body" id="sync-body" style="padding-bottom:18px"></div>
+</div></div>
+<div id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ============================ 상수 ============================ */
+  var RELS = ['직장·동료', '친구·지인', '친척·가족', '거래처·기타'];
+  var KINDS = ['결혼식', '장례식', '돌잔치', '출산·백일', '개업·승진', '생신·칠순', '기타'];
+  var OWNERS = ['유자', '남편', '공동'];
+  var METHODS = ['직접 참석', '계좌이체', '모바일(카톡 등)', '대리 전달', '화환·선물'];
+  var QUICK_AMTS = [30000, 50000, 100000, 150000, 200000, 300000];
+  var DATA_KEY = 'events_v1';
+  var SYNC_CFG_KEY = 'events_sync_v1';
+  var UI_KEY = 'events_ui_v1';
+
+  /* ============================ 유틸 ============================ */
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function esc(v) {
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+    });
+  }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function todayStr() { var d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function num(n) { return Math.round(Number(n) || 0); }
+  function won(n) { return num(n).toLocaleString('ko-KR') + '원'; }
+  function wonShort(n) {
+    n = num(n);
+    if (!n) return '0';
+    if (Math.abs(n) >= 100000000) return (n / 100000000).toFixed(1).replace(/\.0$/, '') + '억';
+    if (Math.abs(n) >= 10000) {
+      var m = n / 10000;
+      return (Math.abs(m) >= 10 ? Math.round(m) : Math.round(m * 10) / 10) + '만';
+    }
+    return n.toLocaleString('ko-KR');
+  }
+  function signed(n, dir) {
+    /* dir: 'in' → +, 'out' → - */
+    var s = num(n).toLocaleString('ko-KR') + '원';
+    if (dir === 'in') return '+' + s;
+    if (dir === 'out') return '-' + s;
+    return (num(n) > 0 ? '+' : '') + s;
+  }
+  function dateParts(s) {
+    var p = String(s || '').split('-');
+    if (p.length < 3) return null;
+    var y = +p[0], m = +p[1], d = +p[2];
+    if (!y || !m || !d) return null;
+    return { y: y, m: m, d: d, dt: new Date(y, m - 1, d) };
+  }
+  function fmtDate(s, withYear) {
+    var P = dateParts(s);
+    if (!P) return s || '';
+    var w = '일월화수목금토'.charAt(P.dt.getDay());
+    var base = P.m + '월 ' + P.d + '일 (' + w + ')';
+    if (withYear === true) return P.y + '. ' + base;
+    if (withYear === 'auto' && P.y !== new Date().getFullYear()) return P.y + '. ' + base;
+    return base;
+  }
+  function yearOf(s) { return String(s || '').slice(0, 4); }
+  function monthOf(s) { return String(s || '').slice(5, 7); }
+  function ownerLabel(o) { return o === '유자' ? '유자(나)' : (o || '유자'); }
+  function dirLabel(d) { return d === 'in' ? '💌 받은 돈' : '💸 보낸 돈'; }
+  function thanksInfo(rec) {
+    if (rec.thanks === 'need') return rec.dir === 'in' ? { t: '갚아야 함', cls: 'need' } : { t: '받을 예정', cls: 'need' };
+    if (rec.thanks === 'done') return { t: rec.dir === 'in' ? '답례 완료' : '받았음', cls: 'done' };
+    return { t: '해당 없음', cls: '' };
+  }
+
+  var toastTimer = null;
+  function toast(msg) {
+    var el = $('#toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2400);
+  }
+  function openSheet(id) {
+    var el = document.getElementById(id);
+    if (el) { el.classList.add('open'); document.body.classList.add('lock'); }
+  }
+  function closeSheet(id) {
+    var el = document.getElementById(id);
+    if (el) el.classList.remove('open');
+    if (!document.querySelector('.sheet.open')) document.body.classList.remove('lock');
+  }
+
+  /* ============================ 데이터 ============================ */
+  function blankData() { return { v: 1, records: [], deletedRecordIds: [] }; }
+  function normalize(d) {
+    if (Array.isArray(d)) d = { records: d };
+    d = d || {};
+    d.v = 1;
+    if (!Array.isArray(d.records)) d.records = [];
+    if (!Array.isArray(d.deletedRecordIds)) d.deletedRecordIds = [];
+    var seen = {};
+    d.records = d.records.filter(function (r) {
+      if (!r || !r.id || seen[r.id]) return false;
+      seen[r.id] = 1;
+      r.dir = (r.dir === 'in') ? 'in' : 'out';
+      r.owner = (r.owner === '남편' || r.owner === '공동') ? r.owner : '유자';
+      r.name = String(r.name == null ? '' : r.name).trim();
+      r.amount = num(r.amount);
+      r.date = String(r.date || '').slice(0, 10) || todayStr();
+      r.relation = String(r.relation || '기타');
+      r.kind = String(r.kind || '기타');
+      r.method = String(r.method || '');
+      r.memo = String(r.memo || '');
+      r.thanks = (r.thanks === 'need' || r.thanks === 'done') ? r.thanks : 'none';
+      r.createdAt = Number(r.createdAt) || 0;
+      r.updatedAt = Number(r.updatedAt) || r.createdAt;
+      return true;
+    });
+    return d;
+  }
+  function loadData() {
+    try {
+      var raw = localStorage.getItem(DATA_KEY);
+      if (!raw) return blankData();
+      return normalize(JSON.parse(raw));
+    } catch (e) { return blankData(); }
+  }
+  var appData = loadData();
+
+  function saveData() {
+    try { localStorage.setItem(DATA_KEY, JSON.stringify(appData)); }
+    catch (e) { toast('이 기기 저장 공간이 부족해 저장하지 못했어요'); }
+    scheduleSyncPush();
+  }
+
+  var ui = { tab: 'list', q: '', dir: 'all', year: 'all', owner: 'all', rel: 'all', kind: 'all', range: 'all', pend: 'owe' };
+  try {
+    var savedUi = JSON.parse(localStorage.getItem(UI_KEY) || '{}');
+    ['tab', 'range', 'pend'].forEach(function (k) { if (savedUi && typeof savedUi[k] === 'string') ui[k] = savedUi[k]; });
+    if (['list', 'stats', 'pending', 'setup'].indexOf(ui.tab) < 0) ui.tab = 'list';
+    if (['month', 'year', 'all'].indexOf(ui.range) < 0) ui.range = 'all';
+    if (['owe', 'due'].indexOf(ui.pend) < 0) ui.pend = 'owe';
+  } catch (e) {}
+  function saveUi() { try { localStorage.setItem(UI_KEY, JSON.stringify({ tab: ui.tab, range: ui.range, pend: ui.pend })); } catch (e) {} }
+
+  /* ============================ 집계 ============================ */
+  function sumOf(list) {
+    var o = { out: 0, in: 0, n: list.length, outN: 0, inN: 0 };
+    list.forEach(function (r) {
+      if (r.dir === 'in') { o.in += r.amount; o.inN++; }
+      else { o.out += r.amount; o.outN++; }
+    });
+    o.net = o.in - o.out;
+    return o;
+  }
+  function inRange(r, range) {
+    if (range === 'all') return true;
+    var now = new Date();
+    var y = String(now.getFullYear()), m = pad(now.getMonth() + 1);
+    if (range === 'year') return yearOf(r.date) === y;
+    if (range === 'month') return yearOf(r.date) === y && monthOf(r.date) === m;
+    return true;
+  }
+  function sortedRecords(list) {
+    return list.slice().sort(function (a, b) {
+      var c = String(b.date || '').localeCompare(String(a.date || ''));
+      if (c) return c;
+      return (b.createdAt || 0) - (a.createdAt || 0);
+    });
+  }
+  function byRange(range) { return appData.records.filter(function (r) { return inRange(r, range); }); }
+  function groupSum(list, keyFn) {
+    var map = {};
+    list.forEach(function (r) {
+      var k = keyFn(r) || '기타';
+      if (!map[k]) map[k] = { out: 0, in: 0, n: 0 };
+      if (r.dir === 'in') map[k].in += r.amount; else map[k].out += r.amount;
+      map[k].n++;
+    });
+    return map;
+  }
+  function pendingList(kind) {
+    /* kind: 'owe' = 내가 받아서 갚아야 함 · 'due' = 내가 보내서 받을 예정 */
+    var dir = kind === 'due' ? 'out' : 'in';
+    return sortedRecords(appData.records.filter(function (r) { return r.dir === dir && r.thanks === 'need'; }));
+  }
+
+  /* ============================ 렌더: 헤더 ============================ */
+  function renderHeader() {
+    var s = sumOf(appData.records);
+    var sub = $('#hdr-sub');
+    if (!s.n) sub.textContent = '오간 마음을 한 곳에 · 첫 기록을 남겨보세요';
+    else sub.textContent = '기록 ' + s.n + '건 · 보낸 ' + wonShort(s.out) + ' · 받은 ' + wonShort(s.in);
+  }
+
+  var DIR_FILTERS = [{ v: 'all', t: '전체' }, { v: 'out', t: '💸 보낸 돈' }, { v: 'in', t: '💌 받은 돈' }];
+  function renderBalance() {
+    var all = sumOf(appData.records);
+    var now = new Date();
+    var y = String(now.getFullYear()), m = pad(now.getMonth() + 1);
+    var thisYear = sumOf(appData.records.filter(function (r) { return yearOf(r.date) === y; }));
+    var thisMonth = sumOf(appData.records.filter(function (r) { return yearOf(r.date) === y && monthOf(r.date) === m; }));
+    var netTxt = all.net === 0 ? '0원' : (all.net > 0 ? '+' : '-') + won(Math.abs(all.net));
+    var netWord = all.n === 0 ? '아직 기록 없음' : (all.net > 0 ? '받은 쪽이 ' + wonShort(all.net) + ' 많아요' : (all.net < 0 ? '보낸 쪽이 ' + wonShort(-all.net) + ' 많아요' : '보낸 돈과 받은 돈이 같아요'));
+    $('#bal').innerHTML =
+      '<div class="bal-top"><b>' + (all.n ? '전체 수지' : '시작해 볼까요') + '</b><span>기록 ' + all.n + '건</span></div>' +
+      '<div class="bal-grid">' +
+        '<div class="bal-cell"><span class="bal-label">💸 보낸 돈</span><span class="bal-val out">' + won(all.out) + '</span></div>' +
+        '<div class="bal-cell"><span class="bal-label">💌 받은 돈</span><span class="bal-val in">' + won(all.in) + '</span></div>' +
+        '<div class="bal-cell"><span class="bal-label">차액</span><span class="bal-val net">' + netTxt + '</span></div>' +
+      '</div>' +
+      '<p class="bal-note">' + esc(netWord) + '<br>' +
+        '이번 달 · 보낸 <b>' + wonShort(thisMonth.out) + '</b> / 받은 <b>' + wonShort(thisMonth.in) + '</b>' +
+        ' &nbsp;·&nbsp; 올해 · 보낸 <b>' + wonShort(thisYear.out) + '</b> / 받은 <b>' + wonShort(thisYear.in) + '</b>' +
+      '</p>';
+  }
+
+  /* ============================ 렌더: 내역 ============================ */
+  function yearOptions() {
+    var set = {};
+    appData.records.forEach(function (r) { var y = yearOf(r.date); if (y) set[y] = 1; });
+    set[String(new Date().getFullYear())] = 1;
+    return Object.keys(set).sort().reverse();
+  }
+  function renderFilterControls() {
+    $('#dir-chips').innerHTML = DIR_FILTERS.map(function (d) {
+      return '<button type="button" class="chip' + (ui.dir === d.v ? ' on' : '') + '" data-act="dir" data-val="' + d.v + '">' + d.t + '</button>';
+    }).join('');
+
+    var yrs = yearOptions();
+    var yEl = $('#f-year');
+    yEl.innerHTML = '<option value="all">연도 전체</option>' + yrs.map(function (y) {
+      return '<option value="' + y + '">' + y + '년</option>';
+    }).join('');
+    yEl.value = (ui.year !== 'all' && yrs.indexOf(ui.year) >= 0) ? ui.year : 'all';
+    if (yEl.value !== ui.year) ui.year = 'all';
+
+    var oEl = $('#f-owner');
+    oEl.innerHTML = '<option value="all">주체 전체</option>' + OWNERS.map(function (o) {
+      return '<option value="' + esc(o) + '">' + esc(ownerLabel(o)) + '</option>';
+    }).join('');
+    oEl.value = ui.owner;
+
+    var relSet = {};
+    RELS.concat(appData.records.map(function (r) { return r.relation; })).forEach(function (x) { if (x) relSet[x] = 1; });
+    var rEl = $('#f-rel');
+    rEl.innerHTML = '<option value="all">관계 전체</option>' + Object.keys(relSet).sort().map(function (x) {
+      return '<option value="' + esc(x) + '">' + esc(x) + '</option>';
+    }).join('');
+    rEl.value = ui.rel;
+    if (rEl.value !== ui.rel) { ui.rel = 'all'; rEl.value = 'all'; }
+
+    var kindSet = {};
+    KINDS.concat(appData.records.map(function (r) { return r.kind; })).forEach(function (x) { if (x) kindSet[x] = 1; });
+    var kEl = $('#f-kind');
+    kEl.innerHTML = '<option value="all">경조사 전체</option>' + Object.keys(kindSet).sort().map(function (x) {
+      return '<option value="' + esc(x) + '">' + esc(x) + '</option>';
+    }).join('');
+    kEl.value = ui.kind;
+    if (kEl.value !== ui.kind) { ui.kind = 'all'; kEl.value = 'all'; }
+
+    var qEl = $('#q');
+    if (qEl.value !== ui.q) qEl.value = ui.q;
+  }
+
+  function filteredRecords() {
+    var q = ui.q.trim().toLowerCase();
+    return appData.records.filter(function (r) {
+      if (ui.dir !== 'all' && r.dir !== ui.dir) return false;
+      if (ui.year !== 'all' && yearOf(r.date) !== ui.year) return false;
+      if (ui.owner !== 'all' && r.owner !== ui.owner) return false;
+      if (ui.rel !== 'all' && r.relation !== ui.rel) return false;
+      if (ui.kind !== 'all' && r.kind !== ui.kind) return false;
+      if (!q) return true;
+      var hay = [r.name, r.relation, r.kind, r.memo, ownerLabel(r.owner), r.method, thanksInfo(r).t].join(' ').toLowerCase();
+      return hay.indexOf(q) >= 0;
+    });
+  }
+  function filtersActive() {
+    return !!(ui.q.trim() || ui.dir !== 'all' || ui.year !== 'all' || ui.owner !== 'all' || ui.rel !== 'all' || ui.kind !== 'all');
+  }
+
+  function recCard(r, opts) {
+    opts = opts || {};
+    var ti = thanksInfo(r);
+    var dirTxt = r.dir === 'in' ? '💌 받은' : '💸 보낸';
+    var tags = '<span class="tag">' + esc(ownerLabel(r.owner)) + '</span>';
+    if (r.method) tags += '<span class="tag">' + esc(r.method) + '</span>';
+    if (ti.cls) tags += '<span class="tag ' + ti.cls + '">' + esc(ti.t) + '</span>';
+    return '<article class="rec" data-act="open" data-id="' + esc(r.id) + '">' +
+      '<div class="rec-top">' +
+        '<span class="dir-badge ' + r.dir + '">' + dirTxt + '</span>' +
+        '<span class="rec-date">' + esc(fmtDate(r.date, 'auto')) + '</span>' +
+        '<span class="rec-amt ' + r.dir + '">' + esc(signed(r.amount, r.dir)) + '</span>' +
+      '</div>' +
+      '<div class="rec-main">' +
+        '<button type="button" class="name-btn" data-act="person" data-name="' + esc(r.name) + '">' + esc(r.name || '(이름 없음)') + '</button>' +
+        '<span class="rec-meta">' + esc(r.relation) + ' · ' + esc(r.kind) + '</span>' +
+      '</div>' +
+      '<div class="tags">' + tags + '</div>' +
+      (r.memo ? '<p class="rec-memo">' + esc(r.memo) + '</p>' : '') +
+      (opts.thanksButton ? '<div class="rec-act"><button type="button" class="btn soft xs" data-act="thanks-done" data-id="' + esc(r.id) + '">✓ 답례 완료로 표시</button></div>' : '') +
+      '</article>';
+  }
+
+  function renderList() {
+    renderFilterControls();
+    var list = sortedRecords(filteredRecords());
+    var s = sumOf(list);
+    $('#list-sum').innerHTML = list.length
+      ? '<span>보낸 <b>' + won(s.out) + '</b> · 받은 <b>' + won(s.in) + '</b></span><span>차액 <b>' + (s.net === 0 ? '0원' : (s.net > 0 ? '+' : '-') + won(Math.abs(s.net))) + '</b></span>'
+      : '<span>표시할 기록이 없어요</span>';
+
+    /* 검색어와 이름이 맞는 사람 바로가기 */
+    var q = ui.q.trim().toLowerCase();
+    var sugg = '';
+    if (q) {
+      var names = {};
+      appData.records.forEach(function (r) { if (r.name && r.name.toLowerCase().indexOf(q) >= 0) names[r.name] = (names[r.name] || 0) + 1; });
+      var keys = Object.keys(names).slice(0, 6);
+      if (keys.length) {
+        sugg = '<div class="card card-tight" style="padding:10px 12px"><div class="sugg" style="margin:0">' +
+          '<span style="font-size:11.5px;color:var(--ink-3);align-self:center;margin-right:2px">사람으로 보기</span>' +
+          keys.map(function (n) {
+            return '<button type="button" data-act="person" data-name="' + esc(n) + '">' + esc(n) + ' · ' + names[n] + '건</button>';
+          }).join('') + '</div></div>';
+      }
+    }
+    $('#sugg-row').innerHTML = sugg;
+
+    var wrap = $('#list-wrap');
+    if (!appData.records.length) {
+      wrap.innerHTML = '<div class="empty">' +
+        '<span class="big">💌</span>' +
+        '<h3>아직 기록이 없어요</h3>' +
+        '<p>축의금·조의금·축하금을 보내고 받은 대로 적어두면,<br>사람별로 주고받은 금액과 갚아야 할 마음까지 자동으로 정리돼요.</p>' +
+        '<button class="btn primary" type="button" data-act="add">첫 기록 남기기</button>' +
+        '<ul class="tips">' +
+          '<li>이름을 누르면 그 사람과 주고받은 내역이 한 화면에 떠요</li>' +
+          '<li>받은 돈은 ‘갚아야 함’으로 남겨두면 미답례 탭에 모여요</li>' +
+          '<li>빠른 금액 버튼(3·5·10·15·20·30만)으로 3초 만에 입력</li>' +
+        '</ul>' +
+      '</div>';
+      return;
+    }
+    if (!list.length) {
+      wrap.innerHTML = '<div class="empty small">' +
+        '<h3>조건에 맞는 기록이 없어요</h3>' +
+        '<p>검색어나 필터를 바꿔 보세요.</p>' +
+        '<button class="btn ghost" type="button" data-act="reset-filters">필터 모두 지우기</button>' +
+      '</div>';
+      return;
+    }
+    wrap.innerHTML = list.map(function (r) { return recCard(r); }).join('');
+  }
+
+  /* ============================ 렌더: 요약 ============================ */
+  function renderStats() {
+    $$('#st-range button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-val') === ui.range); });
+    var list = byRange(ui.range);
+    var s = sumOf(list);
+    var label = ui.range === 'all' ? '전체' : (ui.range === 'year' ? '올해' : '이번 달');
+    var body = '';
+
+    body += '<div class="kpi-grid">' +
+      '<div class="kpi"><span class="kpi-label">💸 보낸 돈</span><span class="kpi-value out">' + won(s.out) + '</span><span class="kpi-sub">' + s.outN + '건</span></div>' +
+      '<div class="kpi"><span class="kpi-label">💌 받은 돈</span><span class="kpi-value in">' + won(s.in) + '</span><span class="kpi-sub">' + s.inN + '건</span></div>' +
+      '<div class="kpi"><span class="kpi-label">차액</span><span class="kpi-value">' + (s.net === 0 ? '0원' : (s.net > 0 ? '+' : '-') + won(Math.abs(s.net))) + '</span><span class="kpi-sub">' + (s.net === 0 ? '균형' : (s.net > 0 ? '받은 쪽 많음' : '보낸 쪽 많음')) + '</span></div>' +
+    '</div>';
+
+    if (!list.length) {
+      body += '<div class="empty small"><h3>' + label + ' 기록이 없어요</h3><p>기간을 바꾸거나 새 기록을 남겨보세요.</p><button class="btn primary" type="button" data-act="add">기록 추가</button></div>';
+      $('#st-body').innerHTML = body;
+      return;
+    }
+
+    /* 관계별 */
+    var rels = groupSum(list, function (r) { return r.relation; });
+    var relKeys = Object.keys(rels).sort(function (a, b) { return (rels[b].out + rels[b].in) - (rels[a].out + rels[a].in); });
+    var relMax = Math.max.apply(null, relKeys.map(function (k) { return rels[k].out + rels[k].in; }).concat([1]));
+    var relHtml = relKeys.map(function (k) {
+      var g = rels[k];
+      return statRow(k, g, relMax);
+    }).join('');
+    body += '<div class="card"><h2 class="card-title">관계별 (' + label + ')</h2>' + relHtml + legendHtml() + '</div>';
+
+    /* 경조사 종류별 */
+    var kinds = groupSum(list, function (r) { return r.kind; });
+    var kindKeys = Object.keys(kinds).sort(function (a, b) { return (kinds[b].out + kinds[b].in) - (kinds[a].out + kinds[a].in); });
+    var kindMax = Math.max.apply(null, kindKeys.map(function (k) { return kinds[k].out + kinds[k].in; }).concat([1]));
+    body += '<div class="card"><h2 class="card-title">경조사별 (' + label + ')</h2>' +
+      kindKeys.map(function (k) { return statRow(k, kinds[k], kindMax); }).join('') +
+      legendHtml() + '</div>';
+
+    /* 주체별 */
+    var owners = groupSum(list, function (r) { return r.owner; });
+    var ownKeys = OWNERS.filter(function (o) { return owners[o]; });
+    body += '<div class="card"><h2 class="card-title">주체별 (' + label + ')</h2>' +
+      (ownKeys.length ? ownKeys.map(function (o) {
+        var g = owners[o];
+        return '<div class="sr-head" style="margin-bottom:8px"><span class="sr-name">' + esc(ownerLabel(o)) + '</span>' +
+          '<span class="sr-val">보낸 ' + won(g.out) + ' · 받은 ' + won(g.in) + ' · ' + g.n + '건</span></div>';
+      }).join('') : '<p class="sync-help" style="margin:0">기록이 없어요.</p>') + '</div>';
+
+    /* 사람별 */
+    var people = groupSum(list, function (r) { return r.name; });
+    var pKeys = Object.keys(people).sort(function (a, b) { return (people[b].out + people[b].in) - (people[a].out + people[a].in); }).slice(0, 10);
+    body += '<div class="card"><h2 class="card-title">자주 오간 사람 (' + label + ')</h2>' +
+      pKeys.map(function (n) {
+        var g = people[n];
+        var diff = g.in - g.out;
+        var cls = diff === 0 ? 'zero' : (diff > 0 ? 'in' : 'out');
+        var dTxt = diff === 0 ? '0' : (diff > 0 ? '+' : '-') + wonShort(Math.abs(diff));
+        return '<button type="button" class="prow" data-act="person" data-name="' + esc(n) + '">' +
+          '<span class="pname">' + esc(n || '(이름 없음)') + '</span>' +
+          '<span class="pmeta">' + g.n + '건 · 보낸 ' + wonShort(g.out) + ' · 받은 ' + wonShort(g.in) + '</span>' +
+          '<span class="pdiff ' + cls + '">' + dTxt + '</span></button>';
+      }).join('') + '</div>';
+
+    /* 연도별 */
+    var years = {};
+    appData.records.forEach(function (r) { var y = yearOf(r.date) || '-'; if (!years[y]) years[y] = { out: 0, in: 0 }; if (r.dir === 'in') years[y].in += r.amount; else years[y].out += r.amount; });
+    var yKeys = Object.keys(years).sort().reverse();
+    if (yKeys.length > 1) {
+      body += '<div class="card"><h2 class="card-title">연도별 (전체)</h2>' + yKeys.map(function (y) {
+        var g = years[y], net = g.in - g.out;
+        return '<div class="yrow"><span class="yr">' + esc(y) + '</span>' +
+          '<span class="yo">' + (g.out ? '-' + wonShort(g.out) : '0') + '</span>' +
+          '<span class="yi">' + (g.in ? '+' + wonShort(g.in) : '0') + '</span>' +
+          '<span class="yn">' + (net === 0 ? '0' : (net > 0 ? '+' : '-') + wonShort(Math.abs(net))) + '</span></div>';
+      }).join('') + '<p class="card-foot">보낸 돈 · 받은 돈 · 차액 순서예요.</p></div>';
+    }
+
+    $('#st-body').innerHTML = body;
+  }
+  function statRow(name, g, max) {
+    var total = g.out + g.in;
+    var w = max > 0 ? Math.max(total / max * 100, total > 0 ? 2 : 0) : 0;
+    var outPct = total > 0 ? (g.out / total * 100) : 0;
+    return '<div class="stat-row">' +
+      '<div class="sr-head"><span class="sr-name">' + esc(name) + '</span>' +
+        '<span class="sr-val">보낸 ' + won(g.out) + ' · 받은 ' + won(g.in) + '</span></div>' +
+      '<span class="bar-track"><span class="bar-duo" style="width:' + w.toFixed(1) + '%">' +
+        (g.out ? '<i class="bo" style="width:' + outPct.toFixed(1) + '%"></i>' : '') +
+        (g.in ? '<i class="bi" style="width:' + (100 - outPct).toFixed(1) + '%"></i>' : '') +
+      '</span></span></div>';
+  }
+  function legendHtml() {
+    return '<div class="legend"><span><i style="background:var(--out)"></i>보낸 돈</span><span><i style="background:var(--in)"></i>받은 돈</span></div>';
+  }
+
+  /* ============================ 렌더: 미답례 ============================ */
+  function renderPending() {
+    $$('#pend-view button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-val') === ui.pend); });
+    var owe = pendingList('owe');
+    var due = pendingList('due');
+    var sOwe = sumOf(owe), sDue = sumOf(due);
+
+    $('#pend-sum').innerHTML =
+      '<div class="card" style="background:linear-gradient(135deg,#fff 0%,#fdf6ef 100%);border-color:#f1e7dd">' +
+        '<div class="kpi-grid" style="margin:0">' +
+          '<div class="kpi" style="background:transparent;border:0;padding:0"><span class="kpi-label">갚아야 할 마음</span><span class="kpi-value out">' + won(sOwe.in) + '</span><span class="kpi-sub">' + owe.length + '건</span></div>' +
+          '<div class="kpi" style="background:transparent;border:0;padding:0"><span class="kpi-label">받을 예정</span><span class="kpi-value in">' + won(sDue.out) + '</span><span class="kpi-sub">' + due.length + '건</span></div>' +
+          '<div class="kpi" style="background:transparent;border:0;padding:0"><span class="kpi-label">합계 차액</span><span class="kpi-value">' + ((sOwe.in - sDue.out) === 0 ? '0원' : ((sOwe.in - sDue.out) > 0 ? '+' : '-') + wonShort(Math.abs(sOwe.in - sDue.out))) + '</span><span class="kpi-sub">갚을 − 받을</span></div>' +
+        '</div>' +
+        '<p class="card-foot" style="margin-top:10px">' + (ui.pend === 'owe'
+          ? '내가 받은 돈 중 아직 갚지 않은 내역이에요. 상대 경조사에 참석하면 ‘답례 완료’로 바꿔주세요.'
+          : '내가 보낸 돈 중 아직 상대가 돌려주지 않은 내역이에요. 받으면 ‘답례 완료’로 바꿔주세요.') + '</p>' +
+      '</div>';
+
+    var list = ui.pend === 'owe' ? owe : due;
+    var wrap = $('#pend-list');
+    if (!list.length) {
+      wrap.innerHTML = '<div class="empty small">' +
+        '<span class="big">' + (ui.pend === 'owe' ? '🤍' : '💌') + '</span>' +
+        '<h3>' + (ui.pend === 'owe' ? '갚아야 할 내역이 없어요' : '받을 예정인 내역이 없어요') + '</h3>' +
+        '<p>기록을 남길 때 답례 상태를 ‘' + (ui.pend === 'owe' ? '갚아야 함' : '받을 예정') + '’으로 고르면 여기에 모여요.</p>' +
+        '<button class="btn primary" type="button" data-act="add">기록 추가</button>' +
+      '</div>';
+      return;
+    }
+    wrap.innerHTML = list.map(function (r) { return recCard(r, { thanksButton: true }); }).join('');
+  }
+
+  /* ============================ 렌더: 설정 ============================ */
+  function renderSetup() {
+    var el = $('#setup-sync-state');
+    if (!el) return;
+    if (syncConnected()) {
+      el.className = 'sync-state on';
+      el.textContent = '✅ 연결됨 · 마지막 동기화 ' + syncTimeText(syncCfg.lastSync);
+    } else {
+      el.className = 'sync-state off';
+      el.textContent = '⚠️ 미연결 · 이 기기에만 저장 중';
+    }
+  }
+
+  /* ============================ 렌더: 공통 ============================ */
+  function renderTabs() {
+    ['list', 'stats', 'pending', 'setup'].forEach(function (t) {
+      var sec = document.getElementById('tab-' + t);
+      if (sec) sec.hidden = (ui.tab !== t);
+    });
+    $$('#tabbar button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-val') === ui.tab); });
+    var n = pendingList('owe').length;
+    var badge = $('#tab-badge');
+    if (badge) {
+      badge.hidden = !n;
+      badge.textContent = n > 99 ? '99+' : String(n);
+    }
+  }
+
+  function render() {
+    renderHeader();
+    renderTabs();
+    renderBalance();
+    renderList();
+    renderStats();
+    renderPending();
+    renderSetup();
+    renderSyncUI();
+  }
+
+  /* ============================ 상세 ============================ */
+  function findRec(id) {
+    for (var i = 0; i < appData.records.length; i++) if (appData.records[i].id === id) return appData.records[i];
+    return null;
+  }
+  function openDetail(id) {
+    var r = findRec(id);
+    if (!r) return;
+    var ti = thanksInfo(r);
+    var panel = $('#detail-panel');
+    panel.innerHTML =
+      '<div class="sheet-head"><h2>' + esc(r.name) + '</h2><button class="x" type="button" data-act="close" data-target="modal-detail">✕</button></div>' +
+      '<div class="sheet-body">' +
+        '<dl class="dl">' +
+          '<div><dt>구분</dt><dd>' + esc(dirLabel(r.dir)) + '</dd></div>' +
+          '<div><dt>금액</dt><dd class="money ' + r.dir + '">' + esc(signed(r.amount, r.dir)) + '</dd></div>' +
+          '<div><dt>날짜</dt><dd>' + esc(fmtDate(r.date, true)) + '</dd></div>' +
+          '<div><dt>주체</dt><dd>' + esc(ownerLabel(r.owner)) + '</dd></div>' +
+          '<div><dt>관계</dt><dd>' + esc(r.relation) + '</dd></div>' +
+          '<div><dt>경조사</dt><dd>' + esc(r.kind) + '</dd></div>' +
+          '<div><dt>전달 방식</dt><dd>' + esc(r.method || '-') + '</dd></div>' +
+          '<div><dt>답례 상태</dt><dd>' + esc(ti.t) + '</dd></div>' +
+          '<div><dt>메모</dt><dd>' + (r.memo ? esc(r.memo).replace(/\n/g, '<br>') : '-') + '</dd></div>' +
+        '</dl>' +
+        '<button class="btn ghost block sm" type="button" data-act="person" data-name="' + esc(r.name) + '" style="margin-top:14px">👤 ' + esc(r.name) + '과 주고받은 내역 보기</button>' +
+      '</div>' +
+      '<div class="sheet-actions">' +
+        '<button class="btn danger sm" type="button" data-act="del" data-id="' + esc(r.id) + '">삭제</button>' +
+        (r.thanks === 'need' ? '<button class="btn soft sm" type="button" data-act="thanks-done" data-id="' + esc(r.id) + '">답례 완료</button>' : '') +
+        '<button class="btn primary sm" type="button" data-act="edit" data-id="' + esc(r.id) + '">수정</button>' +
+      '</div>';
+    openSheet('modal-detail');
+  }
+
+  function openPerson(name) {
+    var list = sortedRecords(appData.records.filter(function (r) { return r.name === name; }));
+    var s = sumOf(list);
+    var diff = s.net;
+    var panel = $('#person-panel');
+    var lastOut = null, lastIn = null;
+    list.forEach(function (r) {
+      if (r.dir === 'out' && !lastOut) lastOut = r;
+      if (r.dir === 'in' && !lastIn) lastIn = r;
+    });
+    panel.innerHTML =
+      '<div class="sheet-head"><h2>👤 ' + esc(name || '(이름 없음)') + '</h2><button class="x" type="button" data-act="close" data-target="modal-person">✕</button></div>' +
+      '<div class="sheet-body">' +
+        '<div class="psum">' +
+          '<div><span class="lb">보낸 돈</span><span class="vl out">' + won(s.out) + '</span></div>' +
+          '<div><span class="lb">받은 돈</span><span class="vl in">' + won(s.in) + '</span></div>' +
+          '<div><span class="lb">차액</span><span class="vl">' + (diff === 0 ? '0원' : (diff > 0 ? '+' : '-') + won(Math.abs(diff))) + '</span></div>' +
+        '</div>' +
+        '<p class="sync-help" style="margin-bottom:12px">' +
+          '총 ' + s.n + '건 · ' + (diff === 0 ? '주고받은 금액이 같아요' : (diff > 0 ? '내가 받은 쪽이 ' + won(diff) + ' 많아요' : '내가 보낸 쪽이 ' + won(-diff) + ' 많아요')) +
+          (s.n ? '<br>마지막 보낸 날 ' + (lastOut ? fmtDate(lastOut.date, true) : '-') + ' · 마지막 받은 날 ' + (lastIn ? fmtDate(lastIn.date, true) : '-') : '') +
+          (s.n === 2 ? '<br>보낸 ' + won(s.out) + ' vs 받은 ' + won(s.in) + ' — ‘저번에 얼마 했지?’ 바로 확인됐어요.' : '') +
+        '</p>' +
+        (list.length ? list.map(function (r) { return recCard(r); }).join('') : '<div class="empty small"><h3>기록이 없어요</h3><p>이 사람과 주고받은 내역을 남겨보세요.</p></div>') +
+      '</div>' +
+      '<div class="sheet-actions">' +
+        '<button class="btn ghost sm" type="button" data-act="close" data-target="modal-person">닫기</button>' +
+        '<button class="btn primary sm" type="button" data-act="add-for" data-name="' + esc(name) + '">이 사람 기록 추가</button>' +
+      '</div>';
+    openSheet('modal-person');
+  }
+
+  /* ============================ 입력 폼 ============================ */
+  var editingId = '';
+  function chipSet(group, values, current, customLabel) {
+    var html = values.map(function (v) {
+      return '<button type="button" class="chip' + (current === v ? ' on' : '') + '" data-act="pick" data-group="' + group + '" data-val="' + esc(v) + '">' + esc(v) + '</button>';
+    }).join('');
+    if (customLabel) {
+      var isCustom = current && values.indexOf(current) < 0;
+      html += '<button type="button" class="chip' + (isCustom ? ' on' : '') + '" data-act="pick" data-group="' + group + '" data-val="__custom">' + customLabel + '</button>';
+    }
+    return html;
+  }
+
+  function openForm(id, preset) {
+    editingId = id || '';
+    var r = id ? findRec(id) : null;
+    var d = r ? JSON.parse(JSON.stringify(r)) : {
+      dir: (preset && preset.dir) || 'out',
+      owner: '유자',
+      name: (preset && preset.name) || '',
+      relation: '직장·동료',
+      kind: '결혼식',
+      date: todayStr(),
+      amount: '',
+      method: '직접 참석',
+      thanks: 'none',
+      memo: ''
+    };
+    if (r) {
+      if (RELS.indexOf(d.relation) < 0) d.relation = '__custom';
+      if (KINDS.indexOf(d.kind) < 0) d.kind = '__custom';
+    }
+    var isCustomRel = d.relation === '__custom';
+    var isCustomKind = d.kind === '__custom';
+    var relCustomVal = isCustomRel ? (r ? r.relation : '') : '';
+    var kindCustomVal = isCustomKind ? (r ? r.kind : '') : '';
+
+    /* 이름 후보 */
+    var knownNames = {};
+    appData.records.forEach(function (x) { if (x.name) knownNames[x.name] = 1; });
+    knownNames = Object.keys(knownNames).slice(0, 8);
+
+    var dirSeg = '<div class="seg big" id="dir-seg">' +
+      '<button type="button" class="' + (d.dir === 'out' ? 'on d-out' : '') + '" data-act="dir-pick" data-val="out">💸 보낸 돈</button>' +
+      '<button type="button" class="' + (d.dir === 'in' ? 'on d-in' : '') + '" data-act="dir-pick" data-val="in">💌 받은 돈</button>' +
+    '</div>';
+
+    var thanksSeg = thanksSegHtml(d.dir, d.thanks);
+
+    var panel = $('#rec-panel');
+    panel.innerHTML =
+      '<div class="sheet-head"><h2>' + (r ? '기록 수정' : '경조사비 기록') + '</h2><button class="x" type="button" data-act="close" data-target="modal-record">✕</button></div>' +
+      '<form id="rec-form" autocomplete="off" novalidate>' +
+        '<input type="hidden" name="dir" value="' + esc(d.dir) + '">' +
+        '<input type="hidden" name="thanks" value="' + esc(d.thanks) + '">' +
+        '<div class="sheet-body">' +
+          dirSeg +
+
+          '<label class="field"><span>이름 (상대방)</span>' +
+            '<input class="input" name="name" type="text" value="' + esc(d.name) + '" placeholder="예: 김민수" maxlength="30" required>' +
+            (knownNames.length ? '<span class="hint">최근 기록한 사람: ' + knownNames.map(function (n) { return '<button type="button" class="link-btn" data-act="fill-name" data-val="' + esc(n) + '">' + esc(n) + '</button>'; }).join(' ') + '</span>' : '') +
+          '</label>' +
+
+          '<div class="field"><span>주체</span>' +
+            '<div class="chipset" data-group="owner">' + OWNERS.map(function (o) {
+              return '<button type="button" class="chip' + (d.owner === o ? ' on' : '') + '" data-act="pick" data-group="owner" data-val="' + esc(o) + '">' + esc(ownerLabel(o)) + '</button>';
+            }).join('') + '</div>' +
+            '<input type="hidden" name="owner" value="' + esc(d.owner) + '">' +
+            '<span class="hint">부부가 함께 쓰면 ‘공동’으로 남겨도 돼요.</span>' +
+          '</div>' +
+
+          '<div class="field"><span>관계</span>' +
+            '<div class="chipset" data-group="relation">' + chipSet('relation', RELS, d.relation, '직접 입력') + '</div>' +
+            '<input type="hidden" name="relation" value="' + esc(d.relation) + '">' +
+            '<input class="input" id="rel-custom" type="text" placeholder="관계 직접 입력 (예: 사촌)" value="' + esc(relCustomVal) + '" maxlength="20" style="margin-top:8px" ' + (isCustomRel ? '' : 'hidden') + '>' +
+          '</div>' +
+
+          '<div class="field"><span>경조사 종류</span>' +
+            '<div class="chipset" data-group="kind">' + chipSet('kind', KINDS, d.kind, '직접 입력') + '</div>' +
+            '<input type="hidden" name="kind" value="' + esc(d.kind) + '">' +
+            '<input class="input" id="kind-custom" type="text" placeholder="경조사 직접 입력 (예: 회갑)" value="' + esc(kindCustomVal) + '" maxlength="20" style="margin-top:8px" ' + (isCustomKind ? '' : 'hidden') + '>' +
+          '</div>' +
+
+          '<div class="field"><span>날짜</span>' +
+            '<div class="date-row"><input class="input" name="date" type="date" value="' + esc(d.date) + '" max="2100-12-31">' +
+            '<button class="btn ghost" type="button" data-act="today">오늘</button></div>' +
+          '</div>' +
+
+          '<div class="field"><span>금액</span>' +
+            '<div class="amt-row"><input class="input" id="f-amount" name="amount" type="text" inputmode="numeric" value="' + (d.amount ? Number(d.amount).toLocaleString('ko-KR') : '') + '" placeholder="0">' +
+            '<span class="unit">원</span></div>' +
+            '<div class="quick-amt" id="quick-amt">' + QUICK_AMTS.map(function (a) {
+              return '<button type="button" class="chip quick" data-act="amt" data-val="' + a + '">' + (a / 10000) + '만</button>';
+            }).join('') + '</div>' +
+            '<span class="hint" id="amt-hint">빠른 버튼을 누르거나 직접 입력하세요.</span>' +
+          '</div>' +
+
+          '<div class="field"><span>전달 · 참석 방식</span>' +
+            '<div class="chipset" data-group="method">' + chipSet('method', METHODS, d.method) + '</div>' +
+            '<input type="hidden" name="method" value="' + esc(d.method) + '">' +
+          '</div>' +
+
+          '<div class="field"><span>답례 상태</span>' +
+            '<div class="seg" id="thanks-seg">' + thanksSeg + '</div>' +
+            '<span class="hint" id="thanks-hint">' + thanksHint(d.dir) + '</span>' +
+          '</div>' +
+
+          '<label class="field"><span>메모</span>' +
+            '<textarea class="input" name="memo" rows="3" maxlength="500" placeholder="예: 식사함 · 답례품 받음 · 연락처 010-0000-0000 · 특이사항">' + esc(d.memo) + '</textarea>' +
+          '</label>' +
+        '</div>' +
+        '<div class="sheet-actions">' +
+          '<button class="btn ghost" type="button" data-act="close" data-target="modal-record">취소</button>' +
+          '<button class="btn primary" type="submit">' + (r ? '수정 저장' : '저장') + '</button>' +
+        '</div>' +
+      '</form>';
+    openSheet('modal-record');
+    var nameEl = panel.querySelector('input[name="name"]');
+    if (nameEl && !r && !(preset && preset.name)) setTimeout(function () { try { nameEl.focus(); } catch (e) {} }, 120);
+  }
+
+  function thanksHint(dir) {
+    return dir === 'in'
+      ? '받은 돈은 보통 ‘갚아야 함’으로 두면 미답례 탭에 쌓여요.'
+      : '보낸 돈이 나중에 돌아올 예정이면 ‘받을 예정’을 골라두세요.';
+  }
+  function thanksSegHtml(dir, cur) {
+    var labels = dir === 'in'
+      ? [{ v: 'need', t: '갚아야 함' }, { v: 'done', t: '답례 완료' }, { v: 'none', t: '해당 없음' }]
+      : [{ v: 'need', t: '받을 예정' }, { v: 'done', t: '받았음' }, { v: 'none', t: '해당 없음' }];
+    if (!cur) cur = 'none';
+    return labels.map(function (o) {
+      return '<button type="button" class="' + (cur === o.v ? 'on' : '') + '" data-act="thanks-pick" data-val="' + o.v + '">' + o.t + '</button>';
+    }).join('');
+  }
+
+  function formEl() { return $('#rec-form'); }
+  function syncThanksSeg() {
+    var f = formEl();
+    if (!f) return;
+    var dir = f.dir.value;
+    var cur = f.thanks.value;
+    var seg = $('#thanks-seg');
+    if (seg) seg.innerHTML = thanksSegHtml(dir, cur);
+    var hint = $('#thanks-hint');
+    if (hint) hint.textContent = thanksHint(dir);
+  }
+
+  function submitForm(e) {
+    e.preventDefault();
+    var f = formEl();
+    if (!f) return;
+    var name = String(f.name.value || '').trim();
+    var amount = num(String(f.amount.value || '').replace(/[^0-9]/g, ''));
+    var date = f.date.value || todayStr();
+    if (!name) { toast('이름을 입력해 주세요'); try { f.name.focus(); } catch (er) {} return; }
+    if (!amount) { toast('금액을 입력해 주세요'); try { f.amount.focus(); } catch (er) {} return; }
+
+    var relation = f.relation.value;
+    if (relation === '__custom') {
+      var rc = $('#rel-custom');
+      relation = (rc && rc.value.trim()) || '기타';
+    }
+    var kind = f.kind.value;
+    if (kind === '__custom') {
+      var kc = $('#kind-custom');
+      kind = (kc && kc.value.trim()) || '기타';
+    }
+
+    var now = Date.now();
+    if (editingId) {
+      var rec = findRec(editingId);
+      if (!rec) { toast('기록을 찾을 수 없어요'); return; }
+      rec.dir = f.dir.value === 'in' ? 'in' : 'out';
+      rec.owner = f.owner.value || '유자';
+      rec.name = name;
+      rec.relation = relation;
+      rec.kind = kind;
+      rec.date = date;
+      rec.amount = amount;
+      rec.method = f.method.value || '';
+      rec.thanks = f.thanks.value || 'none';
+      rec.memo = String(f.memo.value || '').trim();
+      rec.updatedAt = now;
+      saveData();
+      closeSheet('modal-record');
+      toast('수정했어요');
+    } else {
+      appData.records.push({
+        id: uid(), dir: f.dir.value === 'in' ? 'in' : 'out', owner: f.owner.value || '유자',
+        name: name, relation: relation, kind: kind, date: date, amount: amount,
+        method: f.method.value || '', thanks: f.thanks.value || 'none',
+        memo: String(f.memo.value || '').trim(), createdAt: now, updatedAt: now
+      });
+      saveData();
+      closeSheet('modal-record');
+      toast(name + ' · ' + won(amount) + ' 기록했어요');
+    }
+    editingId = '';
+    render();
+  }
+
+  function deleteRecord(id) {
+    var r = findRec(id);
+    if (!r) return;
+    if (!confirm('‘' + r.name + ' · ' + won(r.amount) + '’ 기록을 삭제할까요?\n삭제한 기록은 되돌릴 수 없어요.')) return;
+    appData.records = appData.records.filter(function (x) { return x.id !== id; });
+    if (appData.deletedRecordIds.indexOf(id) < 0) appData.deletedRecordIds.push(id);
+    saveData();
+    closeSheet('modal-detail');
+    closeSheet('modal-person');
+    render();
+    toast('삭제했어요');
+  }
+
+  function markThanksDone(id) {
+    var r = findRec(id);
+    if (!r) return;
+    r.thanks = 'done';
+    r.updatedAt = Date.now();
+    saveData();
+    render();
+    toast(r.dir === 'in' ? '답례 완료로 표시했어요' : '받았음으로 표시했어요');
+  }
+
+  /* ============================ 내보내기 ============================ */
+  function stamp() {
+    var d = new Date();
+    return d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate());
+  }
+  function download(filename, mime, text) {
+    try {
+      var blob = new Blob([text], { type: mime + ';charset=utf-8' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(url); if (a.parentNode) a.parentNode.removeChild(a); }, 1500);
+      return true;
+    } catch (e) {
+      toast('파일을 만들지 못했어요: ' + (e && e.message ? e.message : e));
+      return false;
+    }
+  }
+  function csvCell(v) {
+    var s = String(v == null ? '' : v);
+    if (/[",\n\r]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+  function exportCsv() {
+    if (!appData.records.length) { toast('내보낼 기록이 없어요'); return; }
+    var head = ['날짜', '구분', '주체', '이름', '관계', '경조사', '금액', '전달방식', '답례상태', '메모'];
+    var rows = [head.join(',')];
+    sortedRecords(appData.records).slice().reverse().forEach(function (r) {
+      rows.push([
+        r.date,
+        r.dir === 'in' ? '받은 돈' : '보낸 돈',
+        ownerLabel(r.owner),
+        r.name,
+        r.relation,
+        r.kind,
+        r.amount,
+        r.method,
+        thanksInfo(r).t,
+        r.memo
+      ].map(csvCell).join(','));
+    });
+    var total = sumOf(appData.records);
+    rows.push('');
+    rows.push(['합계', '', '', '', '', '', '', '', '', ''].join(','));
+    rows.push(['보낸 돈', '', '', '', '', '', total.out, '', '', ''].map(csvCell).join(','));
+    rows.push(['받은 돈', '', '', '', '', '', total.in, '', '', ''].map(csvCell).join(','));
+    rows.push(['차액', '', '', '', '', '', total.net, '', '', ''].map(csvCell).join(','));
+    var ok = download('경조사비_' + stamp() + '.csv', 'text/csv', '\ufeff' + rows.join('\r\n') + '\r\n');
+    if (ok) toast('CSV 파일을 저장했어요 (' + appData.records.length + '건)');
+  }
+  function exportJson() {
+    if (!appData.records.length) { toast('백업할 기록이 없어요'); return; }
+    var doc = { app: 'events-book', v: 1, exportedAt: new Date().toISOString(), counts: syncDocCounts(), data: appData };
+    var ok = download('경조사비_백업_' + stamp() + '.json', 'application/json', JSON.stringify(doc, null, 2));
+    if (ok) toast('JSON 백업 파일을 저장했어요');
+  }
+  function importJsonFile(file) {
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      var doc;
+      try { doc = JSON.parse(String(reader.result || '')); } catch (e) { toast('JSON 파일을 읽지 못했어요'); return; }
+      var incoming = normalize(doc && doc.data ? doc.data : doc);
+      if (!incoming.records.length) { toast('불러올 기록이 없어요'); return; }
+      if (!confirm('백업에서 ' + incoming.records.length + '건을 불러와 지금 기록(' + appData.records.length + '건)과 합칠까요?\n같은 기록은 최근에 고친 쪽으로 남아요.')) return;
+      var before = appData.records.length;
+      mergedIntoLocal(incoming);
+      saveData();
+      render();
+      toast('불러왔어요 · ' + before + '건 → ' + appData.records.length + '건');
+    };
+    reader.onerror = function () { toast('파일을 읽지 못했어요'); };
+    reader.readAsText(file, 'utf-8');
+  }
+  function mergedIntoLocal(incoming) {
+    var byId = {};
+    incoming.records.forEach(function (r) { byId[r.id] = r; });
+    appData.records.forEach(function (r) {
+      var o = byId[r.id];
+      if (!o) { byId[r.id] = r; return; }
+      byId[r.id] = (Number(o.updatedAt || 0) > Number(r.updatedAt || 0)) ? keepFilled(o, r) : r;
+    });
+    var del = {};
+    (appData.deletedRecordIds || []).concat(incoming.deletedRecordIds || []).forEach(function (id) { del[id] = 1; });
+    var out = [];
+    Object.keys(byId).forEach(function (id) { if (!del[id]) out.push(byId[id]); });
+    appData.records = out;
+    appData.deletedRecordIds = Object.keys(del);
+  }
+
+  /* ============================ 동기화 ============================ */
+  var SYNC_BASE = 'https://mantledb.sh/v2/';
+  var SYNC_PART_MAX = 58000;
+  var SYNC_PARTS_PER_NS = 88;
+  var syncCfg = null, syncBusy = false, syncApplying = false, syncTimer = null;
+
+  function syncLoadCfg() {
+    try {
+      var raw = localStorage.getItem(SYNC_CFG_KEY);
+      syncCfg = raw ? JSON.parse(raw) : null;
+    } catch (e) { syncCfg = null; }
+    if (!syncCfg || typeof syncCfg !== 'object') syncCfg = {};
+    if (typeof syncCfg.ns !== 'string') syncCfg.ns = '';
+    syncCfg.rev = Number(syncCfg.rev) || 0;
+    syncCfg.lastSync = Number(syncCfg.lastSync) || 0;
+    syncCfg.lastPushTs = Number(syncCfg.lastPushTs) || 0;
+    syncCfg.lastRemoteRev = Number(syncCfg.lastRemoteRev) || 0;
+    if (typeof syncCfg.auto !== 'boolean') syncCfg.auto = true;
+    if (!syncCfg.deviceId) syncCfg.deviceId = 'dev-' + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4);
+    return syncCfg;
+  }
+  function syncSaveCfg() {
+    try { localStorage.setItem(SYNC_CFG_KEY, JSON.stringify(syncCfg)); } catch (e) {}
+  }
+  function syncConnected() { return !!(syncCfg && syncCfg.ns); }
+  function syncErrMsg(e) {
+    var m = String((e && e.message) ? e.message : e || '');
+    if (!m || m === 'HTTP 0' || /Failed to fetch|NetworkError|Load failed|aborted|AbortError|Network request failed/i.test(m)) {
+      return '네트워크에 연결할 수 없습니다 (인터넷 상태를 확인해 주세요)';
+    }
+    return m;
+  }
+  function syncNewNs() {
+    var abc = 'abcdefghijkmnpqrstuvwxyz23456789', s = '';
+    for (var i = 0; i < 10; i++) s += abc.charAt(Math.floor(Math.random() * abc.length));
+    return 'events-' + s;
+  }
+  function syncNsForPart(i) {
+    var bucket = Math.floor(i / SYNC_PARTS_PER_NS);
+    return bucket === 0 ? syncCfg.ns : syncCfg.ns + '-p' + bucket;
+  }
+  function escByteLenOfChar(ch) {
+    var cc = ch.charCodeAt(0);
+    if (ch === '"' || ch === '\\') return 2;
+    if (cc < 0x20) return 6;
+    if (cc < 0x80) return 1;
+    if (cc < 0x800) return 2;
+    if (cc >= 0xD800 && cc <= 0xDBFF) return 4;
+    if (cc >= 0xDC00 && cc <= 0xDFFF) return 0;
+    return 3;
+  }
+  function chunkByEscapedBytes(doc, maxBytes) {
+    var parts = [], cur = '', curLen = 0;
+    for (var i = 0; i < doc.length; i++) {
+      var ch = doc.charAt(i), b = escByteLenOfChar(ch);
+      if (curLen + b > maxBytes) { parts.push(cur); cur = ch; curLen = b; }
+      else { cur += ch; curLen += b; }
+    }
+    if (cur) parts.push(cur);
+    return parts;
+  }
+  function syncFetch(url, opts) {
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 20000);
+    return fetch(url, Object.assign({ signal: ctrl.signal, cache: 'no-store' }, opts || {})).then(function (res) {
+      clearTimeout(timer);
+      return res;
+    }, function (err) { clearTimeout(timer); throw err; });
+  }
+  function syncPost(path, obj) {
+    return syncFetch(SYNC_BASE + path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(obj)
+    }).then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return true;
+    });
+  }
+  function syncGet(path) {
+    return syncFetch(SYNC_BASE + path, { method: 'GET' }).then(function (res) {
+      if (res.status === 404) return null;
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.text().then(function (txt) {
+        if (!txt) return null;
+        try { return JSON.parse(txt); } catch (e) { return null; }
+      });
+    });
+  }
+  function syncDocCounts() {
+    var s = sumOf(appData.records);
+    return { records: appData.records.length, out: s.out, in: s.in };
+  }
+  function syncPush() {
+    if (!syncConnected()) return Promise.reject(new Error('동기화 코드가 없습니다'));
+    var doc = JSON.stringify({ v: 1, app: 'eventsbook', ts: Date.now(), device: syncCfg.deviceId, data: appData });
+    var parts = chunkByEscapedBytes(doc, SYNC_PART_MAX);
+    if (parts.length > SYNC_PARTS_PER_NS * 6) return Promise.reject(new Error('데이터가 너무 큽니다'));
+    var chain = Promise.resolve();
+    parts.forEach(function (p, i) {
+      chain = chain.then(function () { return syncPost(syncNsForPart(i) + '/v1/p' + i, { c: p }); });
+    });
+    return chain.then(function () {
+      var rev = Math.max(syncCfg.rev || 0, syncCfg.lastRemoteRev || 0) + 1;
+      var pushTs = Date.now();
+      var manifest = {
+        t: 1, app: 'eventsbook', rev: rev, ts: pushTs, device: syncCfg.deviceId,
+        parts: parts.map(function (p, i) { return { ns: syncNsForPart(i), k: 'v1/p' + i }; }),
+        counts: syncDocCounts(), bytes: doc.length
+      };
+      return syncPost(syncCfg.ns + '/v1/manifest', manifest).then(function () {
+        syncCfg.rev = rev;
+        syncCfg.lastRemoteRev = rev;
+        syncCfg.lastSync = pushTs;
+        syncCfg.lastPushTs = pushTs;
+        syncCfg.lastCount = manifest.counts;
+        syncCfg.lastError = '';
+        syncCfg.dirty = false;
+        syncSaveCfg();
+        return manifest;
+      });
+    });
+  }
+  function syncReadManifest() {
+    if (!syncConnected()) return Promise.resolve(null);
+    return syncGet(syncCfg.ns + '/v1/manifest').then(function (m) {
+      if (!m || !m.parts || !m.parts.length) return null;
+      return m;
+    });
+  }
+  function syncReadRemoteData(manifest) {
+    var buf = '';
+    var chain = Promise.resolve();
+    manifest.parts.forEach(function (p) {
+      chain = chain.then(function () {
+        return syncGet(p.ns + '/' + p.k).then(function (part) {
+          if (!part || typeof part.c !== 'string') throw new Error('조각을 읽지 못했습니다');
+          buf += part.c;
+        });
+      });
+    });
+    return chain.then(function () {
+      var doc;
+      try { doc = JSON.parse(buf); } catch (e) { throw new Error('원격 데이터 형식이 올바르지 않습니다'); }
+      if (!doc || !doc.data) throw new Error('원격 데이터 형식이 올바르지 않습니다');
+      return doc;
+    });
+  }
+
+  /* 원격이 더 최신이어도 '비어 있는 칸'으로 이 기기에 쓴 내용을 지우지 않는다 */
+  function keepFilled(remote, local) {
+    if (!remote || !local || typeof remote !== 'object' || typeof local !== 'object') return remote;
+    var out = {};
+    for (var k in remote) if (Object.prototype.hasOwnProperty.call(remote, k)) out[k] = remote[k];
+    for (var k2 in local) {
+      if (!Object.prototype.hasOwnProperty.call(local, k2)) continue;
+      var rv = out[k2], lv = local[k2];
+      var rEmpty = (rv === undefined || rv === null || rv === '' || (Array.isArray(rv) && rv.length === 0));
+      var lFilled = !(lv === undefined || lv === null || lv === '' || (Array.isArray(lv) && lv.length === 0));
+      if (rEmpty && lFilled) out[k2] = lv;
+    }
+    return out;
+  }
+  /* 병합: 로컬을 지우지 않고 합집합. 같은 id는 updatedAt이 최신인 쪽, 삭제된 id는 양쪽 합집합으로 제외 */
+  function mergeCollection(L, R, key, delKey, stats) {
+    var byId = {};
+    (R[key] || []).forEach(function (x) { if (x && x.id) byId[String(x.id)] = x; });
+    var remoteIds = Object.keys(byId), localIds = {};
+    (L[key] || []).forEach(function (x) {
+      var k = String(x.id);
+      localIds[k] = 1;
+      var r = byId[k];
+      if (!r) { byId[k] = x; return; }
+      var lt = Number(x.updatedAt || 0), rt = Number(r.updatedAt || 0);
+      if (rt > lt) { byId[k] = keepFilled(r, x); stats.updated++; }
+      else byId[k] = x;
+    });
+    remoteIds.forEach(function (id) { if (!localIds[id]) stats.added++; });
+    var del = {};
+    [].concat(L[delKey] || [], R[delKey] || []).forEach(function (id) { del[String(id)] = 1; });
+    var out = [];
+    Object.keys(byId).forEach(function (id) {
+      if (!del[id]) out.push(byId[id]);
+    });
+    L[key] = out;
+    L[delKey] = Object.keys(del);
+    return out.length;
+  }
+  function mergeRemoteData(local, remoteDoc) {
+    var R = (remoteDoc && remoteDoc.data) ? remoteDoc.data : null;
+    if (!R) return { data: local, stats: { changed: false, added: 0, updated: 0 } };
+    var L = JSON.parse(JSON.stringify(local));
+    var stats = { added: 0, updated: 0, changed: false };
+    mergeCollection(L, R, 'records', 'deletedRecordIds', stats);
+    try { stats.changed = JSON.stringify(L) !== JSON.stringify(local); } catch (e) { stats.changed = !!(stats.added || stats.updated); }
+    return { data: L, stats: stats };
+  }
+
+  function syncNow(opts) {
+    var silent = opts && opts.silent;
+    if (!syncConnected()) {
+      if (!silent) toast('먼저 동기화 코드를 만들거나 입력해 주세요');
+      return Promise.resolve(null);
+    }
+    if (syncBusy) return Promise.resolve(null);
+    syncBusy = true;
+    syncApplying = true;
+    renderSyncUI();
+    var merged = null;
+    return syncReadManifest().then(function (manifest) {
+      var needPush = !manifest || !!syncCfg.dirty;
+      if (manifest) {
+        syncCfg.lastRemoteRev = Number(manifest.rev) || 0;
+        var upToDate = Number(manifest.rev) === Number(syncCfg.rev) && Number(manifest.ts || 0) <= syncCfg.lastPushTs;
+        if (!upToDate) {
+          return syncReadRemoteData(manifest).then(function (remoteDoc) {
+            merged = mergeRemoteData(appData, remoteDoc);
+            if (merged.stats.changed) {
+              appData = normalize(merged.data);
+              saveDataNoPush();
+              render();
+              needPush = true;
+            }
+            return needPush;
+          });
+        }
+      }
+      return needPush;
+    }).then(function (needPush) {
+      if (needPush) return syncPush().then(function () { return true; });
+      var m2 = null;
+      return syncReadManifest().then(function (mm) {
+        if (mm) {
+          syncCfg.rev = Number(mm.rev) || syncCfg.rev;
+          syncCfg.lastRemoteRev = syncCfg.rev;
+          syncCfg.lastPushTs = Number(mm.ts) || syncCfg.lastPushTs;
+          syncCfg.lastCount = mm.counts || syncCfg.lastCount;
+        }
+        syncCfg.lastSync = Date.now();
+        syncCfg.lastError = '';
+        syncSaveCfg();
+        return false;
+      });
+    }).then(function () {
+      syncBusy = false;
+      syncApplying = false;
+      if (syncCfg.dirty && !syncCfg.lastError) { clearTimeout(syncTimer); syncTimer = setTimeout(function () { syncNow({ silent: true }); }, 900); }
+      renderSyncUI();
+      if (!silent) {
+        var c = syncCfg.lastCount || {};
+        var detail = merged && (merged.stats.added || merged.stats.updated)
+          ? ' (클라우드에서 ' + merged.stats.added + '건 추가 · ' + merged.stats.updated + '건 갱신)' : '';
+        toast('동기화 완료' + detail + ' · 기록 ' + (c.records || 0) + '건');
+      }
+      return merged;
+    }).catch(function (err) {
+      syncBusy = false;
+      syncApplying = false;
+      syncCfg.lastError = syncErrMsg(err);
+      syncSaveCfg();
+      renderSyncUI();
+      if (!silent) toast('동기화 실패: ' + syncCfg.lastError);
+      return null;
+    });
+  }
+  function saveDataNoPush() {
+    try { localStorage.setItem(DATA_KEY, JSON.stringify(appData)); } catch (e) {}
+  }
+
+  /* 화면을 닫거나 앱을 나갈 때 미업로드분을 바로 올린다 */
+  function flushDirtyOnHide() {
+    try {
+      if (!syncConnected() || !syncCfg || syncCfg.auto === false) return;
+      if (syncBusy || !syncCfg.dirty) return;
+      clearTimeout(syncTimer);
+      syncPush().catch(function () { });
+    } catch (e) { }
+  }
+  function scheduleSyncPush() {
+    if (!syncConnected()) return;
+    syncCfg.dirty = true;
+    syncSaveCfg();
+    if (!syncCfg.auto) return;
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(function tryPush(n) {
+      if (!syncConnected()) return;
+      if (syncBusy || syncApplying) {
+        if (n < 8) syncTimer = setTimeout(function () { tryPush(n + 1); }, 1500);
+        return;
+      }
+      if (!syncCfg.dirty) return;
+      syncNow({ silent: true });
+    }, 1500);
+  }
+
+  /* 동기화가 끊긴 상태를 접속하자마자 알 수 있게 상단 배너를 띄운다 */
+  function syncOffOpen() {
+    try { var b = document.querySelector('[data-act="open-sync"]'); if (b) b.click(); } catch (e) {}
+  }
+  function ensureSyncOffBar() {
+    var bar = document.getElementById('sync-off-bar');
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.id = 'sync-off-bar';
+      bar.setAttribute('role', 'button');
+      bar.setAttribute('tabindex', '0');
+      bar.style.cssText = 'display:none;position:sticky;top:0;z-index:2147483000;width:100%;box-sizing:border-box;' +
+        'background:#B45309;color:#fff;font:800 12.5px/1.35 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;' +
+        'padding:calc(7px + env(safe-area-inset-top)) 12px 7px;text-align:center;letter-spacing:-.2px;cursor:pointer;' +
+        'box-shadow:0 2px 8px rgba(0,0,0,.18);';
+      bar.textContent = '⚠️  동기화 미연결 · 이 기기에만 저장 중  ·  눌러서 연결';
+      bar.addEventListener('click', syncOffOpen);
+      bar.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); syncOffOpen(); } });
+      var host = document.body;
+      if (host) host.insertBefore(bar, host.firstChild);
+    }
+    return bar;
+  }
+  function updateSyncOffBar() {
+    try {
+      var on = !!(syncCfg && syncCfg.ns);
+      var bar = ensureSyncOffBar();
+      if (!bar) return;
+      bar.style.display = on ? 'none' : 'block';
+      document.body.classList.toggle('sync-off-mode', !on);
+    } catch (e) {}
+  }
+  try { window.__syncOffBar = updateSyncOffBar; } catch (e) {}
+
+  function syncTimeText(ts) {
+    if (!ts) return '아직 없음';
+    var diff = Date.now() - ts, mm = Math.floor(diff / 60000);
+    if (mm < 1) return '방금 전';
+    if (mm < 60) return mm + '분 전';
+    var hh = Math.floor(mm / 60);
+    if (hh < 24) return hh + '시간 전';
+    var d = new Date(ts);
+    return (d.getMonth() + 1) + '월 ' + d.getDate() + '일 ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+  function syncLink() {
+    if (!syncConnected()) return '';
+    return location.origin + location.pathname + '?k=' + syncCfg.ns;
+  }
+
+  function renderSyncUI() {
+    setTimeout(function () { updateSyncOffBar(); }, 0);
+    var pill = $('#btn-sync');
+    if (pill) {
+      if (syncConnected()) {
+        pill.classList.add('on');
+        pill.textContent = syncBusy ? '☁️ 동기화 중…' : '☁️ 연결됨';
+        pill.classList.toggle('busy', !!syncBusy);
+      } else {
+        pill.classList.remove('on');
+        pill.classList.remove('busy');
+        pill.textContent = '☁️ 미연결';
+      }
+    }
+    renderSetup();
+    var box = $('#sync-body');
+    if (!box || !document.getElementById('modal-sync').classList.contains('open')) return;
+    var c = syncDocCounts();
+    if (!syncConnected()) {
+      box.innerHTML =
+        '<div class="sync-state off">🔌 이 기기에는 아직 동기화 코드가 없어요</div>' +
+        '<p class="sync-help">기록은 이 기기 브라우저에 저장됩니다. 다른 기기와 같이 보려면 동기화 코드를 만들거나,<br>이미 만든 코드를 입력해 주세요.</p>' +
+        '<button class="btn primary block" type="button" data-act="sync-new" style="margin-bottom:12px">새 동기화 코드 만들기</button>' +
+        '<label class="field"><span>이미 있는 코드 입력</span><input class="input" id="sync-join" type="text" placeholder="events-xxxxxxxxxx" autocomplete="off" autocapitalize="off" spellcheck="false"></label>' +
+        '<button class="btn ghost block" type="button" data-act="sync-join">이 코드로 연결</button>' +
+        '<p class="warn-note">공개 페이지라 기록 자체는 링크를 아는 사람만 볼 수 있는 전용 클라우드에 저장됩니다. 동기화 코드와 링크는 기기 저장소에만 남고, 페이지 소스에는 들어가지 않아요.</p>' +
+        (syncCfg.lastError ? '<div class="sync-err">⚠️ ' + esc(syncCfg.lastError) + '</div>' : '');
+      return;
+    }
+    var cnt = syncCfg.lastCount || {};
+    box.innerHTML =
+      '<div class="sync-state on">✅ 연결됨 · 마지막 동기화 ' + esc(syncTimeText(syncCfg.lastSync)) + '</div>' +
+      '<label class="field" style="margin-bottom:8px"><span>동기화 코드</span></label>' +
+      '<div class="copy-row"><input class="input" id="sync-code-view" type="text" readonly value="' + esc(syncCfg.ns) + '">' +
+      '<button class="btn ghost" type="button" data-act="copy-code">복사</button></div>' +
+      '<label class="field" style="margin-bottom:8px"><span>전용 링크</span></label>' +
+      '<div class="copy-row"><input class="input" id="sync-link-view" type="text" readonly value="' + esc(syncLink()) + '">' +
+      '<button class="btn ghost" type="button" data-act="copy-link">복사</button></div>' +
+      '<div class="sync-counts">📱 이 기기 · 기록 <b>' + c.records + '</b>건 (보낸 ' + won(c.out) + ' · 받은 ' + won(c.in) + ')<br>' +
+      '☁️ 클라우드 · 기록 <b>' + (cnt.records != null ? cnt.records : '-') + '</b>건' + (cnt.out != null ? ' (보낸 ' + won(cnt.out) + ' · 받은 ' + won(cnt.in) + ')' : '') + '</div>' +
+      '<label class="switch"><input type="checkbox" id="sync-auto"' + (syncCfg.auto ? ' checked' : '') + '> 자동 동기화 (기록을 고치면 몇 초 뒤 올리고, 열 때 내려받기)</label>' +
+      '<div class="sheet-actions" style="padding:0;border-top:0;margin:0 0 10px;gap:8px"><button class="btn ghost sm" type="button" data-act="sync-now"' + (syncBusy ? ' disabled' : '') + '>지금 동기화</button>' +
+      '<button class="btn ghost sm" type="button" data-act="sync-new">새 코드 만들기</button></div>' +
+      '<button class="link-btn danger" type="button" data-act="sync-off">이 기기에서 연결 해제</button>' +
+      '<p class="warn-note">이 링크를 아는 사람은 기록을 볼 수 있어요. 링크는 기기 저장소와 별도로 보관해 두세요 — 휴대폰 브라우저 기록을 지워도 앱 안에서 다시 복사할 수 있습니다.</p>' +
+      (syncCfg.lastError ? '<div class="sync-err">⚠️ 마지막 오류: ' + esc(syncCfg.lastError) + '</div>' : '');
+  }
+
+  function copyText(text, okMsg, elId) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { toast(okMsg); }, function () {
+        var el = elId ? document.getElementById(elId) : null;
+        if (el) { el.select(); try { document.execCommand('copy'); toast(okMsg); } catch (e) { toast('복사 실패 — 길게 눌러 직접 복사해 주세요'); } }
+        else toast('복사 실패 — 길게 눌러 직접 복사해 주세요');
+      });
+    } else {
+      var el = elId ? document.getElementById(elId) : null;
+      if (el) { el.select(); try { document.execCommand('copy'); toast(okMsg); } catch (e) { toast('복사에 실패했어요'); } }
+      else toast('복사에 실패했어요');
+    }
+  }
+
+  function createSyncCode() {
+    if (syncConnected() && !confirm('이 기기 기록을 새 클라우드에 올려 새 코드를 만들까요?\n지금 코드와는 연결이 끊깁니다. 기록은 이 기기에 그대로 남아요.')) return;
+    syncCfg.ns = syncNewNs();
+    syncCfg.rev = 0;
+    syncCfg.lastRemoteRev = 0;
+    syncCfg.lastSync = 0;
+    syncCfg.lastCount = 0;
+    syncCfg.lastPushTs = 0;
+    syncCfg.dirty = true;
+    syncCfg.auto = true;
+    syncCfg.lastError = '';
+    syncSaveCfg();
+    toast('클라우드에 올리는 중…');
+    syncPush().then(function () {
+      renderSyncUI();
+      renderHeader();
+      toast('동기화 코드를 만들었어요. 아래 링크를 다른 기기에서 열어 주세요.');
+    }).catch(function (e) {
+      syncCfg.lastError = syncErrMsg(e);
+      syncSaveCfg();
+      renderSyncUI();
+      toast('업로드 실패: ' + syncCfg.lastError);
+    });
+  }
+
+  function parseSyncCode(raw) {
+    var s = String(raw || '').trim();
+    if (!s) return '';
+    var mQ = s.match(/[?&]k=([A-Za-z0-9_-]+)/);
+    if (mQ) s = mQ[1];
+    s = s.replace(/^https?:\/\/[^\/]+\//i, '').replace(/^v2\//i, '').replace(/\/+$/, '');
+    var m = s.match(/(events-[a-z0-9]+)/i);
+    if (m) return m[1].toLowerCase();
+    return s.toLowerCase();
+  }
+
+  function connectSyncCode(raw) {
+    var code = parseSyncCode(raw);
+    if (!code || code.indexOf('events-') !== 0 || code.length < 12) {
+      toast('코드 형식이 올바르지 않아요. (예: events-ab12cd34ef)');
+      return;
+    }
+    var prevNs = syncCfg.ns;
+    syncCfg.ns = code;
+    syncCfg.rev = 0;
+    syncCfg.lastSync = 0;
+    syncCfg.lastError = '';
+    syncCfg.dirty = false;
+    syncSaveCfg();
+    toast('클라우드 기록을 확인하는 중…');
+    syncReadManifest().then(function (manifest) {
+      if (!manifest) {
+        var hasLocal = appData.records.length;
+        var q = hasLocal
+          ? '이 코드에는 아직 저장된 기록이 없어요.\n이 기기에 있는 기록을 이 코드로 올릴까요?'
+          : '이 코드에는 아직 저장된 기록이 없어요.\n빈 수첩으로 이 코드에 연결할까요?';
+        if (!confirm(q)) {
+          syncCfg.ns = prevNs;
+          syncSaveCfg();
+          renderSyncUI();
+          return null;
+        }
+        syncCfg.dirty = true;
+        syncSaveCfg();
+      }
+      return syncNow({ silent: true }).then(function (merged) {
+        renderSyncUI();
+        renderHeader();
+        render();
+        if (merged) {
+          var st = merged.stats;
+          toast('연결 완료 · 클라우드에서 ' + st.added + '건 추가, ' + st.updated + '건 갱신');
+        } else {
+          toast('연결됨 · ' + (syncCfg.lastError ? '동기화 오류: ' + syncCfg.lastError : '동기화 대기'));
+        }
+        return merged;
+      });
+    }).catch(function (e) {
+      syncCfg.ns = prevNs;
+      syncSaveCfg();
+      renderSyncUI();
+      toast('코드를 확인할 수 없습니다: ' + syncErrMsg(e));
+    });
+  }
+
+  function joinSyncCode() {
+    var input = $('#sync-join');
+    connectSyncCode(input ? input.value : '');
+  }
+
+  function disconnectSync() {
+    if (!confirm('이 기기에서 동기화를 끊을까요?\n기록은 이 기기에 그대로 남고, 클라우드 사본도 그대로 있어요.')) return;
+    syncCfg.ns = '';
+    syncCfg.rev = 0;
+    syncCfg.lastSync = 0;
+    syncCfg.lastCount = 0;
+    syncCfg.lastPushTs = 0;
+    syncCfg.lastError = '';
+    syncSaveCfg();
+    renderSyncUI();
+    renderHeader();
+    toast('동기화 연결을 해제했어요');
+  }
+
+  /* ============================ 이벤트 ============================ */
+  function pickChip(t) {
+    var group = t.getAttribute('data-group');
+    var val = t.getAttribute('data-val');
+    var set = t.parentNode;
+    $$('.chip', set).forEach(function (b) { b.classList.toggle('on', b === t); });
+    var host = set.parentNode;
+    var hid = host.querySelector('input[type="hidden"][name="' + group + '"]');
+    if (hid) hid.value = val;
+    if (group === 'relation' || group === 'kind') {
+      var ci = $(group === 'relation' ? '#rel-custom' : '#kind-custom');
+      if (ci) {
+        ci.hidden = (val !== '__custom');
+        if (val === '__custom') setTimeout(function () { try { ci.focus(); } catch (e) {} }, 80);
+      }
+    }
+  }
+
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest ? e.target.closest('[data-act]') : null;
+    if (!t) return;
+    var act = t.getAttribute('data-act');
+    var id = t.getAttribute('data-id');
+    var val = t.getAttribute('data-val');
+    var name = t.getAttribute('data-name');
+
+    switch (act) {
+      case 'tab':
+        ui.tab = val; saveUi(); render(); window.scrollTo(0, 0);
+        break;
+      case 'range':
+        ui.range = val; saveUi(); renderStats();
+        break;
+      case 'pend':
+        ui.pend = val; saveUi(); renderPending();
+        break;
+      case 'dir':
+        ui.dir = val; renderList();
+        break;
+      case 'reset-filters':
+        ui.q = ''; ui.dir = 'all'; ui.year = 'all'; ui.owner = 'all'; ui.rel = 'all'; ui.kind = 'all';
+        var qEl = $('#q'); if (qEl) qEl.value = '';
+        renderList();
+        break;
+      case 'add':
+        openForm(null, null);
+        break;
+      case 'add-for':
+        closeSheet('modal-person'); openForm(null, { name: name });
+        break;
+      case 'open':
+        openDetail(id);
+        break;
+      case 'person':
+        openPerson(name);
+        break;
+      case 'edit':
+        closeSheet('modal-detail'); openForm(id, null);
+        break;
+      case 'del':
+        deleteRecord(id);
+        break;
+      case 'thanks-done':
+        markThanksDone(id);
+        break;
+      case 'close':
+        closeSheet(t.getAttribute('data-target')); break;
+      case 'open-sync':
+        renderSyncUI(); openSheet('modal-sync'); renderSyncUI(); break;
+      case 'sync-now':
+        syncNow({ silent: false }).then(function () { render(); }); break;
+      case 'sync-new':
+        createSyncCode(); break;
+      case 'sync-join':
+        joinSyncCode(); break;
+      case 'sync-off':
+        disconnectSync(); break;
+      case 'copy-code':
+        if (syncConnected()) copyText(syncCfg.ns, '동기화 코드를 복사했어요', 'sync-code-view'); break;
+      case 'copy-link':
+        if (syncConnected()) copyText(syncLink(), '전용 링크를 복사했어요', 'sync-link-view'); break;
+      case 'export-csv':
+        exportCsv(); break;
+      case 'export-json':
+        exportJson(); break;
+      case 'import-json':
+        var fi = $('#import-file'); if (fi) { fi.value = ''; fi.click(); }
+        break;
+      case 'wipe':
+        wipeAll(); break;
+      case 'pick':
+        pickChip(t); break;
+      case 'dir-pick':
+        var f0 = formEl();
+        if (!f0) return;
+        f0.dir.value = val;
+        $$('#dir-seg button').forEach(function (b) {
+          var on = b.getAttribute('data-val') === val;
+          b.className = on ? ('on d-' + val) : '';
+        });
+        if (f0.thanks.value === 'need' || f0.thanks.value === 'done') f0.thanks.value = 'none';
+        syncThanksSeg();
+        break;
+      case 'thanks-pick':
+        var f1 = formEl();
+        if (!f1) return;
+        f1.thanks.value = val;
+        $$('#thanks-seg button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-val') === val); });
+        break;
+      case 'today':
+        var f2 = formEl();
+        if (f2) f2.date.value = todayStr();
+        break;
+      case 'amt':
+        var amt = $('#f-amount');
+        if (amt) {
+          amt.value = num(val).toLocaleString('ko-KR');
+          updateAmtHint();
+          $$('#quick-amt .chip').forEach(function (b) { b.classList.toggle('on', b === t); });
+        }
+        break;
+      case 'fill-name':
+        var nm = formEl() ? formEl().name : null;
+        if (nm) { nm.value = val; nm.focus(); }
+        break;
+    }
+  });
+
+  function updateAmtHint() {
+    var amt = $('#f-amount');
+    var hint = $('#amt-hint');
+    if (!amt || !hint) return;
+    var v = num(String(amt.value || '').replace(/[^0-9]/g, ''));
+    hint.innerHTML = v > 0 ? '<b>' + won(v) + '</b>' : '빠른 버튼을 누르거나 직접 입력하세요.';
+  }
+
+  document.addEventListener('submit', function (e) {
+    if (e.target && e.target.id === 'rec-form') submitForm(e);
+  });
+
+  document.addEventListener('input', function (e) {
+    var el = e.target;
+    if (!el || !el.id) return;
+    if (el.id === 'f-amount') {
+      var digits = String(el.value || '').replace(/[^0-9]/g, '').slice(0, 12);
+      el.value = digits ? num(digits).toLocaleString('ko-KR') : '';
+      updateAmtHint();
+      $$('#quick-amt .chip').forEach(function (b) {
+        b.classList.toggle('on', num(b.getAttribute('data-val')) === num(digits));
+      });
+      return;
+    }
+    if (el.id === 'q') {
+      ui.q = el.value;
+      renderList();
+    }
+  });
+  document.addEventListener('blur', function (e) {
+    if (e.target && e.target.id === 'f-amount') {
+      var v = num(String(e.target.value || '').replace(/[^0-9]/g, ''));
+      e.target.value = v ? v.toLocaleString('ko-KR') : '';
+      updateAmtHint();
+    }
+  }, true);
+
+  document.addEventListener('change', function (e) {
+    var el = e.target;
+    if (!el) return;
+    if (el.id === 'f-year') { ui.year = el.value; renderList(); return; }
+    if (el.id === 'f-owner') { ui.owner = el.value; renderList(); return; }
+    if (el.id === 'f-rel') { ui.rel = el.value; renderList(); return; }
+    if (el.id === 'f-kind') { ui.kind = el.value; renderList(); return; }
+    if (el.id === 'import-file') { importJsonFile(el.files && el.files[0]); return; }
+    if (el.id === 'sync-auto') {
+      syncCfg.auto = !!el.checked;
+      syncSaveCfg();
+      toast(syncCfg.auto ? '자동 동기화를 켰어요' : '자동 동기화를 껐어요');
+      if (syncCfg.auto && syncConnected()) syncNow({ silent: true });
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      ['modal-record', 'modal-detail', 'modal-person', 'modal-sync'].forEach(function (id) { closeSheet(id); });
+    }
+  });
+
+  function wipeAll() {
+    if (!appData.records.length) { toast('지울 기록이 없어요'); return; }
+    if (!confirm('모든 기록(' + appData.records.length + '건)을 지울까요?\n지운 기록은 되돌릴 수 없고, 연결된 클라우드에서도 지워집니다.')) return;
+    if (!confirm('정말 지울까요? JSON 백업을 받아두셨다면 나중에 되살릴 수 있어요.')) return;
+    var ids = appData.records.map(function (r) { return r.id; });
+    ids.forEach(function (id) { if (appData.deletedRecordIds.indexOf(id) < 0) appData.deletedRecordIds.push(id); });
+    appData.records = [];
+    saveData();
+    render();
+    toast('모든 기록을 지웠어요');
+  }
+
+  /* ============================ 시작 ============================ */
+  function initSync() {
+    syncLoadCfg();
+    var urlCode = '';
+    try {
+      var params = new URLSearchParams(location.search);
+      if (params.get('k')) urlCode = parseSyncCode(params.get('k'));
+      else {
+        var hm = String(location.hash || '').match(/[#&]k=([A-Za-z0-9_-]+)/);
+        if (hm) urlCode = parseSyncCode(hm[1]);
+      }
+    } catch (e) {}
+    if (urlCode && urlCode.indexOf('events-') === 0 && urlCode !== syncCfg.ns) {
+      syncCfg.ns = urlCode;
+      syncCfg.rev = 0;
+      syncCfg.lastSync = 0;
+      syncCfg.lastPushTs = 0;
+      syncCfg.lastError = '';
+      syncCfg.dirty = false;
+      syncSaveCfg();
+      /* 주소창에서 코드를 지워 화면 캡처·기록에 남지 않게 한다 */
+      try { history.replaceState(null, '', location.pathname); } catch (e2) {}
+    }
+    if (syncConnected() && syncCfg.auto) setTimeout(function () { syncNow({ silent: true }); }, 600);
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') {
+        if (syncCfg.auto && syncConnected() && (Date.now() - (syncCfg.lastSync || 0) > 3000)) syncNow({ silent: true });
+      } else {
+        flushDirtyOnHide();
+      }
+    });
+    window.addEventListener('focus', function () {
+      if (document.visibilityState !== 'visible' || syncBusy) return;
+      if (syncCfg.auto && syncConnected() && (Date.now() - (syncCfg.lastSync || 0) > 3000)) syncNow({ silent: true });
+    });
+    window.addEventListener('pagehide', flushDirtyOnHide);
+    window.addEventListener('online', function () {
+      if (syncCfg.auto && syncConnected()) syncNow({ silent: true });
+    });
+  }
+
+  render();
+  initSync();
+  renderSyncUI();
+  renderHeader();
+
+  /* 상태 확인용 (개인 데이터는 저장소에만 있고 페이지 소스에는 없음) */
+  window.__events = {
+    data: function () { return appData; },
+    cfg: function () { return syncCfg; },
+    sync: function () { return syncNow({ silent: true }); },
+    push: function () { return syncPush(); },
+    counts: syncDocCounts,
+    render: render
+  };
+})();
+
+/* 동기화 미연결 배너: 접속 즉시 + 주기적으로 상태 반영 */
+(function () {
+  function tick() { try { if (window.__syncOffBar) window.__syncOffBar(); } catch (e) { } }
+  [0, 200, 600, 1200, 2500].forEach(function (ms) { setTimeout(tick, ms); });
+  setInterval(tick, 2500);
+})();
+</script>
+</body>
+</html>
