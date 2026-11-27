@@ -308,7 +308,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   <section id="tab-list">
     <div class="bal" id="bal"></div>
 
-    <div class="card card-tight">
+    <div class="card card-tight" id="filters-card">
       <div class="search-row">
         <input class="input" id="q" type="search" placeholder="이름 · 관계 · 경조사 · 메모 검색" autocomplete="off" aria-label="검색">
       </div>
@@ -710,6 +710,11 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 
   function renderList() {
     renderFilterControls();
+    var anyRec = appData.records.length > 0;
+    var fcard = $('#filters-card');
+    if (fcard) fcard.hidden = !anyRec;
+    var sumEl = $('#list-sum');
+    if (sumEl) sumEl.hidden = !anyRec;
     var list = sortedRecords(filteredRecords());
     var s = sumOf(list);
     $('#list-sum').innerHTML = (list.length
@@ -740,11 +745,11 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
         '<span class="big">💌</span>' +
         '<h3>아직 기록이 없어요</h3>' +
         '<p>축의금·조의금·축하금을 보내고 받은 대로 적어두면,<br>사람별로 주고받은 금액과 갚아야 할 마음까지 자동으로 정리돼요.</p>' +
-        '<button class="btn primary" type="button" data-act="add">첫 기록 남기기</button>' +
         '<ul class="tips">' +
           '<li>이름을 누르면 그 사람과 주고받은 내역이 한 화면에 떠요</li>' +
           '<li>받은 돈은 ‘갚아야 함’으로 남겨두면 미답례 탭에 모여요</li>' +
           '<li>빠른 금액 버튼(3·5·10·15·20·30만)으로 3초 만에 입력</li>' +
+          '<li>기기 간 자동 동기화 · JSON 백업 · 엑셀 CSV</li>' +
         '</ul>' +
       '</div>';
       return;
