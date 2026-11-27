@@ -1744,8 +1744,8 @@ body.sync-off-mode .sticky{top:34px}
           f.fridgeLink = true;
           if (k !== 'winter') return;   /* 기록은 겨울 배치 기준으로 한 번만 옮긴다 */
           f.zones.forEach(function(z, i){
-            var target = FRIDGE_ZONE_MAP[i];
-            var cell = target && DB.fridge.cells[target];
+            var target = FRIDGE_ZONE_MAP[i] || 'rf-s4';   /* 8칸을 넘게 늘렸던 경우는 냉장실 선반 4로 */
+            var cell = DB.fridge.cells[target];
             if (!cell) return;
             z.items.forEach(function(t){
               if (cell.items.indexOf(t) < 0) cell.items.push(t);
