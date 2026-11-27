@@ -3374,17 +3374,22 @@ body.sync-off-mode .sticky{top:34px}
   function rcParse(text){
     var out = [];
     String(text || '').split(/\r?\n/).forEach(function(line){
-      var s = line.replace(/\t+/g, ' ').replace(/\s+/g, ' ').trim();
+      var s = line
+        .replace(/[\uFF01-\uFF5E]/g, function(ch){ return String.fromCharCode(ch.charCodeAt(0) - 0xFEE0); })  /* 전자 영숫자·기호를 반자로 */
+        .replace(/\u3000/g, ' ')
+        .replace(/\t+/g, ' ')
+        .replace(/[|_=~]{2,}/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
       if (!s) return;
       if (/(영수증|합계|소계|총액|결제|카드|현금|승인|잔액|받은금액|거스름|부가세|과세|면세|포인트|적립|할인|사업자|대표자|주소|전화번호|일시|매장|TEL|VAT|TOTAL|SUBTOTAL|CASH|CARD|CHANGE|APPROVAL|SALE|NO\.)/i.test(s)) return;
       s = s.replace(/^[*\-•·]?\s*\d+\s*[xX×]\s*/, '');
-      s = s.replace(/\s*[\d,]+\s*원?\s*$/, '');
+      s = s.replace(/\s*\d[\d.,]*\s*원?\s*$/, '');                     /* 끝 금액: 2,980 · 2.980 · 2980원 */
       s = s.replace(/\b\d+(\.\d+)?\s*(kg|g|ml|l|oz|ea|개|입|매|봉|팩|병|캔|포기|근|마리|모|통|단|박스|세트)\b\.?/gi, ' ');
       s = s.replace(/\s*(한|두|세|네|\d+)\s*(봉지?|팩|개|병|캔|입|매|줄|망|포기|근|마리)$/, '');
-      s = s.replace(/[\d,]+/g, ' ').replace(/\s+/g, ' ').trim();
-      s = s.replace(/^[*\-•·:·]+|[*\-•·:·]+$/g, '').trim();
-      if (s.length < 2) return;
-      if (!/[가-힣A-Za-z]/.test(s)) return;
+      s = s.replace(/[\d.,]+/g, ' ').replace(/\s+/g, ' ').trim();
+      s = s.replace(/^[\s*\-•·:,.'"·]+|[\s*\-•·:,.'"·]+$/g, '').trim();
+      if (!/[가-힣A-Za-z]{2}/.test(s)) return;
       if (s.length > 24) s = s.slice(0, 24);
       out.push(s);
     });
