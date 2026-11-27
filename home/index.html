@@ -1213,7 +1213,10 @@ body.pinmode .art svg .hit{pointer-events:none}
         var floor = a.floor || b.floor || '';
         up.zones = [{items:items, floor:floor, move:a.move || b.move || null}, up.zones[2], up.zones[3]];
       }
-      if (up.zones.length === 3) up.art = 'upper';
+      if (up.zones.length === 3){
+        up.art = 'upper';
+        if (up.fig) delete up.fig;   /* 4칸짜리 예전 칸 도식은 구조 그림으로 대신한다 */
+      }
     })();
 
     /* 3) 상단 4칸 장 — 거실(s4)에서 주방 벽쪽(s5)으로 */
@@ -1461,8 +1464,8 @@ body.pinmode .art svg .hit{pointer-events:none}
     return {h: h, cells: cells};
   }
   function figOf(f){
-    if (f.fig) return f.fig;
     if (f.art && ART[f.art]) return null;          /* 구조 그림이 번호를 맡고, 남는 칸은 칸 도식으로 */
+    if (f.fig) return f.fig;
     if (f.photos && f.photos.length) return null;  /* 사진 핀이 번호를 맡고, 남는 칸은 칸 도식으로 */
     return autoFig(f.zones.length);
   }
