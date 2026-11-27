@@ -5,13 +5,16 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>우리집 수납 지도 · 유자네 집</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="description" content="원본 3D 도면에서 방을 확대해 가구를 고르고, 칸마다 무엇을 넣었는지 확인하는 우리집 수납 지도. 그림·사진의 번호를 누르면 그 칸 내용이 바로 뜨고, 겨울·여름 배치를 따로 저장하며, 가구와 칸을 직접 늘릴 수 있어요.">
+<meta name="description" content="원본 3D 도면에서 방을 확대해 가구를 고르고, 칸마다 무엇을 넣었는지 확인하는 우리집 수납 지도. 번호를 누르면 그 칸 내용이 바로 뜨고, 냉장고는 사진 그대로 23칸으로 나눠 관리하며 영수증으로 품목을 자동 분류해 담을 수 있어요.">
 <meta name="theme-color" content="#FAF8F5">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="수납 지도">
 <meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
 
@@ -55,22 +58,13 @@ img{max-width:100%}
 @media(min-width:900px){.wrap{padding:0 28px 64px}}
 
 /* ---------- header ---------- */
-.hero{padding:18px 2px 10px}
+/* ---------- header (v9: 제목만, 상태는 상단 우측 한 줄) ---------- */
+.hero{padding:16px 2px 6px}
 .eyebrow{font-size:11px;letter-spacing:.14em;color:var(--terra);font-weight:700;text-transform:uppercase}
-.hero h1{font-size:22px;line-height:1.25;letter-spacing:-.04em;font-weight:800;margin:5px 0 5px}
-.hero .lede{color:var(--ink2);font-size:12.5px;line-height:1.55;max-width:680px;word-break:keep-all;overflow-wrap:anywhere}
-.hero .lede b{color:var(--ink);font-weight:700}
-.stats{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
-.stats li{font-size:11px;color:var(--ink2);background:var(--card);border:1px solid var(--line);
-  border-radius:999px;padding:3px 8px;display:inline-flex;gap:5px;align-items:baseline;line-height:1.35}
-.stats b{color:var(--ink);font-weight:750;font-size:11.5px}
+.hero h1{font-size:22px;line-height:1.25;letter-spacing:-.04em;font-weight:800;margin:5px 0 0}
 @media(min-width:900px){
-  .hero{padding-top:34px}
-  .hero h1{font-size:33px;margin:8px 0 9px}
-  .hero .lede{font-size:14.5px;line-height:1.62}
-  .stats{gap:7px;margin-top:14px}
-  .stats li{font-size:12px;padding:5px 11px}
-  .stats b{font-size:13px}
+  .hero{padding-top:28px}
+  .hero h1{font-size:30px;margin-top:7px}
 }
 
 /* ---------- sticky search + tabs ---------- */
@@ -121,7 +115,6 @@ body[data-view="room"] .chips,body[data-view="furn"] .chips{display:none}
 
 main{padding-top:12px}
 body.searching .hero{display:none}
-body[data-tab="advice"] .hero,body[data-tab="check"] .hero{display:none}
 body[data-view="room"] .hero,body[data-view="furn"] .hero{display:none}
 body.searching main{padding-top:10px}
 
@@ -443,15 +436,21 @@ input,textarea,select{font-size:16px!important}
 .ck-edit input[type=text]{height:42px}
 @media(max-width:520px){.esub .sels{grid-template-columns:1fr 1fr}}
 
-/* 계절 전환 줄 */
-.seasonrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:7px;max-width:900px}
-.seasons{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:11px;padding:2px;gap:2px}
-.season{font-size:12.5px;font-weight:750;color:var(--ink2);border-radius:8px;padding:6px 10px;line-height:1.15;white-space:nowrap;letter-spacing:-.02em}
+/* 계절 전환 + 상단 상태 한 줄 */
+.seasonrow{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;margin-bottom:7px;max-width:900px;min-width:0}
+.seasons{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:11px;padding:2px;gap:2px;flex:0 0 auto}
+.season{font-size:12px;font-weight:750;color:var(--ink2);border-radius:8px;padding:6px 8px;line-height:1.15;white-space:nowrap;letter-spacing:-.02em}
 .season[aria-selected="true"]{background:var(--ink);color:#fff;box-shadow:0 2px 6px -3px rgba(46,39,33,.6)}
 .season small{font-size:10px;font-weight:700;opacity:.75;margin-left:3px}
-.savechip{margin-left:auto;flex:0 0 auto;font-size:11px;font-weight:750;color:var(--sage-d);background:var(--sage-s);
-  border:1px solid var(--sage-b);border-radius:999px;padding:5px 9px;line-height:1.1;white-space:nowrap;
+.season copy{display:none}
+.copybtn{flex:0 0 auto;font-size:11px;font-weight:750;color:var(--ink2);background:#fff;border:1px solid var(--line);
+  border-radius:9px;padding:6px 7px;line-height:1.1;white-space:nowrap}
+.copybtn:hover{border-color:var(--terra-b);color:var(--terra-d)}
+.topstat{margin-left:auto;display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;min-width:0}
+.savechip{flex:0 0 auto;font-size:10.5px;font-weight:750;color:var(--sage-d);background:var(--sage-s);
+  border:1px solid var(--sage-b);border-radius:999px;padding:5px 8px;line-height:1.1;white-space:nowrap;
   transition:background .15s,color .15s,border-color .15s}
+@media(max-width:360px){.season{font-size:11px;padding:6px 6px}.copybtn{padding:6px 5px;font-size:10.5px}}
 .savechip.saving{color:#8A6A20;background:#FBF2DC;border-color:#EEDFB4}
 .savechip.err{color:#A9502F;background:var(--terra-s);border-color:var(--terra-b)}
 
@@ -680,15 +679,158 @@ body.sync-off-mode .sticky{top:34px}
 .figbox.big{max-width:420px}
 .figbox.big .fig{height:214px}
 @media(max-width:520px){.figbox.big .fig{height:180px}}
+
+/* ============================================================
+   v9 — 체크·개선 통합 탭
+   ============================================================ */
+.care-intro,.fr-intro{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:13px 15px;
+  max-width:860px;margin:0 auto 12px}
+.care-intro b,.fr-intro b{display:block;font-size:14.5px;font-weight:800;letter-spacing:-.03em;margin-bottom:4px}
+.care-intro p,.fr-intro p{font-size:12.5px;color:var(--ink2);line-height:1.62;word-break:keep-all;overflow-wrap:anywhere}
+.care-intro p b,.fr-intro p b{display:inline;font-size:inherit;color:var(--ink);font-weight:800;margin:0}
+.adv-section,.check-section{max-width:860px;margin:0 auto}
+.check-section{margin-top:20px;border-top:1px dashed var(--line);padding-top:16px}
+.adv-section .adv-intro{padding-top:2px}
+
+/* ============================================================
+   v9 — 가구 모아보기 (방 배지)
+   ============================================================ */
+.findex{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:13px 14px;margin:12px auto 10px;
+  max-width:920px;box-shadow:0 1px 2px rgba(46,39,33,.04)}
+.findex .fx-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:9px}
+.findex .fx-head h2{font-size:14.5px;font-weight:800;letter-spacing:-.03em}
+.findex .fx-head span{font-size:11.5px;color:var(--ink3);font-weight:700}
+.fx-group{border-top:1px solid var(--line2);padding:8px 0 4px}
+.fx-group:first-of-type{border-top:0;padding-top:0}
+.fx-room{display:flex;align-items:center;gap:7px;width:100%;text-align:left;padding:3px 2px 6px}
+.fx-room .sno{flex:0 0 auto;width:20px;height:20px;border-radius:6px;display:grid;place-items:center;
+  font-size:10.5px;font-weight:800;color:#fff;background:var(--c,var(--sage));line-height:1}
+.fx-room b{font-size:12.5px;font-weight:800;letter-spacing:-.02em;color:var(--ink)}
+.fx-room small{font-size:11px;color:var(--ink3);font-weight:700}
+.fx-list{display:grid;grid-template-columns:1fr;gap:5px}
+@media(min-width:620px){.fx-list{grid-template-columns:1fr 1fr}}
+.fx-item{display:flex;align-items:center;gap:6px;width:100%;text-align:left;background:var(--panel);
+  border:1px solid var(--line2);border-radius:10px;padding:7px 9px;min-width:0;transition:border-color .12s,background .12s}
+.fx-item:hover,.fx-item:focus-visible{border-color:var(--terra-b);background:var(--terra-s)}
+.fx-n{flex:0 0 auto;min-width:17px;height:17px;border-radius:5px;display:grid;place-items:center;
+  font-size:9.5px;font-weight:800;color:var(--ink2);background:#fff;border:1px solid var(--line);line-height:1}
+.fx-t{flex:1 1 auto;min-width:0;font-size:12.5px;font-weight:750;color:var(--ink);letter-spacing:-.02em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fx-badge{flex:0 0 auto;font-size:10px;font-weight:800;color:#fff;background:var(--c,var(--sage));
+  border-radius:999px;padding:3px 7px;line-height:1.1;white-space:nowrap;letter-spacing:-.01em}
+.fx-c{flex:0 0 auto;font-size:10.5px;color:var(--ink3);font-weight:700;white-space:nowrap}
+.fx-all{margin-top:8px;font-size:11.5px;color:var(--ink2);line-height:1.5}
+
+/* ============================================================
+   v9 — 냉장고 탭
+   ============================================================ */
+.fr-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;max-width:860px;margin:0 auto 12px}
+.fr-cta{font-size:13px;font-weight:800;color:#fff;background:var(--sage);border-radius:11px;padding:11px 15px;
+  line-height:1.2;box-shadow:0 8px 18px -12px rgba(79,106,81,.9)}
+.fr-cta:hover{background:var(--sage-d)}
+.fr-hint{flex:1 1 180px;min-width:0;font-size:11.5px;color:var(--ink3);line-height:1.5}
+.fr-photo{max-width:860px;margin:0 auto 12px;background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:8px;overflow:hidden}
+.fr-photo img{display:block;width:100%;max-width:520px;height:auto;margin:0 auto;border-radius:12px;background:#1b1f22}
+.fr-photo figcaption{font-size:11px;color:var(--ink3);font-weight:700;text-align:center;padding:7px 0 2px}
+.fr-mapwrap{max-width:860px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:12px;box-shadow:0 1px 2px rgba(46,39,33,.04)}
+.fr-map{width:100%;max-width:440px;margin:0 auto;display:block}
+.fr-map svg{display:block;width:100%;height:auto;touch-action:manipulation}
+.fr-legend{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:8px;
+  font-size:10.5px;color:var(--ink3);font-weight:700;text-align:center;line-height:1.5}
+.fr-legend .lg{background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:2px 6px;color:var(--ink2)}
+.fr-legend .lg.door{background:#fff;border-style:dashed}
+.frc{cursor:pointer}
+.frc rect{transition:fill .12s,stroke .12s}
+.frc:hover rect{fill:var(--terra-s);stroke:var(--terra)}
+.frc.on rect{fill:var(--terra-s);stroke:var(--terra);stroke-width:1.8}
+.frc .frc-n{font-size:11px;font-weight:800;fill:#6B6156;pointer-events:none}
+.frc .frc-c{font-size:8.5px;font-weight:800;fill:#fff;pointer-events:none}
+.frc .frc-lbl{font-size:8px;font-weight:700;fill:#A79C92;pointer-events:none}
+.fr-panel{max-width:860px;margin:12px auto 0;background:var(--card);border:1px solid var(--terra-b);border-radius:16px;
+  padding:13px 14px;box-shadow:0 10px 30px -26px rgba(46,39,33,.7)}
+.fr-panel .fph{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.fr-panel .fph b{font-size:14px;font-weight:800;letter-spacing:-.03em}
+.fr-panel .fph .cnt{font-size:11px;font-weight:750;color:var(--sage-d);background:var(--sage-s);
+  border-radius:999px;padding:3px 8px}
+.fr-panel .fph .x{margin-left:auto;font-size:12px;color:var(--ink3);padding:4px 7px;border-radius:7px}
+.fr-panel .fph .x:hover{background:var(--line2);color:var(--ink)}
+.fr-items{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px}
+.fr-chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--ink);
+  background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 6px 5px 10px;line-height:1.2}
+.fr-chip .nm{font:inherit;color:inherit;font-weight:700;text-align:left;max-width:190px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.fr-chip .nm:hover{color:var(--terra-d)}
+.fr-chip input{width:120px;height:24px;border:1px solid var(--terra);border-radius:7px;padding:0 6px;
+  font-size:12px;font-weight:700;outline:none;background:#fff}
+.fr-chip button{width:16px;height:16px;border-radius:50%;background:var(--line2);color:var(--ink2);
+  font-size:10px;line-height:1;display:grid;place-items:center}
+.fr-chip button:hover{background:var(--terra-s);color:var(--terra-d)}
+.fr-none{font-size:12px;color:var(--ink3);font-weight:700;padding:2px 0 8px}
+.fr-add{display:flex;gap:5px}
+.fr-add input{flex:1 1 auto;min-width:0;height:42px;border:1px solid var(--line);border-radius:9px;padding:0 11px;
+  background:#fff;outline:none;font-weight:650}
+.fr-add input:focus{border-color:var(--terra);box-shadow:0 0 0 3px var(--terra-s)}
+.fr-add button{flex:0 0 auto;font-size:12.5px;font-weight:800;color:#fff;background:var(--terra);border-radius:9px;padding:0 15px}
+.fr-add button:hover{background:var(--terra-d)}
+.fr-memo{display:flex;gap:5px;align-items:center;margin-top:7px}
+.fr-memo input{flex:1 1 auto;min-width:0;height:38px;border:1px dashed var(--line);border-radius:9px;padding:0 10px;
+  background:var(--panel);outline:none;font-size:12.5px;font-weight:600}
+.fr-memo input:focus{border-style:solid;border-color:var(--terra-b);background:#fff}
+.fr-memo span{flex:0 0 auto;font-size:10.5px;color:var(--ink3);font-weight:800}
+.fr-list{display:grid;grid-template-columns:1fr;gap:9px;max-width:860px;margin:14px auto 0}
+@media(min-width:720px){.fr-list{grid-template-columns:1fr 1fr}}
+.fr-box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:11px 12px;min-width:0}
+.fr-box h3{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;letter-spacing:-.02em;margin-bottom:7px}
+.fr-box h3 .k{font-size:10.5px;font-weight:800;color:var(--ink3);margin-left:auto}
+.fr-row{display:flex;align-items:flex-start;gap:7px;width:100%;text-align:left;border-top:1px solid var(--line2);
+  padding:7px 2px;min-width:0}
+.fr-row:first-of-type{border-top:0}
+.fr-row .n{flex:0 0 auto;min-width:20px;height:20px;padding:0 4px;border-radius:6px;display:grid;place-items:center;
+  font-size:9.5px;font-weight:800;color:var(--ink2);background:var(--panel);border:1px solid var(--line);line-height:1}
+.fr-row .t{flex:1 1 auto;min-width:0}
+.fr-row .t b{display:block;font-size:12px;font-weight:750;color:var(--ink);letter-spacing:-.01em;line-height:1.3}
+.fr-row .t span{display:block;font-size:11px;color:var(--ink3);font-weight:650;line-height:1.4;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fr-row .t span.has{color:var(--sage-d)}
+.fr-row:hover .t b{color:var(--terra-d)}
+.fr-row.on{background:var(--terra-s);border-radius:9px}
+
+/* 영수증 모달 */
+.modal .panel.wide{max-width:620px}
+.rc-lead{font-size:12px;color:var(--ink2);line-height:1.6;margin-bottom:9px;word-break:keep-all}
+.rc-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:9px}
+.rc-state{font-size:11.5px;color:var(--ink3);font-weight:700}
+.rc-state.on{color:var(--sage-d)}
+.rc-state.err{color:var(--terra-d)}
+.rc-text{width:100%;min-height:110px;border:1px solid var(--line);border-radius:11px;padding:10px 12px;
+  background:var(--panel);outline:none;font-size:13px;font-weight:600;line-height:1.6;resize:vertical}
+.rc-text:focus{border-color:var(--terra);background:#fff;box-shadow:0 0 0 3px var(--terra-s)}
+.rc-btns{display:flex;gap:6px;margin:9px 0 0}
+#rcPreview{margin:12px 0 4px}
+.rc-sum{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;font-weight:750;color:var(--ink2);margin-bottom:7px}
+.rc-sum b{color:var(--ink);font-weight:800}
+.rc-rows{display:flex;flex-direction:column;gap:4px;max-height:280px;overflow:auto;border:1px solid var(--line2);border-radius:11px;padding:6px}
+.rc-row2{display:flex;align-items:center;gap:6px;padding:4px;border-radius:8px;min-width:0}
+.rc-row2:hover{background:var(--panel)}
+.rc-row2 input[type=checkbox]{width:16px;height:16px;flex:0 0 auto}
+.rc-row2 .nm{flex:1 1 90px;min-width:0;font-size:12.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rc-row2 select{flex:0 0 auto;max-width:190px;font-size:11px;font-weight:700;color:var(--ink2);background:#fff;
+  border:1px solid var(--line);border-radius:7px;padding:5px 4px;outline:none}
+.rc-row2 .kg{flex:0 0 auto;font-size:9.5px;font-weight:800;color:#fff;background:#6E8AA0;border-radius:999px;padding:3px 6px}
+.rc-row2 .kg.chill{background:var(--sage)}
+.rc-row2 .kg.mid{background:var(--terra)}
+.rc-apply{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+.rc-apply .n{font-size:11.5px;color:var(--ink2);font-weight:750}
+.rc-empty{font-size:12px;color:var(--ink3);padding:10px 0}
 </style>
 </head>
 <body data-tab="map" data-view="overview">
 <div class="wrap">
   <header class="hero">
-    <p class="eyebrow">유자네 집 · Home Storage Map v8</p>
+    <p class="eyebrow">유자네 집 · Home Storage Map v9</p>
     <h1>우리집 수납 지도</h1>
-    <p class="lede">방을 누르면 <b>방 도면 아래로 그 방의 가구 카드와 칸 목록이 세로로 이어져</b> 펼쳐집니다. 도면의 <b>번호를 누르면 그 가구 카드로 부드럽게 내려가</b> 표시되고, 그림·사진의 <b>번호를 누르면 그 칸 내용이 바로</b> 뜹니다. <b>방 이름·순서, 실측 사이즈, 냉장고 세부 칸, 루틴</b>까지 직접 적고 고치면 <b>기기와 클라우드에 함께 저장</b>됩니다.</p>
-    <ul class="stats" id="stats"></ul>
   </header>
 
   <div class="sticky" id="sticky">
@@ -697,9 +839,11 @@ body.sync-off-mode .sticky{top:34px}
         <button class="season" type="button" role="tab" data-season="winter" aria-selected="true">❄️ 겨울<small>현재</small></button>
         <button class="season" type="button" role="tab" data-season="summer" aria-selected="false">☀️ 여름</button>
       </div>
-      <button class="mini-btn" type="button" data-act="copy-season" id="copySeason">지금 배치를 여름으로 복사</button>
-      <button class="sync-pill" id="btn-sync" type="button" data-act="open-sync" aria-label="기기 간 동기화">☁️ 미연결</button>
-      <span class="savechip" id="saveChip" role="status">저장됨 ✓</span>
+      <button class="copybtn" type="button" data-act="copy-season" id="copySeason" title="지금 배치를 반대 계절로 복사">⇄ 복사</button>
+      <div class="topstat">
+        <button class="sync-pill" id="btn-sync" type="button" data-act="open-sync" aria-label="기기 간 동기화">☁️ 미연결</button>
+        <span class="savechip" id="saveChip" role="status">저장됨 ✓</span>
+      </div>
     </div>
     <div class="searchbar">
       <span class="s-ico" aria-hidden="true">🔍</span>
@@ -709,9 +853,8 @@ body.sync-off-mode .sticky{top:34px}
     </div>
     <nav class="tabs" id="tabs" role="tablist">
       <button class="tab" role="tab" data-tab="map" aria-selected="true">전체 지도</button>
-      <button class="tab" role="tab" data-tab="advice" aria-selected="false">개선 방향</button>
-      <button class="tab" role="tab" data-tab="check" aria-selected="false">체크리스트</button>
-      <button class="tab" role="tab" data-tab="routine" aria-selected="false">루틴</button>
+      <button class="tab" role="tab" data-tab="care" aria-selected="false">체크·개선</button>
+      <button class="tab" role="tab" data-tab="fridge" aria-selected="false">냉장고</button>
     </nav>
     <nav class="viewbar" id="viewbar" role="tablist" aria-label="공간 선택"></nav>
   </div>
@@ -727,10 +870,10 @@ body.sync-off-mode .sticky{top:34px}
       </div>
       <div id="mapArea">
         <div class="toolrow">
-          <p><b>줄을 누르면 바로 수정</b> · 자동 저장 (기기 + ☁️ 클라우드)</p>
-          <button class="mini-btn" type="button" data-act="jump-fridge">🧊 냉장고 세부 기록</button>
-          <button class="mini-btn" type="button" data-act="export">JSON 내보내기</button>
-          <button class="mini-btn" type="button" data-act="import">JSON 가져오기</button>
+          <p><b>줄을 누르면 바로 수정</b> · 자동 저장 (기기 + ☁️)</p>
+          <button class="mini-btn" type="button" data-act="jump-fridge">🧊 냉장고 탭</button>
+          <button class="mini-btn" type="button" data-act="export">백업 저장</button>
+          <button class="mini-btn" type="button" data-act="import">백업 불러오기</button>
           <button class="mini-btn danger" type="button" data-act="reset-all">전체 초기화</button>
           <input id="importFile" type="file" accept="application/json,.json" hidden aria-hidden="true">
         </div>
@@ -739,51 +882,65 @@ body.sync-off-mode .sticky{top:34px}
       </div>
     </section>
 
-    <section id="panel-advice" role="tabpanel" aria-label="개선 방향" hidden>
-      <div class="adv-intro">
-        <b>정리전문가 조언 · 방별 모음</b>
-        <p>동선과 수납량을 기준으로 방마다 남긴 조언입니다. 실행 항목은 체크리스트 탭에서 하나씩 지워가면 됩니다.</p>
+    <section id="panel-care" role="tabpanel" aria-label="체크·개선" hidden>
+      <div class="care-intro">
+        <b>정리 체크 · 개선</b>
+        <p>방마다 남긴 조언을 보고, 실행할 일은 아래 체크리스트에서 하나씩 지워가세요.</p>
       </div>
-      <div class="agrid" id="adviceList"></div>
-      <p class="note-small">구조 변경(방 2↔3 안방 교환)과 가구 이동은 체크리스트에 순서대로 정리해 두었습니다.</p>
-    </section>
 
-    <section id="panel-check" role="tabpanel" aria-label="체크리스트" hidden>
-      <div class="check-top">
-        <div class="ctxt">
-          <b>이번 정리 실행 목록</b>
-          <p id="ckState">0 / 0 완료</p>
-          <div class="progress"><i id="ckBar"></i></div>
+      <div class="adv-section">
+        <div class="adv-intro">
+          <b>정리전문가 조언 · 방별 모음</b>
+          <p>동선과 수납량을 기준으로 방마다 남긴 조언입니다. 실행 항목은 아래 체크리스트에서 하나씩 지워가면 됩니다.</p>
         </div>
-        <button class="reset" id="ckReset">전체 해제</button>
+        <div class="agrid" id="adviceList"></div>
+        <p class="note-small">구조 변경(방 2↔3 안방 교환)과 가구 이동은 체크리스트에 순서대로 정리해 두었습니다.</p>
       </div>
-      <div class="checklist" id="checklist"></div>
-      <div class="ckadd">
-        <input id="ckNew" type="text" placeholder="항목 추가 (예: 안방 커튼 세탁)" autocomplete="off">
-        <button id="ckAddBtn" type="button">추가</button>
+
+      <div class="check-section">
+        <div class="check-top">
+          <div class="ctxt">
+            <b>이번 정리 실행 목록</b>
+            <p id="ckState">0 / 0 완료</p>
+            <div class="progress"><i id="ckBar"></i></div>
+          </div>
+          <button class="reset" id="ckReset">전체 해제</button>
+        </div>
+        <div class="checklist" id="checklist"></div>
+        <div class="ckadd">
+          <input id="ckNew" type="text" placeholder="항목 추가 (예: 안방 커튼 세탁)" autocomplete="off">
+          <button id="ckAddBtn" type="button">추가</button>
+        </div>
+        <p class="note-small">항목은 직접 추가·수정·삭제할 수 있고, 체크 상태와 함께 기기와 클라우드에 저장됩니다.</p>
       </div>
-      <p class="note-small">항목은 직접 추가·수정·삭제할 수 있고, 체크 상태와 함께 기기와 클라우드에 저장됩니다.</p>
     </section>
 
-    <section id="panel-routine" role="tabpanel" aria-label="루틴" hidden>
-      <div class="adv-intro">
-        <b>매일 하는 순서</b>
-        <p>집에 들어와서부터 나설 때까지, 몸에 붙은 순서를 그대로 적어 두는 자리입니다. 순서를 바꾸고 싶으면 항목을 눌러 고치세요.</p>
+    <section id="panel-fridge" role="tabpanel" aria-label="냉장고" hidden>
+      <div class="fr-intro">
+        <b>🧊 우리 냉장고</b>
+        <p>사진 그대로 — <b>왼쪽 냉동실 12칸</b>(선반 4 · 서랍 2 · 문 포켓 6), <b>오른쪽 냉장실 11칸</b>(선반 4 · 야채실 2 · 문 포켓 5). 칸을 누르면 그 칸 내용을 보고 바로 고칠 수 있어요.</p>
       </div>
-      <div class="rt-list" id="routineList"></div>
-      <div class="rt-add">
-        <input id="rtNewTitle" type="text" placeholder="루틴 이름 (예: 주말 아침)" autocomplete="off" aria-label="새 루틴 이름">
-        <textarea id="rtNewBody" placeholder="순서를 적어 두세요" aria-label="새 루틴 내용"></textarea>
-        <button id="rtAddBtn" type="button">루틴 추가</button>
+      <div class="fr-actions">
+        <button class="fr-cta" type="button" data-act="fr-receipt">📷 영수증으로 자동 분류 넣기</button>
+        <span class="fr-hint">영수증 사진이나 품목 글을 넣으면 냉동실·냉장실·문 포켓으로 나눠 담아요.</span>
       </div>
-      <p class="note-small">루틴은 직접 추가·수정·삭제할 수 있고, 클라우드에도 함께 저장됩니다.</p>
+      <figure class="fr-photo">
+        <img src="img/fridge-photo.jpg" alt="우리집 양문형 냉장고 — 왼쪽은 좁은 냉동실, 오른쪽은 넓은 냉장실과 홈바" loading="lazy" decoding="async">
+        <figcaption>왼쪽 냉동실 · 오른쪽 냉장실(홈바)</figcaption>
+      </figure>
+      <div class="fr-mapwrap">
+        <div class="fr-map" id="frMap"></div>
+        <p class="fr-legend"><span class="lg">본체</span> 선반·서랍 <span class="lg door">문</span> 포켓 · 숫자를 누르면 아래 칸 내용을 고칠 수 있어요</p>
+      </div>
+      <div class="fr-panel" id="frPanel" hidden></div>
+      <div class="fr-list" id="frList"></div>
     </section>
   </main>
 
   <footer>
-    <b>유자네 집 · 우리집 수납 지도 v8</b><br>
+    <b>유자네 집 · 우리집 수납 지도 v9</b><br>
     2026년 11월 27일 기준 · 검색은 띄어쓰기 없이도 됩니다.<br>
-    v6·v7에서 고쳐 둔 칸·핀·메모는 그대로 이어지고, 이제 기기 간 클라우드 동기화로 함께 저장됩니다.
+    v6·v7·v8에서 고쳐 둔 칸·핀·메모는 그대로 이어지고, 냉장고 칸도 기기 간 클라우드에 함께 저장됩니다.
   </footer>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -796,6 +953,27 @@ body.sync-off-mode .sticky{top:34px}
   </div>
 </div>
 
+<div class="modal" id="modal-receipt" role="dialog" aria-modal="true" aria-label="영수증으로 자동 분류">
+  <div class="veil" data-act="fr-receipt-close"></div>
+  <div class="panel wide">
+    <div class="m-head"><h2>📷 영수증으로 자동 분류</h2><button class="x" type="button" data-act="fr-receipt-close" aria-label="닫기">✕</button></div>
+    <div class="m-body">
+      <p class="rc-lead">영수증 사진을 올리면 이 브라우저에서 글자를 읽어요(한국어·영어). 사진이 잘 안 읽히면 영수증 품목을 그대로 붙여넣어도 됩니다.</p>
+      <div class="rc-row">
+        <button class="btn ghost" type="button" data-act="rc-pick">🖼 영수증 사진 고르기</button>
+        <input id="rcFile" type="file" accept="image/*" capture="environment" hidden aria-label="영수증 사진">
+        <span class="rc-state" id="rcState">사진 없이 글만 넣어도 돼요</span>
+      </div>
+      <textarea id="rcText" class="rc-text" placeholder="영수증 품목을 한 줄에 하나씩 붙여넣으세요&#10;예) 서울우유 1L 2,980&#10;CJ 비비고 만두 450g 6,900&#10;상추 한 봉 2,200" aria-label="영수증 품목 글"></textarea>
+      <div class="rc-btns">
+        <button class="btn primary" type="button" data-act="rc-classify">품목 나누기</button>
+        <button class="btn ghost" type="button" data-act="rc-clear">지우기</button>
+      </div>
+      <div id="rcPreview"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
   "use strict";
@@ -805,11 +983,12 @@ body.sync-off-mode .sticky{top:34px}
      ============================================================ */
   var FW = 481, FH = 696;                     /* 전체 도면 크기(px) */
   var FLOORPLAN = 'img/floorplan.jpg';
-  var DBKEY = 'homeMap.v6.db';              /* v8에서도 같은 키를 그대로 쓴다 — 사용자가 고쳐 둔 내용 보존 */
+  var DBKEY = 'homeMap.v6.db';              /* v9에서도 같은 키를 그대로 쓴다 — 사용자가 고쳐 둔 내용 보존 */
   var BAKKEY = 'homeMap.v6.before-v7';      /* v7 구조 이관 직전 원본 백업 (한 번만) */
   var BAK8 = 'homeMap.v7.before-v8';        /* v8 구조 이관 직전 원본 백업 (한 번만) */
+  var BAK9 = 'homeMap.v8.before-v9';        /* v9 구조 이관 직전 원본 백업 (한 번만) */
   var SYNC_CFG_KEY = 'homeMap.sync.v1';     /* 동기화 코드·마지막 동기화 상태 (이 기기에만) */
-  var SCHEMA = 8;
+  var SCHEMA = 9;
   var ROUTINE_DEFAULT = [
     {id:'r1', title:'퇴근 후', body:'드레스룸 가서 겉옷 벗고 정리하고 로브 입고 샤워하러 가기. 샤워하고 나와서 안방에서 속옷, 잠옷 챙겨입기.'},
     {id:'r2', title:'출근 준비', body:'씻고 나와서 잠옷 벗고 로브를 입고 드레스룸으로 가서 옷 입고 로브 걸기.'}
@@ -1056,6 +1235,54 @@ body.sync-off-mode .sticky{top:34px}
   ];
 
   /* ============================================================
+     냉장고 — 칸 23개 (사진 그대로: 왼쪽 냉동실 12 · 오른쪽 냉장실 11)
+     g = [x, y, w, h]  (SVG viewBox 344 × 474 안의 좌표)
+     ============================================================ */
+  var FRIDGE_DEF = [
+    {id:'fz-s1', side:'fz', kind:'shelf', num:'1', name:'냉동실 선반 1 (맨 위)', g:[70, 36, 90, 54]},
+    {id:'fz-s2', side:'fz', kind:'shelf', num:'2', name:'냉동실 선반 2', g:[70, 94, 90, 54]},
+    {id:'fz-s3', side:'fz', kind:'shelf', num:'3', name:'냉동실 선반 3', g:[70, 152, 90, 54]},
+    {id:'fz-s4', side:'fz', kind:'shelf', num:'4', name:'냉동실 선반 4', g:[70, 210, 90, 54]},
+    {id:'fz-d1', side:'fz', kind:'drawer', num:'상', name:'냉동실 서랍 (위)', g:[70, 272, 90, 84]},
+    {id:'fz-d2', side:'fz', kind:'drawer', num:'하', name:'냉동실 서랍 (아래)', g:[70, 360, 90, 84]},
+    {id:'fz-p1', side:'fz', kind:'pocket', num:'1', name:'냉동실 문 포켓 1', g:[6, 36, 58, 62]},
+    {id:'fz-p2', side:'fz', kind:'pocket', num:'2', name:'냉동실 문 포켓 2', g:[6, 106, 58, 62]},
+    {id:'fz-p3', side:'fz', kind:'pocket', num:'3', name:'냉동실 문 포켓 3', g:[6, 176, 58, 62]},
+    {id:'fz-p4', side:'fz', kind:'pocket', num:'4', name:'냉동실 문 포켓 4', g:[6, 246, 58, 62]},
+    {id:'fz-p5', side:'fz', kind:'pocket', num:'5', name:'냉동실 문 포켓 5', g:[6, 316, 58, 62]},
+    {id:'fz-p6', side:'fz', kind:'pocket', num:'6', name:'냉동실 문 포켓 6', g:[6, 386, 58, 62]},
+    {id:'rf-s1', side:'rf', kind:'shelf', num:'1', name:'냉장실 선반 1 (맨 위)', g:[176, 36, 96, 54]},
+    {id:'rf-s2', side:'rf', kind:'shelf', num:'2', name:'냉장실 선반 2', g:[176, 94, 96, 54]},
+    {id:'rf-s3', side:'rf', kind:'shelf', num:'3', name:'냉장실 선반 3', g:[176, 152, 96, 54]},
+    {id:'rf-s4', side:'rf', kind:'shelf', num:'4', name:'냉장실 선반 4', g:[176, 210, 96, 54]},
+    {id:'rf-d1', side:'rf', kind:'drawer', num:'상', name:'야채실 (위)', g:[176, 272, 96, 84]},
+    {id:'rf-d2', side:'rf', kind:'drawer', num:'하', name:'야채실 (아래)', g:[176, 360, 96, 84]},
+    {id:'rf-p1', side:'rf', kind:'pocket', num:'1', name:'냉장실 문 포켓 1', g:[282, 36, 56, 62]},
+    {id:'rf-p2', side:'rf', kind:'pocket', num:'2', name:'냉장실 문 포켓 2', g:[282, 106, 56, 62]},
+    {id:'rf-pb', side:'rf', kind:'pocket', num:'홈', name:'홈바', g:[282, 176, 56, 108]},
+    {id:'rf-p3', side:'rf', kind:'pocket', num:'3', name:'냉장실 문 포켓 3', g:[282, 292, 56, 62]},
+    {id:'rf-p4', side:'rf', kind:'pocket', num:'4', name:'냉장실 문 포켓 4', g:[282, 362, 56, 62]}
+  ];
+  var FRMAP = {};
+  FRIDGE_DEF.forEach(function(c){ FRMAP[c.id] = c; });
+
+  function nfridge(raw){
+    var out = {v:1, cells:{}};
+    var src = (raw && typeof raw === 'object' && raw.cells && typeof raw.cells === 'object') ? raw.cells : {};
+    FRIDGE_DEF.forEach(function(c){
+      var o = src[c.id];
+      var items = [];
+      if (o && Array.isArray(o.items)){
+        o.items.forEach(function(t){ if (typeof t === 'string' && t.trim()) items.push(t.trim()); });
+      }
+      out.cells[c.id] = {items: items, memo: (o && typeof o.memo === 'string') ? o.memo : ''};
+    });
+    return out;
+  }
+  function frCell(id){ return (DB && DB.fridge && DB.fridge.cells) ? DB.fridge.cells[id] : null; }
+  function frCount(){ var n = 0; FRIDGE_DEF.forEach(function(c){ var d = frCell(c.id); if (d) n += d.items.length; }); return n; }
+
+  /* ============================================================
      구조 그림 (직접 그린 SVG)
      ============================================================ */
   var ART = {
@@ -1254,7 +1481,7 @@ body.sync-off-mode .sticky{top:34px}
   var deep = function(o){ return JSON.parse(JSON.stringify(o)); };
   var clampPct = function(v){ v = parseFloat(v); if (!isFinite(v)) return 50; return Math.max(2, Math.min(98, v)); };
 
-  var state = {tab:'map', space:'all', view:'overview', fid:null, q:'', peek:null};
+  var state = {tab:'map', space:'all', view:'overview', fid:null, q:'', peek:null, frc:null};
   var DB = null;          /* {v:8, active, seasons:{winter:{spaces}, summer:{spaces}}, ck:[...], routines:[...]} */
   var localDirty = false; /* 이 기기에서 고친 내용을 아직 클라우드에 올리지 않았는가 */
   var BOOT = true;        /* 첫 화면을 그리는 동안의 저장은 사용자 수정으로 치지 않는다 */
@@ -1283,6 +1510,7 @@ body.sync-off-mode .sticky{top:34px}
       plan: {x: clampPct(f.plan && f.plan.x), y: clampPct(f.plan && f.plan.y)},
       zones: (Array.isArray(f.zones) && f.zones.length ? f.zones : [[]]).map(nzone)
     };
+    if (o.id === 'f-fridge') o.fridgeLink = true;   /* v9: 냉장고는 냉장고 탭에서 관리 */
     if (f.art && ART[f.art]) o.art = f.art;
     if (f.figBig) o.figBig = true;
     if (Array.isArray(f.photos) && f.photos.length){
@@ -1315,7 +1543,7 @@ body.sync-off-mode .sticky{top:34px}
   function buildDB(){
     var winter = deep(BASE_SPACES).map(nspace);
     var summer = deep(winter);
-    return {v:SCHEMA, sv:SCHEMA, ts:Date.now(), active:'winter', seasons:{winter:{spaces:winter}, summer:{spaces:summer}}, ck:null, routines:deep(ROUTINE_DEFAULT)};
+    return {v:SCHEMA, sv:SCHEMA, ts:Date.now(), active:'winter', seasons:{winter:{spaces:winter}, summer:{spaces:summer}}, ck:null, routines:deep(ROUTINE_DEFAULT), fridge:nfridge(null)};
   }
 
   /* ============================================================
@@ -1498,6 +1726,37 @@ body.sync-off-mode .sticky{top:34px}
     DB.v = SCHEMA; DB.sv = SCHEMA;
   }
 
+  /* ============================================================
+     v8 → v9 구조 이관 (멱등)
+     — 냉장고에 적어 둔 8칸 기록을 새 23칸(좌 냉동 12 · 우 냉장 11) 중
+       가장 가까운 칸으로 옮기고, 지도 위 냉장고 카드는 냉장고 탭 링크로 바꿈다.
+       기존 칸 항목은 지우지 않으므로 데이터는 100% 그대로 남는다.
+     ============================================================ */
+  var FRIDGE_ZONE_MAP = ['rf-s1','rf-s2','rf-s3','rf-d1','rf-p1','fz-s1','fz-s2','fz-p1'];
+  function migrateV9(){
+    DB.fridge = nfridge(DB.fridge);
+    ['winter','summer'].forEach(function(k){
+      var se = DB.seasons[k];
+      if (!se || !Array.isArray(se.spaces)) return;
+      se.spaces.forEach(function(sp){
+        sp.furnitures.forEach(function(f){
+          if (f.id !== 'f-fridge') return;
+          f.fridgeLink = true;
+          if (k !== 'winter') return;   /* 기록은 겨울 배치 기준으로 한 번만 옮긴다 */
+          f.zones.forEach(function(z, i){
+            var target = FRIDGE_ZONE_MAP[i];
+            var cell = target && DB.fridge.cells[target];
+            if (!cell) return;
+            z.items.forEach(function(t){
+              if (cell.items.indexOf(t) < 0) cell.items.push(t);
+            });
+          });
+        });
+      });
+    });
+    DB.v = SCHEMA; DB.sv = SCHEMA;
+  }
+
   function normalizeLoaded(){
     DB.active = DB.active === 'summer' ? 'summer' : 'winter';
     DB.seasons.winter.spaces = DB.seasons.winter.spaces.map(nspace);
@@ -1505,6 +1764,7 @@ body.sync-off-mode .sticky{top:34px}
     else DB.seasons.summer.spaces = DB.seasons.summer.spaces.map(nspace);
     if (!Array.isArray(DB.ck)) DB.ck = null;
     if (!Array.isArray(DB.routines) || !DB.routines.length) DB.routines = deep(ROUTINE_DEFAULT);
+    DB.fridge = nfridge(DB.fridge);
     DB.ts = Number(DB.ts) || 0;
   }
   function normalizeDB(raw){ DB = raw; normalizeLoaded(); return DB; }
@@ -1520,9 +1780,11 @@ body.sync-off-mode .sticky{top:34px}
       var sv = parseInt(raw.sv, 10) || parseInt(raw.v, 10) || 6;
       if (sv < SCHEMA){
         try{ if (rawStr && !localStorage.getItem(BAK8)) localStorage.setItem(BAK8, rawStr); }catch(e){}
+        try{ if (rawStr && !localStorage.getItem(BAK9)) localStorage.setItem(BAK9, rawStr); }catch(e){}
         try{
           if (sv < 7) migrateDB();
           migrateV8();
+          migrateV9();
           DB.v = SCHEMA; DB.sv = SCHEMA;
           saveDB(true);
           localDirty = true;   /* 이 기기에 이미 있던 내용을 클라우드로 올린다 */
@@ -1633,12 +1895,6 @@ body.sync-off-mode .sticky{top:34px}
         f.zones.forEach(function(z){ STAT.rows++; STAT.items += z.items.length; });
       });
     });
-    var el = $('#stats');
-    if (el) el.innerHTML =
-      '<li><b>' + STAT.furn + '</b> 가구 · 수납공간</li>' +
-      '<li><b>' + STAT.rows + '</b> 수납칸</li>' +
-      '<li><b>' + STAT.items + '</b> 물품</li>' +
-      '<li><b>' + SPACES.length + '</b> 공간</li>';
   }
 
   function cleanMoves(){
@@ -1879,7 +2135,34 @@ body.sync-off-mode .sticky{top:34px}
         '</div>' +
       '</section>' +
       '<div class="spgrid">' + cards + '</div>' +
+      furnIndexHTML() +
       '<p class="note-small">' + SEASONS[DB.active].emoji + ' ' + SEASONS[DB.active].name + ' 배치입니다. 방 이름과 순서는 겨울·여름 배치에 함께 바뀝니다. 도면은 원본 3D 도면이고, 제품 사진은 배경과 안내 문구를 지운 편집본입니다.</p>';
+  }
+
+  /* v9: 가구 모아보기 — 가구마다 어느 방인지 배지로 바로 보이게 */
+  function furnIndexHTML(){
+    var total = 0;
+    var groups = SPACES.map(function(sp){
+      total += sp.furnitures.length;
+      var items = sp.furnitures.map(function(f){
+        var cnt = f.zones.reduce(function(s, z){ return s + z.items.length; }, 0);
+        var how = f.fridgeLink ? ('23칸 · ' + frCount() + '개') : (f.zones.length + '칸' + (cnt ? ' · ' + cnt + '개' : ''));
+        return '<button class="fx-item" type="button" data-furn="' + f.id + '" aria-label="' + esc(sp.name + ' ' + f.name + ' 열기') + '">' +
+          '<span class="fx-n">' + f._n + '</span>' +
+          '<span class="fx-t">' + esc(f.name) + '</span>' +
+          '<span class="fx-badge" style="--c:' + sp.color + '">' + esc(sp.short || sp.name) + '</span>' +
+          '<span class="fx-c">' + how + '</span></button>';
+      }).join('');
+      return '<div class="fx-group" style="--c:' + sp.color + '">' +
+        '<button class="fx-room" type="button" data-space="' + sp.id + '" aria-label="' + esc(sp.name) + ' 열기">' +
+          '<span class="sno">' + esc(sp.pin.label) + '</span><b>' + esc(sp.name) + '</b><small>' + sp.furnitures.length + '개</small></button>' +
+        '<div class="fx-list">' + items + '</div></div>';
+    }).join('');
+    return '<section class="findex">' +
+      '<div class="fx-head"><h2>가구 모아보기</h2><span>어느 방 가구인지 배지로 보이고, 가구를 누르면 그 카드로 바로 갑니다 · 모두 ' + total + '개</span></div>' +
+      groups +
+      '<p class="fx-all">숫자는 그 방 안의 가구 번호입니다. 냉장고는 <b>냉장고 탭</b>에서 23칸으로 나눠 관리해요.</p>' +
+    '</section>';
   }
 
   function editRoomName(sid, host){
@@ -1999,12 +2282,9 @@ body.sync-off-mode .sticky{top:34px}
     return true;
   }
   function jumpFridge(){
-    if (!FMAP['f-fridge']){ toast('냉장고 카드가 없어요 — 주방에서 가구로 추가해 주세요'); return; }
-    state.space = 's5'; state.view = 'room'; state.fid = null;
-    if (state.tab !== 'map') setTab('map', true);
     setQueryByIdle();
-    showMap();
-    setTimeout(function(){ jumpToFurn('f-fridge', true); }, 90);
+    setTab('fridge');
+    window.scrollTo({top:0, behavior:'smooth'});
   }
   function setQueryByIdle(){
     state.q = '';
@@ -2017,6 +2297,18 @@ body.sync-off-mode .sticky{top:34px}
 
   function furnCardHTML(f, sp){
     var color = sp.color;
+    /* v9: 냉장고는 23칸을 냉장고 탭에서 관리 — 지도 카드는 바로가기 */
+    if (f.fridgeLink){
+      return '<section class="fcard fcard-item" id="fc-' + f.id + '" data-fid="' + f.id + '" style="--c:' + color + '">' +
+        '<div class="fc-head">' +
+          '<span class="fc-n"' + (f._n > 9 ? ' data-2d="1"' : '') + '>' + f._n + '</span>' +
+          '<div class="fc-t"><h3 class="fname-h">' + esc(f.name) + '</h3>' +
+            '<span class="fc-sub">냉장고 탭 · 23칸 · 담긴 물건 ' + frCount() + '개</span></div>' +
+          '<div class="fc-tools"><button class="mini-btn" type="button" data-act="jump-fridge">🧊 냉장고 탭 열기</button></div>' +
+        '</div>' +
+        '<p class="fhint">냉장고는 사진 그대로 <b>냉동 12칸 · 냉장 11칸</b>으로 냉장고 탭에서 관리합니다. 영수증을 올리면 품목을 칸별로 나눠 넣을 수 있어요.</p>' +
+      '</section>';
+    }
     var media = '';
     if (f.photos && f.photos.length){
       f.photos.forEach(function(ph, i){ media += photoHTML(ph, f, color, i); });
@@ -2190,12 +2482,21 @@ body.sync-off-mode .sticky{top:34px}
     INDEX = [];
     SPACES.forEach(function(sp){
       sp.furnitures.forEach(function(f){
+        if (f.fridgeLink) return;              /* v9: 냉장고 칸은 아래에서 따로 색인한다 */
         f.zones.forEach(function(z, zi){
           z.items.forEach(function(name){
             INDEX.push({sp:sp, f:f, zi:zi, name:name,
               hay:[norm(sp.name), norm(sp.short), norm(sp.sub), norm(f.name), norm(name)].join(' ')});
           });
         });
+      });
+    });
+    FRIDGE_DEF.forEach(function(c){
+      var d = frCell(c.id);
+      if (!d) return;
+      d.items.forEach(function(name){
+        INDEX.push({sp:null, f:null, zi:-1, fr:c.id, name:name,
+          hay:[norm('냉장고'), norm('냉동실 냉장실'), norm(c.name), norm(name)].join(' ')});
       });
     });
   }
@@ -2232,6 +2533,15 @@ body.sync-off-mode .sticky{top:34px}
       return;
     }
     $('#results').innerHTML = list.map(function(e){
+      if (e.fr){
+        var c = FRMAP[e.fr];
+        var d = frCell(e.fr) || {items:[]};
+        return '<button class="result" type="button" data-frc="' + e.fr + '" style="--c:' + (c.side === 'fz' ? '#6E8AA0' : '#5F7A61') + '">' +
+          '<span class="r-room">냉장고</span>' +
+          '<span class="r-body"><span class="r-item">' + hl(e.name, tokens) + '</span>' +
+          '<span class="r-path">' + esc(c.name) + '<span class="sep">›</span>' + d.items.length + '개</span></span>' +
+          '<span class="r-go">열기 ›</span></button>';
+      }
       return '<button class="result" type="button" data-fid="' + e.f.id + '" data-rid="' + e.sp.id + '" data-z="' + e.zi + '" style="--c:' + e.sp.color + '">' +
         '<span class="r-room">' + esc(e.sp.short) + '</span>' +
         '<span class="r-body"><span class="r-item">' + hl(e.name, tokens) + '</span>' +
@@ -2649,7 +2959,10 @@ body.sync-off-mode .sticky{top:34px}
     });
     var other = DB.active === 'winter' ? 'summer' : 'winter';
     var btn = $('#copySeason');
-    if (btn) btn.textContent = '지금 배치를 ' + SEASONS[other].name + '으로 복사';
+    if (btn){
+      btn.title = '지금 배치를 ' + SEASONS[other].name + '으로 복사';
+      btn.setAttribute('aria-label', '지금 배치를 ' + SEASONS[other].name + '으로 복사');
+    }
   }
   function setSeason(s){
     if (!SEASONS[s] || s === DB.active) return;
@@ -2669,16 +2982,16 @@ body.sync-off-mode .sticky{top:34px}
   }
 
   function exportJSON(){
-    var data = {app:'우리집 수납 지도', v:SCHEMA, sv:DB.sv || SCHEMA, exportedAt: new Date().toISOString(), active: DB.active, seasons: DB.seasons, ck: CK, routines: RT};
+    var data = {app:'우리집 수납 지도', v:SCHEMA, sv:DB.sv || SCHEMA, exportedAt: new Date().toISOString(), active: DB.active, seasons: DB.seasons, ck: CK, routines: RT, fridge: DB.fridge};
     var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     var d = new Date();
     a.href = url;
-    a.download = '우리집-수납지도-' + d.getFullYear() + ('0'+(d.getMonth()+1)).slice(-2) + ('0'+d.getDate()).slice(-2) + '.json';
+    a.download = '우리집-수납지도-백업-' + d.getFullYear() + ('0'+(d.getMonth()+1)).slice(-2) + ('0'+d.getDate()).slice(-2) + '.json';
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(function(){ URL.revokeObjectURL(url); }, 5000);
-    toast('JSON 파일을 내려받았어요');
+    toast('백업 파일을 저장했어요');
   }
   function importJSON(file){
     if (!file) return;
@@ -2687,7 +3000,7 @@ body.sync-off-mode .sticky{top:34px}
       var data = null;
       try{ data = JSON.parse(String(fr.result)); }catch(e){}
       if (!data || !data.seasons || !data.seasons.winter || !Array.isArray(data.seasons.winter.spaces)){
-        toast('수납 지도 JSON 파일이 아니에요');
+        toast('수납 지도 백업 파일이 아니에요');
         return;
       }
       if (!window.confirm('지금 이 기기의 수납 내용을 파일 내용으로 바꿀까요?\n\n지금 내용은 덮어써집니다.')) return;
@@ -2699,6 +3012,7 @@ body.sync-off-mode .sticky{top:34px}
         return {id:String(c.id||('c'+i)), t:String(c.t), h:typeof c.h==='string'?c.h:'', done:!!c.done};
       });
       DB.ck = CK;
+      DB.fridge = nfridge(data.fridge);
       if (Array.isArray(data.routines) && data.routines.length){
         RT = data.routines.filter(function(r){ return r && typeof r.title === 'string'; }).map(function(r, i){
           return {id:String(r.id || ('r' + (i + 1))), title:r.title, body:typeof r.body === 'string' ? r.body : ''};
@@ -2891,10 +3205,324 @@ body.sync-off-mode .sticky{top:34px}
   }
 
   /* ============================================================
+     냉장고 탭 — 사진 그대로 23칸
+     ============================================================ */
+  function frSVG(){
+    var sel = state.frc, out = [];
+    out.push('<rect x="1" y="1" width="167" height="470" rx="13" fill="#FFFDFA" stroke="#EEE4D7"/>');
+    out.push('<rect x="169" y="1" width="174" height="470" rx="13" fill="#FFFDFA" stroke="#EEE4D7"/>');
+    out.push('<text x="83" y="21" text-anchor="middle" font-size="10.5" font-weight="800" fill="#8A7C6C" letter-spacing=".08em">냉동실</text>');
+    out.push('<text x="255" y="21" text-anchor="middle" font-size="10.5" font-weight="800" fill="#8A7C6C" letter-spacing=".08em">냉장실</text>');
+    FRIDGE_DEF.forEach(function(c){
+      var d = frCell(c.id) || {items:[], memo:''};
+      var g = c.g, on = sel === c.id;
+      var fill = c.kind === 'pocket' ? '#FFFFFF' : (c.kind === 'drawer' ? '#F7F0E5' : '#FCF9F4');
+      var stroke = on ? '#C86D51' : '#E3D8C9';
+      var dash = c.kind === 'pocket' ? ' stroke-dasharray="3.5 2.5"' : '';
+      out.push('<g class="frc' + (on ? ' on' : '') + '" data-frc="' + c.id + '" role="button" tabindex="0" aria-label="' + esc(c.name + ' · ' + (d.items.length ? d.items.length + '개' : '비어 있음')) + '">');
+      out.push('<rect x="' + g[0] + '" y="' + g[1] + '" width="' + g[2] + '" height="' + g[3] + '" rx="' + (c.kind === 'pocket' ? 7 : 4) + '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="' + (on ? 2 : 1) + '"' + dash + '/>');
+      out.push('<text class="frc-n" x="' + (g[0] + 7) + '" y="' + (g[1] + g[3] / 2 + 4) + '">' + esc(c.num) + '</text>');
+      if (d.items.length){
+        var bx = g[0] + g[2] - 10, by = g[1] + 10.5;
+        out.push('<circle cx="' + bx + '" cy="' + by + '" r="8.5" fill="#5F7A61"/>');
+        out.push('<text class="frc-c" x="' + bx + '" y="' + (by + 3.1) + '" text-anchor="middle">' + (d.items.length > 9 ? '9+' : d.items.length) + '</text>');
+      }
+      out.push('</g>');
+    });
+    return '<svg viewBox="0 0 344 474" role="img" aria-label="냉장고 칸 지도 — 왼쪽 냉동실 12칸, 오른쪽 냉장실 11칸">' + out.join('') + '</svg>';
+  }
+
+  function frPanelHTML(id){
+    var c = FRMAP[id], d = frCell(id) || {items:[], memo:''};
+    var chips = d.items.map(function(t, i){
+      return '<span class="fr-chip" data-cid="' + i + '">' +
+        '<button class="nm" type="button" data-fr-edit="' + id + '" data-i="' + i + '" title="눌러서 이름 고치기">' + esc(t) + '</button>' +
+        '<button type="button" data-fr-del="' + id + '" data-i="' + i + '" aria-label="' + esc(t) + ' 지우기">✕</button></span>';
+    }).join('');
+    return '<div class="fph"><b>' + esc(c.name) + '</b><span class="cnt">' + d.items.length + '개</span>' +
+      '<button class="x" type="button" data-act="fr-close" aria-label="닫기">✕</button></div>' +
+      '<div class="fr-items">' + (chips || '<span class="fr-none">아직 비어 있어요 — 아래에 적으면 바로 저장돼요</span>') + '</div>' +
+      '<div class="fr-add"><input id="frNewItem" type="text" data-fr-add="' + id + '" placeholder="이 칸에 넣은 것 (예: 아이스크림)" autocomplete="off" aria-label="물건 추가">' +
+      '<button type="button" data-act="fr-add" data-id="' + id + '">추가</button></div>' +
+      '<div class="fr-memo"><span>메모</span><input type="text" data-fr-memo="' + id + '" value="' + esc(d.memo) + '" placeholder="예: 유통기한 12/05" autocomplete="off" aria-label="이 칸 메모"></div>';
+  }
+
+  function frListHTML(){
+    var sides = [{k:'fz', t:'🧊 냉동실', s:'왼쪽'}, {k:'rf', t:'❄️ 냉장실', s:'오른쪽'}];
+    return sides.map(function(sd){
+      var cells = FRIDGE_DEF.filter(function(c){ return c.side === sd.k; });
+      var n = 0;
+      var rows = cells.map(function(c){
+        var d = frCell(c.id) || {items:[]};
+        n += d.items.length;
+        return '<button class="fr-row' + (state.frc === c.id ? ' on' : '') + '" type="button" data-frc="' + c.id + '">' +
+          '<span class="n">' + esc(c.num) + '</span>' +
+          '<span class="t"><b>' + esc(c.name) + '</b>' +
+          '<span class="' + (d.items.length ? 'has' : '') + '">' + (d.items.length ? esc(d.items.join(' · ')) : '비어 있음') + '</span></span></button>';
+      }).join('');
+      return '<section class="fr-box"><h3>' + sd.t + '<span class="k">' + sd.s + ' ' + cells.length + '칸 · ' + n + '개</span></h3>' + rows + '</section>';
+    }).join('');
+  }
+
+  function renderFridge(){
+    var map = $('#frMap');
+    if (!map) return;
+    map.innerHTML = frSVG();
+    var panel = $('#frPanel');
+    if (panel){
+      if (state.frc && FRMAP[state.frc]){ panel.hidden = false; panel.innerHTML = frPanelHTML(state.frc); }
+      else { panel.hidden = true; panel.innerHTML = ''; }
+    }
+    var list = $('#frList');
+    if (list) list.innerHTML = frListHTML();
+  }
+
+  function frSelect(id){
+    if (!FRMAP[id]) return;
+    state.frc = (state.frc === id) ? null : id;
+    renderFridge();
+    if (state.frc){
+      var p = $('#frPanel');
+      if (p){
+        var y = p.getBoundingClientRect().top + window.scrollY - stickyH() - 8;
+        window.scrollTo({top: Math.max(0, y), behavior:'smooth'});
+      }
+    }
+  }
+
+  function frAddItem(id, text){
+    var t = String(text || '').replace(/\s+/g, ' ').trim();
+    var d = frCell(id);
+    if (!d) return;
+    if (!t){ var inp0 = $('#frNewItem'); if (inp0) inp0.focus(); return; }
+    var added = 0;
+    t.split(/\s*[,，、]\s*/).forEach(function(p){
+      p = p.trim();
+      if (p && d.items.indexOf(p) < 0){ d.items.push(p); added++; }
+    });
+    if (!added){ toast('이미 들어 있어요'); return; }
+    saveDB();
+    renderFridge();
+    var inp = $('#frNewItem');
+    if (inp) inp.focus();
+    toast(added + '개 넣었어요');
+  }
+
+  function frDelItem(id, i){
+    var d = frCell(id);
+    if (!d || !d.items[i]) return;
+    var name = d.items.splice(i, 1)[0];
+    saveDB();
+    renderFridge();
+    toast(name + ' 지웠어요');
+  }
+
+  /* 칸 안의 이름 고치기 — 칩을 누르면 그 자리에서 입력 */
+  function frEditItem(id, i){
+    var d = frCell(id);
+    if (!d) return;
+    var name = d.items[i];
+    if (name == null) return;
+    var chip = document.querySelector('#frPanel .fr-chip[data-cid="' + i + '"]');
+    if (!chip) return;
+    chip.innerHTML = '<input type="text" value="' + esc(name) + '" aria-label="이름 고치기">';
+    var inp = chip.querySelector('input');
+    inp.focus();
+    try{ inp.setSelectionRange(0, inp.value.length); }catch(e){}
+    var done = false;
+    var finish = function(save){
+      if (done) return;
+      done = true;
+      if (save){
+        var v = inp.value.replace(/\s+/g, ' ').trim();
+        if (v && v !== name){ d.items[i] = v; saveDB(); toast('고쳤어요'); }
+      }
+      renderFridge();
+    };
+    inp.addEventListener('keydown', function(e){
+      if (e.key === 'Enter'){ e.preventDefault(); finish(true); }
+      else if (e.key === 'Escape'){ e.preventDefault(); finish(false); }
+    });
+    inp.addEventListener('blur', function(){ setTimeout(function(){ finish(true); }, 60); });
+  }
+
+  function frSetMemo(id, val){
+    var d = frCell(id);
+    if (!d) return;
+    var v = String(val || '').trim();
+    if (d.memo === v) return;
+    d.memo = v;
+    saveDB(true);
+  }
+
+  /* ============================================================
+     영수증 → 칸 자동 분류
+     ============================================================ */
+  var FR_RULES = [
+    {c:'fz-d1', k:'냉동', re:/만두|교자|김말이|튀김|돈까스|까스|핫도그|너겟|나겟|감자튀김|치킨|냉동|냉동밥|볶음밥|아이스크림|아이스바|빙과|빙수|얼음|설레임/},
+    {c:'fz-s2', k:'냉동', re:/삼겹|목살|갈비|안심|등심|닭|소고기|돼지|양고기|스테이크|불고기|차돌|고기|생선|연어|새우|오징어|조개|해물|참치/},
+    {c:'fz-s1', k:'냉동', re:/피자|수제비|빵|브레드|베이글/},
+    {c:'rf-pb', k:'홈바', re:/맥주|소주|참이슬|처음처럼|한라산|테라|카스|클라우드|하이트|진로|골든블루|스카치|위스키|하이볼|와인|막걸리|탄산|사이다|콜라|환타|음료|주스|에이드|생수|먹는샘물|보리차|이온음료|스파클링/},
+    {c:'rf-d1', k:'냉장', re:/채소|야채|상추|배추|양파|대파|쪽파|오이|당근|호박|브로콜리|버섯|샐러드|과일|사과|바나나|귤|포도|딸기|베리|토마토|깻잎|시금치|파프리카|미나리|감자|무\b/},
+    {c:'rf-s2', k:'냉장', re:/우유|치즈|버터|요거트|요구르트|크림|계란|달걀|두유/},
+    {c:'rf-s3', k:'냉장', re:/두부|김치|반찬|장아찌|젓갈|떡볶이|어묵|햄|소시지|베이컨/},
+    {c:'rf-p1', k:'문', re:/소스|케찹|케첩|케챱|마요|머스터드|드레싱|간장|고추장|된장|쌈장|식초|기름|잼|꿀|액젓|참기름|들기름|굴소스|칠리|양념/}
+  ];
+
+  var RC = {items: [], ran: false, seq: 0};
+
+  function rcParse(text){
+    var out = [];
+    String(text || '').split(/\r?\n/).forEach(function(line){
+      var s = line.replace(/\t+/g, ' ').replace(/\s+/g, ' ').trim();
+      if (!s) return;
+      if (/(영수증|합계|소계|총액|결제|카드|현금|승인|잔액|받은금액|거스름|부가세|과세|면세|포인트|적립|할인|사업자|대표자|주소|전화번호|일시|매장|TEL|VAT|TOTAL|SUBTOTAL|CASH|CARD|CHANGE|APPROVAL|SALE|NO\.)/i.test(s)) return;
+      s = s.replace(/^[*\-•·]?\s*\d+\s*[xX×]\s*/, '');
+      s = s.replace(/\s*[\d,]+\s*원?\s*$/, '');
+      s = s.replace(/\b\d+(\.\d+)?\s*(kg|g|ml|l|oz|ea|개|입|매|봉|팩|병|캔|포기|근|마리|모|통|단|박스|세트)\b\.?/gi, ' ');
+      s = s.replace(/\s*(한|두|세|네|\d+)\s*(봉지?|팩|개|병|캔|입|매|줄|망|포기|근|마리)$/, '');
+      s = s.replace(/[\d,]+/g, ' ').replace(/\s+/g, ' ').trim();
+      s = s.replace(/^[*\-•·:·]+|[*\-•·:·]+$/g, '').trim();
+      if (s.length < 2) return;
+      if (!/[가-힣A-Za-z]/.test(s)) return;
+      if (s.length > 24) s = s.slice(0, 24);
+      out.push(s);
+    });
+    var seen = {}, uniq = [];
+    out.forEach(function(s){ var k = s.toLowerCase(); if (!seen[k]){ seen[k] = 1; uniq.push(s); } });
+    return uniq;
+  }
+
+  function rcGuess(name){
+    for (var i = 0; i < FR_RULES.length; i++){
+      if (FR_RULES[i].re.test(name)) return {cell: FR_RULES[i].c, kind: FR_RULES[i].k};
+    }
+    return {cell:'rf-s1', kind:'냉장'};
+  }
+
+  function rcRender(){
+    var box = $('#rcPreview');
+    if (!box) return;
+    if (!RC.items.length){
+      box.innerHTML = RC.ran ? '<p class="rc-empty">나눌 품목을 찾지 못했어요. 품목을 한 줄에 하나씩 적어 주세요.</p>' : '';
+      return;
+    }
+    var picked = RC.items.filter(function(i){ return i.on; }).length;
+    var rows = RC.items.map(function(it, i){
+      var opts = FRIDGE_DEF.map(function(c){
+        return '<option value="' + c.id + '"' + (c.id === it.cell ? ' selected' : '') + '>' + esc(c.name) + '</option>';
+      }).join('');
+      return '<div class="rc-row2">' +
+        '<input type="checkbox" data-rc-on="' + i + '"' + (it.on ? ' checked' : '') + ' aria-label="' + esc(it.name) + ' 포함">' +
+        '<span class="kg' + (it.kind === '냉동' ? '' : (it.kind === '냉장' ? ' chill' : ' mid')) + '">' + esc(it.kind) + '</span>' +
+        '<span class="nm">' + esc(it.name) + '</span>' +
+        '<select data-rc-sel="' + i + '" aria-label="' + esc(it.name) + ' 넣을 칸">' + opts + '</select>' +
+      '</div>';
+    }).join('');
+    box.innerHTML = '<div class="rc-sum">품목 <b>' + RC.items.length + '</b>개 · 골라서 넣을 곳 <b>' + picked + '</b>개</div>' +
+      '<div class="rc-rows">' + rows + '</div>' +
+      '<div class="rc-apply"><button class="btn primary" type="button" data-act="rc-apply">냉장고에 넣기</button>' +
+      '<span class="n">칸을 잘못 골랐으면 오른쪽에서 바꿀 수 있어요</span></div>';
+  }
+
+  function rcRun(){
+    var ta = $('#rcText');
+    var list = rcParse(ta ? ta.value : '');
+    RC.ran = true;
+    RC.items = list.map(function(n){
+      var g = rcGuess(n);
+      return {name:n, cell:g.cell, kind:g.kind, on:true};
+    });
+    rcRender();
+    toast(list.length ? list.length + '개 품목을 나눴어요' : '나눌 품목이 없어요');
+  }
+
+  function rcApply(){
+    var picked = RC.items.filter(function(i){ return i.on; });
+    if (!picked.length){ toast('넣을 품목을 골라 주세요'); return; }
+    var n = 0, first = '';
+    picked.forEach(function(it){
+      var d = frCell(it.cell);
+      if (!d) return;
+      if (d.items.indexOf(it.name) >= 0) return;
+      d.items.push(it.name);
+      n++;
+      if (!first) first = it.cell;
+    });
+    if (!n){ toast('이미 모두 들어 있어요'); return; }
+    saveDB();
+    state.frc = first;
+    if (state.tab !== 'fridge') setTab('fridge', true);
+    renderFridge();
+    closeReceipt();
+    RC.items = [];
+    var ta = $('#rcText');
+    if (ta) ta.value = '';
+    rcRender();
+    toast(n + '개를 냉장고 칸에 넣었어요');
+  }
+
+  function openReceipt(){
+    var m = $('#modal-receipt');
+    if (m){ m.classList.add('open'); m.setAttribute('aria-hidden', 'false'); }
+    rcRender();
+  }
+  function closeReceipt(){
+    var m = $('#modal-receipt');
+    if (m){ m.classList.remove('open'); m.setAttribute('aria-hidden', 'true'); }
+  }
+
+  var tessP = null;
+  function loadTesseract(){
+    if (window.Tesseract) return Promise.resolve(window.Tesseract);
+    if (tessP) return tessP;
+    tessP = new Promise(function(res, rej){
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+      s.async = true;
+      s.onload = function(){ window.Tesseract ? res(window.Tesseract) : rej(new Error('OCR 없음')); };
+      s.onerror = function(){ tessP = null; rej(new Error('OCR 도구를 불러오지 못했어요')); };
+      document.head.appendChild(s);
+    });
+    return tessP;
+  }
+
+  function rcOcr(file){
+    if (!file) return;
+    var st = $('#rcState');
+    if (st){ st.className = 'rc-state'; st.textContent = '사진에서 글자를 읽는 중… (처음 한 번은 도구를 받아와 조금 걸려요)'; }
+    loadTesseract().then(function(T){
+      return T.recognize(file, 'kor+eng', {
+        langPath: 'https://tessdata.projectnaptha.com/4.0.0_fast',
+        logger: function(m){
+          if (!st) return;
+          if (m && m.status === 'recognizing text' && typeof m.progress === 'number'){
+            st.textContent = '글자를 읽는 중… ' + Math.round(m.progress * 100) + '%';
+          }
+        }
+      });
+    }).then(function(res){
+      var txt = (res && res.data && res.data.text) ? res.data.text : '';
+      var ta = $('#rcText');
+      if (ta) ta.value = txt.trim();
+      if (!txt.trim()){
+        if (st){ st.className = 'rc-state err'; st.textContent = '글자를 찾지 못했어요 — 품목을 직접 적어 주세요'; }
+      } else if (st){
+        st.className = 'rc-state on';
+        st.textContent = '글자를 읽었어요 — 품목 나누기를 눌러 주세요';
+      }
+    }).catch(function(){
+      if (st){ st.className = 'rc-state err'; st.textContent = '사진 읽기를 못 했어요 — 품목을 직접 적어도 돼요'; }
+      toast('영수증 사진 읽기 실패 — 품목을 직접 적어 주세요');
+    });
+  }
+
+  /* ============================================================
      탭
      ============================================================ */
-  var TABS = ['map', 'advice', 'check', 'routine'];
+  var TABS = ['map', 'care', 'fridge'];
   function setTab(name, noScroll){
+    if (TABS.indexOf(name) < 0) name = 'map';
     state.tab = name;
     document.body.setAttribute('data-tab', name);
     TABS.forEach(function(t){
@@ -2906,9 +3534,8 @@ body.sync-off-mode .sticky{top:34px}
     });
     var showRoomBar = (name === 'map') && !state.q.trim();
     $('#viewbar').hidden = !showRoomBar;
-    if (name === 'check') renderChecks();
-    if (name === 'advice') renderAdvice();
-    if (name === 'routine') renderRoutines();
+    if (name === 'care'){ renderAdvice(); renderChecks(); }
+    if (name === 'fridge') renderFridge();
     setVarSh();
     if (!noScroll) window.scrollTo({top: 0, behavior: 'auto'});
   }
@@ -3186,11 +3813,37 @@ body.sync-off-mode .sticky{top:34px}
       var fb = t.closest('.fb[data-furn]');
       if (fb){ jumpToFurn(fb.getAttribute('data-furn'), false); return; }
 
+      /* 가구 모아보기 · 가구 배지 → 그 가구 카드로 */
+      var fx = t.closest('[data-furn]');
+      if (fx){
+        setTab('map', true);
+        jumpToFurn(fx.getAttribute('data-furn'), true);
+        return;
+      }
+
+      /* 냉장고 칸 (검색 결과 버튼은 아래에서 따로 처리) */
+      var frc = t.closest('.frc[data-frc], .fr-row[data-frc]');
+      if (frc){ frSelect(frc.getAttribute('data-frc')); return; }
+      var frd = t.closest('[data-fr-del]');
+      if (frd){ frDelItem(frd.getAttribute('data-fr-del'), parseInt(frd.getAttribute('data-i'), 10) || 0); return; }
+      var fre = t.closest('[data-fr-edit]');
+      if (fre){ frEditItem(fre.getAttribute('data-fr-edit'), parseInt(fre.getAttribute('data-i'), 10) || 0); return; }
+
       /* 공간 카드/목록/필터 */
       var spc = t.closest('[data-space]');
       if (spc){
         var sid = spc.getAttribute('data-space');
         if (sid === 'all') goOverview(false); else goRoom(sid, false);
+        return;
+      }
+
+      /* 검색 결과 → 냉장고 탭 그 칸으로 */
+      var rres = t.closest('.result[data-frc]');
+      if (rres){
+        setQueryByIdle();
+        state.frc = rres.getAttribute('data-frc');
+        setTab('fridge');
+        renderFridge();
         return;
       }
 
@@ -3241,6 +3894,18 @@ body.sync-off-mode .sticky{top:34px}
         else if (a === 'save-size') saveSize(act.closest('.sizehost'));
         else if (a === 'cancel-size') cancelSize(act.closest('.sizehost'));
         else if (a === 'jump-fridge') jumpFridge();
+        else if (a === 'fr-close'){ state.frc = null; renderFridge(); }
+        else if (a === 'fr-add'){ frAddItem(act.getAttribute('data-id'), ($('#frNewItem') || {}).value || ''); }
+        else if (a === 'fr-receipt') openReceipt();
+        else if (a === 'fr-receipt-close') closeReceipt();
+        else if (a === 'rc-pick'){ var rf = $('#rcFile'); if (rf) rf.click(); }
+        else if (a === 'rc-classify') rcRun();
+        else if (a === 'rc-clear'){
+          var rt = $('#rcText'); if (rt) rt.value = '';
+          RC.items = []; RC.ran = false; rcRender();
+          var rs = $('#rcState'); if (rs){ rs.className = 'rc-state'; rs.textContent = '사진 없이 글만 넣어도 돼요'; }
+        }
+        else if (a === 'rc-apply') rcApply();
         else if (a === 'rt-edit') editRoutine(act.getAttribute('data-rid'));
         else if (a === 'rt-del') delRoutine(act.getAttribute('data-rid'));
         else if (a === 'rt-save') saveRoutine(act.getAttribute('data-rid'));
@@ -3272,6 +3937,18 @@ body.sync-off-mode .sticky{top:34px}
     /* 편집기 체크박스 → 하위 입력 토글 */
     document.addEventListener('change', function(e){
       var t = e.target;
+      if (t.hasAttribute && t.hasAttribute('data-fr-memo')){ frSetMemo(t.getAttribute('data-fr-memo'), t.value); return; }
+      if (t.id === 'rcFile'){ rcOcr(t.files && t.files[0]); return; }
+      if (t.hasAttribute && t.hasAttribute('data-rc-on')){
+        var ri = parseInt(t.getAttribute('data-rc-on'), 10);
+        if (RC.items[ri]){ RC.items[ri].on = !!t.checked; rcRender(); }
+        return;
+      }
+      if (t.hasAttribute && t.hasAttribute('data-rc-sel')){
+        var si = parseInt(t.getAttribute('data-rc-sel'), 10);
+        if (RC.items[si]){ RC.items[si].cell = t.value; RC.items[si].kind = (FRMAP[t.value] && FRMAP[t.value].side === 'fz') ? '냉동' : (FRMAP[t.value] && FRMAP[t.value].kind === 'pocket' ? '문' : '냉장'); }
+        return;
+      }
       if (t.id === 'sync-auto'){
         syncCfg.auto = !!t.checked;
         syncSaveCfg();
@@ -3347,6 +4024,17 @@ body.sync-off-mode .sticky{top:34px}
     document.addEventListener('keydown', function(e){
       var t = e.target;
       if (e.key === 'Escape' && state.peek){ hidePeek(); return; }
+      if (e.key === 'Escape' && $('#modal-receipt') && $('#modal-receipt').classList.contains('open')){ closeReceipt(); return; }
+      if (e.key === 'Enter' && t.id === 'frNewItem'){
+        e.preventDefault();
+        frAddItem(t.getAttribute('data-fr-add'), t.value);
+        return;
+      }
+      if ((e.key === 'Enter' || e.key === ' ') && t.closest && t.closest('.frc')){
+        e.preventDefault();
+        frSelect(t.closest('.frc').getAttribute('data-frc'));
+        return;
+      }
       if (e.key === 'Enter' && t.classList && t.classList.contains('e-items')){
         e.preventDefault(); saveEditor(t.closest('.row')); return;
       }
@@ -3646,6 +4334,17 @@ body.sync-off-mode .sticky{top:34px}
     br.forEach(function(r){ rids[r.id] = 1; });
     orr.forEach(function(r){ if (!rids[r.id]){ br.push(deep(r)); rids[r.id] = 1; } });
     base.routines = br;
+    /* 냉장고 23칸도 같은 규칙: 비어 있는 칸만 다른 기기 내용으로 채운다 */
+    if (base.fridge || other.fridge){
+      var bfr = nfridge(base.fridge), ofr = nfridge(other.fridge);
+      FRIDGE_DEF.forEach(function(c){
+        var b = bfr.cells[c.id], o = ofr.cells[c.id];
+        if (!b || !o) return;
+        if (!b.items.length && o.items.length){ b.items = o.items.slice(); stats.updated++; }
+        if (!b.memo && o.memo) b.memo = o.memo;
+      });
+      base.fridge = bfr;
+    }
     return {db: base, stats: stats, baseIsLocal: baseIsLocal};
   }
 
@@ -3655,6 +4354,7 @@ body.sync-off-mode .sticky{top:34px}
     renderAdvice();
     renderChecks();
     renderRoutines();
+    renderFridge();
     if (state.view !== 'room'){ state.view = 'overview'; }
     state.fid = null;
     showMap();
@@ -4021,6 +4721,7 @@ body.sync-off-mode .sticky{top:34px}
   renderChecks();
   renderRoutines();
   bind();
+  renderFridge();
   showMap();
   setVarSh();
   BOOT = false;

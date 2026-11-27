@@ -1,0 +1,17 @@
+{
+  "name": "경조사비 수첩",
+  "short_name": "경조사비",
+  "description": "축의금·조의금·축하금을 보낸 돈과 받은 돈으로 기록하는 개인용 수첩",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fbfaf7",
+  "theme_color": "#fbfaf7",
+  "icons": [
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "./apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ]
+}

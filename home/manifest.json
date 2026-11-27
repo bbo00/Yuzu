@@ -1,0 +1,17 @@
+{
+  "name": "우리집 수납 지도",
+  "short_name": "수납지도",
+  "description": "방마다 가구와 칸을 지도처럼 보고, 냉장고 23칸까지 기록하는 개인용 수납 지도",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF8F5",
+  "theme_color": "#FAF8F5",
+  "icons": [
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "./apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ]
+}

@@ -12,6 +12,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="경조사비 수첩">
 <meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
 <style>
 :root{
   color-scheme: light;
@@ -362,12 +365,12 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     <div class="card">
       <h2 class="card-title">💾 백업 · 내보내기</h2>
       <div class="add-row">
-        <button class="btn ghost" type="button" data-act="export-json">JSON 백업 저장</button>
-        <button class="btn ghost" type="button" data-act="import-json">JSON 불러오기</button>
+        <button class="btn ghost" type="button" data-act="export-json">백업 저장</button>
+        <button class="btn ghost" type="button" data-act="import-json">백업 불러오기</button>
       </div>
       <button class="btn soft block" type="button" data-act="export-csv">📊 엑셀용 CSV 내보내기</button>
-      <p class="card-foot">CSV는 한글이 깨지지 않도록 UTF-8(BOM)로 저장되고, 엑셀·구글 스프레드시트에서 바로 열립니다. JSON은 그대로 복원할 수 있는 백업 파일이에요.</p>
-      <input type="file" id="import-file" accept=".json,application/json" hidden aria-label="JSON 백업 파일 선택">
+      <p class="card-foot">CSV는 한글이 깨지지 않도록 UTF-8(BOM)로 저장되고, 엑셀·구글 스프레드시트에서 바로 열립니다. 백업 파일은 그대로 복원할 수 있어요.</p>
+      <input type="file" id="import-file" accept=".json,application/json" hidden aria-label="백업 파일 선택">
     </div>
 
     <div class="card">
@@ -384,7 +387,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     <div class="card">
       <h2 class="card-title">🧹 데이터 관리</h2>
       <button class="btn danger block" type="button" data-act="wipe">모든 기록 지우기</button>
-      <p class="card-foot">지우기 전에 JSON 백업을 받아두면 안전해요.</p>
+      <p class="card-foot">지우기 전에 백업을 받아두면 안전해요.</p>
     </div>
 
     <p class="card-foot" style="text-align:center;margin:18px 0 8px">경조사비 수첩 · <a href="../index.html">유자 홈</a> · <a href="../health/">건강 수첩</a></p>
@@ -750,7 +753,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
           '<li>이름을 누르면 그 사람과 주고받은 내역이 한 화면에 떠요</li>' +
           '<li>받은 돈은 ‘갚아야 함’으로 남겨두면 미답례 탭에 모여요</li>' +
           '<li>빠른 금액 버튼(3·5·10·15·20·30만)으로 3초 만에 입력</li>' +
-          '<li>기기 간 자동 동기화 · JSON 백업 · 엑셀 CSV</li>' +
+          '<li>기기 간 자동 동기화 · 백업 · 엑셀 CSV</li>' +
         '</ul>' +
       '</div>';
       return;
@@ -1282,14 +1285,14 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     if (!appData.records.length) { toast('백업할 기록이 없어요'); return; }
     var doc = { app: 'events-book', v: 1, exportedAt: new Date().toISOString(), counts: syncDocCounts(), data: appData };
     var ok = download('경조사비_백업_' + stamp() + '.json', 'application/json', JSON.stringify(doc, null, 2));
-    if (ok) toast('JSON 백업 파일을 저장했어요');
+    if (ok) toast('백업 파일을 저장했어요');
   }
   function importJsonFile(file) {
     if (!file) return;
     var reader = new FileReader();
     reader.onload = function () {
       var doc;
-      try { doc = JSON.parse(String(reader.result || '')); } catch (e) { toast('JSON 파일을 읽지 못했어요'); return; }
+      try { doc = JSON.parse(String(reader.result || '')); } catch (e) { toast('백업 파일을 읽지 못했어요'); return; }
       var incoming = normalize(doc && doc.data ? doc.data : doc);
       if (!incoming.records.length) { toast('불러올 기록이 없어요'); return; }
       if (!confirm('백업에서 ' + incoming.records.length + '건을 불러와 지금 기록(' + appData.records.length + '건)과 합칠까요?\n같은 기록은 최근에 고친 쪽으로 남아요.')) return;
@@ -2020,7 +2023,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   function wipeAll() {
     if (!appData.records.length) { toast('지울 기록이 없어요'); return; }
     if (!confirm('모든 기록(' + appData.records.length + '건)을 지울까요?\n지운 기록은 되돌릴 수 없고, 연결된 클라우드에서도 지워집니다.')) return;
-    if (!confirm('정말 지울까요? JSON 백업을 받아두셨다면 나중에 되살릴 수 있어요.')) return;
+    if (!confirm('정말 지울까요? 백업을 받아두셨다면 나중에 되살릴 수 있어요.')) return;
     var ids = appData.records.map(function (r) { return r.id; });
     ids.forEach(function (id) { if (appData.deletedRecordIds.indexOf(id) < 0) appData.deletedRecordIds.push(id); });
     appData.records = [];
