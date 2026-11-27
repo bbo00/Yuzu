@@ -711,9 +711,10 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     renderFilterControls();
     var list = sortedRecords(filteredRecords());
     var s = sumOf(list);
-    $('#list-sum').innerHTML = list.length
+    $('#list-sum').innerHTML = (list.length
       ? '<span>보낸 <b>' + won(s.out) + '</b> · 받은 <b>' + won(s.in) + '</b></span><span>차액 <b>' + (s.net === 0 ? '0원' : (s.net > 0 ? '+' : '-') + won(Math.abs(s.net))) + '</b></span>'
-      : '<span>표시할 기록이 없어요</span>';
+      : '<span>표시할 기록이 없어요</span>') +
+      (filtersActive() ? '<button type="button" class="reset-link" data-act="reset-filters">필터 초기화</button>' : '');
 
     /* 검색어와 이름이 맞는 사람 바로가기 */
     var q = ui.q.trim().toLowerCase();
