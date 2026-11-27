@@ -2427,9 +2427,9 @@ body.phopen { overflow: hidden; }
           if (head && flat.indexOf(head) >= 0) { sub = preset[j]; break; }
         }
       }
-      return { corner: r.corner, sub: sub || '' };
+      return { corner: r.corner, sub: sub || '', hit: true };
     }
-    return { corner: '기타', sub: '' };
+    return { corner: '기타', sub: '', hit: false };
   }
 
   function phParse(t) {
@@ -2442,7 +2442,7 @@ body.phopen { overflow: hidden; }
     var price = phFindPrice(text);
     var sub = cat.sub || (cat.corner === '기타' ? '생활용품' : cat.corner);
     var note = vol.unitText ? vol.unitText : '';
-    return { name: name, corner: cat.corner, sub: sub, qty: qty, size: vol.size, exp: ex.exp, approx: ex.approx, price: price, note: note };
+    return { name: name, corner: cat.corner, sub: sub, qty: qty, size: vol.size, exp: ex.exp, approx: ex.approx, price: price, note: note, hit: !!cat.hit };
   }
 
   function phFillFields(p) {
@@ -2459,6 +2459,7 @@ body.phopen { overflow: hidden; }
     if (!phState) return;
     var p = phParse(rawText);
     phState.parsed = p;
+    phState.initial = { name: p.name || '', corner: p.corner || '기타', qty: p.qty || 1, hit: !!p.hit };
     phFillFields(p);
     var go = phEl('phGo'); if (go) go.disabled = false;
   }
@@ -2490,9 +2491,17 @@ body.phopen { overflow: hidden; }
     if (tgt === 'edit') {
       var it = items.get(tid);
       if (!it) { closePhoto(); return; }
-      var patch = { corner: v.corner, cat: CORNER_CAT[v.corner], sub: v.sub, qty: v.qty, size: v.size, price: v.price, exp: ex.exp, approx: ex.approx };
+      /* 수정: 빈 칸으로 기존 값을 지우지 않는다. 분류·수량은 사진에서 읽혔거나 사용자가 바꿀 때만 바꿔 쓴다. */
+      var p0 = (phState && phState.initial) || {};
+      var patch = {};
       if (v.name) patch.name = v.name;
+      if (v.size) patch.size = v.size;
+      if (v.price) patch.price = v.price;
+      if (ex.exp) { patch.exp = ex.exp; patch.approx = ex.approx; }
+      if (v.sub) patch.sub = v.sub;
       if (v.note) patch.note = (it.note && it.note.indexOf(v.note) < 0) ? (it.note + ' · ' + v.note).slice(0, 80) : v.note;
+      if (p0.hit || v.corner !== p0.corner) { patch.corner = v.corner; patch.cat = CORNER_CAT[v.corner]; }
+      if ((p0.qty || 1) > 1 || v.qty !== p0.qty) patch.qty = v.qty;
       patchItem(it, patch);
       closePhoto(); render();
       toast('사진에서 읽은 값으로 채웠어요 · 칸에서 고칠 수 있어요');
