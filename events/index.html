@@ -286,6 +286,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 
 /* ---------- 데스크톱 ---------- */
 @media(min-width:740px){
+  .filters{grid-template-columns:repeat(4,minmax(0,1fr))}
   .tabbar{border:1px solid var(--line);border-radius:16px;bottom:12px;left:50%;right:auto;transform:translateX(-50%);width:100%;max-width:600px;box-shadow:0 4px 18px rgba(30,35,41,.06);padding-bottom:6px}
   body{padding-bottom:110px}
   .sheet .panel{border-radius:20px;margin-bottom:16px;max-height:88vh}
