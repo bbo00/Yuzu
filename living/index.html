@@ -380,6 +380,33 @@ body.rvopen { overflow: hidden; }
 .onboard .obt { margin: 0; font-family: var(--font-display); font-size: 19px; }
 .onboard .obp { margin: 0; font-size: 14px; color: var(--ink-2); line-height: 1.6; max-width: 30em; }
 .onboard .btn { min-width: 160px; }
+
+/* ---- 사진으로 자동 채우기 (v2.2) ---- */
+.phrow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.phrow small { font-size: 12px; color: var(--ink-2); }
+.phwrap { position: fixed; inset: 0; z-index: 45; display: flex; align-items: flex-end; justify-content: center; }
+.phback { position: absolute; inset: 0; background: rgba(12, 20, 16, .42); }
+.phcard { position: relative; width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; -webkit-overflow-scrolling: touch; background: var(--surface); border-radius: 18px 18px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 10px; box-shadow: 0 -8px 30px rgba(0, 0, 0, .18); }
+.phsub { margin: -4px 0 0; font-size: 13px; line-height: 1.55; color: var(--ink-2); }
+.phpick { position: relative; display: grid; gap: 4px; justify-items: center; text-align: center; border: 1px dashed var(--accent); border-radius: 14px; background: var(--accent-soft); padding: 14px 12px; cursor: pointer; color: var(--ink); }
+.phpick b { font-size: 15px; }
+.phpick small { font-size: 12px; color: var(--ink-2); line-height: 1.45; }
+.phfile { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
+.phprev { display: block; width: 100%; max-height: 170px; object-fit: contain; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); }
+.phstat { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin: 0; font-size: 13px; color: var(--ink-2); }
+.phstat b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.phbar { height: 6px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.phbar i { display: block; height: 100%; width: 0; border-radius: 999px; background: var(--accent); transition: width .2s; }
+.phmsg { margin: 0; font-size: 13px; font-weight: 700; color: var(--bad); }
+.phfields { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+.phfields label { display: grid; gap: 4px; font-size: 13px; color: var(--ink-2); min-width: 0; }
+.phwide { grid-column: 1 / -1; }
+.phraw { display: grid; gap: 4px; font-size: 13px; color: var(--ink-2); }
+.phraw textarea { width: 100%; min-height: 76px; resize: vertical; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); color: var(--ink); font: inherit; font-size: 16px; line-height: 1.45; padding: 9px 11px; }
+.phacts { display: flex; gap: 8px; }
+.phacts .btn { flex: 1 1 0; }
+.phacts .btn[disabled] { opacity: .45; cursor: default; }
+body.phopen { overflow: hidden; }
 </style>
 </head><body>
 <div class="app">
@@ -433,6 +460,31 @@ body.rvopen { overflow: hidden; }
     <label class="rvlab"><span>주요 성분 <small>(선택 · 쉼표로 구분)</small></span><input id="rvIng" maxlength="160" placeholder="예: 시카, 판테놀, 나이아신아마이드" autocomplete="off"></label>
     <div class="rvchips" id="rvChips"></div>
     <div class="rvacts"><button class="btn" type="button" data-act="rv-cancel">취소</button><button class="btn primary" type="button" data-act="rv-save">저장</button></div>
+  </section>
+</div>
+
+<div class="phwrap" id="phSheet" hidden>
+  <div class="phback" data-phx="close"></div>
+  <section class="phcard" role="dialog" aria-modal="true" aria-labelledby="phTitle">
+    <div class="rvtop"><b id="phTitle">📷 사진으로 자동 채우기</b><button class="x" type="button" data-phx="close" aria-label="닫기">×</button></div>
+    <p class="phsub">제품 라벨이나 영수증 사진을 고르면 글자를 읽어 아래 칸을 채워요. 사진은 이 기기 안에서만 읽고 어디로도 보내지 않아요.</p>
+    <label class="phpick"><input type="file" id="phFile" class="phfile" accept="image/*"><b>📷 사진 고르기 · 찍기</b><small>제품 뒷면 라벨이나 영수증을 비스듬하지 않게 담아 주세요</small></label>
+    <img class="phprev" id="phPrev" alt="고른 사진" hidden>
+    <p class="phmsg" id="phMsg" hidden></p>
+    <p class="phstat"><span id="phStat">사진을 고르면 글자를 읽기 시작해요</span><b id="phPct"></b></p>
+    <div class="phbar" id="phBar" hidden><i id="phBarIn"></i></div>
+    <div class="phfields" id="phFields" hidden>
+      <label class="phwide">이름<input id="phName" maxlength="60" autocomplete="off"></label>
+      <label>분류<select id="phCorner"></select></label>
+      <label>소분류<input id="phSub" maxlength="20" autocomplete="off"></label>
+      <label>수량<input id="phQty" type="number" inputmode="numeric" min="0" value="1"></label>
+      <label>용량 (ml)<input id="phSize" type="text" inputmode="decimal" maxlength="7"></label>
+      <label>소비기한<input id="phExp" type="text" placeholder="예: 2027-01-09" autocomplete="off"></label>
+      <label>구매금액 (원)<input id="phPrice" type="text" inputmode="numeric" maxlength="9"></label>
+      <label class="phwide">메모<input id="phNote" maxlength="80" autocomplete="off"></label>
+    </div>
+    <label class="phraw" id="phRawWrap" hidden><span>읽은 글자 <small>(고치면 위 칸이 다시 채워져요)</small></span><textarea id="phRaw" rows="4" spellcheck="false"></textarea></label>
+    <div class="phacts"><button class="btn" type="button" data-phx="close">취소</button><button class="btn primary" type="button" data-phx="apply" id="phGo" disabled>이 칸으로 채우기</button></div>
   </section>
 </div>
 
@@ -1222,6 +1274,7 @@ body.rvopen { overflow: hidden; }
   function addForm() {
     var c = CORNER_NAMES.indexOf(ui.cat) >= 0 ? ui.cat : '스킨케어';
     return '<form class="add" data-form="item">' +
+      '<div class="phrow wide"><button class="btn sm" type="button" data-photo="add">📷 사진으로 자동 채우기</button><small>라벨·영수증을 찍으면 칸이 채워져요</small></div>' +
       '<label class="wide">이름<input name="name" required maxlength="60" placeholder="예: 닥터지 선크림" autocomplete="off"></label>' +
       '<label>분류<select name="corner" data-addcorner>' + opts(CORNER_NAMES, c) + '</select></label>' +
       '<label>소분류<input name="sub" required maxlength="20" list="subpreset" placeholder="눌러서 고르기 / 직접 적기" autocomplete="off"></label>' +
@@ -1276,6 +1329,7 @@ body.rvopen { overflow: hidden; }
       (it.note ? '<span class="memo">' + esc(it.note) + '</span>' : '') + '</button>' + step + '</div>';
     if (open) {
       h += '<div class="edit">' +
+        '<div class="phrow wide"><button class="btn sm" type="button" data-photo="edit" data-id="' + esc(it.id) + '">📷 사진으로 자동 채우기</button><small>라벨 사진으로 다시 채워요</small></div>' +
         '<label class="wide">이름<input data-f="name" value="' + esc(it.name) + '" maxlength="60"></label>' +
         '<label>분류<select data-f="corner">' + opts(CORNER_NAMES, cornerMap().map[it.id] || '기타') + '</select></label>' +
         '<label>소분류<input data-f="sub" value="' + esc(it.sub || '') + '" maxlength="20" list="sublist"></label>' +
@@ -2015,6 +2069,457 @@ body.rvopen { overflow: hidden; }
     toast('후기를 저장했어요 · ' + RATE[rating].e + ' ' + RATE[rating].t);
   }
 
+  /* ================= 사진으로 자동 채우기 (v2.2) =================
+     라벨·패키지·영수증 사진 → 브라우저 안에서 OCR(Tesseract.js kor+eng) → 입력 칸 자동 채움.
+     사진과 글자는 이 기기에서만 처리하고 어디로도 보내지 않는다. 동기화·저장 구조는 건드리지 않는다. */
+  var PH_CDN = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+  var phState = null, phWorker = null, phLoading = null, phJobSeq = 0, phIdle = null;
+
+  function p2(n) { return (String(n).length < 2 ? '0' : '') + n; }
+  function phEl(id) { return document.getElementById(id); }
+  function phSheetEl() { return phEl('phSheet'); }
+  function phSheetOpen() { var s = phSheetEl(); return !!(s && !s.hidden); }
+
+  function phSetStat(txt, pct) {
+    var s = phEl('phStat'); if (s) s.textContent = txt || '';
+    var pe = phEl('phPct'); if (pe) pe.textContent = (typeof pct === 'number') ? Math.round(pct) + '%' : '';
+    var bar = phEl('phBar'), inn = phEl('phBarIn');
+    if (bar && inn) {
+      if (typeof pct === 'number') { bar.hidden = false; inn.style.width = Math.max(2, Math.min(100, pct)) + '%'; }
+      else { bar.hidden = true; inn.style.width = '0%'; }
+    }
+  }
+  function phMsg(txt) { var m = phEl('phMsg'); if (m) { m.textContent = txt || ''; m.hidden = !txt; } }
+  function phResetPreview() {
+    var pv = phEl('phPrev');
+    if (pv) { if (pv.getAttribute('src')) { try { URL.revokeObjectURL(pv.src); } catch (e) {} pv.removeAttribute('src'); } pv.hidden = true; }
+    ['phFields', 'phRawWrap'].forEach(function (k) { var el = phEl(k); if (el) el.hidden = true; });
+    var raw = phEl('phRaw'); if (raw) raw.value = '';
+    var go = phEl('phGo'); if (go) go.disabled = true;
+  }
+
+  function openPhoto(target, id) {
+    if (!canWrite()) return;
+    var sh = phSheetEl(); if (!sh) return;
+    phState = { target: target === 'edit' ? 'edit' : 'add', id: id || '', parsed: null, busy: false, job: 0 };
+    var f = phEl('phFile'); if (f) f.value = '';
+    phResetPreview();
+    phMsg('');
+    phSetStat('사진을 고르면 글자를 읽기 시작해요', null);
+    var cs = phEl('phCorner'); if (cs) cs.innerHTML = opts(CORNER_NAMES, '기타');
+    sh.hidden = false;
+    document.body.classList.add('phopen');
+  }
+  function closePhoto() {
+    phState = null;
+    var sh = phSheetEl(); if (sh) sh.hidden = true;
+    document.body.classList.remove('phopen');
+    var pv = phEl('phPrev');
+    if (pv && pv.getAttribute('src')) { try { URL.revokeObjectURL(pv.src); } catch (e) {} pv.removeAttribute('src'); }
+    clearTimeout(phIdle);
+    phIdle = setTimeout(function () {
+      if (phWorker) { try { phWorker.terminate(); } catch (e) {} phWorker = null; }
+    }, 120000);
+  }
+
+  /* ---- OCR 도구: 처음 쓸 때만 CDN에서 불러온다 ---- */
+  function phLoadTess() {
+    if (window.Tesseract) return Promise.resolve(window.Tesseract);
+    if (phLoading) return phLoading;
+    phLoading = new Promise(function (res, rej) {
+      var s = document.createElement('script');
+      s.src = PH_CDN; s.async = true;
+      s.onload = function () { if (window.Tesseract) res(window.Tesseract); else rej(new Error('ocr-load')); };
+      s.onerror = function () { rej(new Error('ocr-load')); };
+      document.head.appendChild(s);
+    }).catch(function (e) { phLoading = null; throw e; });
+    return phLoading;
+  }
+  function phWorkerFor(job) {
+    return phLoadTess().then(function (T) {
+      if (phWorker) return phWorker;
+      phSetStat('한국어 글자 사전을 준비하는 중… (처음 한 번만)', 4);
+      return T.createWorker('kor+eng', 1, {
+        logger: function (m) {
+          if (!phState || phState.job !== job) return;
+          var st = (m && m.status) || '', pr = (m && typeof m.progress === 'number') ? m.progress : 0;
+          if (st.indexOf('language') >= 0) phSetStat('한국어·영어 글자 사전을 내려받는 중… (처음 한 번만)', 4 + pr * 46);
+          else if (st.indexOf('initializ') >= 0) phSetStat('글자 읽기 준비 중…', 52 + pr * 8);
+          else if (st.indexOf('recognizing') >= 0) phSetStat('글자를 읽는 중…', 62 + pr * 36);
+        }
+      });
+    }).then(function (w) {
+      if (w && !w.__phTuned) {
+        w.__phTuned = true;
+        try { w.setParameters({ preserve_interword_spaces: '1' }); } catch (e) {}
+      }
+      phWorker = w;
+      clearTimeout(phIdle);
+      return w;
+    });
+  }
+  /* 사진 → 캔버스 (긴 변 1800px로 맞춰 메모리·속도 균형) */
+  function phImageCanvas(file) {
+    return new Promise(function (res, rej) {
+      var url = URL.createObjectURL(file), img = new Image();
+      img.onload = function () {
+        try {
+          var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+          if (!w || !h) throw new Error('image');
+          var long = Math.max(w, h), s = 1;
+          if (long > 1800) s = 1800 / long; else if (long < 900) s = Math.min(2, 900 / long);
+          var c = document.createElement('canvas');
+          c.width = Math.round(w * s); c.height = Math.round(h * s);
+          var ctx = c.getContext('2d');
+          try { ctx.imageSmoothingQuality = 'high'; } catch (e) {}
+          ctx.drawImage(img, 0, 0, c.width, c.height);
+          URL.revokeObjectURL(url);
+          res(c);
+        } catch (e) { URL.revokeObjectURL(url); rej(e); }
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); rej(new Error('image')); };
+      img.src = url;
+    });
+  }
+
+  function phReadFile(file) {
+    if (!phState || !file) return;
+    if (!/^image\//i.test(file.type || '')) { phMsg('사진 파일만 고를 수 있어요 (JPG · PNG · HEIC)'); return; }
+    var st = phState, job = ++phJobSeq;
+    st.job = job; st.busy = true; st.parsed = null;
+    phMsg('');
+    phResetPreview();
+    var pv = phEl('phPrev');
+    if (pv) { try { pv.src = URL.createObjectURL(file); pv.hidden = false; } catch (e) {} }
+    phSetStat('사진을 준비하는 중…', 1);
+    phImageCanvas(file).then(function (canvas) {
+      if (!phState || phState !== st || st.job !== job) return null;
+      phSetStat('글자를 읽는 중…', 3);
+      return phWorkerFor(job).then(function (w) {
+        if (!phState || phState !== st || st.job !== job) return null;
+        return w.recognize(canvas, {}, { text: true, blocks: false, hocr: false, tsv: false });
+      });
+    }).then(function (res) {
+      if (!res || !phState || phState !== st || st.job !== job) return;
+      var text = (res.data && res.data.text) || '';
+      var clean = phNorm(text);
+      st.busy = false;
+      var fw = phEl('phFields'), rw = phEl('phRawWrap'), raw = phEl('phRaw');
+      if (raw) raw.value = clean;
+      if (fw) fw.hidden = false;
+      if (rw) rw.hidden = false;
+      if (!clean.replace(/\s/g, '')) { phSetStat('글자를 못 찾았어요 · 더 밝게, 라벨에 가깝게 다시 찍어 주세요', null); phMsg('사진에서 글자를 찾지 못했어요. 칸에 직접 적거나 다른 사진으로 다시 시도해 주세요.'); return; }
+      phSetStat('다 읽었어요 · 값이 맞는지 확인해 주세요', 100);
+      phApplyParse(clean);
+    }).catch(function (e) {
+      if (!phState || phState !== st || st.job !== job) return;
+      st.busy = false;
+      var msg = String((e && e.message) || '');
+      if (msg === 'ocr-load') phMsg('글자 읽기 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.');
+      else if (msg === 'image') phMsg('사진을 열지 못했어요. 다른 사진으로 다시 시도해 주세요.');
+      else phMsg('글자를 읽지 못했어요. 다시 시도해 주세요.');
+      phSetStat('', null);
+    });
+  }
+
+  /* ---------- 읽은 글자 해석 ---------- */
+  function phNorm(t) {
+    return String(t || '')
+      .replace(/\r\n?/g, '\n')
+      .replace(/[|│┃┆¦]/g, ' ')
+      .replace(/[“”‘’]/g, '"')
+      .replace(/\u00a0|\u3000/g, ' ')
+      /* OCR이 전각으로 읽은 영문·숫자(Ｌ, ｍｌ, １２)를 반각으로 */
+      .replace(/[\uFF01-\uFF5E]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); })
+      .replace(/[ \t]+\n/g, '\n')
+      .replace(/\n{3,}/g, '\n\n');
+  }
+  function phLines(t) {
+    return String(t || '').split('\n').map(function (l) {
+      return l.replace(/^[\s\-–—·•*:;,.()\[\]{}<>"'`~^_=+]+/, '').replace(/[\s\-–—·:;]+$/, '').replace(/\s{2,}/g, ' ').trim();
+    }).filter(function (l) { return l.length > 0; });
+  }
+
+  function phFindExp(t) {
+    var cands = [], spans = [];
+    function overlaps(at, len) { return spans.some(function (r) { return at < r[1] && at + len > r[0]; }); }
+    function push(y, m, d, at, len, approx) {
+      if (!(y >= 2000 && y <= 2100) || !(m >= 1 && m <= 12)) return;
+      var dim = new Date(y, m, 0).getDate();
+      if (approx) d = dim;
+      if (!(d >= 1) || d > dim) return;
+      cands.push({ iso: y + '-' + p2(m) + '-' + p2(d), approx: !!approx, at: at });
+      spans.push([at, at + len]);
+    }
+    var m, re, off;
+    re = /(20\d{2})\s*[.\-\/년]\s*(\d{1,2})\s*[.\-\/월]\s*(\d{1,2})\s*일?/g;
+    while ((m = re.exec(t))) push(+m[1], +m[2], +m[3], m.index, m[0].length, false);
+    re = /(?:^|[^\d])(20\d{2})(\d{2})(\d{2})(?!\d)/g;
+    while ((m = re.exec(t))) { off = /^\d/.test(m[0]) ? 0 : 1; push(+m[1], +m[2], +m[3], m.index + off, 8, false); }
+    re = /(?:^|[^\d])(\d{2})\s*[.\-\/]\s*(\d{2})\s*[.\-\/]\s*(\d{2})(?!\d)/g;
+    while ((m = re.exec(t))) { off = /^\d/.test(m[0]) ? 0 : 1; push(2000 + +m[1], +m[2], +m[3], m.index + off, 8, false); }
+    re = /(20\d{2})\s*(?:년|[.\-\/])\s*(\d{1,2})\s*(?:월|(?![\d.\-\/]))/g;
+    while ((m = re.exec(t))) { if (!overlaps(m.index, m[0].length)) push(+m[1], +m[2], 1, m.index, m[0].length, true); }
+    if (!cands.length) return { exp: '', approx: false };
+    var now = new Date(); now.setHours(0, 0, 0, 0);
+    var todayIso = now.getFullYear() + '-' + p2(now.getMonth() + 1) + '-' + p2(now.getDate());
+    var EXPW = /(소비기한|유통기한|사용기한|사용기간|까지|exp|expiry|expires|best\s*before|bb)/gi;
+    var MFGW = /(제조|생산|manufact\w*|mfg|packed)/gi;
+    cands.forEach(function (c) {
+      /* 날짜 바로 앞의 '가장 가까운' 표시만 본다 — 앞 줄의 제조일 표시에 끌려가지 않게 */
+      var ctx = t.slice(Math.max(0, c.at - 60), c.at), mm, lastE = -1, lastM = -1;
+      EXPW.lastIndex = 0; while ((mm = EXPW.exec(ctx))) lastE = mm.index + mm[0].length;
+      MFGW.lastIndex = 0; while ((mm = MFGW.exec(ctx))) lastM = mm.index + mm[0].length;
+      c.score = 0;
+      if (lastE >= 0 && lastE > lastM) c.score += 12;
+      if (lastM >= 0 && lastM > lastE) c.score -= 20;
+      if (c.iso >= todayIso) c.score += 4; else c.score -= 30;
+      if (!c.approx) c.score += 1;
+    });
+    var best = cands.filter(function (c) { return c.score >= 4; }).sort(function (a, b) { return (b.score - a.score) || (a.at - b.at); })[0];
+    return best ? { exp: best.iso, approx: best.approx } : { exp: '', approx: false };
+  }
+
+  function phFindVolume(t) {
+    var found = [], m;
+    var re = /(\d{1,4}(?:[.,]\d{1,2})?)\s*(ml|mL|ML|㎖|리터|litre|liter|kg|KG|㎏|킬로그램|그램|mg|g|G|매|개입|입|정|캡슐|포|l|L)/g;
+    while ((m = re.exec(t))) {
+      var raw = m[1].replace(',', '.'), v = parseFloat(raw), u = m[2];
+      if (!isFinite(v) || v <= 0) continue;
+      var fam = '', text = '';
+      if (/^(ml|mL|ML|㎖)$/.test(u)) { fam = 'ml'; text = ''; }
+      else if (/^(l|L|리터|litre|liter)$/.test(u)) { fam = 'ml'; v = v * 1000; text = ''; }
+      else if (/^(kg|KG|㎏|킬로그램)$/.test(u)) { fam = 'g'; v = v * 1000; text = Math.round(v) + 'g'; }
+      else if (u === 'mg') { fam = 'g'; v = v / 1000; text = (Math.round(v * 100) / 100) + 'g'; }
+      else if (/^(g|G|그램)$/.test(u)) { fam = 'g'; text = (Math.round(v * 100) / 100) + 'g'; }
+      else { fam = 'count'; text = v + u; }
+      if (fam === 'ml' && v > 20000) continue;
+      if (fam === 'g' && v > 50000) continue;
+      found.push({ fam: fam, v: v, text: text, score: fam === 'ml' ? 6 : (fam === 'g' ? 5 : 2), at: m.index });
+    }
+    if (!found.length) return { size: '', unitText: '' };
+    found.sort(function (a, b) { return (b.score - a.score) || (a.at - b.at); });
+    var b = found[0];
+    return { size: b.fam === 'ml' ? String(Math.round(b.v * 100) / 100) : '', unitText: b.fam === 'ml' ? '' : b.text };
+  }
+
+  function phFindQty(t) {
+    var m = String(t || '').match(/(\d{1,2})\s*(개|입|팩|세트|병|통|박스|묶음|롤)/);
+    if (!m) return 1;
+    var n = +m[1];
+    return (n >= 1 && n <= 24) ? n : 1;
+  }
+
+  function phFindPrice(t) {
+    var bad = /(할인|적립|포인트|잔액|누계|부가세|세액|과세|면세|거스름|잔여|쿠폰|배송비|반품|환불|마일|적립금|선불|충전|한도|합계|소계|총액|카드|현금|결제|청구|승인|받을|잔돈|세금)/;
+    var cands = [], m, re, v, before;
+    re = /(?:₩|￦)?\s*(\d{1,3}(?:[,.]\d{3})+|\d{3,7})\s*원/g;
+    while ((m = re.exec(t))) {
+      v = parseInt(m[1].replace(/[,.]/g, ''), 10);
+      if (!(v >= 100 && v <= 30000000)) continue;
+      before = t.slice(Math.max(0, m.index - 16), m.index);
+      cands.push({ v: v, at: m.index, pen: bad.test(before) ? 1 : 0, k: 2 });
+    }
+    /* 영수증처럼 '원' 없이 줄 끝에 금액이 붙는 경우 — 품목 줄의 금액을 총액보다 먼저 본다 */
+    re = /(\d{1,3}(?:,\d{3})+)\s*$/gm;
+    while ((m = re.exec(t))) {
+      var ls = t.lastIndexOf('\n', m.index - 1) + 1, pre = t.slice(ls, m.index);
+      if (!/[가-힣A-Za-z]/.test(pre)) continue;
+      v = parseInt(m[1].replace(/,/g, ''), 10);
+      if (!(v >= 100 && v <= 30000000)) continue;
+      if (bad.test(pre)) continue;
+      cands.push({ v: v, at: m.index, pen: 0, k: 3 });
+    }
+    if (!cands.length) {
+      re = /(?:정가|판매가|가격|금액|구매가|결제|합계)[^0-9]{0,10}(\d{1,3}(?:[,.]\d{3})+|\d{3,7})/g;
+      while ((m = re.exec(t))) {
+        v = parseInt(m[1].replace(/[,.]/g, ''), 10);
+        if (v >= 100 && v <= 30000000) cands.push({ v: v, at: m.index, pen: 0, k: 3 });
+      }
+    }
+    if (!cands.length) {
+      re = /(?:^|\s)(\d{1,3}(?:,\d{3})+)(?=\s|$)/g;
+      while ((m = re.exec(t))) {
+        v = parseInt(m[1].replace(/,/g, ''), 10);
+        if (v >= 500 && v <= 30000000) cands.push({ v: v, at: m.index, pen: 0, k: 1 });
+      }
+    }
+    if (!cands.length) return '';
+    var ok = cands.filter(function (c) { return !c.pen; });
+    var pool = ok.length ? ok : cands;
+    pool.sort(function (a, b) { return (b.k - a.k) || (a.at - b.at); });
+    return String(pool[0].v);
+  }
+
+  var PH_NAME_KW = /(크림|세럼|앰플|에센스|토너|미스트|로션|폼|클렌징|클렌저|샴푸|트리트먼트|린스|오일|워시|바디|핸드|선크림|선로션|쿠션|파운데이션|프라이머|컨실러|파우더|립|틴트|섀도|마스카라|아이라이너|브로우|치크|블러셔|하이라이터|마스크|패드|치약|칫솔|화장지|휴지|키친타올|화장솜|세제|유연제|건조기|수세미|비누|랩|호일|세정제|클리너|탈취|방향제|물티슈|면봉|면도|스킨|선스틱|비비|BB|shampoo|cleanser|toner|serum|cream|lotion|wash|soap|detergent)/i;
+  var PH_BAD_LINE = /(영수증|사업자|대표|전화|주소|고객|적립|포인트|합계|소계|부가세|승인|카드|현금|거스름|일시|주문|매장|계산|감사|교환|환불|반품|제조원|수입원|판매원|제조업|책임|내용량|원재료|사용기간|소비기한|유통기한|사용방법|주의|경고|www\.|https?:|㈜|주식회사|대한민국|made in|net wt|바코드|일련번호|전성분|전성분명|표시사항)/i;
+  function phCleanName(l) {
+    return String(l || '')
+      .replace(/\(?\d{1,3}(?:[,.]\d{3})+\s*원?\)?/g, ' ')
+      .replace(/\d+(?:[.,]\d+)?\s*(?:ml|mL|ML|㎖|리터|kg|KG|㎏|그램|mg|g|G|매|개입|입|정|캡슐|포|l|L)/g, ' ')
+      .replace(/20\d{2}\s*[.\-\/년]\s*\d{1,2}\s*[.\-\/월]\s*\d{1,2}\s*일?/g, ' ')
+      .replace(/[₩￦]/g, ' ')
+      .replace(/\b(?:EXP|MFG|exp|mfg)\b\.?/g, ' ')
+      .replace(/[®™]/g, '')
+      .replace(/\s+/g, ' ')
+      .replace(/^[\s\-–—·•:;,.()\[\]"']+|[\s\-–—·•:;,.()\[\]"']+$/g, '')
+      .trim()
+      .slice(0, 60);
+  }
+  function phFindName(t) {
+    var lines = phLines(t).filter(function (l) { return l.length >= 2 && l.length <= 60; });
+    var best = null, bestIx = -1;
+    lines.forEach(function (l, ix) {
+      if (PH_BAD_LINE.test(l)) return;
+      var flat = l.replace(/\s/g, ''), digits = (l.match(/\d/g) || []).length;
+      if (digits >= Math.max(4, Math.round(flat.length * 0.6))) return;
+      var name = phCleanName(l);
+      if (name.length < 2 || !/[가-힣A-Za-z]/.test(name)) return;
+      var score = 0;
+      if (PH_NAME_KW.test(l)) score += 6;
+      if (name.length >= 4 && name.length <= 30) score += 2;
+      if (ix < 6) score += 2;
+      if (/\d{1,3}(?:[,.]\d{3})+/.test(l)) score += 1;
+      if (/^[A-Za-z][A-Za-z\s.&'\-]+$/.test(name)) score += 1;
+      if (!best || score > best.score) { best = { name: name, score: score }; bestIx = ix; }
+    });
+    if (!best) return '';
+    /* 라벨은 브랜드와 제품명이 줄을 나눠 적히는 경우가 많다 — 바로 윗줄이 브랜드처럼 보이면 붙인다 */
+    var receipt = /(영수증|사업자|승인|합계|매장|주문)/.test(t);
+    if (!receipt && bestIx > 0) {
+      var prev = lines[bestIx - 1];
+      if (prev && !PH_BAD_LINE.test(prev) && !/\d/.test(prev) && prev.length >= 2 && prev.length <= 18
+          && /[가-힣A-Za-z]/.test(prev) && (prev + ' ' + best.name).length <= 60) {
+        best.name = prev + ' ' + best.name;
+      }
+    }
+    return best.name;
+  }
+
+  var PH_CAT_RULES = [
+    { re: /(샴푸|shampoo)/i, corner: '헤어', sub: '샴푸' },
+    { re: /(트리트먼트|컨디셔너|린스|conditioner|treatment)/i, corner: '헤어', sub: '트리트먼트' },
+    { re: /(헤어오일|헤어에센스|헤어팩|두피|모발|hair)/i, corner: '헤어', sub: '헤어오일' },
+    { re: /(섬유유연제|유연제|softener)/i, corner: '세탁', sub: '섬유유연제' },
+    { re: /(건조기시트|건조기|dryer)/i, corner: '세탁', sub: '건조기시트' },
+    { re: /(주방세제|설거지|식기세척|dish)/i, corner: '기타', sub: '주방세제' },
+    { re: /(세탁세제|액체세제|분말세제|울세제|중성세제|세제|detergent)/i, corner: '세탁', sub: '세제' },
+    { re: /(욕실|변기|곰팡이|배수|세정제|클리너|락스|표백|세정)/i, corner: '기타', sub: '욕실세정' },
+    { re: /(화장지|휴지|키친타올|물티슈|티슈|tissue)/i, corner: '기타', sub: '화장지' },
+    { re: /(치약|칫솔|구강|가글|tooth)/i, corner: '기타', sub: '치약' },
+    { re: /(화장솜|면봉|면도)/, corner: '기타', sub: '화장솜' },
+    { re: /(바디워시|바디로션|바디크림|바디오일|입욕|버블배스|핸드크림|핸드로션|핸드워시|핸드솝|body|hand)/i, corner: '바디', sub: '' },
+    { re: /(클렌징|클렌저|워시오프|필링|스크럽|cleansing|cleanser)/i, corner: '얼굴', sub: '' },
+    { re: /(선크림|선로션|선스틱|선쿠션|자외선|쿠션|파운데이션|프라이머|컨실러|파우더|팩트|비비크림|BB크림)/i, corner: '베이스', sub: '' },
+    { re: /(립틴트|립스틱|립글로스|틴트|아이섀도|섀도|마스카라|아이라이너|브로우|치크|블러셔|하이라이터|컨투어)/, corner: '색조', sub: '' },
+    { re: /(토너|미스트|에센스|세럼|앰플|크림|로션|마스크|패드|스킨|립밤|수분|진정|serum|toner|cream|lotion|mist)/i, corner: '스킨케어', sub: '' }
+  ];
+  function phGuessCat(t) {
+    var low = String(t || ''), flat = low.replace(/\s+/g, '');
+    for (var i = 0; i < PH_CAT_RULES.length; i++) {
+      var r = PH_CAT_RULES[i];
+      if (!r.re.test(low)) continue;
+      var sub = r.sub;
+      if (!sub) {
+        var preset = CORNER_PRESET[r.corner] || [];
+        for (var j = 0; j < preset.length; j++) {
+          var head = preset[j].split('·')[0].replace(/\s+/g, '');
+          if (head && flat.indexOf(head) >= 0) { sub = preset[j]; break; }
+        }
+      }
+      return { corner: r.corner, sub: sub || '' };
+    }
+    return { corner: '기타', sub: '' };
+  }
+
+  function phParse(t) {
+    var text = phNorm(t);
+    var ex = phFindExp(text);
+    var vol = phFindVolume(text);
+    var cat = phGuessCat(text);
+    var name = phFindName(text);
+    var qty = phFindQty(text);
+    var price = phFindPrice(text);
+    var sub = cat.sub || (cat.corner === '기타' ? '생활용품' : cat.corner);
+    var note = vol.unitText ? vol.unitText : '';
+    return { name: name, corner: cat.corner, sub: sub, qty: qty, size: vol.size, exp: ex.exp, approx: ex.approx, price: price, note: note };
+  }
+
+  function phFillFields(p) {
+    var n = phEl('phName'); if (n) n.value = p.name || '';
+    var c = phEl('phCorner'); if (c) c.value = CORNER_NAMES.indexOf(p.corner) >= 0 ? p.corner : '기타';
+    var s = phEl('phSub'); if (s) s.value = p.sub || '';
+    var q = phEl('phQty'); if (q) q.value = String(p.qty || 1);
+    var z = phEl('phSize'); if (z) z.value = p.size || '';
+    var e = phEl('phExp'); if (e) e.value = p.exp ? (p.approx ? p.exp.slice(0, 7) : p.exp) : '';
+    var pr = phEl('phPrice'); if (pr) pr.value = p.price || '';
+    var nt = phEl('phNote'); if (nt) nt.value = p.note || '';
+  }
+  function phApplyParse(rawText) {
+    if (!phState) return;
+    var p = phParse(rawText);
+    phState.parsed = p;
+    phFillFields(p);
+    var go = phEl('phGo'); if (go) go.disabled = false;
+  }
+  function phOnRawInput() {
+    if (!phState || phState.busy) return;
+    var raw = phEl('phRaw'); if (!raw) return;
+    phApplyParse(raw.value);
+  }
+
+  function phApply() {
+    if (!phState) return;
+    var elName = phEl('phName'), elCorner = phEl('phCorner'), elSub = phEl('phSub'), elQty = phEl('phQty');
+    var elSize = phEl('phSize'), elExp = phEl('phExp'), elPrice = phEl('phPrice'), elNote = phEl('phNote');
+    var v = {
+      name: ((elName && elName.value) || '').trim().slice(0, 60),
+      corner: (elCorner && elCorner.value) || '기타',
+      sub: ((elSub && elSub.value) || '').trim().slice(0, 20),
+      qty: Math.max(0, parseInt((elQty && elQty.value) || '1', 10) || 0),
+      size: sizeNum(elSize && elSize.value),
+      price: priceNum(elPrice && elPrice.value),
+      note: ((elNote && elNote.value) || '').trim().slice(0, 80),
+      expRaw: ((elExp && elExp.value) || '').trim()
+    };
+    if (CORNER_NAMES.indexOf(v.corner) < 0) v.corner = '기타';
+    var ex = v.expRaw ? parseExpInput(v.expRaw) : { exp: '', approx: false };
+    if (!ex) { phMsg('소비기한을 확인해 주세요 (예: 2027-01-09)'); return; }
+    var tgt = phState.target, tid = phState.id;
+
+    if (tgt === 'edit') {
+      var it = items.get(tid);
+      if (!it) { closePhoto(); return; }
+      var patch = { corner: v.corner, cat: CORNER_CAT[v.corner], sub: v.sub, qty: v.qty, size: v.size, price: v.price, exp: ex.exp, approx: ex.approx };
+      if (v.name) patch.name = v.name;
+      if (v.note) patch.note = (it.note && it.note.indexOf(v.note) < 0) ? (it.note + ' · ' + v.note).slice(0, 80) : v.note;
+      patchItem(it, patch);
+      closePhoto(); render();
+      toast('사진에서 읽은 값으로 채웠어요 · 칸에서 고칠 수 있어요');
+      return;
+    }
+
+    var form = document.querySelector('#view form[data-form="item"]');
+    if (!form) { closePhoto(); toast('추가 화면을 먼저 열어 주세요'); return; }
+    function setF(nm, val) { var el = form.elements[nm]; if (el) el.value = val; }
+    if (v.name) setF('name', v.name);
+    setF('qty', String(v.qty));
+    setF('size', v.size);
+    setF('exp', ex.exp ? expInputVal({ exp: ex.exp, approx: ex.approx }) : '');
+    setF('price', v.price);
+    if (v.note) setF('note', v.note);
+    var cs = form.elements['corner'];
+    if (cs) { cs.value = v.corner; try { cs.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {} }
+    setF('sub', v.sub);
+    closePhoto();
+    var top = form.getBoundingClientRect().top + window.scrollY - 84;
+    window.scrollTo(0, Math.max(0, top));
+    toast('사진에서 읽은 값으로 채웠어요 · 확인 후 ‘추가’를 눌러 주세요');
+  }
+
+  /* 검증용: 읽은 글자 해석 함수 (앱 동작에는 관여하지 않음) */
+  window.__salimkanPhotoParse = phParse;
+
   function ingRank(list) {
     var m = {}, order = [];
     list.forEach(function (i) {
@@ -2176,6 +2681,11 @@ body.rvopen { overflow: hidden; }
   }
 
   document.addEventListener('click', function (e) {
+    var phOpenBtn = e.target.closest('[data-photo]');
+    if (phOpenBtn) { e.preventDefault(); openPhoto(phOpenBtn.getAttribute('data-photo'), phOpenBtn.getAttribute('data-id') || ''); return; }
+    var phActBtn = e.target.closest('[data-phx]');
+    if (phActBtn) { e.preventDefault(); if (phActBtn.getAttribute('data-phx') === 'apply') phApply(); else closePhoto(); return; }
+
     var rvsel = e.target.closest('[data-rvrate]');
     if (rvsel) { if (rvDraft) { rvDraft.rating = rvsel.getAttribute('data-rvrate'); paintReview(); } return; }
 
@@ -2384,6 +2894,19 @@ body.rvopen { overflow: hidden; }
     if (tx) tx.addEventListener('input', function () { if (rvDraft) rvDraft.review = tx.value; });
     if (ig) ig.addEventListener('input', function () { if (rvDraft) { rvDraft.ing = ig.value; paintReview(); } });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && rvDraft) { closeReview(); } });
+  })();
+
+  /* 사진 자동 채우기 시트 입력 연결 (init 바깥에서 한 번만) */
+  (function () {
+    var sh = document.getElementById('phSheet'); if (!sh) return;
+    var fi = document.getElementById('phFile');
+    if (fi) fi.addEventListener('change', function () {
+      var f = fi.files && fi.files[0];
+      if (f) phReadFile(f);
+    });
+    var raw = document.getElementById('phRaw');
+    if (raw) raw.addEventListener('input', phOnRawInput);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && phSheetOpen()) closePhoto(); });
   })();
 })();
 
