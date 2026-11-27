@@ -614,10 +614,11 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
         '<div class="bal-cell"><span class="bal-label">💌 받은 돈</span><span class="bal-val in">' + won(all.in) + '</span></div>' +
         '<div class="bal-cell"><span class="bal-label">차액</span><span class="bal-val net">' + netTxt + '</span></div>' +
       '</div>' +
-      '<p class="bal-note">' + esc(netWord) + '<br>' +
-        '이번 달 · 보낸 <b>' + wonShort(thisMonth.out) + '</b> / 받은 <b>' + wonShort(thisMonth.in) + '</b>' +
-        ' &nbsp;·&nbsp; 올해 · 보낸 <b>' + wonShort(thisYear.out) + '</b> / 받은 <b>' + wonShort(thisYear.in) + '</b>' +
-      '</p>';
+      '<p class="bal-note">' + (all.n
+        ? esc(netWord) + '<br>' +
+          '이번 달 · 보낸 <b>' + wonShort(thisMonth.out) + '</b> / 받은 <b>' + wonShort(thisMonth.in) + '</b>' +
+          ' &nbsp;·&nbsp; 올해 · 보낸 <b>' + wonShort(thisYear.out) + '</b> / 받은 <b>' + wonShort(thisYear.in) + '</b>'
+        : '기록을 남기면 이번 달·올해 합계와 차액이 자동으로 쌓여요.') + '</p>';
   }
 
   /* ============================ 렌더: 내역 ============================ */
