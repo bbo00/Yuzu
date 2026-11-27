@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>우리집 수납 지도 · 유자네 집</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="description" content="원본 3D 도면에서 방을 확대해 가구를 고르고, 칸마다 무엇을 넣었는지 확인하는 우리집 수납 지도. 겨울·여름 배치를 따로 저장하고, 가구와 칸을 직접 늘리고, 도면 위 번호 위치까지 옮길 수 있어요.">
+<meta name="description" content="원본 3D 도면에서 방을 확대해 가구를 고르고, 칸마다 무엇을 넣었는지 확인하는 우리집 수납 지도. 그림·사진의 번호를 누르면 그 칸 내용이 바로 뜨고, 겨울·여름 배치를 따로 저장하며, 가구와 칸을 직접 늘릴 수 있어요.">
 <meta name="theme-color" content="#FAF8F5">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -506,14 +506,58 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
 .photo.small{max-width:245px}
 .fbody.has-media .fmedia .photo.small{max-width:245px}
 @media(max-width:520px){.photo.small,.fbody.has-media .fmedia .photo.small{max-width:215px}}
+/* ===== v7: 번호 → 칸 내용 미리보기 ===== */
+.peek{position:fixed;z-index:130;width:min(330px,calc(100vw - 20px));background:#fff;border:1px solid var(--line);
+  border-radius:14px;box-shadow:0 20px 44px -20px rgba(46,39,33,.55);padding:10px 11px;
+  font-size:12.5px;line-height:1.5;letter-spacing:-.02em}
+.peek[hidden]{display:none!important}
+.peek .pk-h{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.peek .pk-n{flex:0 0 auto;width:21px;height:21px;border-radius:50%;display:grid;place-items:center;
+  font-size:11px;font-weight:800;color:#fff;background:var(--c,var(--sage));line-height:1}
+.peek .pk-t{flex:1 1 auto;min-width:0;font-size:12.5px;font-weight:800;color:var(--ink);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.peek .pk-x{flex:0 0 auto;font-size:12px;line-height:1;color:var(--ink3);padding:3px 4px;border-radius:6px}
+.peek .pk-x:hover{background:var(--line2);color:var(--ink)}
+.peek .pk-items{display:flex;flex-wrap:wrap;gap:4px}
+.peek .pk-chip{background:var(--panel);border:1px solid var(--line2);border-radius:7px;padding:2px 7px;
+  font-size:12px;font-weight:680;color:var(--ink)}
+.peek .pk-none{color:var(--ink3);font-size:12px;font-weight:600}
+.peek .pk-meta{display:block;margin-top:5px;font-size:11.5px;color:#6E7C87;line-height:1.45}
+.peek .pk-meta b{color:#4F5B66;font-weight:800}
+.peek .pk-meta.dark{color:var(--terra-d)}
+.peek .pk-btns{display:flex;gap:5px;margin-top:9px}
+.peek .pk-edit{font-size:11.5px;font-weight:800;color:#fff;background:var(--terra);border-radius:8px;padding:7px 11px;line-height:1.2}
+.peek .pk-edit:hover{background:var(--terra-d)}
+.peek .pk-close{font-size:11.5px;font-weight:750;color:var(--ink2);background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 11px;line-height:1.2}
+.peek .pk-close:hover{border-color:var(--ink3);color:var(--ink)}
+@media(max-width:839px){
+  .peek.sheet{left:10px!important;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));top:auto!important;
+    width:auto;max-height:56vh;overflow:auto;border-radius:16px;
+    box-shadow:0 -10px 34px -12px rgba(46,39,33,.45)}
+}
+
+/* 그림 안에서 번호 칸을 직접 누를 수 있게 */
+.art svg .hit{fill:transparent;cursor:pointer}
+.art svg .hit:hover{fill:rgba(200,109,81,.10)}
+body.pinmode .art svg .hit{pointer-events:none}
+
+/* 그림·사진에 자리가 없는 칸 번호 */
+.exwrap{margin:10px auto 0;max-width:330px}
+.exhint{font-size:10.5px;color:var(--ink3);line-height:1.45;margin:0 0 6px;text-align:center}
+.exgrid{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
+.excell{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;line-height:1;
+  font-size:12px;font-weight:800;color:#fff;background:var(--c,var(--sage));
+  border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.excell:hover{transform:scale(1.08)}
+.excell.hl{box-shadow:0 0 0 4px rgba(200,109,81,.55),0 1px 4px rgba(0,0,0,.2)}
 </style>
 </head>
 <body data-tab="map" data-view="overview">
 <div class="wrap">
   <header class="hero">
-    <p class="eyebrow">유자네 집 · Home Storage Map v6</p>
+    <p class="eyebrow">유자네 집 · Home Storage Map v7</p>
     <h1>우리집 수납 지도</h1>
-    <p class="lede">방을 누르면 <b>그 방만 확대한 도면</b>이 열리고, 가구를 누르면 <b>칸 구성도</b>로 들어갑니다. 어느 줄이든 <b>바로 눌러</b> 고치면 자동으로 저장되고, <b>겨울·여름 배치</b>를 따로 저장해 바꿔 볼 수 있어요.</p>
+    <p class="lede">방을 누르면 <b>그 방만 확대한 도면</b>이 열리고, 가구를 누르면 <b>칸 구성도</b>로 들어갑니다. 위 그림·사진의 <b>번호를 누르면 그 칸에 뭐가 있는지 바로 뜨고</b>, 어느 줄이든 <b>바로 눌러</b> 고치면 자동으로 저장돼요. <b>겨울·여름 배치</b>는 따로 저장됩니다.</p>
     <ul class="stats" id="stats"></ul>
   </header>
 
@@ -592,11 +636,13 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
   </main>
 
   <footer>
-    <b>유자네 집 · 우리집 수납 지도 v6</b><br>
-    2026년 11월 26일 기준 · 검색은 띄어쓰기 없이도 됩니다.
+    <b>유자네 집 · 우리집 수납 지도 v7</b><br>
+    2026년 11월 27일 기준 · 검색은 띄어쓰기 없이도 됩니다.<br>
+    v6에서 고쳐 둔 칸·핀·메모는 그대로 이어집니다.
   </footer>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="peek" id="peek" role="dialog" aria-label="칸 내용 미리보기" hidden></div>
 
 <script>
 (function(){
@@ -607,7 +653,9 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
      ============================================================ */
   var FW = 481, FH = 696;                     /* 전체 도면 크기(px) */
   var FLOORPLAN = 'img/floorplan.jpg';
-  var DBKEY = 'homeMap.v6.db';
+  var DBKEY = 'homeMap.v6.db';              /* v7에서도 같은 키를 그대로 쓴다 — 사용자가 고쳐 둔 내용 보존 */
+  var BAKKEY = 'homeMap.v6.before-v7';      /* v7 구조 이관 직전 원본 백업 (한 번만) */
+  var SCHEMA = 7;
   var OLDZKEY = 'homeMap.v5.zones', OLDCKKEY = 'homeMap.v5.checklist', OLDDBKEY = 'homeMap.v5.db';
   var SEASONS = {winter:{emoji:'❄️', name:'겨울'}, summer:{emoji:'☀️', name:'여름'}};
 
@@ -653,22 +701,22 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
     },
     {
       id:'s0', key:'', name:'베란다', short:'베란다', color:'#7C8B6A',
-      sub:'건조기 · 세탁기 · 트롤리 · 빨래바구니',
+      sub:'건조기 · 세탁기 · 세제 선반 · 4단 트롤리 · 빨래바구니 · 캐리어',
       crop:{x:1,y:0,w:41,h:13}, pin:{x:20,y:6,label:'베'},
       advice:[
-        ['두 칸 나란히','건조기와 세탁기를 같은 크기 두 칸으로 나란히 두고, 그 옆에 얇은 4단 트롤리를 붙입니다.'],
-        ['세제','세탁기 위에는 쓰는 세제만, 부피 큰 세제 통은 바닥에 둡니다.'],
-        ['빨래 분류','빨래바구니는 3단(빨래망·속옷·수건)으로 나누고, 벗어 둔 외투류는 따로 한 단에 둡니다.'],
+        ['한 덩어리','건조기와 세탁기는 세로로 세워진 고정 자리라 1번 하나로 봅니다. 위에는 자주 쓰는 세제만, 부피 큰 통은 바닥에 둡니다.'],
+        ['세제 칸','세탁기 위 선반에는 지금 쓰는 세제·섬유유연제만. 리필 통은 아래 트롤리로 내리면 손이 편합니다.'],
+        ['4단 트롤리','옆면 작은 트롤리 4단은 세탁망·속옷·수건·벗어 둔 외투류를 한 단씩 나눠 쓰는 칸입니다.'],
         ['캐리어','캐리어 3개는 이 자리에 두고, 같이 넣을 물건은 칸을 늘려 적습니다.']
       ],
       furnitures:[
-        {id:'f-dryer', name:'건조기', plan:{x:22,y:45},
-          fig:{h:100, cells:[[0,0,100,100,'door']]},
-          zones:[['건조기']]},
-        {id:'f-washer', name:'세탁기', plan:{x:33,y:53},
-          fig:{h:100, cells:[[0,0,100,100,'door']]},
-          zones:[{items:['세탁기'], floor:'세제(윗면 보관) · 부피 큰 세제(바닥 보관)'}]},
-        {id:'f-trolley', name:'4단 얇은 트롤리', plan:{x:52,y:68},
+        {id:'f-laundry', name:'건조기 · 세탁기', art:'laundry', plan:{x:26,y:50},
+          zones:[
+            ['건조기'],
+            ['세탁기'],
+            ['모락셀라 세제 2.3L 2개','모락셀라 섬유유연제 300ml','보타닉가든 섬유유연제']
+          ]},
+        {id:'f-trolley', name:'옆면 작은 4단 트롤리', plan:{x:52,y:68},
           fig:{h:118, cells:[[0,0,100,25,'drawer'],[0,25,100,25,'drawer'],[0,50,100,25,'drawer'],[0,75,100,25,'drawer']]},
           zones:[[],[],[],[]]},
         {id:'f-lbasket', name:'빨래바구니', plan:{x:26,y:73},
@@ -756,14 +804,11 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
       crop:{x:41,y:28,w:48,h:42}, pin:{x:66,y:50,label:'거'},
       advice:[
         ['비우기','요가매트와 운동용품이 방 2로 빠지면 TV 밑이 넓어지고 거실이 한결 정돈됩니다.'],
-        ['상단장','상단 4칸 장은 계절 물건과 놀이 물건 위주로. 4번 칸은 가벼운 캠핑 소품 여유분으로 둡니다.'],
+        ['상단장은 주방으로','상단 4칸 장은 거실이 아니라 주방 벽쪽에 있습니다. 계절 물건과 놀이 물건 위주로.'],
         ['한 서랍','사무용품·건전지·공구·청소용품은 소파 옆 6단 서랍장 하나로 모읍니다.'],
         ['로봇','로봇청소기 스테이션은 안방에서 거실로 옮겼습니다. 도면의 핀을 실제 자리에 맞춰 두세요.']
       ],
       furnitures:[
-        {id:'f-top4', name:'상단 4칸 장', plan:{x:13,y:10},
-          fig:{h:46, cells:[[0,0,25,100,'door'],[25,0,25,100,'door'],[50,0,25,100,'door'],[75,0,25,100,'door']]},
-          zones:[['여름 물놀이'],['선풍기'],['보드게임'],['가벼운 캠핑 소품 여유분']]},
         {id:'f-tv', name:'TV 밑', plan:{x:33,y:17},
           zones:[['요가매트','헌터 박스','공기청정기','작은 스툴']]},
         {
@@ -781,13 +826,14 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
     },
     {
       id:'s5', key:'', name:'주방', short:'주방', color:'#B9855F',
-      sub:'스피드랙 · 냉장고 · 상하부장',
+      sub:'스피드랙 · 냉장고 · 상부장 3칸 · 상단 4칸 장',
       crop:{x:1,y:38,w:40,h:33}, pin:{x:22,y:54,label:'주'},
       advice:[
         ['먹는 것 전용','스피드랙은 식료품·술·휴지·물티슈 전용으로. 화장품과 판매용품, 택배봉투는 여기서 빼세요.'],
-        ['캠핑 1칸','캠핑용품은 스피드랙 맨 아래 1칸만. 부피 큰 것은 방 3, 가벼운 소품은 거실 상단장으로 나눕니다.'],
+        ['캠핑 1칸','캠핑용품은 스피드랙 맨 아래 1칸만. 부피 큰 것은 방 3, 가벼운 소품은 주방 벽 상단 4칸 장으로 나눕니다.'],
         ['동선','이케아 사다리 선반이 스피드랙 앞을 가로막고 있습니다. 치우거나 현관 쪽으로 빼면 접근이 훨씬 편해집니다.'],
-        ['손 안 닿는 곳','상부장 오른쪽 끝은 손이 잘 안 닿는 자리라 재고품, 가장 아래는 시리얼 전용칸으로 쓰면 좋습니다.']
+        ['상부장 3칸','상부장은 4칸이 아니라 3칸입니다. 왼쪽 두 칸은 그릇·베이킹, 오른쪽 칸은 먹거리·반찬통·재고품·시리얼이 들어갑니다.'],
+        ['차·티·커피','인덕션 옆은 열기 때문에 향이 날아갑니다. 상부장 한 칸에 트레이째 넣어 두면 인덕션 옆을 비울 수 있습니다.']
       ],
       furnitures:[
         {id:'f-speedrack', name:'냉장고 옆 스피드랙', plan:{x:40,y:79},
@@ -797,10 +843,9 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
             ['라면','참치','여분 음료 재고'], ['자주 꺼내는 캠핑 소품']
           ]},
         {id:'f-fridge', name:'냉장고', plan:{x:30,y:67}, zones:[['냉장고']]},
-        {id:'f-upper', name:'상부장', plan:{x:58,y:9},
-          fig:{h:46, cells:[[0,0,25,100,'door'],[25,0,25,100,'door'],[50,0,25,100,'door'],[75,0,25,100,'door']]},
+        {id:'f-upper', name:'상부장', art:'upper', plan:{x:58,y:9},
           zones:[
-            ['아래 그릇','위 베이킹 재료'], ['아래 그릇','위 베이킹 재료'], ['먹거리','반찬통'],
+            ['아래 그릇','위 베이킹 재료'], ['먹거리','반찬통'],
             ['먹거리','반찬통','손 안 닿는 곳 재고품','시리얼']
           ]},
         {id:'f-lower', name:'하부장', plan:{x:20,y:36},
@@ -812,7 +857,10 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
           ]},
         {id:'f-ikea', name:'이케아 4단 흰색 사다리 선반', badge:'out', plan:{x:53,y:88},
           fig:{h:110, cells:[[0,0,100,37,'shelf'],[0,37,100,33,'shelf'],[0,70,100,30,'shelf']]},
-          zones:[['에어프라이어','전자레인지'],['외출 필수템 (마스크 · 향수)'],['마스크']]}
+          zones:[['에어프라이어','전자레인지'],['외출 필수템 (마스크 · 향수)'],['마스크']]},
+        {id:'f-top4', name:'상단 4칸 장', plan:{x:86,y:13},
+          fig:{h:46, cells:[[0,0,25,100,'door'],[25,0,25,100,'door'],[50,0,25,100,'door'],[75,0,25,100,'door']]},
+          zones:[['여름 물놀이'],['선풍기'],['보드게임'],['가벼운 캠핑 소품 여유분']]}
       ]
     },
     {
@@ -841,15 +889,29 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
   var ART = {
     closet:{
       W:300, H:352, TOP:-20,
-      svg:function(){
+      alt:'붙박이장 3칸 정면 구조 — 1칸은 위아래 같은 높이(50:50)의 옷 거는 칸, 2칸은 선반·긴 봉·서랍, 3칸은 1칸과 같은 높이의 위 긴 봉과 아래 왼쪽 짧은 봉, 오른쪽은 똑같이 3등분한 3단 선반',
+      /* 번호가 붙는 칸 사각형 — 6번 높이 = 1번 높이, 8·9·10번은 같은 높이 3등분 */
+      cells:[
+        {n:1,  x:8,   y:0,      w:84, h:176},
+        {n:2,  x:8,   y:176,    w:84, h:176},
+        {n:3,  x:108, y:0,      w:84, h:56},
+        {n:4,  x:108, y:56,     w:84, h:240},
+        {n:5,  x:110, y:296,    w:80, h:52},
+        {n:6,  x:208, y:0,      w:84, h:176},
+        {n:7,  x:208, y:176,    w:42, h:176},
+        {n:8,  x:254, y:176,    w:38, h:58.67},
+        {n:9,  x:254, y:234.67, w:38, h:58.67},
+        {n:10, x:254, y:293.33, w:38, h:58.66}
+      ],
+      svg:function(extra){
         var s = '';
-        s += '<svg viewBox="0 ' + this.TOP + ' ' + this.W + ' ' + (this.H - this.TOP) + '" role="img" aria-label="붙박이장 3칸 정면 구조 — 1칸은 위아래 50:50 옷 거는 칸, 2칸은 선반·긴 봉·서랍, 3칸은 위 긴 봉과 아래 왼쪽 짧은 봉, 오른쪽 3단 선반">';
-        s += '<defs><linearGradient id="wd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3E7D6"/><stop offset="1" stop-color="#E9D9C3"/></linearGradient></defs>';
+        s += '<svg viewBox="0 ' + this.TOP + ' ' + this.W + ' ' + (this.H - this.TOP) + '" role="img" aria-label="' + this.alt + '">';
+        s += '<defs><linearGradient id="wdC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3E7D6"/><stop offset="1" stop-color="#E9D9C3"/></linearGradient></defs>';
         [['1칸',50],['2칸',150],['3칸',250]].forEach(function(l){
           s += '<text x="' + l[1] + '" y="-7" font-size="10" fill="#A79C92" text-anchor="middle" letter-spacing="-.02em">' + l[0] + '</text>';
         });
         function body(x){
-          return '<rect x="' + x + '" y="0" width="92" height="352" rx="3" fill="url(#wd)" stroke="#DCC7AC" stroke-width="1.4"/>'
+          return '<rect x="' + x + '" y="0" width="92" height="352" rx="3" fill="url(#wdC)" stroke="#DCC7AC" stroke-width="1.4"/>'
                + '<rect x="' + (x+4) + '" y="4" width="84" height="344" fill="#FDFAF5" stroke="#E7D8C2" stroke-width="1"/>';
         }
         function rod(x1,x2,y,n){
@@ -865,32 +927,111 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
         function shelf(x,w,y){ return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="5" rx="1" fill="#EDE1CF" stroke="#DFCDB4" stroke-width=".8"/>'; }
         function divider(x,y,h){ return '<rect x="' + x + '" y="' + y + '" width="4" height="' + h + '" fill="#EDE1CF" stroke="#DFCDB4" stroke-width=".6"/>'; }
 
+        /* 1칸 — 위아래 50:50 */
         s += body(4);
         s += shelf(8,84,176);
         s += rod(12,88,46);
         s += rod(12,88,224);
 
+        /* 2칸 — 선반 · 긴 봉 · 서랍 */
         s += body(104);
         s += shelf(108,84,56);
         s += rod(112,188,88);
         s += '<rect x="110" y="296" width="80" height="52" rx="2" fill="#F6EDE0" stroke="#DFCBB0" stroke-width="1.1"/>'
            + '<line x1="126" y1="322" x2="174" y2="322" stroke="#D2BC9F" stroke-width="2" stroke-linecap="round"/>';
 
+        /* 3칸 — 위 긴 봉은 1칸과 같은 높이(176)까지만, 그 아래 왼쪽 짧은 봉 + 오른쪽 3등분 선반 */
         s += body(204);
-        s += rod(212,292,86,3);
-        s += divider(250,96,256);
-        s += rod(212,246,136,2);
-        s += shelf(254,38,200);
-        s += shelf(254,38,274);
+        s += shelf(208,84,176);
+        s += rod(212,292,46,3);
+        s += divider(250,180,172);
+        s += rod(212,246,224,2);
+        s += shelf(254,38,234.67);
+        s += shelf(254,38,293.33);
+        s += (extra || '');
         s += '</svg>';
         return s;
-      },
-      pins:[[50,112],[50,262],[150,30],[150,190],[150,322],[250,46],[222,196],[273,148],[273,237],[273,311]]
+      }
+    },
+    upper:{
+      W:300, H:168, TOP:-18,
+      alt:'주방 상부장 3칸 정면 구조 — 왼쪽부터 1·2·3번, 각 칸은 문짝 두 개와 가운데 선반 한 단',
+      cells:[
+        {n:1, x:4,   y:6, w:94, h:156},
+        {n:2, x:103, y:6, w:94, h:156},
+        {n:3, x:202, y:6, w:94, h:156}
+      ],
+      svg:function(extra){
+        var s = '<svg viewBox="0 ' + this.TOP + ' ' + this.W + ' ' + (this.H - this.TOP) + '" role="img" aria-label="' + this.alt + '">';
+        s += '<defs><linearGradient id="wdU" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6EFE4"/><stop offset="1" stop-color="#EBDFCC"/></linearGradient></defs>';
+        [['1칸',51],['2칸',150],['3칸',249]].forEach(function(l){
+          s += '<text x="' + l[1] + '" y="-5" font-size="10" fill="#A79C92" text-anchor="middle" letter-spacing="-.02em">' + l[0] + '</text>';
+        });
+        s += '<rect x="4" y="6" width="292" height="156" rx="4" fill="url(#wdU)" stroke="#D6BFA0" stroke-width="1.8"/>';
+        [4,103,202].forEach(function(x){
+          s += '<rect x="' + (x+3) + '" y="9" width="88" height="150" fill="#FDFAF5" stroke="#E7D8C2" stroke-width="1"/>';
+          s += '<rect x="' + (x+5) + '" y="84" width="84" height="4" rx="1" fill="#EDE1CF" stroke="#DFCDB4" stroke-width=".6"/>';
+          s += '<line x1="' + (x+47) + '" y1="10" x2="' + (x+47) + '" y2="158" stroke="#E8DAC6" stroke-width="1.2"/>';
+          s += '<line x1="' + (x+40) + '" y1="24" x2="' + (x+40) + '" y2="50" stroke="#D2BC9F" stroke-width="2.6" stroke-linecap="round"/>';
+          s += '<line x1="' + (x+54) + '" y1="24" x2="' + (x+54) + '" y2="50" stroke="#D2BC9F" stroke-width="2.6" stroke-linecap="round"/>';
+        });
+        s += (extra || '');
+        s += '</svg>';
+        return s;
+      }
+    },
+    laundry:{
+      W:300, H:306, TOP:-18,
+      alt:'건조기·세탁기 세로 구조 — 위 1번 건조기, 그 아래 3번 세제 선반, 아래 2번 세탁기',
+      cells:[
+        {n:1, x:34, y:0,   w:232, h:128},
+        {n:2, x:34, y:176, w:232, h:130},
+        {n:3, x:34, y:128, w:232, h:48}
+      ],
+      svg:function(extra){
+        var s = '<svg viewBox="0 ' + this.TOP + ' ' + this.W + ' ' + (this.H - this.TOP) + '" role="img" aria-label="' + this.alt + '">';
+        s += '<defs><linearGradient id="wdL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F1E9"/><stop offset="1" stop-color="#EAE0D1"/></linearGradient></defs>';
+        function box(y,h){ return '<rect x="34" y="' + y + '" width="232" height="' + h + '" rx="5" fill="url(#wdL)" stroke="#D6C4AC" stroke-width="1.6"/>'; }
+        function door(cy){
+          return '<circle cx="150" cy="' + cy + '" r="38" fill="#FBF6EE" stroke="#C9B59A" stroke-width="1.4"/>'
+               + '<circle cx="150" cy="' + cy + '" r="27" fill="#F3EADF" stroke="#D9C8AF" stroke-width="1"/>';
+        }
+        /* 1번 건조기 */
+        s += box(0,128);
+        s += '<line x1="34" y1="18" x2="266" y2="18" stroke="#E0CFB8" stroke-width="1.2"/>';
+        s += '<circle cx="230" cy="9" r="4" fill="#D2BC9F"/>';
+        s += door(72);
+        /* 3번 세제 선반 (세탁기 위) */
+        s += '<rect x="30" y="136" width="240" height="32" rx="3" fill="#FCFAF5" stroke="#E2D2BC" stroke-width="1.2" stroke-dasharray="4 3"/>';
+        s += '<rect x="48" y="141" width="15" height="22" rx="3" fill="#DCE9DA" stroke="#B9CDB4"/>'
+           + '<rect x="68" y="141" width="15" height="22" rx="3" fill="#DCE9DA" stroke="#B9CDB4"/>'
+           + '<rect x="92" y="145" width="13" height="18" rx="3" fill="#F5E3D2" stroke="#E0C2A6"/>'
+           + '<rect x="110" y="145" width="13" height="18" rx="3" fill="#F5E3D2" stroke="#E0C2A6"/>';
+        /* 2번 세탁기 */
+        s += box(176,130);
+        s += '<line x1="34" y1="194" x2="266" y2="194" stroke="#E0CFB8" stroke-width="1.2"/>';
+        s += '<circle cx="230" cy="185" r="4" fill="#D2BC9F"/>';
+        s += door(241);
+        s += (extra || '');
+        s += '</svg>';
+        return s;
+      }
     },
     bed:{
       W:300, H:252, TOP:0,
-      svg:function(){
-        var s = '<svg viewBox="0 0 300 252" role="img" aria-label="퀸 침대 정면 구조 — 매트리스 아래 벙커 수납 2×2 네 칸(1·2 안쪽, 3·4 앞쪽)과 측면 서랍 네 개(5·8 큰 서랍, 6·7 가운데 작은 서랍)">';
+      alt:'퀸 침대 정면 구조 — 매트리스 아래 벙커 수납 2×2 네 칸(1·2 안쪽, 3·4 앞쪽)과 측면 서랍 네 개(5·8 큰 서랍, 6·7 가운데 작은 서랍)',
+      cells:[
+        {n:1, x:26,  y:42,  w:128, h:46},
+        {n:2, x:158, y:42,  w:136, h:46},
+        {n:3, x:26,  y:92,  w:128, h:46},
+        {n:4, x:158, y:92,  w:136, h:46},
+        {n:5, x:0,   y:176, w:94,  h:72},
+        {n:6, x:98,  y:176, w:88,  h:34},
+        {n:7, x:98,  y:214, w:88,  h:34},
+        {n:8, x:190, y:176, w:110, h:72}
+      ],
+      svg:function(extra){
+        var s = '<svg viewBox="0 0 300 252" role="img" aria-label="' + this.alt + '">';
         function cell(x,y,w,h,dash){
           return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="3" fill="' + (dash ? '#FCF7EF' : '#F7EFE3') + '" stroke="' + (dash ? '#E2D2BC' : '#DFCBB0') + '" stroke-width="1.2"' + (dash ? ' stroke-dasharray="4 3"' : '') + '/>';
         }
@@ -917,10 +1058,10 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
         s += drawer(98,176,88,34);
         s += drawer(98,214,88,34);
         s += drawer(190,176,110,72);
+        s += (extra || '');
         s += '</svg>';
         return s;
-      },
-      pins:[[90,65],[226,65],[90,115],[226,115],[47,212],[142,193],[142,231],[245,212]]
+      }
     }
   };
 
@@ -938,7 +1079,7 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
   var deep = function(o){ return JSON.parse(JSON.stringify(o)); };
   var clampPct = function(v){ v = parseFloat(v); if (!isFinite(v)) return 50; return Math.max(2, Math.min(98, v)); };
 
-  var state = {tab:'map', space:'all', view:'overview', fid:null, q:''};
+  var state = {tab:'map', space:'all', view:'overview', fid:null, q:'', peek:null};
   var DB = null;          /* {v:6, active, seasons:{winter:{spaces}, summer:{spaces}}, ck:[...]} */
   var SPACES = [];        /* 현재 계절 공간 목록 */
   var SMAP = {}, FMAP = {};
@@ -992,7 +1133,162 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
   function buildDB(){
     var winter = deep(BASE_SPACES).map(nspace);
     var summer = deep(winter);
-    return {v:6, active:'winter', seasons:{winter:{spaces:winter}, summer:{spaces:summer}}, ck:null};
+    return {v:SCHEMA, sv:SCHEMA, active:'winter', seasons:{winter:{spaces:winter}, summer:{spaces:summer}}, ck:null};
+  }
+
+  /* ============================================================
+     v6 → v7 구조 이관
+     — 저장된 칸 텍스트·바닥·이동 메모·커스텀 가구·핀 좌표는 건드리지 않고
+       구조만 바뀐 가구(베란다 건조기+세탁기 → 1번, 주방 상부장 4칸→3칸, 상단 4칸 장 위치)
+       를 옮긴다. 여러 번 돌려도 결과가 같다(멱등).
+     ============================================================ */
+  var SOAP_DEFAULT = ['모락셀라 세제 2.3L 2개','모락셀라 섬유유연제 300ml','보타닉가든 섬유유연제'];
+  var TOP4_PLAN = {x:86, y:13};
+
+  function mSpaces(spaces){
+    var byId = {};
+    spaces.forEach(function(s){ byId[s.id] = s; });
+    function fnd(sp, id){
+      var out = null;
+      if (sp) sp.furnitures.forEach(function(f){ if (f.id === id) out = f; });
+      return out;
+    }
+    function fixedMoves(){
+      spaces.forEach(function(s){
+        s.furnitures.forEach(function(f){
+          f.zones.forEach(function(z){
+            if (!z.move) return;
+            if (z.move.fid === 'f-dryer'){ z.move.fid = 'f-laundry'; z.move.z = 0; }
+            else if (z.move.fid === 'f-washer'){ z.move.fid = 'f-laundry'; z.move.z = 1; }
+          });
+        });
+      });
+    }
+
+    /* 1) 베란다 — 건조기·세탁기를 1번 하나로 합치고 세탁기 위 세제 칸을 넣는다 */
+    (function(){
+      var sp = byId.s0;
+      if (!sp) return;
+      var d = fnd(sp,'f-dryer'), w = fnd(sp,'f-washer'), l = fnd(sp,'f-laundry');
+      if (l){
+        if (d || w){
+          sp.furnitures = sp.furnitures.filter(function(f){ return f.id !== 'f-dryer' && f.id !== 'f-washer'; });
+          fixedMoves();
+        }
+        return;
+      }
+      if (!d && !w) return;
+      var z0 = (d && d.zones[0]) ? d.zones[0] : {items:[], floor:'', move:null};
+      var z1 = (w && w.zones[0]) ? w.zones[0] : {items:[], floor:'', move:null};
+      var soapItems = SOAP_DEFAULT.slice();
+      var soapFloor = z1.floor || '';
+      var nl = {
+        id:'f-laundry', name:'건조기 · 세탁기', art:'laundry',
+        plan: d && d.plan ? {x:d.plan.x, y:d.plan.y} : {x:26, y:50},
+        zones:[
+          {items: z0.items.length ? z0.items.slice() : ['건조기'], floor: z0.floor || '', move: z0.move || null},
+          {items: z1.items.length ? z1.items.slice() : ['세탁기'], floor: '', move: z1.move || null},
+          {items: soapItems, floor: soapFloor, move: null}
+        ]
+      };
+      var at = d ? sp.furnitures.indexOf(d) : sp.furnitures.indexOf(w);
+      sp.furnitures = sp.furnitures.filter(function(f){ return f !== d && f !== w; });
+      sp.furnitures.splice(Math.max(0, at), 0, nl);
+      fixedMoves();
+      /* 기본 이름일 때만 새 이름으로 */
+      var tr = fnd(sp,'f-trolley');
+      if (tr && tr.name === '4단 얇은 트롤리') tr.name = '옆면 작은 4단 트롤리';
+    })();
+
+    /* 2) 주방 상부장 — 4칸으로 되어 있던 기본값을 3칸으로 합친다(내용은 하나도 잃지 않고 합침) */
+    (function(){
+      var sp = byId.s5;
+      if (!sp) return;
+      var up = fnd(sp,'f-upper');
+      if (!up) return;
+      if (up.zones.length === 4){
+        var a = up.zones[0], b = up.zones[1];
+        var items = a.items.slice();
+        b.items.forEach(function(t){ if (items.indexOf(t) < 0) items.push(t); });
+        var floor = a.floor || b.floor || '';
+        up.zones = [{items:items, floor:floor, move:a.move || b.move || null}, up.zones[2], up.zones[3]];
+      }
+      if (up.zones.length === 3) up.art = 'upper';
+    })();
+
+    /* 3) 상단 4칸 장 — 거실(s4)에서 주방 벽쪽(s5)으로 */
+    (function(){
+      var s4 = byId.s4, s5 = byId.s5;
+      if (!s5) return;
+      var t = fnd(s4,'f-top4');
+      if (fnd(s5,'f-top4')){
+        if (s4 && t) s4.furnitures = s4.furnitures.filter(function(f){ return f !== t; });
+        return;
+      }
+      if (!t) return;
+      if (s4) s4.furnitures = s4.furnitures.filter(function(f){ return f !== t; });
+      t.plan = {x: TOP4_PLAN.x, y: TOP4_PLAN.y};   /* 다른 방 좌표계라 기본 위치로 */
+      s5.furnitures.push(t);
+    })();
+
+    /* 4) 화면에 보이는 방 소개·조언 글은 앱이 쓰는 글이라 v7 문구로 맞춘다(사용자가 적는 칸 내용이 아니다) */
+    ['s0','s4','s5'].forEach(function(id){
+      var sp = byId[id], b = null;
+      BASE_SPACES.forEach(function(x){ if (x.id === id) b = x; });
+      if (!sp || !b) return;
+      sp.sub = b.sub;
+      sp.advice = deep(b.advice);
+    });
+  }
+
+  function migrateDB(){
+    ['winter','summer'].forEach(function(k){
+      var se = DB.seasons[k];
+      if (se && Array.isArray(se.spaces)) mSpaces(se.spaces);
+    });
+  }
+
+  function loadDB(){
+    var rawStr = null, raw = null;
+    try{ rawStr = localStorage.getItem(DBKEY); raw = JSON.parse(rawStr || 'null'); }catch(e){}
+    if (raw && raw.seasons && raw.seasons.winter && Array.isArray(raw.seasons.winter.spaces)){
+      /* 이관 전 원본은 한 번만 떠 둔다 */
+      try{ if (rawStr && !localStorage.getItem(BAKKEY)) localStorage.setItem(BAKKEY, rawStr); }catch(e){}
+      DB = raw;
+      DB.active = raw.active === 'summer' ? 'summer' : 'winter';
+      DB.seasons.winter.spaces = DB.seasons.winter.spaces.map(nspace);
+      if (!DB.seasons.summer || !Array.isArray(DB.seasons.summer.spaces)) DB.seasons.summer = {spaces: deep(DB.seasons.winter.spaces)};
+      else DB.seasons.summer.spaces = DB.seasons.summer.spaces.map(nspace);
+      if (!Array.isArray(DB.ck)) DB.ck = null;
+      var sv = parseInt(raw.sv, 10) || parseInt(raw.v, 10) || 6;
+      if (sv < SCHEMA){
+        try{
+          migrateDB();
+          DB.v = SCHEMA; DB.sv = SCHEMA;
+          saveDB(true);
+        }catch(e){
+          /* 이관에 실패하면 저장하지 않고 원래 데이터로 되돌린다(다음 접속에 다시 시도) */
+          try{ DB = JSON.parse(rawStr); }catch(e2){ DB = raw; }
+          DB.seasons.winter.spaces = (DB.seasons.winter.spaces || []).map(nspace);
+          if (!DB.seasons.summer || !Array.isArray(DB.seasons.summer.spaces)) DB.seasons.summer = {spaces: deep(DB.seasons.winter.spaces)};
+          else DB.seasons.summer.spaces = DB.seasons.summer.spaces.map(nspace);
+          DB.v = 6;
+        }
+      } else {
+        DB.v = SCHEMA;
+      }
+    } else {
+      DB = buildDB();
+      var moved = migrateV5();
+      if (moved){ DB.seasons.summer.spaces = deep(DB.seasons.winter.spaces); }
+      if (!DB.ck){
+        var old = null;
+        try{ old = JSON.parse(localStorage.getItem(OLDCKKEY) || 'null'); }catch(e){}
+        if (Array.isArray(old) && old.length) DB.ck = old;
+      }
+      saveDB(true);
+      return;
+    }
   }
 
   function migrateV5(){
@@ -1014,34 +1310,9 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
         n++;
       });
     });
-    /* v5에서 보일러·로봇청소기 등 사라진 가구의 이동 참조는 정리 */
+    /* v5에서 사라진 가구의 이동 참조는 정리 */
     cleanMoves();
     return n;
-  }
-
-  function loadDB(){
-    var raw = null;
-    try{ raw = JSON.parse(localStorage.getItem(DBKEY) || 'null'); }catch(e){}
-    if (raw && raw.seasons && raw.seasons.winter && Array.isArray(raw.seasons.winter.spaces)){
-      DB = raw;
-      DB.v = 6;
-      DB.active = raw.active === 'summer' ? 'summer' : 'winter';
-      DB.seasons.winter.spaces = DB.seasons.winter.spaces.map(nspace);
-      if (!DB.seasons.summer || !Array.isArray(DB.seasons.summer.spaces)) DB.seasons.summer = {spaces: deep(DB.seasons.winter.spaces)};
-      else DB.seasons.summer.spaces = DB.seasons.summer.spaces.map(nspace);
-      if (!Array.isArray(DB.ck)) DB.ck = null;
-    } else {
-      DB = buildDB();
-      var moved = migrateV5();
-      if (moved){ DB.seasons.summer.spaces = deep(DB.seasons.winter.spaces); }
-      if (!DB.ck){
-        var old = null;
-        try{ old = JSON.parse(localStorage.getItem(OLDCKKEY) || 'null'); }catch(e){}
-        if (Array.isArray(old) && old.length) DB.ck = old;
-      }
-      saveDB(true);
-      return;
-    }
   }
 
   var saveT = null;
@@ -1127,7 +1398,7 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
   }
 
   function photoHTML(ph, f, color, idx){
-    var pins = (ph.pins || []).map(function(p){
+    var pins = (ph.pins || []).filter(function(p){ return p[0] < f.zones.length; }).map(function(p){
       var n = p[0] + 1;
       return pinBtn(p[1], p[2], color, n, f._n + '번 가구 ' + n + '번 칸',
         'data-fid="' + f.id + '" data-ph="' + idx + '" data-z="' + p[0] + '"', n > 9);
@@ -1140,14 +1411,19 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
   function artHTML(f, color){
     var a = ART[f.art];
     if (!a) return '';
-    if (f.zones.length !== a.pins.length) return '';   /* 칸 수가 바뀌면 도식으로 대신해 번호를 맞춘다 */
-    var pins = a.pins.map(function(p, i){
-      var n = i + 1;
-      var x = p[0] / a.W * 100, y = (p[1] - a.TOP) / (a.H - a.TOP) * 100;
-      return pinBtn(x, y, color, n, f._n + '번 가구 ' + n + '번 칸',
-        'data-fid="' + f.id + '" data-z="' + i + '"', n > 9);
-    }).join('');
-    return '<div class="artbox"><div class="art">' + a.svg() + pins + '</div></div>';
+    /* 칸 수가 그림보다 많아도 그림은 그대로 두고, 남는 칸은 아래 칸 도식에 번호로 표시한다 */
+    var n = Math.min(f.zones.length, a.cells.length);
+    var hits = '', pins = '';
+    a.cells.slice(0, n).forEach(function(c, i){
+      hits += '<rect class="hit" x="' + c.x + '" y="' + c.y + '" width="' + c.w + '" height="' + c.h + '" rx="3"' +
+        ' data-cell="' + (i + 1) + '" data-h="' + c.h.toFixed(2) + '" data-fid="' + f.id + '" data-z="' + i + '"' +
+        ' aria-label="' + esc(f._n + '번 가구 ' + (i + 1) + '번 칸') + '"></rect>';
+      var cx = (c.x + c.w / 2) / a.W * 100;
+      var cy = (c.y + c.h / 2 - a.TOP) / (a.H - a.TOP) * 100;
+      pins += pinBtn(cx, cy, color, i + 1, f._n + '번 가구 ' + (i + 1) + '번 칸',
+        'data-fid="' + f.id + '" data-z="' + i + '"', (i + 1) > 9);
+    });
+    return '<div class="artbox"><div class="art">' + a.svg(hits) + pins + '</div></div>';
   }
 
   function figHTML(f, color){
@@ -1186,13 +1462,39 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
   }
   function figOf(f){
     if (f.fig) return f.fig;
-    if (f.art){
-      var a = ART[f.art];
-      /* 구조 그림과 칸 수가 다르면 칸 도식으로 대신한다 */
-      return (a && f.zones.length === a.pins.length) ? null : autoFig(f.zones.length);
-    }
-    if (f.photos && f.photos.length) return null;
+    if (f.art && ART[f.art]) return null;          /* 구조 그림이 번호를 맡고, 남는 칸은 칸 도식으로 */
+    if (f.photos && f.photos.length) return null;  /* 사진 핀이 번호를 맡고, 남는 칸은 칸 도식으로 */
     return autoFig(f.zones.length);
+  }
+
+  /* 그림·사진이 이미 번호를 보여 주는 칸 수 */
+  function placedCount(f){
+    var m = 0;
+    if (f.photos && f.photos.length){
+      f.photos.forEach(function(ph){
+        (ph.pins || []).forEach(function(p){
+          var z = parseInt(p[0], 10) || 0;
+          if (z + 1 > m) m = z + 1;
+        });
+      });
+    }
+    if (f.art && ART[f.art]) m = Math.max(m, ART[f.art].cells.length);
+    var g = figOf(f);
+    if (g) m = Math.max(m, f.fig ? g.cells.length : f.zones.length);
+    return Math.min(m, f.zones.length);
+  }
+
+  /* 그림·사진에 자리가 없는 칸의 번호 — 칸을 추가하면 바로 여기 번호가 생긴다 */
+  function extraCellsHTML(f, color){
+    var from = placedCount(f), n = f.zones.length;
+    if (n <= from) return '';
+    var cells = '';
+    for (var i = from; i < n; i++){
+      cells += '<button class="excell" type="button" data-fid="' + f.id + '" data-z="' + i + '" style="--c:' + color + '"' +
+        ' aria-label="' + esc(f._n + '번 가구 ' + (i + 1) + '번 칸') + '">' + (i + 1) + '</button>';
+    }
+    return '<div class="exwrap"><p class="exhint">그림·사진에 자리가 없는 칸은 여기 번호로 확인·수정하세요.</p>' +
+      '<div class="exgrid">' + cells + '</div></div>';
   }
 
   /* ============================================================
@@ -1345,7 +1647,11 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
     }
     if (f.art) media += artHTML(f, sp.color);
     var fg = figOf(f);
-    if (fg) media += figHTML({fig:fg, name:f.name, _n:f._n, id:f.id}, sp.color);
+    if (fg){
+      var cells = fg.cells.slice(0, Math.max(1, f.zones.length));
+      media += figHTML({fig:{h:fg.h, cells:cells}, name:f.name, _n:f._n, id:f.id}, sp.color);
+    }
+    media += extraCellsHTML(f, sp.color);
 
     var badge = f.badge === 'out' ? '<span class="badge out">처분 검토</span>'
               : f.badge === 'new' ? '<span class="badge new">새로 만드는 존</span>' : '';
@@ -1380,7 +1686,7 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
         '</div>' +
       '</div>' +
       '<div class="fcard">' + body + '</div>' +
-      '<p class="note-small">줄을 누르면 그 자리에서 고칠 수 있고, 다른 곳을 누르면 자동으로 저장됩니다. 번호는 위 사진·구성도의 번호와 같습니다.</p>';
+      '<p class="note-small">줄을 누르면 그 자리에서 고칠 수 있고, 다른 곳을 누르면 자동으로 저장됩니다. 위 그림·사진의 <b>번호를 누르면 그 칸 내용이 바로 뜨고</b>, 그 자리에서 고칠 수 있어요.</p>';
     applyPinMode();
   }
 
@@ -1388,6 +1694,7 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
      화면 전환
      ============================================================ */
   function showMap(){
+    hidePeek();
     var q = state.q.trim();
     document.body.classList.toggle('searching', !!q);
     if (q){
@@ -1785,7 +2092,14 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
     f.plan = {x: 50, y: 46 + (n % 5) * 4};
     sp.furnitures.push(f);
     saveDB(); rebuild(); renderRoom();
-    toast('"' + name + '" 가구를 추가했어요');
+    closeAddFurn();
+    /* 새 가구 번호 핀을 도면 위에 바로 보여 준다 */
+    var np = document.querySelector('#viewRoom .pin[data-furn="' + f.id + '"]');
+    if (np){
+      np.classList.add('hl');
+      setTimeout(function(){ np.classList.remove('hl'); }, 2600);
+    }
+    toast('"' + name + '" ' + f._n + '번 가구로 추가했어요 · 도면의 번호를 끌어서 위치를 옮길 수 있어요');
   }
   function delFurniture(){
     var info = FMAP[state.fid];
@@ -1831,9 +2145,12 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
     if (f.zones.length >= 40){ toast('칸은 40개까지 만들 수 있어요'); return; }
     f.zones.push({items:[], floor:'', move:null});
     saveDB(); rebuild(); renderFurn();
-    var last = document.getElementById(f.id + '-z' + (f.zones.length - 1));
-    if (last) flashEl(last);
-    toast((f.zones.length) + '번 칸을 추가했어요');
+    var nn = f.zones.length;
+    var num = document.querySelector('#viewFurn .pin[data-fid="' + f.id + '"][data-z="' + (nn - 1) + '"], #viewFurn .excell[data-z="' + (nn - 1) + '"], #viewFurn .fcell[data-zone="' + f.id + '-z' + (nn - 1) + '"]');
+    if (num){ num.classList.add('hl'); setTimeout(function(){ num.classList.remove('hl'); }, 2400); }
+    var last = document.getElementById(f.id + '-z' + (nn - 1));
+    if (last){ last.classList.add('hl'); setTimeout(function(){ last.classList.remove('hl'); }, 2400); }
+    toast(nn + '번 칸을 추가했어요 · 위 그림의 ' + nn + '번을 누르면 바로 보여요');
   }
   function delCell(fid, zi){
     var info = FMAP[fid];
@@ -1890,7 +2207,7 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
   }
 
   function exportJSON(){
-    var data = {app:'우리집 수납 지도', v:6, exportedAt: new Date().toISOString(), active: DB.active, seasons: DB.seasons, ck: CK};
+    var data = {app:'우리집 수납 지도', v:SCHEMA, sv:DB.sv || SCHEMA, exportedAt: new Date().toISOString(), active: DB.active, seasons: DB.seasons, ck: CK};
     var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
@@ -1920,6 +2237,9 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
         return {id:String(c.id||('c'+i)), t:String(c.t), h:typeof c.h==='string'?c.h:'', done:!!c.done};
       });
       DB.ck = CK;
+      /* 파일이 v6 형식이면 다시 열 때 v7 구조로 이관된다 */
+      DB.v = parseInt(data.v, 10) || 6;
+      DB.sv = parseInt(data.sv, 10) || DB.v;
       saveDB();
       location.reload();
     };
@@ -1962,7 +2282,7 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
     {t:'주방 · 화장대 화장품 · 바디 · 샴푸 재고 → 방 2 3도어 수납장 한 곳으로', h:'안 뜯은 것만'},
     {t:'이케아 사다리 선반 치우기 — 스피드랙 앞 동선 확보', h:'가전은 조리대 · 싱크대로'},
     {t:'거실 TV 밑 요가매트 · 운동용품 → 방 2 재고실로 이동', h:'거실은 공기청정기 · 작은 스툴만'},
-    {t:'거실 상단 4칸 장 4번 칸 = 가벼운 캠핑 소품 여유분', h:'부피 큰 캠핑용품은 여기 말고 방 3'},
+    {t:'주방 벽 상단 4칸 장 4번 칸 = 가벼운 캠핑 소품 여유분', h:'상단 4칸 장은 거실이 아니라 주방 벽쪽'},
     {t:'원목 스탠드 옷걸이 정리 · 처분', h:'방 3과 거실'},
     {t:'폴딩박스 · 서랍 앞면 마스킹테이프 + 네임펜 라벨링', h:'서랍 앞면 왼쪽 위, 큰 글씨'}
   ];
@@ -2095,6 +2415,95 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
   }
 
   /* ============================================================
+     번호 → 칸 내용 바로 보기 (팝오버 / 아래 시트)
+     ============================================================ */
+  var peekEl = null, revealT = null;
+
+  function peekHTML(fid, zi){
+    var info = FMAP[fid];
+    if (!info) return '';
+    var f = info.f, s = f.zones[zi];
+    if (!s) return '';
+    var n = zi + 1;
+    var items = s.items.length
+      ? s.items.map(function(t){ return '<span class="pk-chip">' + esc(t) + '</span>'; }).join('')
+      : '<span class="pk-none">비어 있음 — 눌러서 적어 두세요</span>';
+    var meta = '';
+    if (s.floor) meta += '<span class="pk-meta"><b>바닥</b> ' + esc(s.floor) + '</span>';
+    if (s.move && FMAP[s.move.fid]){
+      var tf = FMAP[s.move.fid];
+      meta += '<span class="pk-meta dark">옮길 곳 → ' + esc(tf.f.name) + ' · ' + (s.move.z + 1) + '번 칸</span>';
+    }
+    return '<div class="pk-h" style="--c:' + info.space.color + '">' +
+        '<span class="pk-n">' + n + '</span>' +
+        '<span class="pk-t">' + esc(f.name) + ' · ' + n + '번 칸</span>' +
+        '<button class="pk-x" type="button" data-peek-close aria-label="닫기">✕</button></div>' +
+      '<div class="pk-items">' + items + '</div>' + meta +
+      '<div class="pk-btns"><button class="pk-edit" type="button" data-peek-edit>이 칸 고치기</button>' +
+        '<button class="pk-close" type="button" data-peek-close>닫기</button></div>';
+  }
+
+  function placePeek(anchor){
+    if (!peekEl) return;
+    var wide = window.innerWidth >= 840;
+    peekEl.classList.toggle('sheet', !wide);
+    if (!wide){ peekEl.style.left = ''; peekEl.style.top = ''; return; }
+    peekEl.style.left = '0px'; peekEl.style.top = '0px';
+    var pw = peekEl.offsetWidth, ph = peekEl.offsetHeight;
+    var r = (anchor && anchor.getBoundingClientRect) ? anchor.getBoundingClientRect() : null;
+    var x, y;
+    if (r && r.width){
+      x = r.left + r.width / 2 - pw / 2;
+      y = r.bottom + 9;
+    } else {
+      x = (window.innerWidth - pw) / 2; y = 80;
+    }
+    x = Math.max(10, Math.min(window.innerWidth - pw - 10, x));
+    if (y + ph > window.innerHeight - 10) y = Math.max(10, (r ? r.top : 70) - ph - 11);
+    peekEl.style.left = x + 'px';
+    peekEl.style.top = y + 'px';
+  }
+
+  function revealRow(fid, zi, scroll){
+    var row = document.getElementById(fid + '-z' + zi);
+    if (!row) return;
+    if (scroll){
+      var sh = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sh')) || 0;
+      var r = row.getBoundingClientRect();
+      if (r.top < sh + 6 || r.bottom > window.innerHeight * 0.62){
+        try{ row.scrollIntoView({behavior:'smooth', block:'center'}); }catch(e){ row.scrollIntoView(); }
+      }
+    }
+    $$('.row.hl').forEach(function(x){ x.classList.remove('hl'); });
+    row.classList.add('hl');
+    clearTimeout(revealT);
+    revealT = setTimeout(function(){ row.classList.remove('hl'); }, 2800);
+  }
+
+  function showPeek(fid, zi, anchor){
+    if (!peekEl) peekEl = $('#peek');
+    if (!peekEl) return;
+    var info = FMAP[fid];
+    if (!info || !info.f.zones[zi]) return;
+    if (state.peek && state.peek.fid === fid && state.peek.zi === zi && !peekEl.hidden){
+      hidePeek(); return;
+    }
+    peekEl.innerHTML = peekHTML(fid, zi);
+    peekEl.hidden = false;
+    state.peek = {fid:fid, zi:zi};
+    placePeek(anchor);
+    revealRow(fid, zi, window.innerWidth < 840);
+  }
+
+  function hidePeek(){
+    if (!peekEl) peekEl = $('#peek');
+    if (!peekEl || peekEl.hidden) return;
+    peekEl.hidden = true;
+    peekEl.innerHTML = '';
+    state.peek = null;
+  }
+
+  /* ============================================================
      이벤트
      ============================================================ */
   function bind(){
@@ -2155,6 +2564,11 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
     document.addEventListener('click', function(e){
       var t = e.target;
 
+      /* 미리보기 닫기 · 고치기 */
+      if (t.closest('[data-peek-close]')){ hidePeek(); return; }
+      var pke = t.closest('[data-peek-edit]');
+      if (pke && state.peek){ var pk = state.peek; hidePeek(); openEditor(pk.fid, pk.zi); return; }
+
       /* 편집기 내부 */
       var save = t.closest('.e-save');
       if (save){ saveEditor(save.closest('.row')); return; }
@@ -2202,7 +2616,21 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
         var sp2 = pin.getAttribute('data-space');
         if (sp2){ goRoom(sp2, false); return; }
         var pf = pin.getAttribute('data-fid');
-        if (pf){ markRow(pf, parseInt(pin.getAttribute('data-z'), 10)); return; }
+        if (pf){ showPeek(pf, parseInt(pin.getAttribute('data-z'), 10), pin); return; }
+        return;
+      }
+
+      /* 그림 속 번호 칸(누를 수 있는 사각형) */
+      var cellHit = t.closest('[data-cell]');
+      if (cellHit){
+        var hf = cellHit.getAttribute('data-fid');
+        if (hf){ showPeek(hf, parseInt(cellHit.getAttribute('data-z'), 10), cellHit); return; }
+      }
+
+      /* 그림에 자리가 없는 칸 번호 */
+      var exc = t.closest('.excell');
+      if (exc){
+        showPeek(exc.getAttribute('data-fid'), parseInt(exc.getAttribute('data-z'), 10), exc);
         return;
       }
 
@@ -2210,7 +2638,7 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
       var fcell = t.closest('.fcell');
       if (fcell){
         var m = /^(f-.+)-z(\d+)$/.exec(fcell.getAttribute('data-zone'));
-        if (m) markRow(m[1], parseInt(m[2], 10));
+        if (m) showPeek(m[1], parseInt(m[2], 10), fcell);
         return;
       }
 
@@ -2345,6 +2773,7 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
     /* 키보드 */
     document.addEventListener('keydown', function(e){
       var t = e.target;
+      if (e.key === 'Escape' && state.peek){ hidePeek(); return; }
       if (e.key === 'Enter' && t.classList && t.classList.contains('e-items')){
         e.preventDefault(); saveEditor(t.closest('.row')); return;
       }
@@ -2403,6 +2832,14 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
       }
     });
 
+    /* 미리보기: 바깥을 누르면 닫기 */
+    document.addEventListener('click', function(e){
+      if (!peekEl || peekEl.hidden) return;
+      var t = e.target;
+      if (t.closest && (t.closest('#peek') || t.closest('.pin[data-fid]') || t.closest('[data-cell]') || t.closest('.excell') || t.closest('.fcell'))) return;
+      hidePeek();
+    });
+
     /* 스크롤 */
     var stickyBar = $('#sticky');
     var wasCompact = null;
@@ -2411,6 +2848,7 @@ body.pinmode .pin:hover{transform:translate(-50%,-50%) scale(1.2)}
       if (c !== wasCompact){ wasCompact = c; stickyBar.classList.toggle('compact', c); setVarSh(); }
     };
     window.addEventListener('scroll', onScroll, {passive:true});
+    window.addEventListener('scroll', function(){ if (window.innerWidth >= 840 && state.peek) hidePeek(); }, {passive:true});
     window.addEventListener('resize', setVarSh);
     onScroll();
   }
