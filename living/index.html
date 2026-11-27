@@ -2073,6 +2073,8 @@ body.phopen { overflow: hidden; }
      라벨·패키지·영수증 사진 → 브라우저 안에서 OCR(Tesseract.js kor+eng) → 입력 칸 자동 채움.
      사진과 글자는 이 기기에서만 처리하고 어디로도 보내지 않는다. 동기화·저장 구조는 건드리지 않는다. */
   var PH_CDN = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+  /* fast 사전: 표준 사전(한·영 약 18MB)과 정확도는 같고 내려받는 양이 약 3MB로 가벼워 모바일에서 유리 */
+  var PH_LANG = 'https://tessdata.projectnaptha.com/4.0.0_fast';
   var phState = null, phWorker = null, phLoading = null, phJobSeq = 0, phIdle = null;
 
   function p2(n) { return (String(n).length < 2 ? '0' : '') + n; }
@@ -2138,15 +2140,18 @@ body.phopen { overflow: hidden; }
   function phWorkerFor(job) {
     return phLoadTess().then(function (T) {
       if (phWorker) return phWorker;
-      phSetStat('한국어 글자 사전을 준비하는 중… (처음 한 번만)', 4);
-      return T.createWorker('kor+eng', 1, {
-        logger: function (m) {
-          if (!phState || phState.job !== job) return;
-          var st = (m && m.status) || '', pr = (m && typeof m.progress === 'number') ? m.progress : 0;
-          if (st.indexOf('language') >= 0) phSetStat('한국어·영어 글자 사전을 내려받는 중… (처음 한 번만)', 4 + pr * 46);
-          else if (st.indexOf('initializ') >= 0) phSetStat('글자 읽기 준비 중…', 52 + pr * 8);
-          else if (st.indexOf('recognizing') >= 0) phSetStat('글자를 읽는 중…', 62 + pr * 36);
-        }
+      phSetStat('글자 사전을 준비하는 중… (처음 한 번만)', 4);
+      var logger = function (m) {
+        if (!phState || phState.job !== job) return;
+        var st = (m && m.status) || '', pr = (m && typeof m.progress === 'number') ? m.progress : 0;
+        if (st.indexOf('language') >= 0) phSetStat('한국어·영어 글자 사전을 내려받는 중… (처음 한 번만)', 4 + pr * 46);
+        else if (st.indexOf('initializ') >= 0) phSetStat('글자 읽기 준비 중…', 52 + pr * 8);
+        else if (st.indexOf('recognizing') >= 0) phSetStat('글자를 읽는 중…', 62 + pr * 36);
+      };
+      return T.createWorker('kor+eng', 1, { logger: logger, langPath: PH_LANG }).catch(function () {
+        /* 가벼운 사전을 받지 못하면 기본 사전으로 한 번 더 */
+        phSetStat('글자 사전을 다시 받아보는 중…', 4);
+        return T.createWorker('kor+eng', 1, { logger: logger });
       });
     }).then(function (w) {
       if (w && !w.__phTuned) {
