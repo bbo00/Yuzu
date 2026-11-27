@@ -1769,8 +1769,13 @@ body.pinmode .art svg .hit{pointer-events:none}
     if (!tokens.length) return [];
     var whole = norm(raw);
     var exact = INDEX.filter(function(e){ return e.hay.indexOf(whole) >= 0; });
-    if (exact.length) return exact;
-    return INDEX.filter(function(e){ return tokens.every(function(t){ return e.hay.indexOf(t) >= 0; }); });
+    var list = exact.length ? exact : INDEX.filter(function(e){ return tokens.every(function(t){ return e.hay.indexOf(t) >= 0; }); });
+    /* 물건 이름 자체가 맞는 것을 방·가구 이름으로 걸린 것보다 앞에 */
+    return list.slice().sort(function(a, b){
+      var an = norm(a.name).indexOf(whole) >= 0 ? 0 : 1;
+      var bn = norm(b.name).indexOf(whole) >= 0 ? 0 : 1;
+      return an - bn;
+    });
   }
   function renderResults(v){
     var tokens = v.trim().split(/\s+/).filter(Boolean);
