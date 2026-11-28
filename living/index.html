@@ -352,6 +352,21 @@ button.ingtag:hover { border-color: var(--accent); color: var(--accent); }
 .rvacts .btn { flex: 1; }
 body.rvopen { overflow: hidden; }
 
+/* ---- 헤더: 제품 추가 버튼을 첫 화면 맨 위에 두고, 동기화는 작게 (v2.3) ---- */
+.subrow { display: flex; align-items: center; justify-content: space-between; gap: 6px 10px; flex-wrap: wrap; }
+.subrow .glance { flex: 1 1 auto; }
+.syncmini { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface);
+  color: var(--ink-2); border-radius: 999px; padding: 0 10px; min-height: 30px; font-size: 12px; font-weight: 700; white-space: nowrap; flex: none; }
+.syncmini:hover { border-color: var(--accent); }
+.syncmini[data-state="off"] { background: var(--warn-soft); border-color: transparent; color: var(--warn); }
+.syncmini[data-state="err"] { background: var(--bad-soft); border-color: transparent; color: var(--bad); }
+.syncmini[data-state="on"] { background: var(--accent-soft); border-color: transparent; color: var(--accent); }
+.syncmini[data-state="busy"] { background: var(--surface-2); }
+.addbtn { min-height: 38px; padding: 8px 14px; border-radius: 999px; font-size: 14px; white-space: nowrap; flex: none; }
+.note.offnote { background: var(--warn-soft); color: var(--warn); font-size: 13px; margin: 0; }
+.note.offnote b { color: var(--warn); }
+@media (max-width: 380px) { h1 { font-size: 26px; } .addbtn { padding: 8px 11px; font-size: 13.5px; } }
+
 /* ---- 동기화 상태 칩 · 패널 (v2) ---- */
 .syncchip { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: 12px; padding: 8px 12px; font-size: 13px; font-weight: 500; min-height: 40px; }
 .syncchip:hover { border-color: var(--accent); }
@@ -413,13 +428,15 @@ body.phopen { overflow: hidden; }
   <header class="head">
     <div class="top">
       <h1>우리 살림칸</h1>
-      <div class="topbtns"><button class="btn primary" type="button" data-act="add-toggle" id="addBtn">+ 물건 추가</button></div>
+      <div class="topbtns"><button class="btn primary addbtn" type="button" data-act="add-toggle" id="addBtn">+ 제품 추가</button></div>
     </div>
-    <button class="syncchip" type="button" data-sact="open" id="syncBtn" aria-expanded="false" aria-controls="syncBox">
-      <span id="syncDot" data-state="off"></span><span id="syncBtnText">동기화 코드로 연결하기</span><span class="sbx">›</span>
-    </button>
     <section class="syncbox" id="syncBox" hidden><div id="syncBoxIn"></div></section>
-    <ul class="glance" id="glance" aria-label="재고 요약"></ul>
+    <div class="subrow">
+      <ul class="glance" id="glance" aria-label="재고 요약"></ul>
+      <button class="syncmini" type="button" data-sact="open" id="syncBtn" aria-expanded="false" aria-controls="syncBox" aria-label="동기화 상태">
+        <span id="syncDot" data-state="off"></span><span id="syncBtnText">미연결</span>
+      </button>
+    </div>
   </header>
 
   <div class="bar">
@@ -1029,14 +1046,16 @@ body.phopen { overflow: hidden; }
         bar.setAttribute('role', 'button');
         bar.setAttribute('tabindex', '0');
         bar.style.cssText = 'display:none;position:sticky;top:0;z-index:2147483000;width:100%;box-sizing:border-box;' +
-          'background:#B45309;color:#fff;font:800 12.5px/1.35 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;' +
-          'padding:calc(7px + env(safe-area-inset-top)) 12px 7px;text-align:center;letter-spacing:-.2px;cursor:pointer;' +
-          'box-shadow:0 2px 8px rgba(0,0,0,.18);';
+          'background:#B45309;color:#fff;font:800 12px/1.35 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;' +
+          'padding:7px 10px;text-align:center;letter-spacing:-.2px;cursor:pointer;border-radius:12px;' +
+          'box-shadow:0 2px 8px rgba(0,0,0,.14);';
         bar.textContent = '\u26A0\uFE0F  \uB3D9\uAE30\uD654 \uBBF8\uC5F0\uACB0 \u00B7 \uC774 \uAE30\uAE30\uC5D0\uB9CC \uC800\uC7A5 \uC911  \u00B7  \uB20C\uB7EC\uC11C \uC5F0\uACB0';
         bar.addEventListener('click', syncOffOpen);
         bar.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); syncOffOpen(); } });
-        var host = document.body;
-        if (host) host.insertBefore(bar, host.firstChild);
+        /* 맨 위에 끼우지 않고 제목·제품 추가 버튼 바로 아래에 넣어 버튼을 가리지 않게 한다 (v2.3) */
+        var host = document.body, topRow = document.querySelector('.app .head .top');
+        if (topRow && topRow.parentNode) topRow.parentNode.insertBefore(bar, topRow.nextSibling);
+        else if (host) host.insertBefore(bar, host.firstChild);
       }
       return bar;
     }
@@ -1062,15 +1081,19 @@ body.phopen { overflow: hidden; }
   }
 
   function setSync() {
-    var chip = $('#syncBtnText'), dot = $('#syncDot'), t, cls = '';
-    if (!syncConnected()) { t = '동기화 코드로 연결하기'; cls = 'off'; }
-    else if (syncBusy || saving) { t = '클라우드와 맞추는 중…'; cls = 'busy'; }
-    else if (syncCfg.lastError) { t = '동기화 오류 · 다시 시도'; cls = 'err'; }
-    else if (dirty) { t = '저장 중… (이 기기에 먼저 저장됨)'; cls = 'busy'; }
-    else { t = '연결됨 · ' + syncAgo(syncCfg.lastSync) + ' 동기화'; cls = 'on'; }
+    var chip = $('#syncBtnText'), dot = $('#syncDot'), t, cls = '', full = '';
+    if (!syncConnected()) { t = '미연결'; full = '동기화 코드로 연결하기'; cls = 'off'; }
+    else if (syncBusy || saving) { t = '저장 중'; full = '클라우드와 맞추는 중…'; cls = 'busy'; }
+    else if (syncCfg.lastError) { t = '오류'; full = '동기화 오류 · 다시 시도 (' + syncCfg.lastError + ')'; cls = 'err'; }
+    else if (dirty) { t = '저장 중'; full = '저장 중 (이 기기에 먼저 저장됨)'; cls = 'busy'; }
+    else { t = '연결됨'; full = '연결됨 · ' + syncAgo(syncCfg.lastSync) + ' 동기화'; cls = 'on'; }
     if (chip) chip.textContent = t;
     var btn = $('#syncBtn');
-    if (btn) btn.setAttribute('data-state', cls);
+    if (btn) {
+      btn.setAttribute('data-state', cls);
+      btn.setAttribute('title', full);
+      btn.setAttribute('aria-label', '동기화 · ' + full);
+    }
     if (dot) dot.setAttribute('data-state', cls);
     var foot = $('#sync');
     if (foot) {
@@ -1261,7 +1284,7 @@ body.phopen { overflow: hidden; }
     $('#tools').hidden = ui.tab !== 'stock';
     $('#q').placeholder = '이름·브랜드로 찾기';
     var ab = $('#addBtn'); ab.hidden = ro || !db;
-    ab.textContent = !syncConnected() ? '🔑 동기화 코드 입력' : (ui.add ? '닫기' : '+ 물건 추가');
+    ab.textContent = ui.add ? '닫기' : '+ 제품 추가';
     var subs = [];
     allItems().forEach(function (i) { if (i.sub && subs.indexOf(i.sub) < 0) subs.push(i.sub); });
     $('#sublist').innerHTML = subs.map(function (s) { return '<option value="' + esc(s) + '">'; }).join('');
@@ -1273,7 +1296,8 @@ body.phopen { overflow: hidden; }
 
   function addForm() {
     var c = CORNER_NAMES.indexOf(ui.cat) >= 0 ? ui.cat : '스킨케어';
-    return '<form class="add" data-form="item">' +
+    var offNote = syncConnected() ? '' : '<div class="note offnote wide"><span>📴 동기화 코드가 없어 <b>이 기기에만 저장</b>돼요. 나중에 코드를 넣으면 여기서 적은 것도 함께 올라가요.</span></div>';
+    return '<form class="add" data-form="item">' + offNote +
       '<div class="phrow wide"><button class="btn sm" type="button" data-photo="add">📷 사진으로 자동 채우기</button><small>라벨·영수증을 찍으면 칸이 채워져요</small></div>' +
       '<label class="wide">이름<input name="name" required maxlength="60" placeholder="예: 닥터지 선크림" autocomplete="off"></label>' +
       '<label>분류<select name="corner" data-addcorner>' + opts(CORNER_NAMES, c) + '</select></label>' +
@@ -1856,15 +1880,7 @@ body.phopen { overflow: hidden; }
     var near = past.concat(inr).sort(cmpExp);
     var h = '';
 
-    /* 지금 쓰는 중 */
-    var inuse = all.filter(function (i) { return openUse(i); }).sort(function (x, y) { return openUse(x).s < openUse(y).s ? -1 : 1; });
-    if (inuse.length) {
-      h += '<section class="dsec"><h2>지금 쓰는 중 <small>' + inuse.length + '종</small></h2><ul class="rows">' + inuse.map(function (i) {
-        var o = openUse(i);
-        return '<li class="row urow" data-id="' + esc(i.id) + '"><div style="min-width:0"><div class="nm">' + esc(i.name) + '</div><div class="meta"><span>' + esc(pathOf(i)) + '</span><span>' + dayFmt(o.s) + ' 시작</span></div></div>' +
-          '<div class="end"><b>' + useDays(o) + '일째</b>' + (canWrite() ? '<button class="btn sm primary" type="button" data-act="use-end">사용 종료</button>' : '') + '</div></li>';
-      }).join('') + '</ul></section>';
-    }
+    /* ‘지금 쓰는 중’은 사용 통계 탭에만 둔다 (v2.3) */
 
     /* 곧 끝나는 것 */
     (function () {
@@ -2667,7 +2683,8 @@ body.phopen { overflow: hidden; }
     renderHead();
     syncBarH();
     var oc = $('#view .chips'), sl = oc ? oc.scrollLeft : 0;
-    $('#view').innerHTML = emptyOnboard() ? onboardHTML() : viewHTML();
+    /* 코드 없이 비어 있어도 ‘제품 추가’를 누르면 입력 폼이 보이게 한다 (v2.3) */
+    $('#view').innerHTML = (emptyOnboard() && !ui.add) ? onboardHTML() : viewHTML();
     var nc = $('#view .chips');
     if (nc) {
       nc.scrollLeft = sl;
@@ -2759,13 +2776,7 @@ body.phopen { overflow: hidden; }
     }
 
     if (act === 'add-toggle') {
-      if (!syncConnected()) {
-        toggleSyncPanel(true);
-        var sbx = document.getElementById('syncBox');
-        if (sbx) window.scrollTo(0, Math.max(0, sbx.getBoundingClientRect().top + window.scrollY - 90));
-        toast('먼저 동기화 코드를 넣어 주세요');
-        return;
-      }
+      /* 동기화 코드 없이도 추가는 된다 — 이 기기에 먼저 저장되고, 나중에 코드를 넣으면 합쳐져 올라간다 */
       ui.add = !ui.add; ui.sell = null; render(ui.add ? '.add input[name="name"]' : null);
     } else if (act === 'sync-open') {
       toggleSyncPanel();
