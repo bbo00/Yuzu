@@ -130,79 +130,54 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 .add-row{margin:0 0 12px;display:flex;gap:8px}
 .add-row .btn{flex:1 1 auto}
 
-/* ---------- 남편 전용 보기 · 방명록 OCR ---------- */
+/* ---------- 남편 전용 보기 · 여러 건 한 번에 입력 ---------- */
 .head-btns{display:flex;gap:6px;flex:0 0 auto;flex-wrap:wrap;justify-content:flex-end}
 .husband-bar{background:#eef4f0;border:1px solid #cfe3d9;color:#2b6a55;border-radius:12px;padding:9px 12px;margin:0 0 11px;font-size:13px;font-weight:800;letter-spacing:-.2px;line-height:1.35}
 .husband-bar span{display:block;margin-top:2px;font-size:11.5px;font-weight:500;color:#4d7f6d}
-.ocr-entry{margin:0 0 12px}
-.ocr-help{margin:0 0 10px;font-size:12px;color:var(--ink-2);line-height:1.6}
-.ocr-help b{color:var(--ink)}
-.ocr-src{display:flex;gap:7px;margin:0 0 10px}
-.ocr-src .btn{flex:1 1 0}
-/* 사진 고정 영역: 모달 안에서 스크롤되지 않는 상단 칸 */
-.ocr-fixed{flex:0 0 auto;padding:0 16px;background:var(--surface);z-index:6}
-.ocr-fixed:empty{display:none}
-.ocr-pin{position:relative;z-index:6;margin:0 0 8px;padding:2px 0 6px;background:var(--surface);border-bottom:1px solid transparent;transition:box-shadow .16s ease,border-color .16s ease}
-.ocr-pin[hidden]{display:none}
-.ocr-pin.stuck{box-shadow:0 8px 18px rgba(25,30,35,.12);border-bottom-color:var(--line-2)}
-.ocr-pin-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 6px}
-.ocr-pin-head .pt{font-size:11.5px;font-weight:800;color:var(--ink-2);letter-spacing:-.2px}
-.ocr-pin-head .pt b{color:var(--in);font-weight:800}
-.ocr-pin-head .btn{height:28px;font-size:11.5px;padding:0 10px;border-radius:8px}
-.ocr-prev{margin:0 0 6px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);overflow:hidden;cursor:zoom-in}
-.ocr-prev img{display:block;width:100%;max-height:min(28vh,220px);object-fit:contain}
-.ocr-pin.min .ocr-prev{cursor:zoom-out}
-.ocr-pin.min .ocr-prev img{max-height:54px}
-/* 아이폰 키보드가 올라온 상태: 사진은 140px로 줄이고 회전 버튼은 잠시 접어 표 칸을 넓힌다 */
-#modal-ocr .panel{overflow:hidden}
-#modal-ocr.kb .sheet-head{padding-bottom:6px}
-#modal-ocr .panel.kb .ocr-pin{margin-bottom:4px}
-#modal-ocr .panel.kb .ocr-pin-head{display:none}
-#modal-ocr .panel.kb .ocr-rot{display:none}
-#modal-ocr .panel.kb .ocr-pin:not(.min) .ocr-prev img{max-height:min(140px,24vh)}
-.ocr-rot{display:flex;gap:6px;margin:0}
-.ocr-rot .btn{flex:1 1 0;padding:0 6px;font-size:12px;white-space:nowrap}
-.ocr-rot .btn:last-child{flex:0 0 auto}
-.ocr-stat{margin:0 0 7px;font-size:12.5px;color:var(--ink-2);min-height:18px;line-height:1.5}
-.ocr-bar{height:6px;border-radius:4px;background:var(--track);overflow:hidden;margin:0 0 10px}
-.ocr-bar i{display:block;height:100%;width:0;background:var(--in);transition:width .2s ease}
-.ocr-msg{margin:0 0 10px;font-size:12px;color:var(--bad);line-height:1.55}
-.ocr-common{background:var(--surface-2);border:1px solid var(--line-2);border-radius:12px;padding:10px;margin:0 0 12px}
-.ocr-common .row{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.ocr-common .row + .row{margin-top:7px}
-.ocr-common label{display:block;min-width:0}
-.ocr-common label > span{display:block;font-size:11px;font-weight:700;color:var(--ink-2);margin:0 0 3px}
-.ocr-common .input{height:40px;font-size:16px}
-.ocr-count{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;font-size:12.5px;color:var(--ink-2)}
-.ocr-count b{color:var(--ink)}
-.ocr-tools{display:flex;gap:6px;margin:0 0 8px;flex-wrap:wrap}
-.ocr-tools .btn{flex:1 1 0;min-width:0}
-.ocr-tools .btn.danger{flex:1 1 0}
-.ocr-delmode{margin:0 0 8px;padding:9px 11px;border-radius:11px;background:var(--bad-soft);border:1px solid #eccfc9;color:#8f3a31;font-size:12px;font-weight:700;line-height:1.5}
-.ocr-row.delsel{border-color:#e0b3ab;background:var(--bad-soft)}
-.ocr-row .ck.del{accent-color:var(--bad)}
-.ocr-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:8px 9px;margin:0 0 7px;background:var(--surface)}
-.ocr-row.off{opacity:.45}
-.ocr-row .ck{flex:0 0 auto;width:22px;height:22px;accent-color:var(--in)}
-.ocr-row .nm{flex:1 1 90px;min-width:0;height:40px;font-size:16px;font-weight:700;border:1px solid var(--line);border-radius:9px;padding:0 9px;background:var(--surface);letter-spacing:-.2px}
-.ocr-row .am{flex:0 0 92px;width:92px;height:40px;font-size:16px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;border:1px solid var(--line);border-radius:9px;padding:0 9px;background:var(--surface)}
-.ocr-row .ocr-del{flex:0 0 28px;width:28px;height:40px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);color:var(--ink-3);font-size:13px;line-height:1;padding:0}
-.ocr-row .ocr-del:active{background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
-.ocr-row .mm{flex:0 0 100%;height:38px;font-size:16px;border:1px dashed var(--line);border-radius:9px;padding:0 9px;background:var(--surface-2);color:var(--ink-2)}
-.ocr-row .ocr-memo{flex:0 0 100%;display:flex;gap:6px;align-items:center}
-.ocr-row .ocr-memo .sel{flex:0 0 112px;width:112px;padding:0 6px}
-.ocr-row .ocr-memo .mm{flex:1 1 auto;min-width:0;width:auto}
-.ocr-row .ocr-sub{flex:0 0 100%;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-.ocr-row .sel{width:100%;min-width:0;height:38px;font-size:16px;border:1px solid var(--line);border-radius:9px;padding:0 8px;background:var(--surface-2);color:var(--ink-2)}
-.ocr-row .dup{flex:0 0 100%;font-size:11px;color:var(--warn);line-height:1.4}
-.ocr-row .miss{flex:0 0 100%;font-size:11px;color:var(--bad);line-height:1.4}
-.ocr-addrow{display:flex;gap:7px;margin:2px 0 4px}
-.ocr-addrow .btn{flex:1 1 0}
-.ocr-raw{margin:8px 0 14px}
-.ocr-raw summary{font-size:12px;color:var(--accent);cursor:pointer;padding:5px 0;font-weight:700}
-.ocr-raw textarea{width:100%;min-height:96px;margin-top:6px;padding:10px 11px;border:1px solid var(--line);border-radius:10px;font-size:16px;line-height:1.5;font-family:inherit;background:var(--surface-2);resize:vertical}
-.ocr-raw .btn{margin-top:7px}
-.ocr-tip{margin:12px 0 4px;font-size:11.5px;color:var(--ink-3);line-height:1.6}
+.bulk-entry{margin:0 0 12px}
+/* 참고 사진: 모달 안에서 스크롤되지 않는 위 칸에 붙는다 */
+.bulk-fixed{flex:0 0 auto;padding:0 16px;background:var(--surface);z-index:6}
+.bulk-fixed:empty{display:none}
+.bulk-pin{position:relative;z-index:6;margin:0 0 8px;padding:2px 0 6px;background:var(--surface);border-bottom:1px solid var(--line-2);transition:box-shadow .16s ease,border-color .16s ease}
+.bulk-pin.stuck{box-shadow:0 8px 18px rgba(25,30,35,.12);border-bottom-color:var(--line-2)}
+.bulk-pin-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 6px}
+.bulk-pin-head .pt{font-size:11.5px;font-weight:800;color:var(--ink-2);letter-spacing:-.2px}
+.bulk-pin-head .btn{height:28px;font-size:11.5px;padding:0 10px;border-radius:8px}
+.bulk-prev{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);overflow:hidden;cursor:zoom-in}
+.bulk-prev img{display:block;width:100%;max-height:min(26vh,200px);object-fit:contain}
+.bulk-pin.min .bulk-prev{cursor:zoom-out}
+.bulk-pin.min .bulk-prev img{max-height:52px}
+/* 아이폰 키보드가 올라오면 사진을 더 줄이고 머리 줄을 접어 표 칸을 넓힌다 */
+#modal-bulk .panel{overflow:hidden}
+#modal-bulk .panel.kb .bulk-pin-head{display:none}
+#modal-bulk .panel.kb .bulk-pin:not(.min) .bulk-prev img{max-height:min(128px,21vh)}
+.bulk-photo-line{display:flex;justify-content:flex-end;margin:7px 0 10px}
+/* 공통 설정 */
+.bulk-common{background:var(--surface-2);border:1px solid var(--line-2);border-radius:12px;padding:9px 10px;margin:0 0 10px}
+.bulk-common .row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.bulk-common .row + .row{margin-top:6px}
+.bulk-common label{display:block;min-width:0}
+.bulk-common label > span{display:block;font-size:11px;font-weight:700;color:var(--ink-2);margin:0 0 3px;letter-spacing:-.2px}
+.bulk-common .input{height:38px;font-size:16px}
+/* 입력 줄 */
+.bulk-row{border:1px solid var(--line);border-radius:12px;padding:7px 8px;margin:0 0 6px;background:var(--surface)}
+.bulk-row.delsel{border-color:#e0b3ab;background:var(--bad-soft)}
+.bulk-row .l1,.bulk-row .l2{display:flex;align-items:center;gap:6px;min-width:0}
+.bulk-row .l2{margin-top:6px}
+.bulk-row .ck{flex:0 0 auto;width:20px;height:20px;accent-color:var(--bad)}
+.bulk-row .nm{flex:1 1 0;min-width:0;height:40px;font-size:16px;font-weight:700;border:1px solid var(--line);border-radius:9px;padding:0 9px;background:var(--surface);letter-spacing:-.2px}
+.bulk-row .am{flex:0 0 88px;width:88px;height:40px;font-size:16px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;border:1px solid var(--line);border-radius:9px;padding:0 9px;background:var(--surface)}
+.bulk-row .nm:focus,.bulk-row .am:focus,.bulk-row .mm:focus{outline:none;border-color:var(--in-line);box-shadow:0 0 0 3px var(--accent-soft)}
+.bulk-row .del{flex:0 0 28px;width:28px;height:40px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);color:var(--ink-3);font-size:13px;line-height:1;padding:0}
+.bulk-row .del:active{background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
+.bulk-row .sel{flex:0 0 auto;height:38px;font-size:16px;border:1px solid var(--line);border-radius:9px;padding:0 16px 0 7px;background-color:var(--surface-2);color:var(--ink-2);-webkit-appearance:none;appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--ink-3) 50%),linear-gradient(135deg,var(--ink-3) 50%,transparent 50%);background-position:calc(100% - 11px) 17px,calc(100% - 7px) 17px;background-size:4px 4px,4px 4px;background-repeat:no-repeat}
+.bulk-row .rel{width:108px}
+.bulk-row .att{width:72px}
+.bulk-row .mm{flex:1 1 0;min-width:0;height:38px;font-size:16px;border:1px dashed var(--line);border-radius:9px;padding:0 9px;background:var(--surface-2);color:var(--ink-2)}
+.bulk-tools{display:flex;gap:6px;margin:2px 0 4px}
+.bulk-tools .btn{flex:1 1 0;min-width:0}
+#bulk-del-line{margin:6px 0 2px}
+#bulk-body{padding-bottom:14px}
 
 /* ---------- 기록 카드 ---------- */
 .rec{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:12px 13px;margin:0 0 9px;cursor:pointer;box-shadow:0 1px 2px rgba(30,35,41,.02);transition:border-color .12s}
@@ -460,7 +435,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 
     <div class="row-sum" id="list-sum"></div>
     <div class="add-row"><button class="btn primary block" type="button" data-act="add">＋ 경조사비 기록하기</button></div>
-    <button class="btn soft block ocr-entry" type="button" data-act="ocr-open">📷 방명록 사진으로 일괄 등록</button>
+    <button class="btn soft block bulk-entry" type="button" data-act="bulk-open">📝 여러 건 한 번에 입력</button>
     <div id="sugg-row"></div>
     <div id="list-wrap"></div>
   </section>
@@ -554,16 +529,15 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   <div class="sheet-body" id="share-body" style="padding-bottom:18px"></div>
 </div></div>
 
-<div class="sheet" id="modal-ocr"><div class="veil" data-act="ocr-close"></div><div class="panel">
-  <div class="sheet-head"><h2>📷 방명록 사진으로 일괄 등록</h2><button class="x" type="button" data-act="ocr-close" aria-label="닫기">✕</button></div>
-  <div class="ocr-fixed" id="ocr-fixed"></div>
-  <div class="sheet-body" id="ocr-body"></div>
-  <div class="sheet-actions" id="ocr-actions">
-    <button class="btn ghost" type="button" data-act="ocr-close">닫기</button>
-    <button class="btn primary" type="button" data-act="ocr-commit" id="ocr-commit" disabled>등록</button>
+<div class="sheet" id="modal-bulk"><div class="veil" data-act="bulk-close"></div><div class="panel">
+  <div class="sheet-head"><h2>📝 여러 건 한 번에 입력</h2><button class="x" type="button" data-act="bulk-close" aria-label="닫기">✕</button></div>
+  <div class="bulk-fixed" id="bulk-fixed"></div>
+  <div class="sheet-body" id="bulk-body"></div>
+  <div class="sheet-actions">
+    <button class="btn ghost" type="button" data-act="bulk-close">닫기</button>
+    <button class="btn primary" type="button" data-act="bulk-commit" id="bulk-commit" disabled>등록</button>
   </div>
-  <input type="file" id="ocr-file-cam" accept="image/*" capture="environment" hidden aria-label="방명록 사진 찍기">
-  <input type="file" id="ocr-file-album" accept="image/*" multiple hidden aria-label="방명록 사진 고르기">
+  <input type="file" id="bulk-file" accept="image/*" hidden aria-label="참고 사진 고르기">
 </div></div>
 <div id="toast"></div>
 
@@ -597,10 +571,6 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   }
   function attendTitleHtml(dir) {
     return dir === 'in' ? '🙋 방문·참석 체크' : '🙋 참석 체크';
-  }
-  /* 방명록 OCR 공통 줄처럼 좁은 곳에 쓰는 짧은 제목 */
-  function attendTitleShort(dir) {
-    return attendTitleHtml(dir);
   }
   function attendChipsHtml(dir, cur) {
     var c = normAttend(cur);
@@ -2435,118 +2405,25 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
         exportHusbandJson(); break;
       case 'export-husband-csv':
         exportHusbandCsv(); break;
-      case 'ocr-open':
-        ocrOpen(); break;
-      case 'ocr-close':
-        ocrClose(); break;
-      case 'ocr-camera':
-        var ocf = $('#ocr-file-cam'); if (ocf) { ocf.value = ''; ocf.click(); } break;
-      case 'ocr-album':
-        var oaf = $('#ocr-file-album'); if (oaf) { oaf.value = ''; oaf.click(); } break;
-      case 'ocr-commit':
-        ocrCommit(); break;
-      case 'ocr-addrow':
-        if (ocrState) { ocrState.rows.push(ocrNewRow('', 0)); renderOcrResult(); }
+      case 'bulk-open':
+        bulkOpen(); break;
+      case 'bulk-close':
+        bulkClose(); break;
+      case 'bulk-commit':
+        bulkCommit(); break;
+      case 'bulk-add5':
+        bulkAddRows(BULK_STEP); break;
+      case 'bulk-row-del':
+        if (bulkState && bulkState.rows[+id]) { bulkState.rows.splice(+id, 1); bulkRenderRows(); }
         break;
-      case 'ocr-clear':
-        if (ocrState) { ocrState.rows = []; renderOcrResult(); }
-        break;
-      case 'ocr-rot-ccw':
-        ocrRotate(-90); break;
-      case 'ocr-rot-cw':
-        ocrRotate(90); break;
-      case 'ocr-photo-clear':
-        ocrClearPhoto(); break;
-      case 'ocr-row-del':
-        if (ocrState && ocrState.rows[+id]) {
-          ocrState.rows.splice(+id, 1);
-          renderOcrResult();
-        }
-        break;
-      case 'ocr-selall':
-        if (ocrState) {
-          if (ocrState.delMode) ocrState.rows.forEach(function (r, i) { ocrState.delSel[i] = true; });
-          else ocrState.rows.forEach(function (r) { r.on = true; });
-          renderOcrResult();
-        }
-        break;
-      case 'ocr-selnone':
-        if (ocrState) {
-          if (ocrState.delMode) ocrState.delSel = {};
-          else ocrState.rows.forEach(function (r) { r.on = false; });
-          renderOcrResult();
-        }
-        break;
-      case 'ocr-del-mode':
-        if (ocrState) { ocrState.delMode = true; ocrState.delSel = {}; renderOcrResult(); }
-        break;
-      case 'ocr-del-cancel':
-        if (ocrState) { ocrState.delMode = false; ocrState.delSel = {}; renderOcrResult(); }
-        break;
-      case 'ocr-del-selected':
-        if (!ocrState) return;
-        var delIdx = Object.keys(ocrState.delSel || {}).filter(function (k) { return ocrState.delSel[k]; }).map(Number).sort(function (a, b) { return b - a; });
-        if (!delIdx.length) { toast('지울 줄을 먼저 체크해 주세요'); return; }
-        var delCnt = delIdx.length;
-        delIdx.forEach(function (ix) { ocrState.rows.splice(ix, 1); });
-        ocrState.delMode = false; ocrState.delSel = {};
-        renderOcrResult();
-        toast(delCnt + '줄을 지웠어요');
-        break;
-      case 'ocr-reparse':
-        var oraw = $('#ocr-raw');
-        if (ocrState && oraw) {
-          ocrState.text = oraw.value;
-          ocrState.rows = ocrParseText(oraw.value);
-          renderOcrResult();
-        }
-        break;
-      case 'open-sync':
-        renderSyncUI(); openSheet('modal-sync'); renderSyncUI(); break;
-      case 'sync-now':
-        syncNow({ silent: false }).then(function () { render(); }); break;
-      case 'sync-new':
-        createSyncCode(); break;
-      case 'sync-join':
-        joinSyncCode(); break;
-      case 'sync-off':
-        disconnectSync(); break;
-      case 'copy-code':
-        if (syncConnected()) copyText(syncCfg.ns, '동기화 코드를 복사했어요', 'sync-code-view'); break;
-      case 'copy-link':
-        if (syncConnected()) copyText(syncLink(), '전용 링크를 복사했어요', 'sync-link-view'); break;
-      case 'export-csv':
-        exportCsv(); break;
-      case 'export-json':
-        exportJson(); break;
-      case 'import-json':
-        var fi = $('#import-file'); if (fi) { fi.value = ''; fi.click(); }
-        break;
-      case 'wipe':
-        wipeAll(); break;
-      case 'card-attend':
-        var caRec = findRec(id);
-        if (!caRec) return;
-        var caVal = normAttend(val);
-        caRec.attend = caVal;
-        caRec.updatedAt = Date.now();
-        saveData();
-        render();
-        if (personView && document.getElementById('modal-person').classList.contains('open')) openPerson(personView.name, personView.rel);
-        toast(caRec.name + ' · ' + (attendLabelUI(caVal) || '체크 안 함') + '으로 표시했어요');
-        break;
-      case 'ocr-pin-toggle':
-        var pinEl = $('#ocr-pin');
-        if (!pinEl) return;
-        var pinMin = pinEl.classList.toggle('min');
-        if (ocrState) ocrState.pinMin = pinMin;
-        var pinBtn = pinEl.querySelector('.ocr-pin-head [data-act="ocr-pin-toggle"]');
-        if (pinBtn) {
-          pinBtn.textContent = pinMin ? '사진 크게 보기 ▾' : '사진 접기 ▴';
-          pinBtn.setAttribute('aria-expanded', pinMin ? 'false' : 'true');
-        }
-        updateOcrPin();
-        break;
+      case 'bulk-del-mode':
+        bulkToggleDelMode(); break;
+      case 'bulk-del-selected':
+        bulkDeleteSelected(); break;
+      case 'bulk-photo':
+        var blf = $('#bulk-file'); if (blf) { blf.value = ''; blf.click(); } break;
+      case 'bulk-pin-toggle':
+        bulkTogglePin(); break;
       case 'pick':
         pickChip(t); break;
       case 'dir-pick':
@@ -2621,140 +2498,104 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     }
   });
 
-  /* ---------- 방명록 OCR 표 편집 ---------- */
+  /* ---------- 여러 건 한 번에 입력: 표 편집 ---------- */
   document.addEventListener('input', function (e) {
     var t = e.target;
     if (!t || !t.getAttribute) return;
-    if (t.getAttribute('data-ocr-name') != null) {
-      var i = +t.getAttribute('data-ocr-name');
-      if (ocrState && ocrState.rows[i]) { ocrState.rows[i].name = String(t.value || '').trim(); updateOcrActions(); refreshOcrRowHint(i); }
+    if (t.getAttribute('data-bulk-name') != null) {
+      var bi = +t.getAttribute('data-bulk-name');
+      if (bulkState && bulkState.rows[bi]) bulkState.rows[bi].name = String(t.value || '').trim();
+      bulkUpdateCommit();
       return;
     }
-    if (t.getAttribute('data-ocr-amt') != null) {
-      var j = +t.getAttribute('data-ocr-amt');
+    if (t.getAttribute('data-bulk-amt') != null) {
+      var bj = +t.getAttribute('data-bulk-amt');
       var typed = amtTypeFormat(t);
-      if (ocrState && ocrState.rows[j]) ocrState.rows[j].amount = typed;
-      updateOcrActions();
-      refreshOcrRowHint(j);
+      if (bulkState && bulkState.rows[bj]) bulkState.rows[bj].amount = typed;
+      bulkUpdateCommit();
       return;
     }
-    if (t.getAttribute('data-ocr-memo') != null) {
-      var mi = +t.getAttribute('data-ocr-memo');
-      if (ocrState && ocrState.rows[mi]) ocrState.rows[mi].memo = String(t.value || '').trim();
-      return;
+    if (t.getAttribute('data-bulk-memo') != null) {
+      var bm = +t.getAttribute('data-bulk-memo');
+      if (bulkState && bulkState.rows[bm]) bulkState.rows[bm].memo = String(t.value || '').trim();
     }
-    if (t.id === 'ocr-raw' && ocrState) ocrState.text = t.value;
   });
   document.addEventListener('change', function (e) {
     var t = e.target;
     if (!t || !t.getAttribute) return;
-    if (t.getAttribute('data-ocr-delck') != null) {
-      var di = +t.getAttribute('data-ocr-delck');
-      if (ocrState) {
-        if (!ocrState.delSel) ocrState.delSel = {};
-        if (t.checked) ocrState.delSel[di] = true; else delete ocrState.delSel[di];
-        var drow = t.closest ? t.closest('.ocr-row') : null;
-        if (drow) drow.classList.toggle('delsel', !!t.checked);
-        updateOcrActions();
-      }
+    if (t.getAttribute('data-bulk-delck') != null) {
+      var bd = +t.getAttribute('data-bulk-delck');
+      if (!bulkState) return;
+      if (!bulkState.delSel) bulkState.delSel = {};
+      if (t.checked) bulkState.delSel[bd] = true; else delete bulkState.delSel[bd];
+      var bdrow = t.closest ? t.closest('.bulk-row') : null;
+      if (bdrow) bdrow.classList.toggle('delsel', !!t.checked);
+      bulkUpdateTools();
       return;
     }
-    if (t.getAttribute('data-ocr-ck') != null) {
-      var i = +t.getAttribute('data-ocr-ck');
-      if (ocrState && ocrState.rows[i]) {
-        ocrState.rows[i].on = !!t.checked;
-        var row = t.closest ? t.closest('.ocr-row') : null;
-        if (row) row.classList.toggle('off', !t.checked);
-        updateOcrActions();
-      }
+    if (t.getAttribute('data-bulk-rel') != null) {
+      var br = +t.getAttribute('data-bulk-rel');
+      if (bulkState && bulkState.rows[br]) bulkState.rows[br].relation = t.value;
       return;
     }
-    if (t.getAttribute('data-ocr-dir') != null) {
-      var j = +t.getAttribute('data-ocr-dir');
-      if (ocrState && ocrState.rows[j]) {
-        var rr = ocrState.rows[j];
-        rr.dir = t.value === 'out' ? 'out' : 'in';
-        var as2 = document.querySelector('[data-ocr-attend="' + j + '"]');
-        if (as2) {
-          var keepAtt = normAttend(rr.attend);
-          as2.innerHTML = '<option value="">참석 미정</option>' + attendOpts(rr.dir).map(function (a) {
-            return '<option value="' + a.v + '">' + esc(attendShort(a.v, rr.dir)) + '</option>';
-          }).join('');
-          as2.value = keepAtt;
-        }
-      }
+    if (t.getAttribute('data-bulk-att') != null) {
+      var ba = +t.getAttribute('data-bulk-att');
+      if (bulkState && bulkState.rows[ba]) bulkState.rows[ba].attend = normAttend(t.value);
       return;
     }
-    if (t.getAttribute('data-ocr-owner') != null) {
-      var k = +t.getAttribute('data-ocr-owner');
-      if (ocrState && ocrState.rows[k]) ocrState.rows[k].owner = t.value;
+    if (t.id === 'bulk-date') {
+      var bdv = normDate(t.value);
+      bulkAll.date = bdv || todayStr();
+      if (bdv) t.value = bdv;
       return;
     }
-    if (t.getAttribute('data-ocr-attend') != null) {
-      var ai = +t.getAttribute('data-ocr-attend');
-      if (ocrState && ocrState.rows[ai]) ocrState.rows[ai].attend = normAttend(t.value);
+    if (t.id === 'bulk-kind') { bulkAll.kind = t.value; return; }
+    if (t.id === 'bulk-thanks') { bulkAll.thanks = t.value; return; }
+    if (t.id === 'bulk-all-dir') { bulkAll.dir = t.value === 'out' ? 'out' : 'in'; return; }
+    if (t.id === 'bulk-all-owner') { bulkAll.owner = t.value; return; }
+    if (t.id === 'bulk-rel') {
+      bulkAll.relation = t.value;
+      if (bulkState) bulkState.rows.forEach(function (r) { r.relation = t.value; });
+      $$('#bulk-rows [data-bulk-rel]').forEach(function (sel) { sel.value = t.value; });
       return;
     }
-    if (t.getAttribute('data-ocr-rel') != null) {
-      var ri = +t.getAttribute('data-ocr-rel');
-      if (ocrState && ocrState.rows[ri]) ocrState.rows[ri].relation = t.value;
+    if (t.id === 'bulk-all-attend') {
+      var bav = normAttend(t.value);
+      bulkAll.attend = bav;
+      if (bulkState) bulkState.rows.forEach(function (r) { r.attend = bav; });
+      $$('#bulk-rows [data-bulk-att]').forEach(function (sel) { sel.value = bav; });
       return;
     }
-    if (t.id === 'ocr-date') {
-      var dv = normDate(t.value);
-      ocrCommon.date = dv || todayStr();
-      if (dv) t.value = dv;
-      return;
-    }
-    if (t.id === 'ocr-kind') { ocrCommon.kind = t.value; return; }
-    if (t.id === 'ocr-rel') {
-      ocrCommon.relation = t.value;
-      if (ocrState) ocrState.rows.forEach(function (r) { r.relation = t.value; });
-      $$('#ocr-result [data-ocr-rel]').forEach(function (sel) { sel.value = t.value; });
-      return;
-    }
-    if (t.id === 'ocr-thanks') { ocrCommon.thanks = t.value; return; }
-    if (t.id === 'ocr-all-dir' || t.id === 'ocr-all-owner' || t.id === 'ocr-all-attend') {
-      var field = t.id === 'ocr-all-dir' ? 'dir' : (t.id === 'ocr-all-owner' ? 'owner' : 'attend');
-      var val2 = field === 'attend' ? normAttend(t.value) : t.value;
-      ocrCommon[field] = val2;
-      if (ocrState) ocrState.rows.forEach(function (r) { r[field] = val2; });
-      $$('#ocr-result [data-ocr-' + field + ']').forEach(function (sel) { sel.value = val2; });
-      if (field === 'dir') {
-        var lal = $('#ocr-all-attend-label');
-        if (lal) lal.innerHTML = attendTitleShort(val2) + ' (아래 모두 적용)';
-        var aAll = $('#ocr-all-attend');
-        if (aAll) {
-          var keepAll = ocrCommon.attend;
-          aAll.innerHTML = '<option value="">정하지 않음</option>' + attendOpts(val2).map(function (a) {
-            return '<option value="' + a.v + '">' + esc(a.t) + '</option>';
-          }).join('');
-          aAll.value = keepAll;
-        }
-      }
-      return;
-    }
-    if (t.id === 'ocr-file-cam' || t.id === 'ocr-file-album') {
-      ocrFiles(t.files);
+    if (t.id === 'bulk-file') {
+      bulkLoadPhoto(t.files && t.files[0]);
       t.value = '';
     }
   });
   document.addEventListener('blur', function (e) {
     var t = e.target;
-    if (t && t.getAttribute && t.getAttribute('data-ocr-amt') != null) {
-      var v = amtBlurFormat(t);
-      var bi = +t.getAttribute('data-ocr-amt');
-      if (ocrState && ocrState.rows[bi]) {
-        ocrState.rows[bi].amount = v;
-        updateOcrActions();
-        refreshOcrRowHint(bi);
-      }
+    if (t && t.getAttribute && t.getAttribute('data-bulk-amt') != null) {
+      var bv = amtBlurFormat(t);
+      var bbi = +t.getAttribute('data-bulk-amt');
+      if (bulkState && bulkState.rows[bbi]) bulkState.rows[bbi].amount = bv;
+      bulkUpdateCommit();
     }
   }, true);
-
+  /* 줄에서 엔터를 치면 다음 줄 이름칸으로 넘어간다 (한글 조합 중에는 넘기지 않는다) */
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' || e.isComposing || e.keyCode === 229) return;
+    var t = e.target;
+    if (!t || !t.getAttribute) return;
+    var bri = t.getAttribute('data-bulk-name');
+    if (bri == null) bri = t.getAttribute('data-bulk-amt');
+    if (bri == null) bri = t.getAttribute('data-bulk-memo');
+    if (bri == null) return;
+    e.preventDefault();
+    var nextName = document.querySelector('[data-bulk-name="' + (+bri + 1) + '"]');
+    if (nextName) nextName.focus(); else t.blur();
+  });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
-      ['modal-record', 'modal-detail', 'modal-person', 'modal-sync', 'modal-share', 'modal-ocr'].forEach(function (id) { closeSheet(id); });
+      ['modal-record', 'modal-detail', 'modal-person', 'modal-sync', 'modal-share', 'modal-bulk'].forEach(function (id) { closeSheet(id); });
     }
   });
 
@@ -2770,582 +2611,229 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     toast('모든 기록을 지웠어요');
   }
 
-  /* ============================ 방명록 사진 OCR ============================
-     방명록 사진 → 이 기기 안에서만 글자 인식(Tesseract.js kor+eng)
-     · 촬영 사진은 EXIF 방향을 반영해 바로 세워 그리고, 흑백 이진화(배경 얼룩 제거 + 대비 강조) 후 인식한다.
-     · 사진이 옆으로 누워 있으면 ↺ / ↻ 버튼으로 90°씩 돌려 바로 다시 인식한다.
-     · 글자 위치(단어 상자)를 이용해 표의 줄을 다시 세우므로 이름과 금액이 한 줄에서 섞이지 않는다.
-     사진과 글자는 어디로도 보내지 않고, 저장 키·동기화 구조는 건드리지 않는다. */
-  var OCR_CDN = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
-  var OCR_LANG = 'https://tessdata.projectnaptha.com/4.0.0_fast';
-  var ocrState = null, ocrWorker = null, ocrLoading = null, ocrJobSeq = 0, ocrIdle = null;
-  var ocrCommon = { dir: 'in', owner: '공동', attend: '', date: '', kind: '결혼식', relation: '기타', thanks: 'none' };
+  /* ============================ 여러 건 한 번에 입력 ============================
+     방명록을 보며 이름·금액을 여러 건 한 번에 적는 표.
+     · 사진은 눈으로 보기만 한다. 고르면 스크롤되지 않는 위 칸에 붙어 따라온다.
+     · 위 공통 설정(구분·주체·관계·경조사·날짜·참석·답례)은 한 번만 고르면 아래 모든 줄에 적용된다.
+     저장 키·동기화 구조는 건드리지 않는다. */
+  var BULK_START = 5, BULK_STEP = 5;
+  var bulkState = null;
+  var bulkAll = { dir: 'in', owner: '공동', attend: '', date: '', kind: '결혼식', relation: '기타', thanks: 'none' };
 
-  function ocrMsg(txt) { var m = $('#ocr-msg'); if (m) { m.textContent = txt || ''; m.hidden = !txt; } }
-  function ocrStat(txt, pct) {
-    var el = $('#ocr-stat'); if (el) el.textContent = txt || '';
-    var bar = $('#ocr-bar');
-    if (bar) {
-      var inn = bar.querySelector('i');
-      if (typeof pct === 'number') { bar.hidden = false; if (inn) inn.style.width = Math.max(2, Math.min(100, pct)) + '%'; }
-      else { bar.hidden = true; if (inn) inn.style.width = '0%'; }
-    }
+  function bulkNewRow() {
+    return { name: '', amount: 0, memo: '', relation: bulkAll.relation || '기타', attend: bulkAll.attend || '' };
   }
-  function ocrLoadTess() {
-    if (window.Tesseract) return Promise.resolve(window.Tesseract);
-    if (ocrLoading) return ocrLoading;
-    ocrLoading = new Promise(function (res, rej) {
-      var sc = document.createElement('script');
-      sc.src = OCR_CDN; sc.async = true;
-      sc.onload = function () { if (window.Tesseract) res(window.Tesseract); else rej(new Error('ocr-load')); };
-      sc.onerror = function () { rej(new Error('ocr-load')); };
-      document.head.appendChild(sc);
-    }).catch(function (e) { ocrLoading = null; throw e; });
-    return ocrLoading;
-  }
-  /* 한국어 + 영어 사전을 함께 올린다(숫자·영문 금액 표기까지 읽도록) */
-  function ocrWorkerFor(job) {
-    return ocrLoadTess().then(function (T) {
-      if (ocrWorker) return ocrWorker;
-      ocrStat('글자 사전을 준비하는 중… (처음 한 번만)', 4);
-      var logger = function (m) {
-        if (!ocrState || ocrState.job !== job) return;
-        var st = (m && m.status) || '', pr = (m && typeof m.progress === 'number') ? m.progress : 0;
-        if (st.indexOf('language') >= 0) ocrStat('한국어·영어 글자 사전을 내려받는 중… (처음 한 번만)', 4 + pr * 40);
-        else if (st.indexOf('initializ') >= 0) ocrStat('글자 읽기 준비 중…', 46 + pr * 8);
-        else if (st.indexOf('recognizing') >= 0) ocrStat('글자를 읽는 중…', 56 + pr * 38);
-      };
-      return T.createWorker('kor+eng', 1, { logger: logger, langPath: OCR_LANG }).catch(function () {
-        ocrStat('글자 사전을 다시 받아보는 중…', 4);
-        return T.createWorker('kor+eng', 1, { logger: logger });
-      });
-    }).then(function (w) {
-      if (w && !w.__tuned) {
-        w.__tuned = true;
-        try { w.setParameters({ preserve_interword_spaces: '1', tessedit_pageseg_mode: '6' }); } catch (e) {}
-      }
-      ocrWorker = w;
-      clearTimeout(ocrIdle);
-      return w;
-    });
-  }
-
-  /* ---------- 사진 준비: EXIF 방향 반영 · 90° 회전 · 흑백 이진화 ---------- */
-  function ocrSizedCanvas(src, w0, h0) {
-    var long = Math.max(w0, h0);
-    var k = Math.min(2, 2200 / long);        /* 작은 사진은 2배까지 키워 글자를 또렷하게 */
-    var cap = Math.sqrt(4500000 / (w0 * h0));
-    if (cap < k) k = cap;                     /* 너무 커지면 메모리를 위해 제한 */
-    var c = document.createElement('canvas');
-    c.width = Math.max(1, Math.round(w0 * k));
-    c.height = Math.max(1, Math.round(h0 * k));
-    var ctx = c.getContext('2d');
-    try { ctx.imageSmoothingQuality = 'high'; } catch (e) {}
-    ctx.drawImage(src, 0, 0, c.width, c.height);
-    return c;
-  }
-  function ocrImgCanvas(file) {
-    return new Promise(function (res, rej) {
-      var url = URL.createObjectURL(file), img = new Image();
-      img.onload = function () {
-        try {
-          var c = ocrSizedCanvas(img, img.naturalWidth || img.width, img.naturalHeight || img.height);
-          URL.revokeObjectURL(url);
-          res(c);
-        } catch (e) { URL.revokeObjectURL(url); rej(e); }
-      };
-      img.onerror = function () { URL.revokeObjectURL(url); rej(new Error('image')); };
-      img.src = url;
-    });
-  }
-  /* 세로로 찍은 사진이 눕지 않게: 브라우저가 EXIF 방향을 적용해 그린다(createImageBitmap 우선) */
-  function ocrBaseCanvas(file) {
-    if (window.createImageBitmap) {
-      return createImageBitmap(file, { imageOrientation: 'from-image' })
-        .then(function (bmp) {
-          var c = ocrSizedCanvas(bmp, bmp.width || 1, bmp.height || 1);
-          try { bmp.close(); } catch (e) {}
-          return c;
-        })
-        .catch(function () { return ocrImgCanvas(file); });
-    }
-    return ocrImgCanvas(file);
-  }
-  function ocrRotCanvas(src, deg) {
-    deg = ((deg % 360) + 360) % 360;
-    if (!deg) return src;
-    var swap = (deg === 90 || deg === 270);
-    var c = document.createElement('canvas');
-    c.width = swap ? src.height : src.width;
-    c.height = swap ? src.width : src.height;
-    var ctx = c.getContext('2d');
-    ctx.translate(c.width / 2, c.height / 2);
-    ctx.rotate(deg * Math.PI / 180);   /* +90 = 시계 방향(오른쪽) */
-    ctx.drawImage(src, -src.width / 2, -src.height / 2);
-    return c;
-  }
-  function ocrPreviewUrl(base, deg) {
-    var r = ocrRotCanvas(base, deg);
-    var long = Math.max(r.width, r.height), k = long > 900 ? 900 / long : 1;
-    var c = document.createElement('canvas');
-    c.width = Math.max(1, Math.round(r.width * k));
-    c.height = Math.max(1, Math.round(r.height * k));
-    c.getContext('2d').drawImage(r, 0, 0, c.width, c.height);
-    var url = '';
-    try { url = c.toDataURL('image/jpeg', 0.82); } catch (e) {}
-    c.width = c.height = 0;
-    return url;
-  }
-  /* 3x3 중간값(점 노이즈 제거) · 배경 조명 지도(박스 블러 두 번 ≈ 가우시안) · 이진화 */
-  function ocrMedian3(g, w, h) {
-    var out = new Uint8Array(g.length), x, y, i;
-    var v = new Array(9);
-    for (y = 0; y < h; y++) {
-      for (x = 0; x < w; x++) {
-        i = y * w + x;
-        if (!x || !y || x === w - 1 || y === h - 1) { out[i] = g[i]; continue; }
-        v[0] = g[i - w - 1]; v[1] = g[i - w]; v[2] = g[i - w + 1];
-        v[3] = g[i - 1];     v[4] = g[i];     v[5] = g[i + 1];
-        v[6] = g[i + w - 1]; v[7] = g[i + w]; v[8] = g[i + w + 1];
-        for (var a = 1; a < 9; a++) {
-          var t = v[a], b = a - 1;
-          while (b >= 0 && v[b] > t) { v[b + 1] = v[b]; b--; }
-          v[b + 1] = t;
-        }
-        out[i] = v[4];
-      }
-    }
+  function bulkEmptyRows(n) {
+    var out = [], i;
+    for (i = 0; i < n; i++) out.push(bulkNewRow());
     return out;
   }
-  function ocrBoxBlur(g, w, h, r) {
-    var tmp = new Uint8Array(g.length), out = new Uint8Array(g.length);
-    var x, y, sum, i;
-    for (y = 0; y < h; y++) {
-      var row = y * w;
-      sum = 0;
-      for (x = 0; x <= r && x < w; x++) sum += g[row + x];
-      for (x = 0; x < w; x++) {
-        var lo = x - r, hi = x + r;
-        if (x > 0) { if (hi < w) sum += g[row + hi]; if (lo - 1 >= 0) sum -= g[row + lo - 1]; }
-        var n1 = Math.min(w - 1, hi) - Math.max(0, lo) + 1;
-        tmp[row + x] = sum / n1;
-      }
-    }
-    for (x = 0; x < w; x++) {
-      sum = 0;
-      for (y = 0; y <= r && y < h; y++) sum += tmp[y * w + x];
-      for (y = 0; y < h; y++) {
-        var lo2 = y - r, hi2 = y + r;
-        if (y > 0) { if (hi2 < h) sum += tmp[hi2 * w + x]; if (lo2 - 1 >= 0) sum -= tmp[(lo2 - 1) * w + x]; }
-        var n2 = Math.min(h - 1, hi2) - Math.max(0, lo2) + 1;
-        out[y * w + x] = sum / n2;
-      }
-    }
-    return out;
-  }
-  /* 표의 격자선(가로·세로 긴 직선)을 지운다 — 선이 있으면 글자를 엉뚱하게 읽는다 */
-  function ocrDropLines(ink, w, h, frac) {
-    var x, y, s0, i;
-    for (y = 0; y < h; y++) {
-      var row = y * w;
-      x = 0;
-      while (x < w) {
-        if (ink[row + x]) {
-          s0 = x;
-          while (x < w && ink[row + x]) x++;
-          if (x - s0 > w * frac) for (i = s0; i < x; i++) ink[row + i] = 0;
-        } else x++;
-      }
-    }
-    for (x = 0; x < w; x++) {
-      y = 0;
-      while (y < h) {
-        if (ink[y * w + x]) {
-          s0 = y;
-          while (y < h && ink[y * w + x]) y++;
-          if (y - s0 > h * frac) for (i = s0; i < y; i++) ink[i * w + x] = 0;
-        } else y++;
-      }
-    }
-    return ink;
-  }
-  function ocrPrep(src) {
-    var w = src.width, h = src.height, n = w * h;
-    var c = document.createElement('canvas'); c.width = w; c.height = h;
-    var ctx = c.getContext('2d');
-    ctx.drawImage(src, 0, 0);
-    var img = ctx.getImageData(0, 0, w, h), d = img.data;
-    var g = new Uint8Array(n), i, p;
-    for (i = 0, p = 0; i < n; i++, p += 4) g[i] = (d[p] * 0.299 + d[p + 1] * 0.587 + d[p + 2] * 0.114);
-    var med = ocrMedian3(g, w, h);
-    var r = Math.max(6, Math.round(Math.min(w, h) / 66));
-    var bg = ocrBoxBlur(ocrBoxBlur(med, w, h, r), w, h, r);
-    /* 획은 배경보다 어둡다 → 그 차이가 임계값을 넘으면 글자(검정) */
-    var thr = 33, inkCount = 0;
-    for (i = 0; i < n; i++) if (bg[i] - med[i] > thr) inkCount++;
-    if (inkCount < n * 0.006) thr = 20;
-    inkCount = 0;
-    for (i = 0; i < n; i++) if (bg[i] - med[i] > thr) inkCount++;
-    if (inkCount < n * 0.004) thr = 12;
-    var ink = new Uint8Array(n);
-    for (i = 0; i < n; i++) ink[i] = (bg[i] - med[i] > thr) ? 1 : 0;
-    ocrDropLines(ink, w, h, 0.45);
-    var out = ctx.createImageData(w, h), od = out.data;
-    for (i = 0, p = 0; i < n; i++, p += 4) {
-      var on = ink[i] ? 0 : 255;
-      od[p] = od[p + 1] = od[p + 2] = on; od[p + 3] = 255;
-    }
-    ctx.putImageData(out, 0, 0);
-    return c;
-  }
-  /* ---------- 읽은 글자 해석 ---------- */
-  function ocrNorm(t) {
-    return String(t || '')
-      .replace(/\r\n?/g, '\n')
-      .replace(/[|│┃┆¦]/g, ' ')
-      .replace(/[“”‘’]/g, '"')
-      .replace(/\u00a0|\u3000/g, ' ')
-      .replace(/[\uFF01-\uFF5E]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); })
-      .replace(/[ \t]+/g, ' ')
-      .replace(/\n{3,}/g, '\n\n');
-  }
-  var OCR_STOP = /^(성함|성명|이름|금액|축의금|조의금|축의|조의|방명록|축결혼|축하|결혼|결혼식|참석|서명|번호|비고|일시|날짜|장소|주소|계좌|신랑|신부|혼주|부모|관계|메모|합계|총계|소계|계|선물|및|축|결혼합니다|감사합니다)$/;
-  function ocrNameJoin(s) {
-    var t = String(s || '').replace(/[^가-힣·\s]/g, ' ').replace(/\s+/g, ' ').trim();
-    if (!t) return '';
-    var ws = t.split(' ').filter(function (x) { return x && !OCR_STOP.test(x); });
-    if (!ws.length) return '';
-    t = ws.join(' ').replace(/(님|씨|군|양)$/, '').trim();
-    if (!t) return '';
-    var parts = t.split(' ');
-    if (parts.length > 1 && parts.every(function (x) { return /^[가-힣]{1,4}$/.test(x); })) {
-      var joined = parts.join('');
-      if (joined.length <= 8) t = joined;
-    }
-    t = t.replace(/\s+/g, '');
-    if (!t || t.length < 1) return '';
-    return t.slice(0, 20);
-  }
-  function ocrCleanName(s) {   /* 글자 줄만 있을 때(위치 정보 없음) 쓰는 옛 방식 */
-    var t = ocrNameJoin(s);
-    if (t.length < 2) return '';
-    return t;
-  }
-  /* 금액처럼 생긴 토막인지 (50,000 · 50,- · sO, ooo · $0, 000 같은 표기) */
-  function ocrAmtLike(tok) {
-    var raw = String(tok || '').trim();
-    if (!raw || raw.length > 14) return false;
-    var ok = raw.replace(/[^0-9oOlIsSBZgQ$°ㅇ,.\-–—'"~^:%!/]/g, '');
-    var digitish = ok.replace(/[^0-9]/g, '').length;
-    var numish = ok.replace(/[^0-9oOlIsS$°ㅇ]/g, '').length;
-    if (!digitish && numish < 2) return false;   /* 'S'·'o' 한 글자는 금액으로 보지 않는다 */
-    var bare = raw.replace(/\s/g, '');
-    if (!bare.length) return false;
-    return (ok.length / bare.length) >= 0.7;
-  }
-  function ocrToAmount(tok) {
-    var s = String(tok || '')
-      .replace(/[oO°ㅇQ]/g, '0').replace(/[lI|!]/g, '1').replace(/[sS$]/g, '5')
-      .replace(/[%/]/g, '');
-    /* 금액 자리에 글자가 섞여 있으면 숫자를 지어내지 않고 비워 둔다 */
-    if (/[A-Za-zㄱ-ㅎㅏ-ㅣ]/.test(s.replace(/[0-9,.\-–—'"~^:%/]/g, ''))) return 0;
-    s = s.replace(/[^0-9,.\-–—'"~^:]/g, '');
-    var m = s.match(/\d{1,3}(?:,\d{3})+/);
-    if (m) {
-      var full = parseInt(m[0].replace(/,/g, ''), 10);
-      if (full >= 1000) return full;
-    }
-    var d = (s.match(/\d{1,9}/) || [''])[0];
-    if (!d) return 0;
-    var v = parseInt(d, 10);
-    if (!v) return 0;
-    if (v < 1000) return v * 1000;        /* 50 · 100 · 150 · 300 → 5만·10만·15만·30만 */
-    if (v < 10000 && v % 1000 === 0) return v * 100;   /* 2000·3000 → 20만·30만 (만원 단위 표기) */
-    return v;
-  }
-  function ocrSkipLine(line) {
-    var t = String(line || '').replace(/\s/g, '');
-    if (!t) return true;
-    if (/^[-=~_*·.()\[\]{}]+$/.test(t)) return true;
-    if (/^[\d.\-\/년월일\s]{4,}$/.test(String(line).trim())) return true;
-    if (/^(합계|총계|소계|계)[\d,.\-]*$/.test(t)) return true;
-    var toks = String(line).split(/\s+/).filter(Boolean);
-    if (toks.length && toks.every(function (x) { return OCR_STOP.test(x); })) return true;
-    return false;
-  }
-  /* 줄 번호·이름표 상자로 표의 줄을 다시 세운다 */
-  function ocrRowsFromWords(words) {
-    if (!words || !words.length) return [];
-    var groups = [], byKey = {};
-    words.forEach(function (w) {
-      var k = w.l || ('y' + Math.round(w.y / 40));
-      if (!byKey[k]) { byKey[k] = []; groups.push(byKey[k]); }
-      byKey[k].push(w);
-    });
-    var rows = [];
-    groups.forEach(function (ws) {
-      ws.sort(function (a, b) { return a.x - b.x; });
-      var rawText = ws.map(function (w) { return w.t; }).join(' ');
-      if (/합계|총계|소계/.test(rawText.replace(/\s/g, ''))) return;
-      var toks = ws.filter(function (w) { return !/^[|│┃┆¦:;·.,'"“”‘’()\[\]{}~\-–—_\/\\+*<>^…\s]+$/.test(w.t); });
-      if (!toks.length) return;
-      var start = 0;
-      if (/^[0-9OolISs]{1,3}[.)]?$/.test(toks[0].t)) start = 1;
-      var i0 = -1, i;
-      for (i = start; i < toks.length; i++) { if (ocrAmtLike(toks[i].t)) { i0 = i; break; } }
-      var nameToks, amtToks = [], memoToks = [], ditto = false;
-      if (i0 < 0) {
-        nameToks = toks.slice(start);
-      } else {
-        nameToks = toks.slice(start, i0);
-        var j = i0;
-        while (j < toks.length && ocrAmtLike(toks[j].t)) { amtToks.push(toks[j].t); j++; }
-        memoToks = toks.slice(j);
-        var tail = ws.slice(ws.indexOf(toks[j] || toks[toks.length - 1])).map(function (w) { return w.t; }).join(' ');
-        ditto = /["“”″〃]/.test(tail) && !/[가-힣]/.test(tail);
-      }
-      var name = ocrNameJoin(nameToks.map(function (t) { return t.t; }).join(' '));
-      var amount = amtToks.length ? ocrToAmount(amtToks.join('')) : 0;
-      var memo = ocrNameJoin(memoToks.map(function (t) { return t.t; }).join(' '));
-      if (/^["“”″〃']+$/.test(String(memo).trim())) memo = '';
-      if (!name && !amount) return;
-      /* 이름도 번호도 없는 큰 숫자만 있는 줄 = 합계로 본다 */
-      if (!name && !/^[0-9OolISs]{1,3}[.)]?$/.test(ws[0].t) && amount >= 500000) return;
-      /* 금액 없이 한 글자만 남은 줄은 잘못 읽은 조각으로 본다 */
-      if (!amount && name.length < 2) return;
-      rows.push({ y: ws[0].y, x: ws[0].x, name: name, amount: amount, memo: memo, ditto: ditto, raw: rawText });
-    });
-    rows.sort(function (a, b) { return (a.y - b.y) || (a.x - b.x); });
-    var prevMemo = '';
-    rows.forEach(function (r) {
-      if (r.ditto && !r.memo) r.memo = prevMemo;   /* " 는 바로 윗줄 비고를 이어받는다 */
-      prevMemo = r.memo || '';
-    });
-    return rows;
-  }
-  /* 위치 정보가 없을 때: 글자만으로 이름·금액 짝짓기 */
-  function ocrParseText(text) {
-    var lines = ocrNorm(text).split('\n');
-    var out = [];
-    lines.forEach(function (line0) {
-      var line = line0.replace(/([가-힣a-zA-Z])(\d)/g, '$1 $2').trim();
-      if (!line || ocrSkipLine(line)) return;
-      var toks = line.split(/\s+/).filter(Boolean);
-      var start = 0;
-      if (toks.length && /^[0-9OolISs]{1,3}[.)]?$/.test(toks[0])) start = 1;
-      var amtParts = [], nameToks = [], i0 = -1, i;
-      for (i = start; i < toks.length; i++) { if (ocrAmtLike(toks[i])) { i0 = i; break; } }
-      if (i0 < 0) { nameToks = toks.slice(start); }
-      else {
-        nameToks = toks.slice(start, i0);
-        var j = i0;
-        while (j < toks.length && ocrAmtLike(toks[j])) { amtParts.push(toks[j]); j++; }
-      }
-      var name = ocrNameJoin(nameToks.join(' '));
-      var amount = amtParts.length ? ocrToAmount(amtParts.join('')) : 0;
-      if (!name && !amount) return;
-      out.push(ocrNewRow(name, amount, ''));
-    });
-    out.forEach(function (r) {
-      r.dup = !!(r.name && r.amount && appData.records.some(function (x) {
-        return x.name === r.name && Number(x.amount) === Number(r.amount);
-      }));
-      if (r.dup) r.on = false;
-    });
-    return out;
-  }
-
-  /* ---------- 화면 ---------- */
-  function ocrNewRow(name, amount, memo) {
-    return { on: true, name: name || '', amount: amount || 0, memo: memo || '', dir: ocrCommon.dir, owner: ocrCommon.owner, attend: ocrCommon.attend, relation: ocrCommon.relation || '기타' };
-  }
-  function ocrSel(id, opts, cur) {
-    return '<select class="input" id="' + id + '">' + opts.map(function (o) {
+  function bulkOptsHtml(opts, cur) {
+    return opts.map(function (o) {
       return '<option value="' + esc(o.v) + '"' + (o.v === cur ? ' selected' : '') + '>' + esc(o.t) + '</option>';
-    }).join('') + '</select>';
+    }).join('');
   }
-  /* 방명록 표 줄의 관계 선택지: 앱의 관계 목록 + 기타 (+ 이미 정해진 값) */
-  function relOptsFor(cur) {
+  function bulkSel(id, opts, cur) {
+    return '<select class="input" id="' + id + '">' + bulkOptsHtml(opts, cur) + '</select>';
+  }
+  function bulkRelOpts(cur) {
     var list = RELS.concat(['기타']);
     if (cur && list.indexOf(cur) < 0) list.push(cur);
-    return list;
+    return list.map(function (v) { return { v: v, t: v }; });
   }
-  function ocrCommonHtml() {
+  /* 줄 안의 참석 선택지: 좁은 칸에 들어가도록 짧게 */
+  function bulkAttendOpts() {
+    return [{ v: '', t: '미정' }, { v: '1', t: '1인' }, { v: '2', t: '2인' }, { v: '0', t: '불참' }];
+  }
+  function bulkCommonHtml() {
     var kindOpts = KINDS.map(function (k) { return { v: k, t: k }; });
     var relOpts = RELS.concat(['기타']).map(function (r) { return { v: r, t: r }; });
     var dirOpts = [{ v: 'in', t: '💌 받은 돈' }, { v: 'out', t: '💸 보낸 돈' }];
     var ownOpts = OWNERS.map(function (o) { return { v: o, t: ownerLabel(o) }; });
-    var attDir = ocrCommon.dir === 'out' ? 'out' : 'in';
-    var attOpts = [{ v: '', t: '정하지 않음' }].concat(attendOpts(attDir));
     var thankOpts = [{ v: 'none', t: '해당 없음' }, { v: 'need', t: '갚아야 함 / 받을 예정' }, { v: 'done', t: '완료' }];
-    return '<div class="ocr-common">' +
+    return '<div class="bulk-common">' +
       '<div class="row">' +
-        '<label><span>날짜 (모두 같은 날)</span><input class="input dateinput" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" enterkeyhint="done" maxlength="10" placeholder="예: 261128" id="ocr-date" value="' + esc(ocrCommon.date) + '"></label>' +
-        '<label><span>경조사</span>' + ocrSel('ocr-kind', kindOpts, ocrCommon.kind) + '</label>' +
+        '<label><span>날짜</span><input class="input dateinput" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" enterkeyhint="done" maxlength="10" placeholder="예: 261128" id="bulk-date" value="' + esc(bulkAll.date) + '"></label>' +
+        '<label><span>경조사</span>' + bulkSel('bulk-kind', kindOpts, bulkAll.kind) + '</label>' +
       '</div>' +
       '<div class="row">' +
-        '<label><span>관계 (아래 모두 적용)</span>' + ocrSel('ocr-rel', relOpts, ocrCommon.relation) + '</label>' +
-        '<label><span>답례 상태</span>' + ocrSel('ocr-thanks', thankOpts, ocrCommon.thanks) + '</label>' +
+        '<label><span>구분</span>' + bulkSel('bulk-all-dir', dirOpts, bulkAll.dir) + '</label>' +
+        '<label><span>주체</span>' + bulkSel('bulk-all-owner', ownOpts, bulkAll.owner) + '</label>' +
       '</div>' +
       '<div class="row">' +
-        '<label><span>구분 (아래 모두 적용)</span>' + ocrSel('ocr-all-dir', dirOpts, ocrCommon.dir) + '</label>' +
-        '<label><span>주체 (아래 모두 적용)</span>' + ocrSel('ocr-all-owner', ownOpts, ocrCommon.owner) + '</label>' +
+        '<label><span>관계</span>' + bulkSel('bulk-rel', relOpts, bulkAll.relation) + '</label>' +
+        '<label><span>참석</span>' + bulkSel('bulk-all-attend', bulkAttendOpts(), bulkAll.attend) + '</label>' +
       '</div>' +
-      '<div class="row">' +
-        '<label style="grid-column:1 / -1"><span id="ocr-all-attend-label">' + attendTitleShort(attDir) + ' (아래 모두 적용)</span>' + ocrSel('ocr-all-attend', attOpts, ocrCommon.attend) + '</label>' +
+      '<div class="row"><label style="grid-column:1 / -1"><span>답례 상태</span>' + bulkSel('bulk-thanks', thankOpts, bulkAll.thanks) + '</label></div>' +
+    '</div>';
+  }
+  function bulkRowHtml(r, i) {
+    var delMode = !!(bulkState && bulkState.delMode);
+    var ck = !!(bulkState && bulkState.delSel && bulkState.delSel[i]);
+    var amt = num(r.amount);
+    return '<div class="bulk-row' + (ck ? ' delsel' : '') + '" data-bulk-row="' + i + '">' +
+      '<div class="l1">' +
+        (delMode ? '<input class="ck" type="checkbox" data-bulk-delck="' + i + '"' + (ck ? ' checked' : '') + ' aria-label="이 줄 지우기로 선택">' : '') +
+        '<input class="nm" type="text" data-bulk-name="' + i + '" value="' + esc(r.name) + '" placeholder="이름" aria-label="이름" maxlength="20" autocomplete="off">' +
+        '<input class="am" type="text" inputmode="decimal" data-bulk-amt="' + i + '" value="' + (amt ? amt.toLocaleString('ko-KR') : '') + '" placeholder="금액" aria-label="금액" autocomplete="off">' +
+        (delMode ? '' : '<button class="del" type="button" data-act="bulk-row-del" data-id="' + i + '" aria-label="이 줄 지우기" title="이 줄 지우기">✕</button>') +
+      '</div>' +
+      '<div class="l2">' +
+        '<select class="sel rel" data-bulk-rel="' + i + '" aria-label="관계">' + bulkOptsHtml(bulkRelOpts(r.relation), r.relation || '기타') + '</select>' +
+        '<select class="sel att" data-bulk-att="' + i + '" aria-label="참석">' + bulkOptsHtml(bulkAttendOpts(), normAttend(r.attend)) + '</select>' +
+        '<input class="mm" type="text" data-bulk-memo="' + i + '" value="' + esc(r.memo) + '" placeholder="비고 (선택)" aria-label="비고" maxlength="40" autocomplete="off">' +
       '</div>' +
     '</div>';
   }
-  function ocrRowHtml(r, i) {
-    var miss = [];
-    if (!r.name) miss.push('이름 없음');
-    if (!r.amount) miss.push('금액 없음');
-    var delMode = !!(ocrState && ocrState.delMode);
-    var delSel = !!(ocrState && ocrState.delSel && ocrState.delSel[i]);
-    return '<div class="ocr-row' + (r.on ? '' : ' off') + (delSel ? ' delsel' : '') + '" data-ocr-row="' + i + '">' +
-      (delMode
-        ? '<input class="ck del" type="checkbox" data-ocr-delck="' + i + '"' + (delSel ? ' checked' : '') + ' aria-label="이 줄 지우기로 선택">'
-        : '<input class="ck" type="checkbox" data-ocr-ck="' + i + '"' + (r.on ? ' checked' : '') + ' aria-label="이 줄 등록">') +
-      '<input class="nm" type="text" data-ocr-name="' + i + '" value="' + esc(r.name) + '" placeholder="이름" aria-label="이름" maxlength="20" autocomplete="off">' +
-      '<input class="am" type="text" inputmode="decimal" data-ocr-amt="' + i + '" value="' + (r.amount ? r.amount.toLocaleString('ko-KR') : '') + '" placeholder="금액" aria-label="금액">' +
-      '<button class="ocr-del" type="button" data-act="ocr-row-del" data-id="' + i + '" aria-label="이 줄 지우기" title="이 줄 지우기">✕</button>' +
-      '<div class="ocr-sub">' +
-        '<select class="sel" data-ocr-dir="' + i + '" aria-label="구분">' +
-          '<option value="in"' + (r.dir === 'in' ? ' selected' : '') + '>💌 받은 돈</option>' +
-          '<option value="out"' + (r.dir === 'out' ? ' selected' : '') + '>💸 보낸 돈</option>' +
-        '</select>' +
-        '<select class="sel" data-ocr-owner="' + i + '" aria-label="주체">' +
-          OWNERS.map(function (o) { return '<option value="' + esc(o) + '"' + (r.owner === o ? ' selected' : '') + '>' + esc(ownerLabel(o)) + '</option>'; }).join('') +
-        '</select>' +
-        '<select class="sel" data-ocr-attend="' + i + '" aria-label="방문·참석 체크">' +
-          '<option value=""' + (!normAttend(r.attend) ? ' selected' : '') + '>참석 미정</option>' +
-          attendOpts(r.dir).map(function (a) { return '<option value="' + a.v + '"' + (normAttend(r.attend) === a.v ? ' selected' : '') + '>' + esc(attendShort(a.v, r.dir)) + '</option>'; }).join('') +
-        '</select>' +
-      '</div>' +
-      '<div class="ocr-memo">' +
-        '<select class="sel" data-ocr-rel="' + i + '" aria-label="관계">' +
-          relOptsFor(r.relation).map(function (o) { return '<option value="' + esc(o) + '"' + (o === (r.relation || '기타') ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') +
-        '</select>' +
-        '<input class="mm" type="text" data-ocr-memo="' + i + '" value="' + esc(r.memo || '') + '" placeholder="비고 (선물·관계 메모, 선택)" aria-label="비고" maxlength="40" autocomplete="off">' +
-      '</div>' +
-      (r.dup ? '<span class="dup">이미 수첩에 있는 이름·금액이에요 (기본 선택 해제)</span>' : '') +
-      (miss.length ? '<span class="miss">' + miss.join(' · ') + ' — 고쳐 주세요</span>' : '') +
-    '</div>';
-  }
-  function refreshOcrRowHint(i) {
-    var row = document.querySelector('.ocr-row[data-ocr-row="' + i + '"]');
-    if (!row || !ocrState || !ocrState.rows[i]) return;
-    var r = ocrState.rows[i], el = row.querySelector('.miss');
-    var miss = [];
-    if (!r.name) miss.push('이름 없음');
-    if (!r.amount) miss.push('금액 없음');
-    if (!miss.length) { if (el && el.parentNode) el.parentNode.removeChild(el); return; }
-    if (!el) { el = document.createElement('span'); el.className = 'miss'; row.appendChild(el); }
-    el.textContent = miss.join(' · ') + ' — 고쳐 주세요';
-  }
-  function updateOcrActions() {
-    var btn = $('#ocr-commit');
+  function bulkUpdateCommit() {
+    var btn = $('#bulk-commit');
     if (!btn) return;
-    var n = ocrState ? ocrState.rows.filter(function (r) { return r.on && r.name && r.amount > 0; }).length : 0;
-    btn.disabled = !n || !!(ocrState && ocrState.busy);
-    btn.textContent = (ocrState && ocrState.rows.length) ? ('선택한 ' + n + '건 등록') : '등록';
-    var sel = $('#ocr-sel');
-    if (sel) sel.textContent = ocrState
-      ? (ocrState.delMode
-        ? Object.keys(ocrState.delSel || {}).filter(function (k) { return ocrState.delSel[k]; }).length
-        : ocrState.rows.filter(function (r) { return r.on; }).length)
-      : 0;
-    var dbtn = $('#ocr-del-selected');
-    if (dbtn) {
-      var dn = ocrState && ocrState.delSel ? Object.keys(ocrState.delSel).filter(function (k) { return ocrState.delSel[k]; }).length : 0;
-      dbtn.textContent = '선택한 ' + dn + '줄 삭제';
-      dbtn.disabled = !dn;
-    }
+    var n = bulkState ? bulkState.rows.filter(function (r) {
+      return String(r.name || '').trim() && num(r.amount) > 0;
+    }).length : 0;
+    btn.disabled = !n;
+    btn.textContent = n ? (n + '건 등록') : '등록';
   }
-  function renderOcrResult() {
-    var host = $('#ocr-result');
-    if (!host) return;
-    var st = ocrState;
-    if (!st || !st.rows.length) {
-      host.innerHTML = ocrCommonHtml() +
-        '<div class="ocr-addrow"><button class="btn ghost sm" type="button" data-act="ocr-addrow">＋ 빈 줄 추가</button></div>' +
-        '<p class="ocr-tip">사진을 고르면 여기에 이름·금액 후보가 표로 나와요. 여러 장을 한 번에 골라도 되고, 표에 직접 적어도 돼요.</p>';
-      updateOcrActions();
-      return;
-    }
-    var delMode = !!st.delMode;
-    var delN = st.delSel ? Object.keys(st.delSel).filter(function (k) { return st.delSel[k]; }).length : 0;
-    host.innerHTML = ocrCommonHtml() +
-      '<div class="ocr-count"><span>찾은 기록 <b>' + st.rows.length + '</b>건</span><span>' +
-        (delMode ? '지울 줄 <b id="ocr-sel">' + delN + '</b>줄' : '선택 <b id="ocr-sel">' + st.rows.filter(function (r) { return r.on; }).length + '</b>건') +
-      '</span></div>' +
-      (delMode
-        ? '<p class="ocr-delmode">사진에서 실제보다 많이 잡힌 줄을 체크한 뒤 <b>선택한 줄 삭제</b>를 누르면 한 번에 지워져요.</p>'
-        : '') +
-      '<div class="ocr-tools"><button class="btn ghost sm" type="button" data-act="ocr-selall">전체 선택</button><button class="btn ghost sm" type="button" data-act="ocr-selnone">전체 해제</button>' +
-        (delMode
-          ? '<button class="btn danger sm" type="button" data-act="ocr-del-selected" id="ocr-del-selected"' + (delN ? '' : ' disabled') + '>선택한 ' + delN + '줄 삭제</button>' +
-            '<button class="btn ghost sm" type="button" data-act="ocr-del-cancel">취소</button>'
-          : '<button class="btn ghost sm" type="button" data-act="ocr-del-mode">🧹 여러 줄 지우기</button>') +
+  function bulkUpdateTools() {
+    if (!bulkState) return;
+    var delMode = !!bulkState.delMode;
+    var seld = Object.keys(bulkState.delSel || {}).filter(function (k) { return bulkState.delSel[k]; }).length;
+    var modeBtn = $('#bulk-del-mode');
+    if (modeBtn) modeBtn.textContent = delMode ? '취소' : '🧹 여러 줄 지우기';
+    var line = $('#bulk-del-line');
+    if (line) line.hidden = !delMode;
+    var delBtn = $('#bulk-del-selected');
+    if (delBtn) { delBtn.textContent = '선택한 ' + seld + '줄 지우기'; delBtn.disabled = !seld; }
+  }
+  function bulkRenderRows() {
+    var host = $('#bulk-rows');
+    if (!host || !bulkState) return;
+    host.innerHTML = bulkState.rows.map(bulkRowHtml).join('');
+    bulkUpdateTools();
+    bulkUpdateCommit();
+  }
+  function bulkRender() {
+    var body = $('#bulk-body');
+    if (!body || !bulkState) return;
+    body.innerHTML =
+      '<div class="bulk-photo-line"><button class="btn ghost sm" type="button" data-act="bulk-photo" id="bulk-photo-btn">' +
+        (bulkState.prevUrl ? '🖼️ 사진 바꾸기' : '🖼️ 참고 사진 띄우기') + '</button></div>' +
+      bulkCommonHtml() +
+      '<div id="bulk-rows"></div>' +
+      '<div class="bulk-tools">' +
+        '<button class="btn ghost sm" type="button" data-act="bulk-add5">＋ 5줄 추가</button>' +
+        '<button class="btn ghost sm" type="button" data-act="bulk-del-mode" id="bulk-del-mode">🧹 여러 줄 지우기</button>' +
       '</div>' +
-      st.rows.map(ocrRowHtml).join('') +
-      '<div class="ocr-addrow"><button class="btn ghost sm" type="button" data-act="ocr-addrow">＋ 빈 줄 추가</button><button class="btn ghost sm" type="button" data-act="ocr-clear">표 비우기</button></div>' +
-      '<details class="ocr-raw"><summary>읽은 글자 보기 · 직접 고쳐서 다시 분석</summary>' +
-        '<textarea id="ocr-raw" spellcheck="false" aria-label="읽은 글자">' + esc(st.text || '') + '</textarea>' +
-        '<button class="btn ghost sm" type="button" data-act="ocr-reparse">이 글자로 다시 분석</button></details>' +
-      '<p class="ocr-tip">금액 <b>50</b>은 5만원으로 읽어요 · 이름이 빈 줄은 등록되지 않아요.</p>';
-    updateOcrActions();
+      '<div id="bulk-del-line" hidden><button class="btn danger sm block" type="button" data-act="bulk-del-selected" id="bulk-del-selected" disabled>선택한 0줄 지우기</button></div>';
+    bulkRenderRows();
+    bulkRenderFixed();
   }
-  function renderOcr() {
-    var body = $('#ocr-body');
-    if (!body) return;
-    var st = ocrState;
-    var has = !!(st && st.preview);
-    /* 사진은 스크롤되지 않는 상단 칸(#ocr-fixed)에, 표·입력칸만 아래 칸에서 스크롤한다 */
-    var pinHtml = '<div class="ocr-pin' + (st && st.pinMin ? ' min' : '') + '" id="ocr-pin"' + (has ? '' : ' hidden') + '>' +
-        '<div class="ocr-pin-head"><span class="pt">📷 방명록 사진 <b>위에 고정</b></span>' +
-          '<button class="btn ghost" type="button" data-act="ocr-pin-toggle" aria-expanded="' + (st && st.pinMin ? 'false' : 'true') + '">' + (st && st.pinMin ? '사진 크게 보기 ▾' : '사진 접기 ▴') + '</button>' +
-        '</div>' +
-        '<div class="ocr-prev" id="ocr-prev" data-act="ocr-pin-toggle" title="눌러서 사진 접기·펴기"><img id="ocr-img" alt="방명록 사진" src="' + (has ? esc(st.preview) : '') + '"></div>' +
-        '<div class="ocr-rot" id="ocr-rot">' +
-          '<button class="btn ghost sm" type="button" data-act="ocr-rot-ccw" title="시계 반대 방향으로 90도">↺ 왼쪽 90°</button>' +
-          '<button class="btn ghost sm" type="button" data-act="ocr-rot-cw" title="시계 방향으로 90도">↻ 오른쪽 90°</button>' +
-          '<button class="btn ghost sm" type="button" data-act="ocr-photo-clear" title="사진 지우기">🗑 사진 지우기</button>' +
-        '</div>' +
-      '</div>';
-    var html = '<p class="ocr-help">사진은 <b>이 기기 안에서만</b> 읽어요 · 손글씨는 표에서 바로 고쳐 주세요.</p>' +
-      '<div class="ocr-src">' +
-        '<button class="btn ghost sm" type="button" data-act="ocr-camera">📷 사진 찍기</button>' +
-        '<button class="btn ghost sm" type="button" data-act="ocr-album">🖼 앨범에서 고르기</button>' +
+  function bulkRenderFixed() {
+    var fixed = $('#bulk-fixed');
+    if (!fixed) return;
+    var url = bulkState && bulkState.prevUrl;
+    if (!url) { fixed.innerHTML = ''; return; }
+    var min = !!bulkState.pinMin;
+    fixed.innerHTML = '<div class="bulk-pin' + (min ? ' min' : '') + '" id="bulk-pin">' +
+      '<div class="bulk-pin-head"><span class="pt">🖼️ 참고 사진</span>' +
+        '<button class="btn ghost" type="button" data-act="bulk-pin-toggle" aria-expanded="' + (min ? 'false' : 'true') + '">' +
+          (min ? '크게 보기 ▾' : '접기 ▴') + '</button>' +
       '</div>' +
-      '<p class="ocr-stat" id="ocr-stat"></p><div class="ocr-bar" id="ocr-bar" hidden><i></i></div><p class="ocr-msg" id="ocr-msg" hidden></p>' +
-      '<div id="ocr-result"></div>';
-    var fixed = $('#ocr-fixed');
-    if (fixed) fixed.innerHTML = pinHtml;
-    body.innerHTML = html;
-    renderOcrResult();
-    if (st && st.stat) ocrStat(st.stat, st.pct);
-    if (st && st.msg) ocrMsg(st.msg);
-    updateOcrPin();
+      '<div class="bulk-prev" data-act="bulk-pin-toggle" title="눌러서 접기·펴기"><img alt="참고 사진" src="' + url + '"></div>' +
+    '</div>';
+    bulkUpdatePin();
   }
-  /* 사진을 위에 붙인 채로 내려가면 그림자로 경계를 보여 준다 */
-  function updateOcrPin() {
-    var body = $('#ocr-body');
-    var pin = $('#ocr-pin');
+  function bulkUpdatePin() {
+    var body = $('#bulk-body'), pin = $('#bulk-pin');
     if (!body || !pin) return;
     pin.classList.toggle('stuck', body.scrollTop > 4);
   }
-  /* 아이폰 키보드가 올라와도 사진이 화면 밖으로 밀리지 않게 모달을 보이는 화면에 맞춘다 */
-  var ocrVPBound = false;
-  function ocrFitViewport() {
-    var sheet = document.getElementById('modal-ocr');
+  function bulkTogglePin() {
+    if (!bulkState) return;
+    bulkState.pinMin = !bulkState.pinMin;
+    var pin = $('#bulk-pin');
+    if (!pin) return;
+    pin.classList.toggle('min', bulkState.pinMin);
+    var btn = pin.querySelector('[data-act="bulk-pin-toggle"]');
+    if (btn) {
+      btn.textContent = bulkState.pinMin ? '크게 보기 ▾' : '접기 ▴';
+      btn.setAttribute('aria-expanded', bulkState.pinMin ? 'false' : 'true');
+    }
+  }
+  function bulkLoadPhoto(file) {
+    if (!bulkState || !file) return;
+    if (!/^image\//i.test(file.type || '')) { toast('사진 파일만 고를 수 있어요'); return; }
+    if (bulkState.prevUrl) { try { URL.revokeObjectURL(bulkState.prevUrl); } catch (e) {} }
+    bulkState.prevUrl = URL.createObjectURL(file);
+    bulkState.pinMin = false;
+    var btn = $('#bulk-photo-btn');
+    if (btn) btn.textContent = '🖼️ 사진 바꾸기';
+    bulkRenderFixed();
+    bulkFitViewport();
+  }
+  function bulkAddRows(n) {
+    if (!bulkState) return;
+    var from = bulkState.rows.length, i;
+    for (i = 0; i < n; i++) bulkState.rows.push(bulkNewRow());
+    bulkRenderRows();
+    var el = document.querySelector('[data-bulk-name="' + from + '"]');
+    if (el) el.focus();
+  }
+  function bulkToggleDelMode() {
+    if (!bulkState) return;
+    bulkState.delMode = !bulkState.delMode;
+    bulkState.delSel = {};
+    bulkRenderRows();
+  }
+  function bulkDeleteSelected() {
+    if (!bulkState) return;
+    var idx = Object.keys(bulkState.delSel || {}).filter(function (k) { return bulkState.delSel[k]; })
+      .map(Number).sort(function (a, b) { return b - a; });
+    if (!idx.length) { toast('지울 줄을 먼저 체크해 주세요'); return; }
+    idx.forEach(function (i) { bulkState.rows.splice(i, 1); });
+    bulkState.delMode = false;
+    bulkState.delSel = {};
+    if (!bulkState.rows.length) bulkState.rows = bulkEmptyRows(BULK_START);
+    bulkRenderRows();
+    toast(idx.length + '줄을 지웠어요');
+  }
+  function bulkCommit() {
+    if (!bulkState) return;
+    var date = normDate(bulkAll.date) || todayStr();
+    var now = Date.now(), added = 0, skipped = 0;
+    bulkState.rows.forEach(function (r) {
+      var name = String(r.name || '').trim();
+      var amount = num(r.amount) > 0 ? num(r.amount) : amtParse(r.amount);
+      var memo = String(r.memo || '').trim();
+      if (!name && !amount && !memo) return;          /* 손대지 않은 빈 줄은 조용히 건너뛴다 */
+      if (!name || amount <= 0) { skipped++; return; }
+      appData.records.push({
+        id: uid(), dir: bulkAll.dir === 'out' ? 'out' : 'in',
+        owner: normOwner(bulkAll.owner), attend: normAttend(r.attend != null ? r.attend : bulkAll.attend),
+        name: name.slice(0, 20), relation: r.relation || bulkAll.relation || '기타',
+        kind: bulkAll.kind || '결혼식', date: date, amount: amount,
+        thanks: bulkAll.thanks || 'none', memo: memo.slice(0, 40),
+        createdAt: now, updatedAt: now
+      });
+      added++;
+    });
+    if (!added) { toast('등록할 줄이 없어요 · 이름과 금액을 적어 주세요'); return; }
+    saveData();
+    render();
+    bulkClose();
+    toast(added + '건 등록했어요' + (skipped ? ' · 이름·금액이 빠진 ' + skipped + '줄은 건너뜀' : ''));
+  }
+  /* 아이폰 키보드가 올라와도 표가 화면 밖으로 밀리지 않게 모달을 보이는 화면에 맞춘다 */
+  var bulkVPBound = false;
+  function bulkFitViewport() {
+    var sheet = document.getElementById('modal-bulk');
     if (!sheet || !sheet.classList.contains('open')) return;
     var vv = window.visualViewport;
     var mobile = window.matchMedia('(max-width: 739px)').matches;
     var vh = vv ? vv.height : window.innerHeight;
     var kb = !!vv && (window.innerHeight - vv.height) > 120;
-    var compact = kb || vh < 620;   /* 키보드가 올라왔거나 화면이 짧으면 사진·버튼을 접어 표 칸을 넓힌다 */
-    if (!mobile && !compact) { ocrResetViewport(); return; }
+    var compact = kb || vh < 620;   /* 키보드가 올라왔거나 화면이 짧으면 사진·머리 줄을 접어 표 칸을 넓힌다 */
+    if (!mobile && !compact) { bulkResetViewport(); return; }
     sheet.style.top = Math.max(0, Math.round(vv ? vv.offsetTop : 0)) + 'px';
     sheet.style.bottom = 'auto';
     sheet.style.height = Math.round(vh) + 'px';
@@ -3356,204 +2844,42 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     }
     sheet.classList.toggle('kb', compact);
   }
-  function ocrResetViewport() {
-    var sheet = document.getElementById('modal-ocr');
+  function bulkResetViewport() {
+    var sheet = document.getElementById('modal-bulk');
     if (!sheet) return;
     sheet.style.top = ''; sheet.style.bottom = ''; sheet.style.height = '';
     sheet.classList.remove('kb');
     var panel = sheet.querySelector('.panel');
     if (panel) { panel.style.height = ''; panel.classList.remove('kb'); }
   }
-  function ocrBindViewport() {
-    if (ocrVPBound) return;
-    ocrVPBound = true;
+  function bulkBindViewport() {
+    if (bulkVPBound) return;
+    bulkVPBound = true;
     var vv = window.visualViewport;
     if (vv) {
-      vv.addEventListener('resize', ocrFitViewport);
-      vv.addEventListener('scroll', ocrFitViewport);
+      vv.addEventListener('resize', bulkFitViewport);
+      vv.addEventListener('scroll', bulkFitViewport);
     }
-    window.addEventListener('resize', ocrFitViewport);
-    window.addEventListener('orientationchange', function () { setTimeout(ocrFitViewport, 150); });
+    window.addEventListener('resize', bulkFitViewport);
+    window.addEventListener('orientationchange', function () { setTimeout(bulkFitViewport, 150); });
   }
-  function ocrOpen() {
-    ocrCommon = { dir: 'in', owner: husbandView ? '남편' : '공동', attend: '', date: todayStr(), kind: '결혼식', relation: '기타', thanks: 'none' };
-    ocrState = { rows: [], busy: false, job: 0, text: '', preview: '', stat: '', pct: null, msg: '', bases: [], rot: 0, pinMin: false, delMode: false, delSel: {} };
-    renderOcr();
-    openSheet('modal-ocr');
-    ocrBindViewport();
-    ocrFitViewport();
+  function bulkOpen() {
+    bulkAll = { dir: 'in', owner: husbandView ? '남편' : '공동', attend: '', date: todayStr(), kind: '결혼식', relation: '기타', thanks: 'none' };
+    bulkState = { rows: bulkEmptyRows(BULK_START), delMode: false, delSel: {}, prevUrl: '', pinMin: false };
+    bulkRender();
+    openSheet('modal-bulk');
+    bulkBindViewport();
+    bulkFitViewport();
+    var body = $('#bulk-body');
+    if (body) body.scrollTop = 0;
   }
-  function ocrClose() {
-    closeSheet('modal-ocr');
-    ocrResetViewport();
-    var fixed = $('#ocr-fixed');
+  function bulkClose() {
+    closeSheet('modal-bulk');
+    bulkResetViewport();
+    var fixed = $('#bulk-fixed');
     if (fixed) fixed.innerHTML = '';
-    ocrState = null;
-    clearTimeout(ocrIdle);
-    ocrIdle = setTimeout(function () {
-      if (ocrWorker) { try { ocrWorker.terminate(); } catch (e) {} ocrWorker = null; }
-    }, 120000);
-  }
-  function ocrClearPhoto() {
-    var st = ocrState;
-    if (!st) return;
-    st.job = ++ocrJobSeq;         /* 진행 중이던 인식 결과는 버린다 */
-    st.bases.forEach(function (c) { try { c.width = c.height = 0; } catch (e) {} });
-    st.bases = []; st.rot = 0; st.preview = ''; st.text = ''; st.rows = [];
-    st.busy = false; st.stat = ''; st.pct = null; st.msg = '';
-    renderOcr();
-    toast('사진을 지웠어요 · 새 사진을 고르면 다시 읽어요');
-  }
-  /* 사진에서 읽은 결과를 표로 */
-  function ocrApplyRows(st, wordRows, text) {
-    if (wordRows && wordRows.length) {
-      st.rows = wordRows.map(function (r) { return ocrNewRow(r.name, r.amount, r.memo || ''); });
-    } else {
-      st.rows = ocrParseText(text);
-    }
-    st.rows.forEach(function (r) {
-      r.dup = !!(r.name && r.amount && appData.records.some(function (x) {
-        return x.name === r.name && Number(x.amount) === Number(r.amount);
-      }));
-      if (r.dup) r.on = false;
-    });
-  }
-  function ocrRun(job) {
-    var st = ocrState;
-    if (!st || !st.bases.length) return;
-    st.busy = true; st.msg = ''; st.text = '';
-    var wordRows = [], failed = 0;
-    updateOcrActions();
-    var chain = Promise.resolve();
-    st.bases.forEach(function (base, idx) {
-      chain = chain.then(function () {
-        if (!ocrState || ocrState !== st || st.job !== job) return;
-        st.stat = '사진 ' + (idx + 1) + '/' + st.bases.length + ' 준비 중…'; st.pct = 3;
-        ocrStat(st.stat, st.pct);
-        var rotC = ocrRotCanvas(base, st.rot);
-        var bin = ocrPrep(rotC);
-        if (rotC !== base) { try { rotC.width = rotC.height = 0; } catch (e) {} }
-        st.stat = '사진 ' + (idx + 1) + '/' + st.bases.length + ' · 글자를 읽는 중…'; st.pct = 8;
-        ocrStat(st.stat, st.pct);
-        return ocrWorkerFor(job).then(function (w) {
-          if (!ocrState || ocrState !== st || st.job !== job) return null;
-          return w.recognize(bin, {}, { text: true, tsv: true, blocks: false, hocr: false });
-        }).then(function (res) {
-          try { bin.width = bin.height = 0; } catch (e) {}
-          if (!res) return;
-          var txt = ocrNorm((res.data && res.data.text) || '');
-          st.text = (st.text ? st.text + '\n' : '') + txt;
-          wordRows = wordRows.concat(ocrRowsFromWords(ocrWordsFromTsv(res.data && res.data.tsv)));
-        });
-      }).catch(function () { failed++; });
-    });
-    chain.then(function () {
-      if (!ocrState || ocrState !== st || st.job !== job) return;
-      st.busy = false;
-      if (!String(st.text || '').replace(/\s/g, '') && !wordRows.length) {
-        st.stat = failed ? '사진을 읽지 못했어요 · 다른 사진으로 다시 시도해 주세요' : '사진에서 글자를 찾지 못했어요';
-        st.pct = null; st.msg = '글자를 못 찾았어요. 방명록을 더 밝게, 정면에서 다시 찍거나 아래 표에 직접 적어 주세요.';
-        renderOcr();
-        return;
-      }
-      ocrApplyRows(st, wordRows, st.text);
-      var withName = st.rows.filter(function (r) { return r.name; }).length;
-      var withAmt = st.rows.filter(function (r) { return r.amount > 0; }).length;
-      st.stat = '다 읽었어요 · ' + st.rows.length + '줄 (이름 ' + withName + ' · 금액 ' + withAmt + ')' + (failed ? ' · 사진 ' + failed + '장 실패' : '');
-      st.pct = null;
-      /* 한글이 거의 안 나오고 영문 자모만 잔뜩이면 사진이 누워 있을 가능성이 크다 */
-      var hangul = (st.text.match(/[가-힣]/g) || []).length;
-      var latin = (st.text.match(/[A-Za-z]/g) || []).length;
-      if (hangul < 4 && latin > 10) st.msg = '한글이 거의 읽히지 않았어요. 사진이 누워 있다면 ↺ 왼쪽 90° 또는 ↻ 오른쪽 90°를 눌러 다시 읽어 보세요.';
-      renderOcr();
-    });
-  }
-  function ocrRotate(delta) {
-    var st = ocrState;
-    if (!st || !st.bases.length) return;
-    if (st.busy) { toast('사진을 읽는 중이에요 · 끝나면 바로 돌릴 수 있어요'); return; }
-    st.rot = ((st.rot + delta) % 360 + 360) % 360;
-    st.preview = ocrPreviewUrl(st.bases[0], st.rot) || st.preview;
-    st.rows = []; st.text = ''; st.stat = ''; st.pct = null; st.msg = '';
-    renderOcr();
-    st.job = ++ocrJobSeq;
-    ocrRun(st.job);
-  }
-  function ocrFiles(fileList) {
-    var list = Array.prototype.slice.call(fileList || []).filter(function (f) { return /^image\//i.test(f.type || ''); });
-    if (!list.length) { if (ocrState) { ocrState.msg = '사진 파일만 고를 수 있어요 (JPG · PNG · HEIC)'; renderOcr(); } return; }
-    if (!ocrState) return;
-    var st = ocrState;
-    var job = ++ocrJobSeq;
-    st.job = job; st.busy = true; st.msg = ''; st.text = ''; st.rows = []; st.stat = ''; st.pct = 1;
-    renderOcr();
-    updateOcrActions();
-    var chain = Promise.resolve();
-    list.forEach(function (file, idx) {
-      chain = chain.then(function () {
-        if (!ocrState || ocrState !== st || st.job !== job) return;
-        st.stat = '사진 ' + (idx + 1) + '/' + list.length + ' 불러오는 중…'; st.pct = 1;
-        ocrStat(st.stat, st.pct);
-        return ocrBaseCanvas(file).then(function (base) {
-          if (!ocrState || ocrState !== st || st.job !== job) { try { base.width = base.height = 0; } catch (e) {} return; }
-          st.bases.push(base);
-          if (!st.preview) {
-            st.preview = ocrPreviewUrl(base, st.rot);
-            var img = $('#ocr-img'), pv = $('#ocr-prev'), rb = $('#ocr-rot');
-            if (img) img.src = st.preview;
-            if (pv) pv.hidden = false;
-            if (rb) rb.hidden = false;
-          }
-        }).catch(function () {});
-      });
-    });
-    chain.then(function () {
-      if (!ocrState || ocrState !== st || st.job !== job) return;
-      if (!st.bases.length) {
-        st.busy = false;
-        st.stat = '사진을 불러오지 못했어요';
-        st.msg = 'HEIC 사진은 아이폰 사진 앱에서 JPG로 저장한 뒤 다시 골라 주세요.';
-        renderOcr();
-        return;
-      }
-      ocrRun(st.job);
-    });
-  }
-  function ocrCommit() {
-    if (!ocrState || !ocrState.rows.length) return;
-    var date = ocrCommon.date || todayStr();
-    var now = Date.now(), added = 0, skipped = 0;
-    ocrState.rows.forEach(function (r) {
-      if (!r.on) return;
-      var name = String(r.name || '').trim();
-      var amount = num(r.amount) > 0 && num(r.amount) < 1000 ? num(r.amount) * 10000 : num(r.amount);
-      if (!name || amount <= 0) { skipped++; return; }
-      appData.records.push({
-        id: uid(), dir: r.dir === 'in' ? 'in' : 'out',
-        owner: normOwner(r.owner), attend: normAttend(r.attend),
-        name: name, relation: r.relation || ocrCommon.relation || '기타', kind: ocrCommon.kind || '결혼식',
-        date: date, amount: amount, thanks: ocrCommon.thanks || 'none',
-        memo: String(r.memo || '').trim(), createdAt: now, updatedAt: now
-      });
-      added++;
-    });
-    if (!added) { toast('등록할 줄이 없어요 · 이름과 금액을 확인해 주세요'); return; }
-    saveData();
-    render();
-    ocrClose();
-    toast(added + '건 등록했어요' + (skipped ? ' · ' + skipped + '건은 이름·금액이 비어 건너뜀' : ''));
-  }
-  /* Tesseract 단어 상자(TSV) 파싱 */
-  function ocrWordsFromTsv(tsv) {
-    var out = [];
-    String(tsv || '').split('\n').forEach(function (line) {
-      var f = line.split('\t');
-      if (f.length < 12 || f[0] !== '5') return;
-      var t = String(f[11] || '').replace(/\s+/g, ' ').trim();
-      if (!t) return;
-      out.push({ x: +f[6] || 0, y: +f[7] || 0, w: +f[8] || 0, h: +f[9] || 0, c: +f[10] || 0, t: t, l: f[2] + '-' + f[3] + '-' + f[4] });
-    });
-    return out;
+    if (bulkState && bulkState.prevUrl) { try { URL.revokeObjectURL(bulkState.prevUrl); } catch (e) {} }
+    bulkState = null;
   }
 
   /* ============================ 시작 ============================ */
@@ -3597,8 +2923,8 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     });
   }
 
-  var ocrBodyEl = $('#ocr-body');
-  if (ocrBodyEl) ocrBodyEl.addEventListener('scroll', updateOcrPin, { passive: true });
+  var bulkBodyEl = $('#bulk-body');
+  if (bulkBodyEl) bulkBodyEl.addEventListener('scroll', bulkUpdatePin, { passive: true });
 
   initHusbandView();
   render();
@@ -3614,8 +2940,11 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     push: function () { return syncPush(); },
     counts: syncDocCounts,
     render: render,
-    ocrParse: ocrParseText,
-    ocrRows: function () { return ocrState ? ocrState.rows : null; },
+    bulkRows: function () {
+      return bulkState ? bulkState.rows.map(function (r, i) {
+        return { i: i, name: r.name, amount: r.amount, relation: r.relation, attend: r.attend, memo: r.memo };
+      }) : null;
+    },
     husband: function () { return husbandView; }
   };
 })();
