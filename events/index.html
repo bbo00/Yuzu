@@ -263,6 +263,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 .legend{display:flex;flex-wrap:wrap;gap:4px 12px;margin:10px 0 0;font-size:11px;color:var(--ink-2)}
 .legend span{display:inline-flex;align-items:center;gap:4px}
 .legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+.prow .prel{font-size:11px;color:var(--ink-3);font-weight:600;margin-left:2px}
 .prow{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 0;border-top:1px solid var(--line-2)}
 .prow:first-child{border-top:0}
 .pname{flex:0 0 auto;font-size:13.5px;font-weight:700;letter-spacing:-.2px;max-width:38%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -308,6 +309,18 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 .psum .vl{display:block;margin-top:2px;font-size:14px;font-weight:800;letter-spacing:-.4px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .psum .vl.out{color:var(--out)}
 .psum .vl.in{color:var(--in)}
+.psum .lb{line-height:1.3}
+.psum .pc{display:block;margin-top:1px;font-size:10.5px;color:var(--ink-3)}
+.pnote{margin:0 0 12px;font-size:11.5px;color:var(--ink-2);line-height:1.6}
+.pnote b{color:var(--ink)}
+.pside{margin:0 0 4px}
+.pside > h3{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:14px 0 8px;font-size:12.5px;font-weight:800;letter-spacing:-.2px}
+.pside > h3 span{font-size:11.5px;font-weight:600;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.pside > h3.in-h{color:var(--in)}
+.pside > h3.out-h{color:var(--out)}
+.prel-chips{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 11px}
+.prel-chips button{font-size:11.5px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink-2);letter-spacing:-.2px;line-height:1.3}
+.prel-chips button.on{background:#23282e;border-color:#23282e;color:#fff;font-weight:700}
 
 /* ---------- 상세 ---------- */
 .dl{margin:0}
@@ -685,9 +698,25 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       else if (String(el.value).trim()) el.classList.add('bad');
       else el.classList.remove('bad');
     }, true);
+    /* 탭하면 기존 값을 통째로 골라 두어, 6자리(261128)를 바로 입력하면 덮어써진다 */
     document.addEventListener('focus', function (e) {
       var el = e.target;
-      if (el && el.classList && el.classList.contains('dateinput')) { try { el.select(); } catch (er) {} }
+      if (!el || !el.classList || !el.classList.contains('dateinput')) return;
+      try { el.select(); } catch (er) {}
+      /* iOS 키보드가 올라온 뒤에 입력칸이 화면 가운데로 오게 한다 */
+      setTimeout(function () {
+        if (document.activeElement !== el) return;
+        try { el.select(); } catch (er) {}
+        try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+        catch (er) { try { el.scrollIntoView(); } catch (er2) {} }
+      }, 260);
+    }, true);
+    /* iOS는 탭 직후 선택을 풀어 버리므로 손을 뗄 때 한 번 더 고른다 */
+    document.addEventListener('mouseup', function (e) {
+      var el = e.target;
+      if (!el || !el.classList || !el.classList.contains('dateinput')) return;
+      if (document.activeElement !== el) return;
+      setTimeout(function () { try { el.select(); } catch (er) {} }, 0);
     }, true);
   }
   bindDateInputs();
@@ -1000,6 +1029,12 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       (cur ? '' : '<span class="ra-ask">눌러서 체크</span>') +
       '</div>';
   }
+  /* 사람은 '이름 + 분류(관계)'로 구분한다 (김철수 · 직장동료 vs 김철수 · 친구) */
+  function personRel(r) { return (r && r.relation) ? r.relation : '기타'; }
+  function personKey(r) { return String(r.name || '') + '\u0001' + personRel(r); }
+  function personLabel(name, rel) { return (name || '(이름 없음)') + (rel ? ' · ' + rel : ''); }
+  var personView = null;
+
   function recCard(r, opts) {
     opts = opts || {};
     var ti = thanksInfo(r);
@@ -1014,7 +1049,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
         '<span class="rec-amt ' + r.dir + '">' + esc(signed(r.amount, r.dir)) + '</span>' +
       '</div>' +
       '<div class="rec-main">' +
-        '<button type="button" class="name-btn" data-act="person" data-name="' + esc(r.name) + '">' + esc(r.name || '(이름 없음)') + '</button>' +
+        '<button type="button" class="name-btn" data-act="person" data-name="' + esc(r.name) + '" data-rel="' + esc(personRel(r)) + '">' + esc(r.name || '(이름 없음)') + '</button>' +
         '<span class="rec-meta">' + esc(r.relation) + ' · ' + esc(r.kind) + '</span>' +
       '</div>' +
       '<div class="tags">' + tags + '</div>' +
@@ -1043,13 +1078,20 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     var sugg = '';
     if (q) {
       var names = {};
-      scopeRecords().forEach(function (r) { if (r.name && r.name.toLowerCase().indexOf(q) >= 0) names[r.name] = (names[r.name] || 0) + 1; });
-      var keys = Object.keys(names).slice(0, 6);
+      scopeRecords().forEach(function (r) {
+        if (!r.name) return;
+        if (r.name.toLowerCase().indexOf(q) < 0 && personRel(r).toLowerCase().indexOf(q) < 0) return;
+        var k = personKey(r);
+        if (!names[k]) names[k] = { name: r.name, rel: personRel(r), n: 0 };
+        names[k].n++;
+      });
+      var keys = Object.keys(names).sort(function (a, b) { return names[b].n - names[a].n; }).slice(0, 6);
       if (keys.length) {
         sugg = '<div class="card card-tight" style="padding:10px 12px"><div class="sugg" style="margin:0">' +
           '<span style="font-size:11.5px;color:var(--ink-3);align-self:center;margin-right:2px">사람으로 보기</span>' +
-          keys.map(function (n) {
-            return '<button type="button" data-act="person" data-name="' + esc(n) + '">' + esc(n) + ' · ' + names[n] + '건</button>';
+          keys.map(function (k) {
+            var o = names[k];
+            return '<button type="button" data-act="person" data-name="' + esc(o.name) + '" data-rel="' + esc(o.rel) + '">' + esc(o.name) + ' · ' + esc(o.rel) + ' ' + o.n + '건</button>';
           }).join('') + '</div></div>';
       }
     }
@@ -1180,19 +1222,25 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     body += '<div class="card"><h2 class="card-title">관계별 (' + label + ')</h2>' + relHtml + legendHtml() + '</div>';
 
     /* 사람별 */
-    var people = groupSum(list, function (r) { return r.name; });
-    var pKeys = Object.keys(people).sort(function (a, b) { return (people[b].out + people[b].in) - (people[a].out + people[a].in); }).slice(0, 10);
-    body += '<div class="card"><h2 class="card-title">자주 오간 사람 (' + label + ')</h2>' +
-      pKeys.map(function (n) {
-        var g = people[n];
+    var people = {};
+    list.forEach(function (r) {
+      var k = personKey(r);
+      if (!people[k]) people[k] = { name: r.name, rel: personRel(r), out: 0, in: 0, n: 0 };
+      if (r.dir === 'in') people[k].in += r.amount; else people[k].out += r.amount;
+      people[k].n++;
+    });
+    var pKeys = Object.keys(people).sort(function (a, b) { return (people[b].out + people[b].in) - (people[a].out + people[a].in); }).slice(0, 12);
+    body += '<div class="card"><h2 class="card-title">자주 오간 사람 · 분류 (' + label + ')</h2>' +
+      pKeys.map(function (k) {
+        var g = people[k];
         var diff = g.in - g.out;
         var cls = diff === 0 ? 'zero' : (diff > 0 ? 'in' : 'out');
         var dTxt = diff === 0 ? '0' : (diff > 0 ? '+' : '-') + wonShort(Math.abs(diff));
-        return '<button type="button" class="prow" data-act="person" data-name="' + esc(n) + '">' +
-          '<span class="pname">' + esc(n || '(이름 없음)') + '</span>' +
+        return '<button type="button" class="prow" data-act="person" data-name="' + esc(g.name) + '" data-rel="' + esc(g.rel) + '">' +
+          '<span class="pname">' + esc(g.name || '(이름 없음)') + ' <span class="prel">' + esc(g.rel) + '</span></span>' +
           '<span class="pmeta">' + g.n + '건 · 보낸 ' + wonShort(g.out) + ' · 받은 ' + wonShort(g.in) + '</span>' +
           '<span class="pdiff ' + cls + '">' + dTxt + '</span></button>';
-      }).join('') + '</div>';
+      }).join('') + '<p class="card-foot">이름을 누르면 그 사람과 주고받은 금액을 한 화면에서 비교해요.</p></div>';
 
     /* 연도별 */
     var years = {};
@@ -1330,7 +1378,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
           '<div><dt>답례 상태</dt><dd>' + esc(ti.t) + '</dd></div>' +
           '<div><dt>메모</dt><dd>' + (r.memo ? esc(r.memo).replace(/\n/g, '<br>') : '-') + '</dd></div>' +
         '</dl>' +
-        '<button class="btn ghost block sm" type="button" data-act="person" data-name="' + esc(r.name) + '" style="margin-top:14px">👤 ' + esc(r.name) + '과 주고받은 내역 보기</button>' +
+        '<button class="btn ghost block sm" type="button" data-act="person" data-name="' + esc(r.name) + '" data-rel="' + esc(personRel(r)) + '" style="margin-top:14px">👤 ' + esc(personLabel(r.name, personRel(r))) + ' 주고받은 내역 보기</button>' +
       '</div>' +
       '<div class="sheet-actions">' +
         '<button class="btn danger sm" type="button" data-act="del" data-id="' + esc(r.id) + '">삭제</button>' +
@@ -1340,34 +1388,47 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     openSheet('modal-detail');
   }
 
-  function openPerson(name) {
-    var list = sortedRecords(scopeRecords().filter(function (r) { return r.name === name; }));
+  function openPerson(name, rel) {
+    rel = rel == null ? '' : String(rel);
+    var all = scopeRecords().filter(function (r) { return r.name === name; });
+    var list = sortedRecords(rel ? all.filter(function (r) { return personRel(r) === rel; }) : all);
     var s = sumOf(list);
     var diff = s.net;
+    var ins = list.filter(function (r) { return r.dir === 'in'; });
+    var outs = list.filter(function (r) { return r.dir === 'out'; });
+    var lastOf = function (arr) { return arr.length ? fmtDate(arr[0].date, true) : '-'; };
+    var relSet = {};
+    all.forEach(function (r) { var k = personRel(r); relSet[k] = (relSet[k] || 0) + 1; });
+    var relKeys = Object.keys(relSet).sort(function (a, b) { return relSet[b] - relSet[a]; });
+    personView = { name: name, rel: rel };
     var panel = $('#person-panel');
-    var lastOut = null, lastIn = null;
-    list.forEach(function (r) {
-      if (r.dir === 'out' && !lastOut) lastOut = r;
-      if (r.dir === 'in' && !lastIn) lastIn = r;
-    });
     panel.innerHTML =
-      '<div class="sheet-head"><h2>👤 ' + esc(name || '(이름 없음)') + '</h2><button class="x" type="button" data-act="close" data-target="modal-person">✕</button></div>' +
+      '<div class="sheet-head"><h2>👤 ' + esc(personLabel(name, rel)) + '</h2><button class="x" type="button" data-act="close" data-target="modal-person">✕</button></div>' +
       '<div class="sheet-body">' +
+        (relKeys.length > 1
+          ? '<div class="prel-chips">' +
+              '<button type="button" data-act="person" data-name="' + esc(name) + '" data-rel="" class="' + (rel ? '' : 'on') + '">같은 이름 전체 ' + all.length + '건</button>' +
+              relKeys.map(function (k) {
+                return '<button type="button" data-act="person" data-name="' + esc(name) + '" data-rel="' + esc(k) + '" class="' + (rel === k ? 'on' : '') + '">' + esc(k) + ' ' + relSet[k] + '건</button>';
+              }).join('') + '</div>'
+          : '') +
         '<div class="psum">' +
-          '<div><span class="lb">보낸 돈</span><span class="vl out">' + won(s.out) + '</span></div>' +
-          '<div><span class="lb">받은 돈</span><span class="vl in">' + won(s.in) + '</span></div>' +
-          '<div><span class="lb">차액</span><span class="vl">' + (diff === 0 ? '0원' : (diff > 0 ? '+' : '-') + won(Math.abs(diff))) + '</span></div>' +
+          '<div><span class="lb">💌 나한테 준 돈</span><span class="vl in">' + won(s.in) + '</span><span class="pc">' + s.inN + '건</span></div>' +
+          '<div><span class="lb">💸 내가 보낸 돈</span><span class="vl out">' + won(s.out) + '</span><span class="pc">' + s.outN + '건</span></div>' +
+          '<div><span class="lb">차액</span><span class="vl">' + (diff === 0 ? '0원' : (diff > 0 ? '+' : '-') + won(Math.abs(diff))) + '</span><span class="pc">' + s.n + '건</span></div>' +
         '</div>' +
-        '<p class="sync-help" style="margin-bottom:12px">' +
-          '총 ' + s.n + '건 · ' + (diff === 0 ? '주고받은 금액이 같아요' : (diff > 0 ? '내가 받은 쪽이 ' + won(diff) + ' 많아요' : '내가 보낸 쪽이 ' + won(-diff) + ' 많아요')) +
-          (s.n ? '<br>마지막 보낸 날 ' + (lastOut ? fmtDate(lastOut.date, true) : '-') + ' · 마지막 받은 날 ' + (lastIn ? fmtDate(lastIn.date, true) : '-') : '') +
-          (s.n === 2 ? '<br>보낸 ' + won(s.out) + ' vs 받은 ' + won(s.in) + ' — ‘저번에 얼마 했지?’ 바로 확인됐어요.' : '') +
+        '<p class="pnote">' +
+          (diff === 0 ? '💌 받은 돈과 💸 보낸 돈이 같아요.' : (diff > 0 ? '내가 <b>' + won(diff) + '</b> 더 받았어요.' : '내가 <b>' + won(-diff) + '</b> 더 보냈어요.')) +
+          '<br>마지막 받은 날 ' + lastOf(ins) + ' · 마지막 보낸 날 ' + lastOf(outs) +
         '</p>' +
-        (list.length ? list.map(function (r) { return recCard(r); }).join('') : '<div class="empty small"><h3>기록이 없어요</h3><p>이 사람과 주고받은 내역을 남겨보세요.</p></div>') +
+        (ins.length ? '<div class="pside"><h3 class="in-h">💌 받은 돈 · 이 사람 → 나 <span>' + s.inN + '건 · ' + won(s.in) + '</span></h3>' + ins.map(function (r) { return recCard(r); }).join('') + '</div>' : '') +
+        (outs.length ? '<div class="pside"><h3 class="out-h">💸 보낸 돈 · 나 → 이 사람 <span>' + s.outN + '건 · ' + won(s.out) + '</span></h3>' + outs.map(function (r) { return recCard(r); }).join('') + '</div>' : '') +
+        (!list.length ? '<div class="empty small"><h3>기록이 없어요</h3><p>이 사람과 주고받은 내역을 남겨보세요.</p></div>' : '') +
+        (rel ? '<button class="btn ghost block sm" type="button" data-act="rel-filter" data-rel="' + esc(rel) + '" style="margin:4px 0 2px">📂 ‘' + esc(rel) + '’ 분류만 모아 보기</button>' : '') +
       '</div>' +
       '<div class="sheet-actions">' +
         '<button class="btn ghost sm" type="button" data-act="close" data-target="modal-person">닫기</button>' +
-        '<button class="btn primary sm" type="button" data-act="add-for" data-name="' + esc(name) + '">이 사람 기록 추가</button>' +
+        '<button class="btn primary sm" type="button" data-act="add-for" data-name="' + esc(name) + '" data-rel="' + esc(rel) + '">이 사람 기록 추가</button>' +
       '</div>';
     openSheet('modal-person');
   }
@@ -1392,7 +1453,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       dir: (preset && preset.dir) || 'out',
       owner: husbandView ? '남편' : '아내',
       name: (preset && preset.name) || '',
-      relation: '직장·동료',
+      relation: (preset && preset.relation) || '직장·동료',
       kind: '결혼식',
       date: todayStr(),
       amount: '',
@@ -2324,13 +2385,22 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
         openForm(null, null);
         break;
       case 'add-for':
-        closeSheet('modal-person'); openForm(null, { name: name });
+        closeSheet('modal-person');
+        openForm(null, { name: name, relation: t.getAttribute('data-rel') || '' });
         break;
       case 'open':
         openDetail(id);
         break;
       case 'person':
-        openPerson(name);
+        openPerson(name, t.getAttribute('data-rel') || '');
+        break;
+      case 'rel-filter':
+        closeSheet('modal-person');
+        ui.rel = t.getAttribute('data-rel') || 'all';
+        ui.q = '';
+        var rq = $('#q'); if (rq) rq.value = '';
+        ui.tab = 'list'; saveUi(); render(); window.scrollTo(0, 0);
+        toast('‘' + ui.rel + '’ 분류만 보여요');
         break;
       case 'edit':
         closeSheet('modal-detail'); openForm(id, null);
@@ -2452,6 +2522,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
         caRec.updatedAt = Date.now();
         saveData();
         render();
+        if (personView && document.getElementById('modal-person').classList.contains('open')) openPerson(personView.name, personView.rel);
         toast(caRec.name + ' · ' + (attendLabelUI(caVal) || '체크 안 함') + '으로 표시했어요');
         break;
       case 'ocr-pin-toggle':
