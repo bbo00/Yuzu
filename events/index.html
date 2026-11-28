@@ -130,6 +130,46 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 .add-row{margin:0 0 12px;display:flex;gap:8px}
 .add-row .btn{flex:1 1 auto}
 
+/* ---------- 남편 전용 보기 · 방명록 OCR ---------- */
+.head-btns{display:flex;gap:6px;flex:0 0 auto;flex-wrap:wrap;justify-content:flex-end}
+.husband-bar{background:#eef4f0;border:1px solid #cfe3d9;color:#2b6a55;border-radius:12px;padding:9px 12px;margin:0 0 11px;font-size:13px;font-weight:800;letter-spacing:-.2px;line-height:1.35}
+.husband-bar span{display:block;margin-top:2px;font-size:11.5px;font-weight:500;color:#4d7f6d}
+.ocr-entry{margin:0 0 12px}
+.ocr-help{margin:0 0 10px;font-size:12px;color:var(--ink-2);line-height:1.6}
+.ocr-help b{color:var(--ink)}
+.ocr-src{display:flex;gap:7px;margin:0 0 10px}
+.ocr-src .btn{flex:1 1 0}
+.ocr-prev{margin:0 0 10px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);overflow:hidden}
+.ocr-prev img{display:block;width:100%;max-height:240px;object-fit:contain}
+.ocr-stat{margin:0 0 7px;font-size:12.5px;color:var(--ink-2);min-height:18px;line-height:1.5}
+.ocr-bar{height:6px;border-radius:4px;background:var(--track);overflow:hidden;margin:0 0 10px}
+.ocr-bar i{display:block;height:100%;width:0;background:var(--in);transition:width .2s ease}
+.ocr-msg{margin:0 0 10px;font-size:12px;color:var(--bad);line-height:1.55}
+.ocr-common{background:var(--surface-2);border:1px solid var(--line-2);border-radius:12px;padding:10px;margin:0 0 12px}
+.ocr-common .row{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.ocr-common .row + .row{margin-top:7px}
+.ocr-common label{display:block;min-width:0}
+.ocr-common label > span{display:block;font-size:11px;font-weight:700;color:var(--ink-2);margin:0 0 3px}
+.ocr-common .input{height:40px;font-size:16px}
+.ocr-count{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;font-size:12.5px;color:var(--ink-2)}
+.ocr-count b{color:var(--ink)}
+.ocr-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:8px 9px;margin:0 0 7px;background:var(--surface)}
+.ocr-row.off{opacity:.45}
+.ocr-row .ck{flex:0 0 auto;width:22px;height:22px;accent-color:var(--in)}
+.ocr-row .nm{flex:1 1 90px;min-width:0;height:40px;font-size:16px;font-weight:700;border:1px solid var(--line);border-radius:9px;padding:0 9px;background:var(--surface);letter-spacing:-.2px}
+.ocr-row .am{flex:0 0 96px;width:96px;height:40px;font-size:16px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;border:1px solid var(--line);border-radius:9px;padding:0 9px;background:var(--surface)}
+.ocr-row .ocr-sub{flex:0 0 100%;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ocr-row .sel{width:100%;min-width:0;height:38px;font-size:16px;border:1px solid var(--line);border-radius:9px;padding:0 8px;background:var(--surface-2);color:var(--ink-2)}
+.ocr-row .dup{flex:0 0 100%;font-size:11px;color:var(--warn);line-height:1.4}
+.ocr-row .miss{flex:0 0 100%;font-size:11px;color:var(--bad);line-height:1.4}
+.ocr-addrow{display:flex;gap:7px;margin:2px 0 4px}
+.ocr-addrow .btn{flex:1 1 0}
+.ocr-raw{margin:8px 0 14px}
+.ocr-raw summary{font-size:12px;color:var(--accent);cursor:pointer;padding:5px 0;font-weight:700}
+.ocr-raw textarea{width:100%;min-height:96px;margin-top:6px;padding:10px 11px;border:1px solid var(--line);border-radius:10px;font-size:16px;line-height:1.5;font-family:inherit;background:var(--surface-2);resize:vertical}
+.ocr-raw .btn{margin-top:7px}
+.ocr-tip{margin:12px 0 4px;font-size:11.5px;color:var(--ink-3);line-height:1.6}
+
 /* ---------- 기록 카드 ---------- */
 .rec{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:12px 13px;margin:0 0 9px;cursor:pointer;box-shadow:0 1px 2px rgba(30,35,41,.02);transition:border-color .12s}
 .rec:active{background:var(--surface-2)}
@@ -299,12 +339,16 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 </head>
 <body>
 <div class="wrap">
+  <div class="husband-bar" id="husband-bar" hidden>👨 남편 내역 전용 보기<span>남편 주체로 남긴 기록만 보여요 · 유자(내)·공동 내역은 숨김</span></div>
   <header class="app-head">
     <div>
       <h1>경조사비 수첩</h1>
       <p class="sub" id="hdr-sub">오간 마음을 한 곳에</p>
     </div>
-    <button class="sync-pill" id="btn-sync" type="button" data-act="open-sync">☁️ 미연결</button>
+    <div class="head-btns">
+      <button class="sync-pill" id="btn-share" type="button" data-act="open-share">👨 남편 공유</button>
+      <button class="sync-pill" id="btn-sync" type="button" data-act="open-sync">☁️ 미연결</button>
+    </div>
   </header>
 
   <!-- ============ 탭 1. 내역 ============ -->
@@ -326,6 +370,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 
     <div class="row-sum" id="list-sum"></div>
     <div class="add-row"><button class="btn primary block" type="button" data-act="add">＋ 경조사비 기록하기</button></div>
+    <button class="btn soft block ocr-entry" type="button" data-act="ocr-open">📷 방명록 사진으로 일괄 등록</button>
     <div id="sugg-row"></div>
     <div id="list-wrap"></div>
   </section>
@@ -362,7 +407,13 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       <p class="card-foot">휴대폰과 PC에서 같은 기록을 보려면 동기화 코드를 만들어 두 기기에서 같은 링크를 여세요.</p>
     </div>
 
-    <div class="card">
+    <div class="card" id="setup-share-card">
+      <h2 class="card-title">👨 남편 내역 공유</h2>
+      <p class="sync-help" style="margin-bottom:10px">남편에게는 <b>남편 주체로 남긴 내역만</b> 보여줄 수 있어요. 전용 링크를 보내거나 남편 내역만 파일로 내보내세요.</p>
+      <button class="btn soft block" type="button" data-act="open-share">👨 남편 내역 공유 설정</button>
+    </div>
+
+    <div class="card" id="setup-backup-card">
       <h2 class="card-title">💾 백업 · 내보내기</h2>
       <div class="add-row">
         <button class="btn ghost" type="button" data-act="export-json">백업 저장</button>
@@ -384,7 +435,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       <p class="card-foot">입력한 기록은 이 기기 브라우저(그리고 연결했다면 전용 클라우드)에만 저장됩니다. 페이지 소스에는 어떤 기록도 들어 있지 않아요.</p>
     </div>
 
-    <div class="card">
+    <div class="card" id="setup-wipe-card">
       <h2 class="card-title">🧹 데이터 관리</h2>
       <button class="btn danger block" type="button" data-act="wipe">모든 기록 지우기</button>
       <p class="card-foot">지우기 전에 백업을 받아두면 안전해요.</p>
@@ -408,6 +459,21 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   <div class="sheet-head"><h2>☁️ 기기 간 동기화</h2><button class="x" type="button" data-act="close" data-target="modal-sync">✕</button></div>
   <div class="sheet-body" id="sync-body" style="padding-bottom:18px"></div>
 </div></div>
+<div class="sheet" id="modal-share"><div class="veil" data-act="close" data-target="modal-share"></div><div class="panel">
+  <div class="sheet-head"><h2>👨 남편 내역 공유</h2><button class="x" type="button" data-act="close" data-target="modal-share">✕</button></div>
+  <div class="sheet-body" id="share-body" style="padding-bottom:18px"></div>
+</div></div>
+
+<div class="sheet" id="modal-ocr"><div class="veil" data-act="ocr-close"></div><div class="panel">
+  <div class="sheet-head"><h2>📷 방명록 사진으로 일괄 등록</h2><button class="x" type="button" data-act="ocr-close" aria-label="닫기">✕</button></div>
+  <div class="sheet-body" id="ocr-body"></div>
+  <div class="sheet-actions" id="ocr-actions">
+    <button class="btn ghost" type="button" data-act="ocr-close">닫기</button>
+    <button class="btn primary" type="button" data-act="ocr-commit" id="ocr-commit" disabled>등록</button>
+  </div>
+  <input type="file" id="ocr-file-cam" accept="image/*" capture="environment" hidden aria-label="방명록 사진 찍기">
+  <input type="file" id="ocr-file-album" accept="image/*" multiple hidden aria-label="방명록 사진 고르기">
+</div></div>
 <div id="toast"></div>
 
 <script>
@@ -423,6 +489,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   var DATA_KEY = 'events_v1';
   var SYNC_CFG_KEY = 'events_sync_v1';
   var UI_KEY = 'events_ui_v1';
+  var husbandView = false;   /* ?owner=husband 로 열면 남편 주체 내역만 보여준다 */
 
   /* ============================ 유틸 ============================ */
   function $(s, r) { return (r || document).querySelector(s); }
@@ -576,7 +643,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       return (b.createdAt || 0) - (a.createdAt || 0);
     });
   }
-  function byRange(range) { return appData.records.filter(function (r) { return inRange(r, range); }); }
+  function byRange(range) { return scopeRecords().filter(function (r) { return inRange(r, range); }); }
   function groupSum(list, keyFn) {
     var map = {};
     list.forEach(function (r) {
@@ -590,28 +657,56 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   function pendingList(kind) {
     /* kind: 'owe' = 내가 받아서 갚아야 함 · 'due' = 내가 보내서 받을 예정 */
     var dir = kind === 'due' ? 'out' : 'in';
-    return sortedRecords(appData.records.filter(function (r) { return r.dir === dir && r.thanks === 'need'; }));
+    return sortedRecords(scopeRecords().filter(function (r) { return r.dir === dir && r.thanks === 'need'; }));
+  }
+
+  /* ============================ 남편 전용 보기 ============================ */
+  function scopeRecords() {
+    if (!husbandView) return appData.records;
+    return appData.records.filter(function (r) { return r.owner === '남편'; });
+  }
+  function husbandRecords() {
+    return appData.records.filter(function (r) { return r.owner === '남편'; });
+  }
+  function husbandLink() {
+    if (!syncConnected()) return '';
+    return location.origin + location.pathname + '?k=' + encodeURIComponent(syncCfg.ns) + '&owner=husband';
+  }
+  function initHusbandView() {
+    try {
+      var params = new URLSearchParams(location.search);
+      var v = String(params.get('owner') || params.get('view') || '').toLowerCase();
+      if (v === 'husband' || v === 'nam' || v === '남편') husbandView = true;
+    } catch (e) {}
+    if (husbandView) ui.owner = 'all';
   }
 
   /* ============================ 렌더: 헤더 ============================ */
   function renderHeader() {
-    var s = sumOf(appData.records);
+    var s = sumOf(scopeRecords());
     var sub = $('#hdr-sub');
+    if (husbandView) {
+      sub.textContent = s.n
+        ? '남편 기록 ' + s.n + '건 · 보낸 ' + wonShort(s.out) + ' · 받은 ' + wonShort(s.in)
+        : '남편 주체로 남긴 기록이 아직 없어요';
+      return;
+    }
     if (!s.n) sub.textContent = '오간 마음을 한 곳에 · 첫 기록을 남겨보세요';
     else sub.textContent = '기록 ' + s.n + '건 · 보낸 ' + wonShort(s.out) + ' · 받은 ' + wonShort(s.in);
   }
 
   var DIR_FILTERS = [{ v: 'all', t: '전체' }, { v: 'out', t: '💸 보낸 돈' }, { v: 'in', t: '💌 받은 돈' }];
   function renderBalance() {
-    var all = sumOf(appData.records);
+    var mine = scopeRecords();
+    var all = sumOf(mine);
     var now = new Date();
     var y = String(now.getFullYear()), m = pad(now.getMonth() + 1);
-    var thisYear = sumOf(appData.records.filter(function (r) { return yearOf(r.date) === y; }));
-    var thisMonth = sumOf(appData.records.filter(function (r) { return yearOf(r.date) === y && monthOf(r.date) === m; }));
+    var thisYear = sumOf(mine.filter(function (r) { return yearOf(r.date) === y; }));
+    var thisMonth = sumOf(mine.filter(function (r) { return yearOf(r.date) === y && monthOf(r.date) === m; }));
     var netTxt = all.net === 0 ? '0원' : (all.net > 0 ? '+' : '-') + won(Math.abs(all.net));
     var netWord = all.n === 0 ? '아직 기록 없음' : (all.net > 0 ? '받은 쪽이 ' + wonShort(all.net) + ' 많아요' : (all.net < 0 ? '보낸 쪽이 ' + wonShort(-all.net) + ' 많아요' : '보낸 돈과 받은 돈이 같아요'));
     $('#bal').innerHTML =
-      '<div class="bal-top"><b>' + (all.n ? '전체 수지' : '시작해 볼까요') + '</b><span>기록 ' + all.n + '건</span></div>' +
+      '<div class="bal-top"><b>' + (all.n ? (husbandView ? '남편 수지' : '전체 수지') : '시작해 볼까요') + '</b><span>기록 ' + all.n + '건</span></div>' +
       '<div class="bal-grid">' +
         '<div class="bal-cell"><span class="bal-label">💸 보낸 돈</span><span class="bal-val out">' + won(all.out) + '</span></div>' +
         '<div class="bal-cell"><span class="bal-label">💌 받은 돈</span><span class="bal-val in">' + won(all.in) + '</span></div>' +
@@ -627,7 +722,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   /* ============================ 렌더: 내역 ============================ */
   function yearOptions() {
     var set = {};
-    appData.records.forEach(function (r) { var y = yearOf(r.date); if (y) set[y] = 1; });
+    scopeRecords().forEach(function (r) { var y = yearOf(r.date); if (y) set[y] = 1; });
     set[String(new Date().getFullYear())] = 1;
     return Object.keys(set).sort().reverse();
   }
@@ -645,13 +740,21 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     if (yEl.value !== ui.year) ui.year = 'all';
 
     var oEl = $('#f-owner');
-    oEl.innerHTML = '<option value="all">주체 전체</option>' + OWNERS.map(function (o) {
-      return '<option value="' + esc(o) + '">' + esc(ownerLabel(o)) + '</option>';
-    }).join('');
-    oEl.value = ui.owner;
+    if (husbandView) {
+      oEl.innerHTML = '<option value="all">주체 : 남편</option>';
+      oEl.value = 'all';
+      oEl.hidden = true;
+      ui.owner = 'all';
+    } else {
+      oEl.hidden = false;
+      oEl.innerHTML = '<option value="all">주체 전체</option>' + OWNERS.map(function (o) {
+        return '<option value="' + esc(o) + '">' + esc(ownerLabel(o)) + '</option>';
+      }).join('');
+      oEl.value = ui.owner;
+    }
 
     var relSet = {};
-    RELS.concat(appData.records.map(function (r) { return r.relation; })).forEach(function (x) { if (x) relSet[x] = 1; });
+    RELS.concat(scopeRecords().map(function (r) { return r.relation; })).forEach(function (x) { if (x) relSet[x] = 1; });
     var rEl = $('#f-rel');
     rEl.innerHTML = '<option value="all">관계 전체</option>' + Object.keys(relSet).sort().map(function (x) {
       return '<option value="' + esc(x) + '">' + esc(x) + '</option>';
@@ -660,7 +763,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     if (rEl.value !== ui.rel) { ui.rel = 'all'; rEl.value = 'all'; }
 
     var kindSet = {};
-    KINDS.concat(appData.records.map(function (r) { return r.kind; })).forEach(function (x) { if (x) kindSet[x] = 1; });
+    KINDS.concat(scopeRecords().map(function (r) { return r.kind; })).forEach(function (x) { if (x) kindSet[x] = 1; });
     var kEl = $('#f-kind');
     kEl.innerHTML = '<option value="all">경조사 전체</option>' + Object.keys(kindSet).sort().map(function (x) {
       return '<option value="' + esc(x) + '">' + esc(x) + '</option>';
@@ -674,7 +777,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 
   function filteredRecords() {
     var q = ui.q.trim().toLowerCase();
-    return appData.records.filter(function (r) {
+    return scopeRecords().filter(function (r) {
       if (ui.dir !== 'all' && r.dir !== ui.dir) return false;
       if (ui.year !== 'all' && yearOf(r.date) !== ui.year) return false;
       if (ui.owner !== 'all' && r.owner !== ui.owner) return false;
@@ -714,7 +817,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 
   function renderList() {
     renderFilterControls();
-    var anyRec = appData.records.length > 0;
+    var anyRec = scopeRecords().length > 0;
     var fcard = $('#filters-card');
     if (fcard) fcard.hidden = !anyRec;
     var sumEl = $('#list-sum');
@@ -731,7 +834,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     var sugg = '';
     if (q) {
       var names = {};
-      appData.records.forEach(function (r) { if (r.name && r.name.toLowerCase().indexOf(q) >= 0) names[r.name] = (names[r.name] || 0) + 1; });
+      scopeRecords().forEach(function (r) { if (r.name && r.name.toLowerCase().indexOf(q) >= 0) names[r.name] = (names[r.name] || 0) + 1; });
       var keys = Object.keys(names).slice(0, 6);
       if (keys.length) {
         sugg = '<div class="card card-tight" style="padding:10px 12px"><div class="sugg" style="margin:0">' +
@@ -744,7 +847,16 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     $('#sugg-row').innerHTML = sugg;
 
     var wrap = $('#list-wrap');
-    if (!appData.records.length) {
+    if (!scopeRecords().length) {
+      if (husbandView) {
+        wrap.innerHTML = '<div class="empty">' +
+          '<span class="big">👨</span>' +
+          '<h3>남편 주체로 남긴 기록이 없어요</h3>' +
+          '<p>이 화면은 남편 내역만 보여줘요.<br>남편이 보낸 돈·받은 돈을 새로 남기면 여기에 쌓여요.</p>' +
+          '<button class="btn primary" type="button" data-act="add">＋ 남편 내역 남기기</button>' +
+        '</div>';
+        return;
+      }
       wrap.innerHTML = '<div class="empty">' +
         '<span class="big">💌</span>' +
         '<h3>아직 기록이 없어요</h3>' +
@@ -834,7 +946,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 
     /* 연도별 */
     var years = {};
-    appData.records.forEach(function (r) { var y = yearOf(r.date) || '-'; if (!years[y]) years[y] = { out: 0, in: 0 }; if (r.dir === 'in') years[y].in += r.amount; else years[y].out += r.amount; });
+      scopeRecords().forEach(function (r) { var y = yearOf(r.date) || '-'; if (!years[y]) years[y] = { out: 0, in: 0 }; if (r.dir === 'in') years[y].in += r.amount; else years[y].out += r.amount; });
     var yKeys = Object.keys(years).sort().reverse();
     if (yKeys.length > 1) {
       body += '<div class="card"><h2 class="card-title">연도별 (전체)</h2>' + yKeys.map(function (y) {
@@ -899,6 +1011,12 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 
   /* ============================ 렌더: 설정 ============================ */
   function renderSetup() {
+    var hb = $('#husband-bar'); if (hb) hb.hidden = !husbandView;
+    var be = $('#btn-share'); if (be) be.hidden = husbandView;
+    var sc = $('#setup-share-card'); if (sc) sc.hidden = husbandView;
+    var wc = $('#setup-wipe-card'); if (wc) wc.hidden = husbandView;
+    var bc = $('#setup-backup-card'); if (bc) bc.hidden = husbandView;   /* 남편 보기에서는 전체 백업을 내보내지 않는다 */
+    document.body.classList.toggle('husband-mode', husbandView);
     var el = $('#setup-sync-state');
     if (!el) return;
     if (syncConnected()) {
@@ -971,7 +1089,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   }
 
   function openPerson(name) {
-    var list = sortedRecords(appData.records.filter(function (r) { return r.name === name; }));
+    var list = sortedRecords(scopeRecords().filter(function (r) { return r.name === name; }));
     var s = sumOf(list);
     var diff = s.net;
     var panel = $('#person-panel');
@@ -1020,7 +1138,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     var r = id ? findRec(id) : null;
     var d = r ? JSON.parse(JSON.stringify(r)) : {
       dir: (preset && preset.dir) || 'out',
-      owner: '유자',
+      owner: husbandView ? '남편' : '유자',
       name: (preset && preset.name) || '',
       relation: '직장·동료',
       kind: '결혼식',
@@ -1041,7 +1159,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 
     /* 이름 후보 */
     var knownNames = {};
-    appData.records.forEach(function (x) { if (x.name) knownNames[x.name] = 1; });
+    scopeRecords().forEach(function (x) { if (x.name) knownNames[x.name] = 1; });
     knownNames = Object.keys(knownNames).slice(0, 8);
 
     var dirSeg = '<div class="seg big" id="dir-seg">' +
@@ -1254,11 +1372,10 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     if (/[",\n\r]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
     return s;
   }
-  function exportCsv() {
-    if (!appData.records.length) { toast('내보낼 기록이 없어요'); return; }
+  function csvText(list) {
     var head = ['날짜', '구분', '주체', '이름', '관계', '경조사', '금액', '전달방식', '답례상태', '메모'];
     var rows = [head.join(',')];
-    sortedRecords(appData.records).slice().reverse().forEach(function (r) {
+    sortedRecords(list).slice().reverse().forEach(function (r) {
       rows.push([
         r.date,
         r.dir === 'in' ? '받은 돈' : '보낸 돈',
@@ -1272,14 +1389,73 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
         r.memo
       ].map(csvCell).join(','));
     });
-    var total = sumOf(appData.records);
+    var total = sumOf(list);
     rows.push('');
     rows.push(['합계', '', '', '', '', '', '', '', '', ''].join(','));
     rows.push(['보낸 돈', '', '', '', '', '', total.out, '', '', ''].map(csvCell).join(','));
     rows.push(['받은 돈', '', '', '', '', '', total.in, '', '', ''].map(csvCell).join(','));
     rows.push(['차액', '', '', '', '', '', total.net, '', '', ''].map(csvCell).join(','));
-    var ok = download('경조사비_' + stamp() + '.csv', 'text/csv', '\ufeff' + rows.join('\r\n') + '\r\n');
-    if (ok) toast('CSV 파일을 저장했어요 (' + appData.records.length + '건)');
+    return '\ufeff' + rows.join('\r\n') + '\r\n';
+  }
+  function exportCsv() {
+    if (!appData.records.length) { toast('내보낼 기록이 없어요'); return; }
+    if (download('경조사비_' + stamp() + '.csv', 'text/csv', csvText(appData.records))) {
+      toast('CSV 파일을 저장했어요 (' + appData.records.length + '건)');
+    }
+  }
+  function exportHusbandCsv() {
+    var list = husbandRecords();
+    if (!list.length) { toast('남편 내역이 없어요'); return; }
+    if (download('경조사비_남편_' + stamp() + '.csv', 'text/csv', csvText(list))) {
+      toast('남편 내역 CSV를 저장했어요 (' + list.length + '건)');
+    }
+  }
+  function exportHusbandJson() {
+    var list = husbandRecords();
+    if (!list.length) { toast('남편 내역이 없어요'); return; }
+    var s = sumOf(list);
+    var doc = {
+      app: 'events-book', v: 1, scope: 'husband', exportedAt: new Date().toISOString(),
+      counts: { records: list.length, out: s.out, in: s.in },
+      data: { v: 1, records: list, deletedRecordIds: [] }
+    };
+    if (download('경조사비_남편_' + stamp() + '.json', 'application/json', JSON.stringify(doc, null, 2))) {
+      toast('남편 내역 JSON을 저장했어요 (' + list.length + '건)');
+    }
+  }
+  function renderShare() {
+    var box = $('#share-body');
+    if (!box) return;
+    var list = husbandRecords();
+    var s = sumOf(list);
+    var link = husbandLink();
+    var html = '<div class="sync-counts">👨 남편 주체 기록 <b>' + list.length + '</b>건<br>보낸 <b>' + won(s.out) + '</b> · 받은 <b>' + won(s.in) + '</b></div>';
+    if (link) {
+      html += '<label class="field" style="margin-bottom:8px"><span>남편 전용 보기 링크</span></label>' +
+        '<div class="copy-row"><input class="input" id="husband-link-view" type="text" readonly value="' + esc(link) + '">' +
+        '<button class="btn ghost" type="button" data-act="copy-husband-link">복사</button></div>' +
+        '<div class="add-row" style="margin-top:0"><button class="btn soft" type="button" data-act="share-husband-native">📤 카톡 등으로 보내기</button></div>' +
+        '<p class="warn-note">이 링크로 열면 <b>남편 주체 내역만</b> 보여요. 링크 안의 동기화 코드를 지우면 전체 내역이 보이니, 남편에게는 이 주소 그대로 보내 주세요.</p>';
+    } else {
+      html += '<div class="sync-state off">🔌 아직 동기화 코드가 없어요</div>' +
+        '<p class="sync-help">남편 휴대폰에서 같은 내역을 보려면 먼저 이 기기에서 동기화 코드를 만들어야 해요. 코드를 만들면 남편 전용 링크가 여기에 생겨요.</p>' +
+        '<button class="btn primary block" type="button" data-act="share-open-sync" style="margin-bottom:12px">동기화 코드 만들기</button>';
+    }
+    html += '<h2 class="card-title" style="margin-top:14px">📄 파일로 보내기 (남편 내역만)</h2>' +
+      '<div class="add-row" style="margin-bottom:6px"><button class="btn ghost" type="button" data-act="export-husband-json"' + (list.length ? '' : ' disabled') + '>JSON 저장</button>' +
+      '<button class="btn ghost" type="button" data-act="export-husband-csv"' + (list.length ? '' : ' disabled') + '>CSV 저장</button></div>' +
+      '<p class="warn-note">파일에는 남편 주체 기록만 담겨요. CSV는 엑셀에서 바로 열립니다.</p>';
+    box.innerHTML = html;
+  }
+  function shareHusbandNative() {
+    var link = husbandLink();
+    if (!link) { toast('먼저 동기화 코드를 만들어 주세요'); return; }
+    var n = husbandRecords().length;
+    if (navigator.share) {
+      navigator.share({ title: '남편 경조사비 내역', text: '남편 경조사비 내역 (' + n + '건)', url: link }).catch(function () {});
+    } else {
+      copyText(link, '링크를 복사했어요 · 카톡에 붙여 넣어 주세요', 'husband-link-view');
+    }
   }
   function exportJson() {
     if (!appData.records.length) { toast('백업할 기록이 없어요'); return; }
@@ -1900,6 +2076,42 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
         break;
       case 'close':
         closeSheet(t.getAttribute('data-target')); break;
+      case 'open-share':
+        renderShare(); openSheet('modal-share'); break;
+      case 'copy-husband-link':
+        if (syncConnected()) copyText(husbandLink(), '남편 전용 링크를 복사했어요', 'husband-link-view'); break;
+      case 'share-husband-native':
+        shareHusbandNative(); break;
+      case 'share-open-sync':
+        closeSheet('modal-share'); renderSyncUI(); openSheet('modal-sync'); break;
+      case 'export-husband-json':
+        exportHusbandJson(); break;
+      case 'export-husband-csv':
+        exportHusbandCsv(); break;
+      case 'ocr-open':
+        ocrOpen(); break;
+      case 'ocr-close':
+        ocrClose(); break;
+      case 'ocr-camera':
+        var ocf = $('#ocr-file-cam'); if (ocf) { ocf.value = ''; ocf.click(); } break;
+      case 'ocr-album':
+        var oaf = $('#ocr-file-album'); if (oaf) { oaf.value = ''; oaf.click(); } break;
+      case 'ocr-commit':
+        ocrCommit(); break;
+      case 'ocr-addrow':
+        if (ocrState) { ocrState.rows.push(ocrNewRow('', 0)); renderOcrResult(); }
+        break;
+      case 'ocr-clear':
+        if (ocrState) { ocrState.rows = []; renderOcrResult(); }
+        break;
+      case 'ocr-reparse':
+        var oraw = $('#ocr-raw');
+        if (ocrState && oraw) {
+          ocrState.text = oraw.value;
+          ocrState.rows = ocrParseText(oraw.value);
+          renderOcrResult();
+        }
+        break;
       case 'open-sync':
         renderSyncUI(); openSheet('modal-sync'); renderSyncUI(); break;
       case 'sync-now':
@@ -2014,9 +2226,74 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     }
   });
 
+  /* ---------- 방명록 OCR 표 편집 ---------- */
+  document.addEventListener('input', function (e) {
+    var t = e.target;
+    if (!t || !t.getAttribute) return;
+    if (t.getAttribute('data-ocr-name') != null) {
+      var i = +t.getAttribute('data-ocr-name');
+      if (ocrState && ocrState.rows[i]) { ocrState.rows[i].name = String(t.value || '').trim(); updateOcrActions(); }
+      return;
+    }
+    if (t.getAttribute('data-ocr-amt') != null) {
+      var j = +t.getAttribute('data-ocr-amt');
+      var digits = String(t.value || '').replace(/[^0-9]/g, '').slice(0, 12);
+      if (ocrState && ocrState.rows[j]) ocrState.rows[j].amount = digits ? num(digits) : 0;
+      updateOcrActions();
+      return;
+    }
+    if (t.id === 'ocr-raw' && ocrState) ocrState.text = t.value;
+  });
+  document.addEventListener('change', function (e) {
+    var t = e.target;
+    if (!t || !t.getAttribute) return;
+    if (t.getAttribute('data-ocr-ck') != null) {
+      var i = +t.getAttribute('data-ocr-ck');
+      if (ocrState && ocrState.rows[i]) {
+        ocrState.rows[i].on = !!t.checked;
+        var row = t.closest ? t.closest('.ocr-row') : null;
+        if (row) row.classList.toggle('off', !t.checked);
+        updateOcrActions();
+      }
+      return;
+    }
+    if (t.getAttribute('data-ocr-dir') != null) {
+      var j = +t.getAttribute('data-ocr-dir');
+      if (ocrState && ocrState.rows[j]) ocrState.rows[j].dir = t.value === 'out' ? 'out' : 'in';
+      return;
+    }
+    if (t.getAttribute('data-ocr-owner') != null) {
+      var k = +t.getAttribute('data-ocr-owner');
+      if (ocrState && ocrState.rows[k]) ocrState.rows[k].owner = t.value;
+      return;
+    }
+    if (t.id === 'ocr-date') { ocrCommon.date = t.value || todayStr(); return; }
+    if (t.id === 'ocr-kind') { ocrCommon.kind = t.value; return; }
+    if (t.id === 'ocr-rel') { ocrCommon.relation = t.value; return; }
+    if (t.id === 'ocr-thanks') { ocrCommon.thanks = t.value; return; }
+    if (t.id === 'ocr-all-dir' || t.id === 'ocr-all-owner') {
+      var field = t.id === 'ocr-all-dir' ? 'dir' : 'owner';
+      ocrCommon[field] = t.value;
+      if (ocrState) ocrState.rows.forEach(function (r) { r[field] = t.value; });
+      $$('#ocr-result [data-ocr-' + field + ']').forEach(function (sel) { sel.value = t.value; });
+      return;
+    }
+    if (t.id === 'ocr-file-cam' || t.id === 'ocr-file-album') {
+      ocrFiles(t.files);
+      t.value = '';
+    }
+  });
+  document.addEventListener('blur', function (e) {
+    var t = e.target;
+    if (t && t.getAttribute && t.getAttribute('data-ocr-amt') != null) {
+      var v = num(String(t.value || '').replace(/[^0-9]/g, ''));
+      t.value = v ? v.toLocaleString('ko-KR') : '';
+    }
+  }, true);
+
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
-      ['modal-record', 'modal-detail', 'modal-person', 'modal-sync'].forEach(function (id) { closeSheet(id); });
+      ['modal-record', 'modal-detail', 'modal-person', 'modal-sync', 'modal-share', 'modal-ocr'].forEach(function (id) { closeSheet(id); });
     }
   });
 
@@ -2030,6 +2307,378 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     saveData();
     render();
     toast('모든 기록을 지웠어요');
+  }
+
+  /* ============================ 방명록 사진 OCR ============================
+     방명록 사진 → 이 기기 안에서만 글자 인식(Tesseract.js kor+eng, living과 같은 방식)
+     → 이름·금액 후보를 표로 보여주고, 확인·수정한 줄만 한 번에 등록한다.
+     사진과 글자는 어디로도 보내지 않고, 저장 키·동기화 구조는 건드리지 않는다. */
+  var OCR_CDN = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+  var OCR_LANG = 'https://tessdata.projectnaptha.com/4.0.0_fast';
+  var ocrState = null, ocrWorker = null, ocrLoading = null, ocrJobSeq = 0, ocrIdle = null;
+  var ocrCommon = { dir: 'in', owner: '공동', date: '', kind: '결혼식', relation: '기타', thanks: 'none' };
+
+  function ocrMsg(txt) { var m = $('#ocr-msg'); if (m) { m.textContent = txt || ''; m.hidden = !txt; } }
+  function ocrStat(txt, pct) {
+    var el = $('#ocr-stat'); if (el) el.textContent = txt || '';
+    var bar = $('#ocr-bar');
+    if (bar) {
+      var inn = bar.querySelector('i');
+      if (typeof pct === 'number') { bar.hidden = false; if (inn) inn.style.width = Math.max(2, Math.min(100, pct)) + '%'; }
+      else { bar.hidden = true; if (inn) inn.style.width = '0%'; }
+    }
+  }
+  function ocrLoadTess() {
+    if (window.Tesseract) return Promise.resolve(window.Tesseract);
+    if (ocrLoading) return ocrLoading;
+    ocrLoading = new Promise(function (res, rej) {
+      var sc = document.createElement('script');
+      sc.src = OCR_CDN; sc.async = true;
+      sc.onload = function () { if (window.Tesseract) res(window.Tesseract); else rej(new Error('ocr-load')); };
+      sc.onerror = function () { rej(new Error('ocr-load')); };
+      document.head.appendChild(sc);
+    }).catch(function (e) { ocrLoading = null; throw e; });
+    return ocrLoading;
+  }
+  function ocrWorkerFor(job) {
+    return ocrLoadTess().then(function (T) {
+      if (ocrWorker) return ocrWorker;
+      ocrStat('글자 사전을 준비하는 중… (처음 한 번만)', 4);
+      var logger = function (m) {
+        if (!ocrState || ocrState.job !== job) return;
+        var st = (m && m.status) || '', pr = (m && typeof m.progress === 'number') ? m.progress : 0;
+        if (st.indexOf('language') >= 0) ocrStat('한국어·영어 글자 사전을 내려받는 중… (처음 한 번만)', 4 + pr * 46);
+        else if (st.indexOf('initializ') >= 0) ocrStat('글자 읽기 준비 중…', 52 + pr * 8);
+        else if (st.indexOf('recognizing') >= 0) ocrStat('글자를 읽는 중…', 62 + pr * 36);
+      };
+      return T.createWorker('kor+eng', 1, { logger: logger, langPath: OCR_LANG }).catch(function () {
+        ocrStat('글자 사전을 다시 받아보는 중…', 4);
+        return T.createWorker('kor+eng', 1, { logger: logger });
+      });
+    }).then(function (w) {
+      if (w && !w.__tuned) { w.__tuned = true; try { w.setParameters({ preserve_interword_spaces: '1' }); } catch (e) {} }
+      ocrWorker = w;
+      clearTimeout(ocrIdle);
+      return w;
+    });
+  }
+  /* 사진 → 캔버스 (긴 변 2000px: 손글씨가 작아 1800보다 조금 크게) */
+  function ocrImageCanvas(file) {
+    return new Promise(function (res, rej) {
+      var url = URL.createObjectURL(file), img = new Image();
+      img.onload = function () {
+        try {
+          var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+          if (!w || !h) throw new Error('image');
+          var long = Math.max(w, h), k = 1;
+          if (long > 2000) k = 2000 / long; else if (long < 1000) k = Math.min(2, 1000 / long);
+          var c = document.createElement('canvas');
+          c.width = Math.round(w * k); c.height = Math.round(h * k);
+          var ctx = c.getContext('2d');
+          try { ctx.imageSmoothingQuality = 'high'; } catch (e) {}
+          ctx.drawImage(img, 0, 0, c.width, c.height);
+          URL.revokeObjectURL(url);
+          res(c);
+        } catch (e) { URL.revokeObjectURL(url); rej(e); }
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); rej(new Error('image')); };
+      img.src = url;
+    });
+  }
+
+  /* ---------- 읽은 글자 해석 ---------- */
+  function ocrNorm(t) {
+    return String(t || '')
+      .replace(/\r\n?/g, '\n')
+      .replace(/[|│┃┆¦]/g, ' ')
+      .replace(/[“”‘’]/g, '"')
+      .replace(/\u00a0|\u3000/g, ' ')
+      .replace(/[\uFF01-\uFF5E]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); })
+      .replace(/[ \t]+/g, ' ')
+      .replace(/\n{3,}/g, '\n\n');
+  }
+  var OCR_STOP = /^(성함|이름|금액|축의금|조의금|축의|조의|방명록|축결혼|축하|결혼|결혼식|참석|서명|번호|비고|일시|날짜|장소|주소|계좌|신랑|신부|혼주|부모|관계|메모|합계|총액|축|결혼합니다|감사합니다)$/;
+  function ocrCleanName(s) {
+    var t = String(s || '').replace(/[^가-힣a-zA-Z·\s]/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!t) return '';
+    var ws = t.split(' ');
+    if (ws.every(function (x) { return OCR_STOP.test(x); })) return '';
+    t = t.replace(/(님|씨|군|양)$/, '').trim();
+    var parts = t.split(' ');
+    if (parts.length > 1 && parts.every(function (x) { return /^[가-힣]{1,4}$/.test(x); })) {
+      var joined = parts.join('');
+      if (joined.length <= 6) t = joined;
+    }
+    if (!t || t.length < 2) return '';
+    return t.slice(0, 20);
+  }
+  function ocrSkipLine(line) {
+    var t = String(line || '').replace(/\s/g, '');
+    if (!t) return true;
+    if (/^[-=~_*·.()\[\]{}]+$/.test(t)) return true;
+    if (/^[\d.\-\/년월일\s]{4,}$/.test(String(line).trim())) return true;
+    var toks = String(line).split(/\s+/).filter(Boolean);
+    if (toks.length && toks.every(function (x) { return OCR_STOP.test(x); })) return true;
+    if (/^(합계|총액|소계|계)\s*[\d,]/.test(String(line).trim())) return true;
+    if (!/\d/.test(t) && OCR_STOP.test(t)) return true;
+    return false;
+  }
+  /* 금액 후보: 100,000 / 5만원 / 50000 / 10(→10만원) */
+  function ocrAmountScan(line) {
+    var out = [], m, re = /(\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?\s*만\s*원?|\d{4,8}\s*원?|\d{1,3}\s*원|\d{1,3})/g;
+    while ((m = re.exec(line))) {
+      var raw = m[0], idx = m.index, len = raw.length;
+      var before = idx === 0 ? ' ' : line.charAt(idx - 1);
+      var after = (idx + len >= line.length) ? ' ' : line.charAt(idx + len);
+      var v = 0;
+      if (/만/.test(raw)) v = Math.round(parseFloat(raw.replace(/[^\d.]/g, '')) * 10000);
+      else if (/,/.test(raw)) v = parseInt(raw.replace(/[^\d]/g, ''), 10);
+      else {
+        var d = raw.replace(/[^\d]/g, '');
+        v = parseInt(d, 10);
+        if (d.length <= 3) v = v * 10000;   /* 방명록은 만원 단위로 적는 경우가 많다 */
+      }
+      var bare = !/[,만원]/.test(raw);
+      if (bare && (!/[\s(\[{.:·,~-]/.test(before) || !/[\s)\]}.·,~-]/.test(after))) continue;
+      if (!v || v < 1000 || v > 100000000) continue;
+      out.push({ at: idx, len: len, val: v });
+    }
+    return out;
+  }
+  function ocrPairsFromLine(line) {
+    var amts = ocrAmountScan(line);
+    if (!amts.length) {
+      var only = ocrCleanName(line);
+      return only ? [{ name: only, amount: 0, loose: true }] : [];
+    }
+    var pairs = [], last = 0;
+    amts.forEach(function (a) {
+      var seg = line.slice(last, a.at);
+      last = a.at + a.len;
+      pairs.push({ name: ocrCleanName(seg), amount: a.val });
+    });
+    var tail = ocrCleanName(line.slice(last));
+    if (tail) {
+      if (pairs.length && !pairs[pairs.length - 1].name) pairs[pairs.length - 1].name = tail;
+      else pairs.push({ name: tail, amount: 0, loose: true });
+    }
+    return pairs;
+  }
+  function ocrNewRow(name, amount) {
+    return { on: true, name: name || '', amount: amount || 0, dir: ocrCommon.dir, owner: ocrCommon.owner };
+  }
+  function ocrParseText(text) {
+    var lines = ocrNorm(text).split('\n');
+    var rows = [], waiting = '';
+    function flushWaiting() { if (waiting) { rows.push(ocrNewRow(waiting, 0)); waiting = ''; } }
+    lines.forEach(function (line0) {
+      /* 이름과 숫자가 붙어 있으면 떼어 놓는다 (예: 홍길동100,000) */
+      var line = line0.replace(/([가-힣a-zA-Z])(\d)/g, '$1 $2').trim();
+      if (!line || ocrSkipLine(line)) return;
+      ocrPairsFromLine(line).forEach(function (pr) {
+        if (pr.loose) { flushWaiting(); waiting = pr.name; return; }
+        if (!pr.name && waiting) { rows.push(ocrNewRow(waiting, pr.amount)); waiting = ''; return; }
+        flushWaiting();
+        rows.push(ocrNewRow(pr.name, pr.amount));
+      });
+    });
+    flushWaiting();
+    rows.forEach(function (r) {
+      r.dup = !!(r.name && r.amount && appData.records.some(function (x) {
+        return x.name === r.name && Number(x.amount) === Number(r.amount);
+      }));
+      if (r.dup) r.on = false;
+    });
+    return rows;
+  }
+
+  /* ---------- 화면 ---------- */
+  function ocrSel(id, opts, cur) {
+    return '<select class="input" id="' + id + '">' + opts.map(function (o) {
+      return '<option value="' + esc(o.v) + '"' + (o.v === cur ? ' selected' : '') + '>' + esc(o.t) + '</option>';
+    }).join('') + '</select>';
+  }
+  function ocrCommonHtml() {
+    var kindOpts = KINDS.map(function (k) { return { v: k, t: k }; });
+    var relOpts = RELS.concat(['기타']).map(function (r) { return { v: r, t: r }; });
+    var dirOpts = [{ v: 'in', t: '💌 받은 돈' }, { v: 'out', t: '💸 보낸 돈' }];
+    var ownOpts = OWNERS.map(function (o) { return { v: o, t: ownerLabel(o) }; });
+    var thankOpts = [{ v: 'none', t: '해당 없음' }, { v: 'need', t: '갚아야 함 / 받을 예정' }, { v: 'done', t: '완료' }];
+    return '<div class="ocr-common">' +
+      '<div class="row">' +
+        '<label><span>날짜 (모두 같은 날)</span><input class="input" type="date" id="ocr-date" value="' + esc(ocrCommon.date) + '" max="2100-12-31"></label>' +
+        '<label><span>경조사</span>' + ocrSel('ocr-kind', kindOpts, ocrCommon.kind) + '</label>' +
+      '</div>' +
+      '<div class="row">' +
+        '<label><span>관계</span>' + ocrSel('ocr-rel', relOpts, ocrCommon.relation) + '</label>' +
+        '<label><span>답례 상태</span>' + ocrSel('ocr-thanks', thankOpts, ocrCommon.thanks) + '</label>' +
+      '</div>' +
+      '<div class="row">' +
+        '<label><span>구분 (아래 모두 적용)</span>' + ocrSel('ocr-all-dir', dirOpts, ocrCommon.dir) + '</label>' +
+        '<label><span>주체 (아래 모두 적용)</span>' + ocrSel('ocr-all-owner', ownOpts, ocrCommon.owner) + '</label>' +
+      '</div>' +
+    '</div>';
+  }
+  function ocrRowHtml(r, i) {
+    var miss = [];
+    if (!r.name) miss.push('이름 없음');
+    if (!r.amount) miss.push('금액 없음');
+    return '<div class="ocr-row' + (r.on ? '' : ' off') + '" data-ocr-row="' + i + '">' +
+      '<input class="ck" type="checkbox" data-ocr-ck="' + i + '"' + (r.on ? ' checked' : '') + ' aria-label="이 줄 등록">' +
+      '<input class="nm" type="text" data-ocr-name="' + i + '" value="' + esc(r.name) + '" placeholder="이름" aria-label="이름" maxlength="20" autocomplete="off">' +
+      '<input class="am" type="text" inputmode="numeric" data-ocr-amt="' + i + '" value="' + (r.amount ? r.amount.toLocaleString('ko-KR') : '') + '" placeholder="금액" aria-label="금액">' +
+      '<div class="ocr-sub">' +
+        '<select class="sel" data-ocr-dir="' + i + '" aria-label="구분">' +
+          '<option value="in"' + (r.dir === 'in' ? ' selected' : '') + '>💌 받은 돈</option>' +
+          '<option value="out"' + (r.dir === 'out' ? ' selected' : '') + '>💸 보낸 돈</option>' +
+        '</select>' +
+        '<select class="sel" data-ocr-owner="' + i + '" aria-label="주체">' +
+          OWNERS.map(function (o) { return '<option value="' + esc(o) + '"' + (r.owner === o ? ' selected' : '') + '>' + esc(ownerLabel(o)) + '</option>'; }).join('') +
+        '</select>' +
+      '</div>' +
+      (r.dup ? '<span class="dup">이미 수첩에 있는 이름·금액이에요 (기본 선택 해제)</span>' : '') +
+      (miss.length ? '<span class="miss">' + miss.join(' · ') + ' — 고쳐 주세요</span>' : '') +
+    '</div>';
+  }
+  function updateOcrActions() {
+    var btn = $('#ocr-commit');
+    if (!btn) return;
+    var n = ocrState ? ocrState.rows.filter(function (r) { return r.on && r.name && r.amount > 0; }).length : 0;
+    btn.disabled = !n || !!(ocrState && ocrState.busy);
+    btn.textContent = (ocrState && ocrState.rows.length) ? ('선택한 ' + n + '건 등록') : '등록';
+    var sel = $('#ocr-sel');
+    if (sel) sel.textContent = ocrState ? ocrState.rows.filter(function (r) { return r.on; }).length : 0;
+  }
+  function renderOcrResult() {
+    var host = $('#ocr-result');
+    if (!host) return;
+    var st = ocrState;
+    if (!st || !st.rows.length) {
+      host.innerHTML = ocrCommonHtml() +
+        '<div class="ocr-addrow"><button class="btn ghost sm" type="button" data-act="ocr-addrow">＋ 빈 줄 추가</button></div>' +
+        '<p class="ocr-tip">사진을 고르면 여기에 이름·금액 후보가 표로 나와요. 여러 장을 한 번에 골라도 되고, 표에 직접 적어도 돼요.</p>';
+      updateOcrActions();
+      return;
+    }
+    host.innerHTML = ocrCommonHtml() +
+      '<div class="ocr-count"><span>찾은 기록 <b>' + st.rows.length + '</b>건</span><span>등록할 <b id="ocr-sel">' + st.rows.filter(function (r) { return r.on; }).length + '</b>건</span></div>' +
+      st.rows.map(ocrRowHtml).join('') +
+      '<div class="ocr-addrow"><button class="btn ghost sm" type="button" data-act="ocr-addrow">＋ 빈 줄 추가</button><button class="btn ghost sm" type="button" data-act="ocr-clear">표 비우기</button></div>' +
+      '<details class="ocr-raw"><summary>읽은 글자 보기 · 직접 고쳐서 다시 분석</summary>' +
+        '<textarea id="ocr-raw" spellcheck="false" aria-label="읽은 글자">' + esc(st.text || '') + '</textarea>' +
+        '<button class="btn ghost sm" type="button" data-act="ocr-reparse">이 글자로 다시 분석</button></details>' +
+      '<p class="ocr-tip">금액이 <b>10</b>처럼 적혀 있으면 만원 단위로 읽어요(10 → 100,000원). 이름 칸이 비어 있는 줄은 등록되지 않아요.</p>';
+    updateOcrActions();
+  }
+  function renderOcr() {
+    var body = $('#ocr-body');
+    if (!body) return;
+    var st = ocrState;
+    var html = '<p class="ocr-help">방명록 사진을 고르면 <b>이 기기 안에서만</b> 글자를 읽어 이름과 금액을 뽑아요. 손글씨는 잘못 읽을 수 있으니 표에서 바로 고쳐 주세요.</p>' +
+      '<div class="ocr-src">' +
+        '<button class="btn ghost sm" type="button" data-act="ocr-camera">📷 사진 찍기</button>' +
+        '<button class="btn ghost sm" type="button" data-act="ocr-album">🖼 앨범에서 고르기</button>' +
+      '</div>' +
+      '<div class="ocr-prev" id="ocr-prev"' + (st && st.preview ? '' : ' hidden') + '><img id="ocr-img" alt="방명록 사진" src="' + (st && st.preview ? esc(st.preview) : '') + '"></div>' +
+      '<p class="ocr-stat" id="ocr-stat"></p><div class="ocr-bar" id="ocr-bar" hidden><i></i></div><p class="ocr-msg" id="ocr-msg" hidden></p>' +
+      '<div id="ocr-result"></div>';
+    body.innerHTML = html;
+    renderOcrResult();
+    if (st) ocrStat(st.stat, st.pct);
+  }
+  function ocrOpen() {
+    ocrCommon = { dir: 'in', owner: husbandView ? '남편' : '공동', date: todayStr(), kind: '결혼식', relation: '기타', thanks: 'none' };
+    ocrState = { rows: [], busy: false, job: 0, text: '', preview: '', stat: '', pct: null };
+    renderOcr();
+    openSheet('modal-ocr');
+  }
+  function ocrClose() {
+    closeSheet('modal-ocr');
+    if (ocrState && ocrState.preview) { try { URL.revokeObjectURL(ocrState.preview); } catch (e) {} }
+    ocrState = null;
+    clearTimeout(ocrIdle);
+    ocrIdle = setTimeout(function () {
+      if (ocrWorker) { try { ocrWorker.terminate(); } catch (e) {} ocrWorker = null; }
+    }, 120000);
+  }
+  function ocrFiles(fileList) {
+    var list = Array.prototype.slice.call(fileList || []).filter(function (f) { return /^image\//i.test(f.type || ''); });
+    if (!list.length) { ocrMsg('사진 파일만 고를 수 있어요 (JPG · PNG · HEIC)'); return; }
+    if (!ocrState) return;
+    var st = ocrState, job = ++ocrJobSeq;
+    st.job = job; st.busy = true;
+    ocrMsg('');
+    updateOcrActions();
+    var failed = 0;
+    var chain = Promise.resolve();
+    list.forEach(function (file, idx) {
+      chain = chain.then(function () {
+        if (!ocrState || ocrState !== st || st.job !== job) return;
+        st.stat = '사진 ' + (idx + 1) + '/' + list.length + ' 준비 중…'; st.pct = 1;
+        ocrStat(st.stat, st.pct);
+        return ocrImageCanvas(file).then(function (canvas) {
+          if (!ocrState || ocrState !== st || st.job !== job) return;
+          if (st.preview) { try { URL.revokeObjectURL(st.preview); } catch (e) {} }
+          st.preview = URL.createObjectURL(file);
+          var img = $('#ocr-img'), pv = $('#ocr-prev');
+          if (img) img.src = st.preview;
+          if (pv) pv.hidden = false;
+          st.stat = '사진 ' + (idx + 1) + '/' + list.length + ' · 글자를 읽는 중…'; st.pct = 5;
+          ocrStat(st.stat, st.pct);
+          return ocrWorkerFor(job).then(function (w) {
+            if (!ocrState || ocrState !== st || st.job !== job) return null;
+            return w.recognize(canvas, {}, { text: true, blocks: false, hocr: false, tsv: false });
+          }).then(function (res) {
+            if (!res) return;
+            var txt = ocrNorm((res.data && res.data.text) || '');
+            st.text = (st.text ? st.text + '\n' : '') + txt;
+          });
+        }).catch(function () { failed++; });
+      });
+    });
+    chain.then(function () {
+      if (!ocrState || ocrState !== st || st.job !== job) return;
+      st.busy = false;
+      if (!String(st.text || '').replace(/\s/g, '')) {
+        st.stat = failed ? '사진을 읽지 못했어요 · 다른 사진으로 다시 시도해 주세요' : '사진에서 글자를 찾지 못했어요';
+        st.pct = null;
+        ocrStat(st.stat, null);
+        ocrMsg('글자를 못 찾았어요. 방명록을 더 밝게, 정면에서 다시 찍거나 아래 표에 직접 적어 주세요.');
+        updateOcrActions();
+        return;
+      }
+      st.rows = ocrParseText(st.text);
+      var withAmt = st.rows.filter(function (r) { return r.amount > 0; }).length;
+      st.stat = '다 읽었어요 · ' + st.rows.length + '명 찾음 (금액 ' + withAmt + '건)' + (failed ? ' · 사진 ' + failed + '장 실패' : '');
+      st.pct = null;
+      renderOcrResult();
+      ocrStat(st.stat, null);
+      updateOcrActions();
+    });
+  }
+  function ocrCommit() {
+    if (!ocrState || !ocrState.rows.length) return;
+    var date = ocrCommon.date || todayStr();
+    var now = Date.now(), added = 0, skipped = 0;
+    ocrState.rows.forEach(function (r) {
+      if (!r.on) return;
+      var name = String(r.name || '').trim();
+      var amount = num(r.amount);
+      if (!name || amount <= 0) { skipped++; return; }
+      appData.records.push({
+        id: uid(), dir: r.dir === 'in' ? 'in' : 'out',
+        owner: (r.owner === '남편' || r.owner === '공동') ? r.owner : '유자',
+        name: name, relation: ocrCommon.relation || '기타', kind: ocrCommon.kind || '결혼식',
+        date: date, amount: amount, method: '직접 참석', thanks: ocrCommon.thanks || 'none',
+        memo: '방명록 사진에서 등록', createdAt: now, updatedAt: now
+      });
+      added++;
+    });
+    if (!added) { toast('등록할 줄이 없어요 · 이름과 금액을 확인해 주세요'); return; }
+    saveData();
+    render();
+    ocrClose();
+    toast(added + '건 등록했어요' + (skipped ? ' · ' + skipped + '건은 이름·금액이 비어 건너뜀' : ''));
   }
 
   /* ============================ 시작 ============================ */
@@ -2052,8 +2701,8 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       syncCfg.lastError = '';
       syncCfg.dirty = false;
       syncSaveCfg();
-      /* 주소창에서 코드를 지워 화면 캡처·기록에 남지 않게 한다 */
-      try { history.replaceState(null, '', location.pathname); } catch (e2) {}
+      /* 주소창에서 코드를 지워 화면 캡처·기록에 남지 않게 한다 (남편 보기 표시는 남긴다) */
+      try { history.replaceState(null, '', location.pathname + (husbandView ? '?owner=husband' : '')); } catch (e2) {}
     }
     if (syncConnected() && syncCfg.auto) setTimeout(function () { syncNow({ silent: true }); }, 600);
     document.addEventListener('visibilitychange', function () {
@@ -2073,6 +2722,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     });
   }
 
+  initHusbandView();
   render();
   initSync();
   renderSyncUI();
@@ -2085,7 +2735,10 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     sync: function () { return syncNow({ silent: true }); },
     push: function () { return syncPush(); },
     counts: syncDocCounts,
-    render: render
+    render: render,
+    ocrParse: ocrParseText,
+    ocrRows: function () { return ocrState ? ocrState.rows : null; },
+    husband: function () { return husbandView; }
   };
 })();
 

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>우리집 수납 지도 · 유자네 집</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="description" content="원본 3D 도면에서 방을 확대해 가구를 고르고, 칸마다 무엇을 넣었는지 확인하는 우리집 수납 지도. 번호를 누르면 그 칸 내용이 바로 뜨고, 냉장고는 사진 그대로 23칸으로 나눠 관리하며 영수증으로 품목을 자동 분류해 담을 수 있어요.">
+<meta name="description" content="원본 3D 도면에서 방을 확대해 가구를 고르고, 칸마다 무엇을 넣었는지 확인하는 우리집 수납 지도. 번호를 누르면 그 칸 내용이 바로 뜨고, 냉장고는 번호 도식 23칸으로 나눠 관리하며 영수증으로 품목을 자동 분류해 담을 수 있어요.">
 <meta name="theme-color" content="#FAF8F5">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -729,10 +729,6 @@ body.sync-off-mode .sticky{top:34px}
   line-height:1.2;box-shadow:0 8px 18px -12px rgba(79,106,81,.9)}
 .fr-cta:hover{background:var(--sage-d)}
 .fr-hint{flex:1 1 180px;min-width:0;font-size:11.5px;color:var(--ink3);line-height:1.5}
-.fr-photo{max-width:860px;margin:0 auto 12px;background:var(--card);border:1px solid var(--line);border-radius:18px;
-  padding:8px;overflow:hidden}
-.fr-photo img{display:block;width:100%;max-width:520px;height:auto;margin:0 auto;border-radius:12px;background:#1b1f22}
-.fr-photo figcaption{font-size:11px;color:var(--ink3);font-weight:700;text-align:center;padding:7px 0 2px}
 .fr-mapwrap{max-width:860px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:18px;
   padding:12px;box-shadow:0 1px 2px rgba(46,39,33,.04)}
 .fr-map{width:100%;max-width:440px;margin:0 auto;display:block}
@@ -745,7 +741,7 @@ body.sync-off-mode .sticky{top:34px}
 .frc rect{transition:fill .12s,stroke .12s}
 .frc:hover rect{fill:var(--terra-s);stroke:var(--terra)}
 .frc.on rect{fill:var(--terra-s);stroke:var(--terra);stroke-width:1.8}
-.frc .frc-n{font-size:11px;font-weight:800;fill:#6B6156;pointer-events:none}
+.frc .frc-n{font-size:10.5px;font-weight:800;fill:#5F564C;pointer-events:none}
 .frc .frc-c{font-size:8.5px;font-weight:800;fill:#fff;pointer-events:none}
 .frc .frc-lbl{font-size:8px;font-weight:700;fill:#A79C92;pointer-events:none}
 .fr-panel{max-width:860px;margin:12px auto 0;background:var(--card);border:1px solid var(--terra-b);border-radius:16px;
@@ -918,19 +914,15 @@ body.sync-off-mode .sticky{top:34px}
     <section id="panel-fridge" role="tabpanel" aria-label="냉장고" hidden>
       <div class="fr-intro">
         <b>🧊 우리 냉장고</b>
-        <p>사진 그대로 — <b>왼쪽 냉동실 12칸</b>(선반 4 · 서랍 2 · 문 포켓 6), <b>오른쪽 냉장실 11칸</b>(선반 4 · 야채실 2 · 문 포켓 5). 칸을 누르면 그 칸 내용을 보고 바로 고칠 수 있어요.</p>
+        <p><b>왼쪽 냉동실 12칸</b>(선반 4 · 서랍 2 · 문 포켓 6), <b>오른쪽 냉장실 11칸</b>(선반 4 · 야채실 2 · 문 포켓 5). 칸 안의 <b>번호</b>를 누르면 그 칸 내용을 보고 바로 고칠 수 있어요.</p>
       </div>
       <div class="fr-actions">
         <button class="fr-cta" type="button" data-act="fr-receipt">📷 영수증으로 자동 분류 넣기</button>
         <span class="fr-hint">영수증 사진이나 품목 글을 넣으면 냉동실·냉장실·문 포켓으로 나눠 담아요.</span>
       </div>
-      <figure class="fr-photo">
-        <img src="img/fridge-photo.jpg" alt="우리집 양문형 냉장고 — 왼쪽은 좁은 냉동실, 오른쪽은 넓은 냉장실과 홈바" loading="lazy" decoding="async">
-        <figcaption>왼쪽 냉동실 · 오른쪽 냉장실(홈바)</figcaption>
-      </figure>
       <div class="fr-mapwrap">
         <div class="fr-map" id="frMap"></div>
-        <p class="fr-legend"><span class="lg">본체</span> 선반·서랍 <span class="lg door">문</span> 포켓 · 숫자를 누르면 아래 칸 내용을 고칠 수 있어요</p>
+        <p class="fr-legend"><span class="lg">본체</span> 선반·서랍 <span class="lg door">문</span> 포켓 · 번호를 누르면 아래 칸 내용을 고칠 수 있어요</p>
       </div>
       <div class="fr-panel" id="frPanel" hidden></div>
       <div class="fr-list" id="frList"></div>
@@ -1235,7 +1227,7 @@ body.sync-off-mode .sticky{top:34px}
   ];
 
   /* ============================================================
-     냉장고 — 칸 23개 (사진 그대로: 왼쪽 냉동실 12 · 오른쪽 냉장실 11)
+     냉장고 — 칸 23개 (번호 도식: 왼쪽 냉동실 12 · 오른쪽 냉장실 11)
      g = [x, y, w, h]  (SVG viewBox 344 × 474 안의 좌표)
      ============================================================ */
   var FRIDGE_DEF = [
@@ -2306,7 +2298,7 @@ body.sync-off-mode .sticky{top:34px}
             '<span class="fc-sub">냉장고 탭 · 23칸 · 담긴 물건 ' + frCount() + '개</span></div>' +
           '<div class="fc-tools"><button class="mini-btn" type="button" data-act="jump-fridge">🧊 냉장고 탭 열기</button></div>' +
         '</div>' +
-        '<p class="fhint">냉장고는 사진 그대로 <b>냉동 12칸 · 냉장 11칸</b>으로 냉장고 탭에서 관리합니다. 영수증을 올리면 품목을 칸별로 나눠 넣을 수 있어요.</p>' +
+        '<p class="fhint">냉장고는 번호 도식 <b>냉동 12칸 · 냉장 11칸</b>으로 냉장고 탭에서 관리합니다. 영수증을 올리면 품목을 칸별로 나눠 넣을 수 있어요.</p>' +
       '</section>';
     }
     var media = '';
@@ -3205,7 +3197,7 @@ body.sync-off-mode .sticky{top:34px}
   }
 
   /* ============================================================
-     냉장고 탭 — 사진 그대로 23칸
+     냉장고 탭 — 번호 도식 23칸
      ============================================================ */
   function frSVG(){
     var sel = state.frc, out = [];
@@ -3221,7 +3213,15 @@ body.sync-off-mode .sticky{top:34px}
       var dash = c.kind === 'pocket' ? ' stroke-dasharray="3.5 2.5"' : '';
       out.push('<g class="frc' + (on ? ' on' : '') + '" data-frc="' + c.id + '" role="button" tabindex="0" aria-label="' + esc(c.name + ' · ' + (d.items.length ? d.items.length + '개' : '비어 있음')) + '">');
       out.push('<rect x="' + g[0] + '" y="' + g[1] + '" width="' + g[2] + '" height="' + g[3] + '" rx="' + (c.kind === 'pocket' ? 7 : 4) + '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="' + (on ? 2 : 1) + '"' + dash + '/>');
-      out.push('<text class="frc-n" x="' + (g[0] + 7) + '" y="' + (g[1] + g[3] / 2 + 4) + '">' + esc(c.num) + '</text>');
+      /* v9.1: 숫자는 칸 안 왼쪽 위의 동그란 번호 배지로 — 사진 없이도 번호만 보고 매칭 */
+      var ncx = g[0] + 14.5, ncy = g[1] + 14.5;
+      out.push('<circle cx="' + ncx + '" cy="' + ncy + '" r="9.8" fill="#FFFFFF" stroke="' + (on ? '#C86D51' : '#DED2C1') + '" stroke-width="1.1"/>');
+      out.push('<text class="frc-n" x="' + ncx + '" y="' + (ncy + 3.7) + '" text-anchor="middle">' + esc(c.num) + '</text>');
+      /* 칸 종류를 작게 — 사진 없이도 어느 칸인지 바로 알 수 있게 */
+      if (g[3] >= 50){
+        var lbl = c.kind === 'shelf' ? '선반' : (c.id === 'rf-pb' ? '홈바' : (c.kind === 'pocket' ? '포켓' : (c.id.indexOf('rf') === 0 ? '야채실' : '서랍')));
+        out.push('<text class="frc-lbl" x="' + (g[0] + g[2] / 2) + '" y="' + (g[1] + g[3] - 8) + '" text-anchor="middle">' + lbl + '</text>');
+      }
       if (d.items.length){
         var bx = g[0] + g[2] - 10, by = g[1] + 10.5;
         out.push('<circle cx="' + bx + '" cy="' + by + '" r="8.5" fill="#5F7A61"/>');
