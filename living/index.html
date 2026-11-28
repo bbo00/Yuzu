@@ -422,6 +422,29 @@ body.rvopen { overflow: hidden; }
 .phacts .btn { flex: 1 1 0; }
 .phacts .btn[disabled] { opacity: .45; cursor: default; }
 body.phopen { overflow: hidden; }
+
+/* ---------- 날짜 숫자 입력 (261128 · 20261128 · 2026-11-28 · 26.11.28) ---------- */
+.datewrap{position:relative;display:block;min-width:0}
+.datewrap .dateinput{padding-right:40px !important;letter-spacing:.2px;font-size:16px;font-variant-numeric:tabular-nums}
+.datewrap .datebtn{position:absolute;right:2px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:0;background:transparent;border-radius:9px;font-size:15px;line-height:1;display:grid;place-items:center;color:var(--ink-3,#8a8a82);padding:0}
+.datewrap .datebtn:active{background:var(--surface-2,#f1f1ee)}
+.dateinput.bad{border-color:#e5a3a3 !important;background:#fff7f7 !important}
+.dhint{display:block;margin:2px 0 0;font-size:11px;color:var(--ink-3,#8a8a82);letter-spacing:-.2px;line-height:1.45}
+.dhint b{color:var(--accent,#4f46e5)}
+.dpback{position:fixed;inset:0;z-index:2147483000;background:rgba(17,24,39,.34);display:grid;place-items:center;padding:16px}
+.dpcard{width:min(340px,100%);background:#fff;border-radius:18px;box-shadow:0 18px 50px rgba(16,24,40,.28);padding:12px 12px 10px;display:grid;gap:8px;font-family:inherit;color:#1f2937}
+.dphead{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.dphead b{font-size:15px;letter-spacing:-.3px}
+.dpnav{width:38px;height:38px;border:0;background:#f2f2ef;border-radius:11px;font-size:19px;line-height:1;color:#374151}
+.dpweek{display:grid;grid-template-columns:repeat(7,1fr);font-size:10.5px;color:#8a8a82;text-align:center;font-weight:700}
+.dpweek span:first-child{color:#d9534f}
+.dpgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.dpcell{height:38px;border:0;background:transparent;border-radius:10px;font-size:14px;color:#1f2937;font-variant-numeric:tabular-nums}
+.dpcell.empty{pointer-events:none}
+.dpcell.today{box-shadow:inset 0 0 0 1px #d9d9d4;font-weight:700}
+.dpcell.sel{background:var(--accent,#4f46e5);color:#fff;font-weight:800}
+.dpfoot{display:flex;gap:8px;margin-top:2px}
+.dpfoot button{flex:1;height:38px;border:0;border-radius:11px;background:#f2f2ef;font-size:13.5px;font-weight:700;color:#374151}
 </style>
 </head><body>
 <div class="app">
@@ -496,7 +519,7 @@ body.phopen { overflow: hidden; }
       <label>소분류<input id="phSub" maxlength="20" autocomplete="off"></label>
       <label>수량<input id="phQty" type="number" inputmode="numeric" min="0" value="1"></label>
       <label>용량 (ml)<input id="phSize" type="text" inputmode="decimal" maxlength="7"></label>
-      <label>소비기한<input id="phExp" type="text" placeholder="예: 2027-01-09" autocomplete="off"></label>
+      <label>소비기한<input id="phExp" type="text" inputmode="numeric" maxlength="10" placeholder="예: 270109" autocomplete="off"></label>
       <label>구매금액 (원)<input id="phPrice" type="text" inputmode="numeric" maxlength="9"></label>
       <label class="phwide">메모<input id="phNote" maxlength="80" autocomplete="off"></label>
     </div>
@@ -536,6 +559,140 @@ body.phopen { overflow: hidden; }
   function num(v) { var n = parseInt(String(v == null ? '' : v).replace(/[^\d-]/g, ''), 10); return isNaN(n) ? 0 : n; }
   function profitOf(s) { return (s.sale || 0) - (s.cost || 0) - (s.fee || 0); }
   function today() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+
+  /* ============================================================
+     날짜 숫자 입력 (공통) — 261128 · 20261128 · 2026-11-28 · 26.11.28
+     입력하는 동안 6·8자리 숫자를 2026-11-28 로 바꾸고, 저장할 때는
+     dateValue() 로 한 번 더 확인한다. 저장 형식은 예전과 같은 YYYY-MM-DD.
+     ============================================================ */
+  function dateNorm(v) {
+    var s = String(v == null ? '' : v).trim();
+    if (!s) return '';
+    if (/^\d{6}$/.test(s)) {
+      var y6 = parseInt(s.slice(0, 2), 10);
+      s = (y6 >= 50 ? 1900 : 2000) + y6 + '-' + s.slice(2, 4) + '-' + s.slice(4, 6);
+    } else if (/^\d{8}$/.test(s)) {
+      s = s.slice(0, 4) + '-' + s.slice(4, 6) + '-' + s.slice(6, 8);
+    }
+    var m = s.match(/^(\d{4})[-.\/\s]*(\d{1,2})[-.\/\s]*(\d{1,2})\.?$/);
+    if (!m) {
+      var m2 = s.match(/^(\d{2})[-.\/](\d{1,2})[-.\/](\d{1,2})$/);
+      if (m2) { var y2 = parseInt(m2[1], 10); m = [0, (y2 >= 50 ? 1900 : 2000) + y2, m2[2], m2[3]]; }
+    }
+    if (!m) return '';
+    var y = parseInt(m[1], 10), mo = parseInt(m[2], 10), d = parseInt(m[3], 10);
+    if (y < 1900 || y > 2100 || mo < 1 || mo > 12 || d < 1 || d > 31) return '';
+    var dt = new Date(y, mo - 1, d);
+    if (dt.getFullYear() !== y || dt.getMonth() !== mo - 1 || dt.getDate() !== d) return '';
+    return y + '-' + (mo < 10 ? '0' + mo : '' + mo) + '-' + (d < 10 ? '0' + d : '' + d);
+  }
+  function dateQuick(v) {
+    var d = String(v == null ? '' : v).replace(/\D/g, '');
+    if (d.length === 6 || d.length === 8) return dateNorm(d);
+    return '';
+  }
+  function bindDateInput(el) {
+    if (!el || el.__dn) return el;
+    el.__dn = 1;
+    el.addEventListener('input', function () {
+      var q = dateQuick(el.value);
+      if (q && q !== el.value) { el.value = q; el.classList.remove('bad'); }
+    });
+    el.addEventListener('blur', function () {
+      var t = String(el.value == null ? '' : el.value).trim();
+      if (!t) { el.classList.remove('bad'); return; }
+      var v = dateNorm(t);
+      if (v) { el.value = v; el.classList.remove('bad'); }
+      else el.classList.add('bad');
+    });
+    el.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); try { el.blur(); } catch (er) { } } });
+    el.addEventListener('focus', function () { try { el.select(); } catch (e) { } });
+    return el;
+  }
+  function bindDates(root) {
+    var r = root || document;
+    Array.prototype.slice.call(r.querySelectorAll('.dateinput')).forEach(bindDateInput);
+    Array.prototype.slice.call(r.querySelectorAll('.datewrap .datebtn')).forEach(function (b) {
+      if (b.__dn) return;
+      b.__dn = 1;
+      b.addEventListener('click', function (e) {
+        e.preventDefault(); e.stopPropagation();
+        openDatePick(b.parentNode.querySelector('.dateinput'));
+      });
+    });
+  }
+  /* 저장할 때: 비어 있으면 fallback(기본 오늘), 형식이 틀리면 null 을 돌려준다 */
+  function dateValue(input, fallback) {
+    if (!input) return fallback || '';
+    var t = String(input.value == null ? '' : input.value).trim();
+    if (!t) { input.classList.remove('bad'); return fallback || ''; }
+    var v = dateNorm(t);
+    if (v) { input.classList.remove('bad'); input.value = v; return v; }
+    input.classList.add('bad');
+    return null;
+  }
+  var dpBox = null;
+  function closeDatePick() { if (dpBox) { try { dpBox.remove(); } catch (e) { } dpBox = null; } }
+  function dpPad(n) { return (n < 10 ? '0' : '') + n; }
+  function openDatePick(input) {
+    if (!input) return;
+    closeDatePick();
+    var seed = dateNorm(input.value) || today();
+    var sd = new Date(seed + 'T00:00:00');
+    var cur = { y: sd.getFullYear(), m: sd.getMonth() };
+    var box = document.createElement('div');
+    box.className = 'dpback';
+    box.innerHTML =
+      '<div class="dpcard" role="dialog" aria-label="날짜 선택">' +
+      '<div class="dphead"><button type="button" class="dpnav" data-dpn="-1" aria-label="이전 달">‹</button>' +
+      '<b class="dptitle"></b>' +
+      '<button type="button" class="dpnav" data-dpn="1" aria-label="다음 달">›</button></div>' +
+      '<div class="dpweek"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>' +
+      '<div class="dpgrid"></div>' +
+      '<div class="dpfoot"><button type="button" data-dpt="today">오늘</button><button type="button" data-dpt="close">닫기</button></div>' +
+      '</div>';
+    var grid = box.querySelector('.dpgrid'), title = box.querySelector('.dptitle');
+    function paint() {
+      title.textContent = cur.y + '년 ' + (cur.m + 1) + '월';
+      var start = new Date(cur.y, cur.m, 1).getDay();
+      var last = new Date(cur.y, cur.m + 1, 0).getDate();
+      var sel = dateNorm(input.value) || '', t = today();
+      var cells = '', d, ds;
+      for (var i = 0; i < start; i++) cells += '<span class="dpcell empty"></span>';
+      for (d = 1; d <= last; d++) {
+        ds = cur.y + '-' + dpPad(cur.m + 1) + '-' + dpPad(d);
+        cells += '<button type="button" class="dpcell' + (ds === sel ? ' sel' : '') + (ds === t ? ' today' : '') + '" data-dpd="' + ds + '">' + d + '</button>';
+      }
+      grid.innerHTML = cells;
+    }
+    paint();
+    box.addEventListener('click', function (e) {
+      if (e.target === box) { closeDatePick(); return; }
+      var tg = e.target;
+      var n = tg.closest ? tg.closest('[data-dpn]') : null;
+      if (n) {
+        cur.m += parseInt(n.getAttribute('data-dpn'), 10);
+        if (cur.m < 0) { cur.m = 11; cur.y--; }
+        if (cur.m > 11) { cur.m = 0; cur.y++; }
+        paint(); return;
+      }
+      var dv = tg.closest ? tg.closest('[data-dpd]') : null;
+      if (dv) {
+        input.value = dv.getAttribute('data-dpd');
+        input.classList.remove('bad');
+        closeDatePick();
+        try { input.blur(); } catch (er) { }
+        return;
+      }
+      var ft = tg.closest ? tg.closest('[data-dpt]') : null;
+      if (ft) {
+        if (ft.getAttribute('data-dpt') === 'today') { input.value = today(); input.classList.remove('bad'); }
+        closeDatePick();
+      }
+    });
+    document.body.appendChild(box);
+    dpBox = box;
+  }
 
   /* ---------- derived ---------- */
   function dday(exp) {
@@ -1521,7 +1678,7 @@ body.phopen { overflow: hidden; }
       '<label>판매처<select name="platform">' + opts(PLATFORMS, '당근') + '</select></label>' +
       '<label>판매가(원)<input name="sale" type="number" inputmode="numeric" min="0" required></label>' +
       '<label>수수료 등(원)<input name="fee" type="number" inputmode="numeric" min="0" value="0"></label>' +
-      '<label>날짜<input name="date" type="date" value="' + today() + '"></label>' +
+      '<label>날짜<div class="datewrap"><input name="date" class="dateinput" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="10" enterkeyhint="done" placeholder="261128" value="' + today() + '"><button type="button" class="datebtn" aria-label="달력에서 날짜 고르기">📅</button></div></label>' +
       '<div class="acts wide"><button class="btn primary" type="submit">판매 기록에 넣기</button></div></form>';
   }
   function goodsForm() {
@@ -1544,7 +1701,7 @@ body.phopen { overflow: hidden; }
       '<label>판매가(원)<input name="sale" type="number" inputmode="numeric" min="0" required></label>' +
       '<label>매입가(원)<input name="cost" type="number" inputmode="numeric" min="0"></label>' +
       '<label>수수료 등(원)<input name="fee" type="number" inputmode="numeric" min="0" value="0"></label>' +
-      '<label>날짜<input name="date" type="date" value="' + today() + '"></label>' +
+      '<label>날짜<div class="datewrap"><input name="date" class="dateinput" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="10" enterkeyhint="done" placeholder="261128" value="' + today() + '"><button type="button" class="datebtn" aria-label="달력에서 날짜 고르기">📅</button></div></label>' +
       '<div class="acts wide"><button class="btn primary" type="submit">기록하기</button></div></form>';
   }
 
@@ -1690,6 +1847,12 @@ body.phopen { overflow: hidden; }
     var kind = form.dataset.form;
     if (kind !== 'goods' && kind !== 'sell' && kind !== 'sale') return false;
     var fd = new FormData(form);
+    /* 날짜: 빈칸이면 오늘, 261128 같은 숫자도 YYYY-MM-DD 로 맞춰 저장한다 */
+    var when = '';
+    if (kind !== 'goods') {
+      when = dateValue(form.querySelector('input[name="date"]'), today());
+      if (when === null) { toast('날짜를 확인해주세요 · 261128 또는 2026-11-28'); return true; }
+    }
     if (kind === 'goods') {
       var name = String(fd.get('name') || '').trim();
       if (!name) return true;
@@ -1708,7 +1871,7 @@ body.phopen { overflow: hidden; }
       var rec = createDoc('sales', sales, {
         name: g.name + (g.size ? ' ' + g.size : ''), platform: String(fd.get('platform')),
         sale: Math.max(0, num(fd.get('sale'))), cost: g.cost || 0, fee: Math.max(0, num(fd.get('fee'))),
-        date: String(fd.get('date') || ''), goodsId: g.id, ord: nextOrdOf(sales)
+        date: when, goodsId: g.id, ord: nextOrdOf(sales)
       });
       patchGoods(g, { qty: Math.max(0, (g.qty || 0) - 1) });
       ui.sell = null; ui.gopen = null; render();
@@ -1719,7 +1882,7 @@ body.phopen { overflow: hidden; }
       createDoc('sales', sales, {
         name: nm, platform: String(fd.get('platform')), sale: Math.max(0, num(fd.get('sale'))),
         cost: Math.max(0, num(fd.get('cost'))), fee: Math.max(0, num(fd.get('fee'))),
-        date: String(fd.get('date') || ''), goodsId: '', ord: nextOrdOf(sales)
+        date: when, goodsId: '', ord: nextOrdOf(sales)
       });
       ui.add = true; render('.add input[name="name"]'); toast('판매 기록에 넣었어요');
     }
@@ -2507,7 +2670,7 @@ body.phopen { overflow: hidden; }
     };
     if (CORNER_NAMES.indexOf(v.corner) < 0) v.corner = '기타';
     var ex = v.expRaw ? parseExpInput(v.expRaw) : { exp: '', approx: false };
-    if (!ex) { phMsg('소비기한을 확인해 주세요 (예: 2027-01-09)'); return; }
+    if (!ex) { phMsg('소비기한을 확인해 주세요 (예: 270109)'); return; }
     var tgt = phState.target, tid = phState.id;
 
     if (tgt === 'edit') {
@@ -2692,6 +2855,7 @@ body.phopen { overflow: hidden; }
       if (act && (act.offsetLeft < nc.scrollLeft || act.offsetLeft + act.offsetWidth > nc.scrollLeft + nc.clientWidth)) nc.scrollLeft = Math.max(0, act.offsetLeft - (nc.clientWidth - act.offsetWidth) / 2);
     }
     if (focus) { var el = $('#view').querySelector(focus); if (el) el.focus(); }
+    bindDates($('#view'));
   }
 
   /* ---------- actions ---------- */
