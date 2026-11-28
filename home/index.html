@@ -412,6 +412,8 @@ body.searching main{padding-top:10px}
   max-width:calc(100vw - 32px);opacity:0;transition:opacity .18s ease,transform .18s ease;pointer-events:none}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 
+footer button.ver-reload{display:inline-flex;align-items:center;gap:4px;margin-top:7px;padding:6px 11px;border:1px solid var(--line);border-radius:9px;background:#fff;font:750 11.5px/1.2 inherit;color:var(--ink2);cursor:pointer}
+footer button.ver-reload:hover{border-color:var(--terra-b);color:var(--terra-d)}
 footer{margin-top:26px;text-align:center;font-size:11.5px;color:var(--ink3);line-height:1.7}
 footer b{color:var(--ink2);font-weight:700}
 .flash{animation:flash 1.7s ease}
@@ -930,9 +932,10 @@ body.sync-off-mode .sticky{top:34px}
   </main>
 
   <footer>
-    <b>유자네 집 · 우리집 수납 지도 v9</b><br>
-    2026년 11월 27일 기준 · 검색은 띄어쓰기 없이도 됩니다.<br>
-    v6·v7·v8에서 고쳐 둔 칸·핀·메모는 그대로 이어지고, 냉장고 칸도 기기 간 클라우드에 함께 저장됩니다.
+    <b>유자네 집 · 우리집 수납 지도 v9.1</b><br>
+    2026년 11월 28일 기준 · 검색은 띄어쓰기 없이도 됩니다.<br>
+    v6·v7·v8에서 고쳐 둔 칸·핀·메모는 그대로 이어지고, 냉장고 칸도 기기 간 클라우드에 함께 저장됩니다.<br>
+    <button class="ver-reload" type="button" data-act="app-reload">↻ 화면 새로고침 (새 버전 반영)</button>
   </footer>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -1267,7 +1270,7 @@ body.sync-off-mode .sticky{top:34px}
       if (o && Array.isArray(o.items)){
         o.items.forEach(function(t){ if (typeof t === 'string' && t.trim()) items.push(t.trim()); });
       }
-      out.cells[c.id] = {items: items, memo: (o && typeof o.memo === 'string') ? o.memo : ''};
+      out.cells[c.id] = {items: items, memo: (o && typeof o.memo === 'string') ? o.memo : '', t: (o && Number(o.t)) || 0};
     });
     return out;
   }
@@ -1483,16 +1486,18 @@ body.sync-off-mode .sticky{top:34px}
 
   /* ---------- 정규화 ---------- */
   function nzone(z){
-    if (Array.isArray(z)) return {items: z.filter(function(t){ return typeof t === 'string'; }), floor:'', move:null, label:''};
+    /* t: 이 칸을 마지막으로 고친 시각 — 기기끼리 합칠 때 '지운 칸'이 되살아나지 않게 하는 표시 */
+    if (Array.isArray(z)) return {items: z.filter(function(t){ return typeof t === 'string'; }), floor:'', move:null, label:'', t:0};
     if (z && typeof z === 'object'){
       return {
         items: Array.isArray(z.items) ? z.items.filter(function(t){ return typeof t === 'string'; }) : [],
         floor: typeof z.floor === 'string' ? z.floor : '',
         label: typeof z.label === 'string' ? z.label : '',
-        move: (z.move && typeof z.move === 'object') ? {rid:String(z.move.rid||''), fid:String(z.move.fid||''), z:parseInt(z.move.z,10)||0, memo:String(z.move.memo||'')} : null
+        move: (z.move && typeof z.move === 'object') ? {rid:String(z.move.rid||''), fid:String(z.move.fid||''), z:parseInt(z.move.z,10)||0, memo:String(z.move.memo||'')} : null,
+        t: Number(z.t) || 0
       };
     }
-    return {items:[], floor:'', move:null, label:''};
+    return {items:[], floor:'', move:null, label:'', t:0};
   }
   function nfurn(f, i){
     var o = {
@@ -2680,6 +2685,7 @@ body.sync-off-mode .sticky{top:34px}
     if (!info || !info.f.zones[zi]) return;
     var s = info.f.zones[zi];
     s.items = v.items; s.floor = v.floor; s.move = v.move; s.label = v.label;
+    s.t = Date.now();   /* 이 칸을 고친 시각 — 다른 기기와 합칠 때 지운 내용이 되살아나지 않게 */
     saveDB(quiet);
     buildIndex(); recount();
     var sy = window.scrollY;
@@ -2708,9 +2714,11 @@ body.sync-off-mode .sticky{top:34px}
     if (!t) return;
     if (!s.items.length){ toast('옮길 물건이 없어요'); return; }
     var moved = s.items.slice();
+    var nowTs = Date.now();
     moved.forEach(function(n){ if (t.items.indexOf(n) < 0) t.items.push(n); });
     if (!t.floor && s.floor) t.floor = s.floor;
     s.items = []; s.floor = ''; s.move = null;
+    s.t = nowTs; t.t = nowTs;   /* 옮긴 뒤 빈 칸이 상대 기기에서 되살아나지 않게 */
     saveDB(); buildIndex(); recount();
     showMap();
     var row = document.getElementById(fid + '-z' + zi);
@@ -3301,6 +3309,7 @@ body.sync-off-mode .sticky{top:34px}
       if (p && d.items.indexOf(p) < 0){ d.items.push(p); added++; }
     });
     if (!added){ toast('이미 들어 있어요'); return; }
+    d.t = Date.now();
     saveDB();
     renderFridge();
     var inp = $('#frNewItem');
@@ -3312,6 +3321,7 @@ body.sync-off-mode .sticky{top:34px}
     var d = frCell(id);
     if (!d || !d.items[i]) return;
     var name = d.items.splice(i, 1)[0];
+    d.t = Date.now();
     saveDB();
     renderFridge();
     toast(name + ' 지웠어요');
@@ -3335,7 +3345,7 @@ body.sync-off-mode .sticky{top:34px}
       done = true;
       if (save){
         var v = inp.value.replace(/\s+/g, ' ').trim();
-        if (v && v !== name){ d.items[i] = v; saveDB(); toast('고쳤어요'); }
+        if (v && v !== name){ d.items[i] = v; d.t = Date.now(); saveDB(); toast('고쳤어요'); }
       }
       renderFridge();
     };
@@ -3352,6 +3362,7 @@ body.sync-off-mode .sticky{top:34px}
     var v = String(val || '').trim();
     if (d.memo === v) return;
     d.memo = v;
+    d.t = Date.now();
     saveDB(true);
   }
 
@@ -3917,6 +3928,10 @@ body.sync-off-mode .sticky{top:34px}
         else if (a === 'rt-cancel') renderRoutines();
         else if (a === 'open-sync') openSync();
         else if (a === 'close-sync') closeSync();
+        else if (a === 'app-reload'){
+          /* 홈 화면 앱(PWA)은 새로고침 버튼이 없어 예전 화면에 머무를 수 있다 — 주소에 시간을 붙여 새로 받는다 */
+          try{ location.replace(location.pathname + '?r=' + Date.now()); }catch(e){ location.reload(); }
+        }
         else if (a === 'sync-now') syncNow({silent:false}).then(renderSyncUI);
         else if (a === 'sync-new') createSyncCode();
         else if (a === 'sync-join') joinSyncCode();
@@ -4313,6 +4328,9 @@ body.sync-off-mode .sticky{top:34px}
             if (!bz){ bf.zones.push(deep(oz)); stats.added++; continue; }
             if (!bz.label && oz.label) bz.label = oz.label;
             if (zoneEmpty(bz) && !zoneEmpty(oz)){
+              /* 이 기기에서 더 나중에 지운 칸이면 다른 기기의 옛 내용을 다시 채우지 않는다 */
+              var bt = Number(bz.t) || 0, ot = Number(oz.t) || 0;
+              if (bt && bt >= ot) continue;
               bz.items = oz.items.slice();
               bz.floor = oz.floor || '';
               bz.move = oz.move ? deep(oz.move) : null;
@@ -4345,7 +4363,10 @@ body.sync-off-mode .sticky{top:34px}
       FRIDGE_DEF.forEach(function(c){
         var b = bfr.cells[c.id], o = ofr.cells[c.id];
         if (!b || !o) return;
-        if (!b.items.length && o.items.length){ b.items = o.items.slice(); stats.updated++; }
+        if (!b.items.length && o.items.length){
+          var bt = Number(b.t) || 0, ot = Number(o.t) || 0;
+          if (!(bt && bt >= ot)){ b.items = o.items.slice(); stats.updated++; }
+        }
         if (!b.memo && o.memo) b.memo = o.memo;
       });
       base.fridge = bfr;
@@ -4370,6 +4391,21 @@ body.sync-off-mode .sticky{top:34px}
     renderSyncUI();
   }
 
+  /* ============================================================
+     편집 중에는 동기화로 화면을 다시 그리지 않는다
+     — 예전에는 앱을 열거나 탭으로 돌아올 때 자동 동기화가 끝나면
+       refreshAll()이 화면을 통째로 다시 그려, 그 사이에 연 편집기와
+       입력 중이던 글자가 소리 없이 사라졌다.
+     ============================================================ */
+  var syncWaitT = null, syncDeferred = false;
+  function syncEditingNow(){
+    try{ return !!document.querySelector('.row.editing'); }catch(e){ return false; }
+  }
+  function deferSync(opts){
+    clearTimeout(syncWaitT);
+    syncWaitT = setTimeout(function(){ syncNow(opts || {silent:true}); }, 1400);
+  }
+
   function syncNow(opts){
     var silent = opts && opts.silent;
     if (!syncConnected()){
@@ -4377,6 +4413,11 @@ body.sync-off-mode .sticky{top:34px}
       return Promise.resolve(null);
     }
     if (syncBusy) return Promise.resolve(null);
+    if (syncEditingNow()){
+      deferSync(opts);
+      if (!silent) toast('칸을 고치는 중이라 저장한 뒤에 동기화할게요');
+      return Promise.resolve(null);
+    }
     syncBusy = true; syncApplying = true;
     renderSyncUI();
     var merged = null, pushed = false;
@@ -4393,6 +4434,7 @@ body.sync-off-mode .sticky{top:34px}
         if (!R) return localDirty ? syncPush().then(function(){ pushed = true; }) : false;
         if (!localDirty && !DB.edited){
           /* 이 기기에 고친 것이 없으면 클라우드 사본을 그대로 받는다 */
+          if (syncEditingNow()){ syncDeferred = true; return false; }
           var mRev = Number(m.rev) || 0, mTs = Number(m.ts) || 0;
           DB = normalizeDB(deep(R));
           DB.edited = false;
@@ -4409,6 +4451,7 @@ body.sync-off-mode .sticky{top:34px}
         var changed = false;
         try{ changed = JSON.stringify(res.db) !== JSON.stringify(DB); }catch(e){ changed = true; }
         merged = {stats:res.stats, changed:changed};
+        if (changed && syncEditingNow()){ syncDeferred = true; return false; }
         if (changed){ DB = normalizeDB(res.db); persist(); refreshAll(); }
         return syncPush().then(function(){ pushed = true; });
       });
@@ -4419,6 +4462,11 @@ body.sync-off-mode .sticky{top:34px}
       syncSaveCfg();
       syncBusy = false; syncApplying = false;
       renderSyncUI();
+      if (syncDeferred){
+        syncDeferred = false;
+        deferSync(opts);
+        return merged;
+      }
       if (!silent && merged){
         if (merged.stats.adopted) toast('클라우드 기록을 이 기기로 받았어요');
         else if (merged.stats.added || merged.stats.updated) toast('동기화 완료 · ' + merged.stats.added + '칸 추가, ' + merged.stats.updated + '칸 채움');
