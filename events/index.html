@@ -141,6 +141,9 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 .ocr-src .btn{flex:1 1 0}
 .ocr-prev{margin:0 0 10px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);overflow:hidden}
 .ocr-prev img{display:block;width:100%;max-height:240px;object-fit:contain}
+.ocr-rot{display:flex;gap:6px;margin:0 0 10px}
+.ocr-rot .btn{flex:1 1 0;padding:0 6px;font-size:12px;white-space:nowrap}
+.ocr-rot .btn:last-child{flex:0 0 auto}
 .ocr-stat{margin:0 0 7px;font-size:12.5px;color:var(--ink-2);min-height:18px;line-height:1.5}
 .ocr-bar{height:6px;border-radius:4px;background:var(--track);overflow:hidden;margin:0 0 10px}
 .ocr-bar i{display:block;height:100%;width:0;background:var(--in);transition:width .2s ease}
@@ -153,11 +156,16 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 .ocr-common .input{height:40px;font-size:16px}
 .ocr-count{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;font-size:12.5px;color:var(--ink-2)}
 .ocr-count b{color:var(--ink)}
+.ocr-tools{display:flex;gap:6px;margin:0 0 8px}
+.ocr-tools .btn{flex:1 1 0}
 .ocr-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:8px 9px;margin:0 0 7px;background:var(--surface)}
 .ocr-row.off{opacity:.45}
 .ocr-row .ck{flex:0 0 auto;width:22px;height:22px;accent-color:var(--in)}
 .ocr-row .nm{flex:1 1 90px;min-width:0;height:40px;font-size:16px;font-weight:700;border:1px solid var(--line);border-radius:9px;padding:0 9px;background:var(--surface);letter-spacing:-.2px}
-.ocr-row .am{flex:0 0 96px;width:96px;height:40px;font-size:16px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;border:1px solid var(--line);border-radius:9px;padding:0 9px;background:var(--surface)}
+.ocr-row .am{flex:0 0 92px;width:92px;height:40px;font-size:16px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;border:1px solid var(--line);border-radius:9px;padding:0 9px;background:var(--surface)}
+.ocr-row .ocr-del{flex:0 0 28px;width:28px;height:40px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);color:var(--ink-3);font-size:13px;line-height:1;padding:0}
+.ocr-row .ocr-del:active{background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
+.ocr-row .mm{flex:0 0 100%;height:38px;font-size:16px;border:1px dashed var(--line);border-radius:9px;padding:0 9px;background:var(--surface-2);color:var(--ink-2)}
 .ocr-row .ocr-sub{flex:0 0 100%;display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .ocr-row .sel{width:100%;min-width:0;height:38px;font-size:16px;border:1px solid var(--line);border-radius:9px;padding:0 8px;background:var(--surface-2);color:var(--ink-2)}
 .ocr-row .dup{flex:0 0 100%;font-size:11px;color:var(--warn);line-height:1.4}
@@ -191,6 +199,9 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 .tag.done{background:#eff4f2;border-color:#dde8e4;color:#3f6d5f}
 .rec-memo{margin:7px 0 0;font-size:12.5px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
 .rec-act{display:flex;justify-content:flex-end;margin-top:8px}
+.rec-act-del{margin-top:4px}
+.rec-act-del .btn{color:var(--ink-3);opacity:.85}
+.rec-act-del .btn:active{color:var(--bad);border-color:var(--bad)}
 
 /* ---------- 빈 상태 ---------- */
 .empty{background:var(--surface);border:1px dashed #e2dfd7;border-radius:var(--radius);padding:24px 18px;text-align:center;margin:0 0 12px}
@@ -339,7 +350,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 </head>
 <body>
 <div class="wrap">
-  <div class="husband-bar" id="husband-bar" hidden>👨 남편 내역 전용 보기<span>남편 주체로 남긴 기록만 보여요 · 유자(내)·공동 내역은 숨김</span></div>
+  <div class="husband-bar" id="husband-bar" hidden>👨 남편 내역 전용 보기<span>남편 주체로 남긴 기록만 보여요 · 아내(내)·공동 내역은 숨김</span></div>
   <header class="app-head">
     <div>
       <h1>경조사비 수첩</h1>
@@ -429,7 +440,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       <dl class="dl">
         <div><dt>보낸 돈</dt><dd>축의금·조의금·축하금 등 내가 낸 돈</dd></div>
         <div><dt>받은 돈</dt><dd>내 경조사에 받은 돈 · 나중에 갚아야 할 마음</dd></div>
-        <div><dt>주체</dt><dd>유자(나) · 남편 · 공동 중 고르면 부부 기록을 나눠 볼 수 있어요</dd></div>
+        <div><dt>주체</dt><dd>아내(나) · 남편 · 공동 중 고르면 부부 기록을 나눠 볼 수 있어요</dd></div>
         <div><dt>답례 상태</dt><dd>받은 돈은 ‘갚아야 함’, 보낸 돈은 ‘받을 예정’으로 남겨두면 미답례 탭에 모입니다</dd></div>
       </dl>
       <p class="card-foot">입력한 기록은 이 기기 브라우저(그리고 연결했다면 전용 클라우드)에만 저장됩니다. 페이지 소스에는 어떤 기록도 들어 있지 않아요.</p>
@@ -483,7 +494,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   /* ============================ 상수 ============================ */
   var RELS = ['직장·동료', '친구·지인', '친척·가족', '거래처·기타'];
   var KINDS = ['결혼식', '장례식', '돌잔치', '출산·백일', '개업·승진', '생신·칠순', '기타'];
-  var OWNERS = ['유자', '남편', '공동'];
+  var OWNERS = ['아내', '남편', '공동'];   /* 주체: 아내(나) · 남편 · 공동 (예전에 저장된 '유자'는 '아내'로 읽는다) */
   var METHODS = ['직접 참석', '계좌이체', '모바일(카톡 등)', '대리 전달', '화환·선물'];
   var QUICK_AMTS = [30000, 50000, 100000, 150000, 200000, 300000];
   var DATA_KEY = 'events_v1';
@@ -539,7 +550,16 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   }
   function yearOf(s) { return String(s || '').slice(0, 4); }
   function monthOf(s) { return String(s || '').slice(5, 7); }
-  function ownerLabel(o) { return o === '유자' ? '유자(나)' : (o || '유자'); }
+  /* 예전 기록의 '유자'/'yuzu'를 '아내'로 옮겨 읽어 기존 내역이 사라지지 않게 한다 */
+  function normOwner(o) {
+    var v = String(o == null ? '' : o).trim();
+    if (!v) return '아내';
+    if (v === '남편' || v === 'husband') return '남편';
+    if (v === '공동' || v === 'both') return '공동';
+    if (v === '아내' || v === '유자' || v === 'yuzu' || v === '나' || v === 'wife') return '아내';
+    return v;
+  }
+  function ownerLabel(o) { return normOwner(o) === '아내' ? '아내(나)' : normOwner(o); }
   function dirLabel(d) { return d === 'in' ? '💌 받은 돈' : '💸 보낸 돈'; }
   function thanksInfo(rec) {
     if (rec.thanks === 'need') return rec.dir === 'in' ? { t: '갚아야 함', cls: 'need' } : { t: '받을 예정', cls: 'need' };
@@ -578,7 +598,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       if (!r || !r.id || seen[r.id]) return false;
       seen[r.id] = 1;
       r.dir = (r.dir === 'in') ? 'in' : 'out';
-      r.owner = (r.owner === '남편' || r.owner === '공동') ? r.owner : '유자';
+      r.owner = normOwner(r.owner);
       r.name = String(r.name == null ? '' : r.name).trim();
       r.amount = num(r.amount);
       r.date = String(r.date || '').slice(0, 10) || todayStr();
@@ -812,6 +832,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       '<div class="tags">' + tags + '</div>' +
       (r.memo ? '<p class="rec-memo">' + esc(r.memo) + '</p>' : '') +
       (opts.thanksButton ? '<div class="rec-act"><button type="button" class="btn soft xs" data-act="thanks-done" data-id="' + esc(r.id) + '">✓ 답례 완료로 표시</button></div>' : '') +
+      '<div class="rec-act rec-act-del"><button type="button" class="btn ghost xs" data-act="del" data-id="' + esc(r.id) + '" aria-label="이 기록 삭제">✕ 삭제</button></div>' +
       '</article>';
   }
 
@@ -1138,7 +1159,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     var r = id ? findRec(id) : null;
     var d = r ? JSON.parse(JSON.stringify(r)) : {
       dir: (preset && preset.dir) || 'out',
-      owner: husbandView ? '남편' : '유자',
+      owner: husbandView ? '남편' : '아내',
       name: (preset && preset.name) || '',
       relation: '직장·동료',
       kind: '결혼식',
@@ -1294,7 +1315,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       var rec = findRec(editingId);
       if (!rec) { toast('기록을 찾을 수 없어요'); return; }
       rec.dir = f.dir.value === 'in' ? 'in' : 'out';
-      rec.owner = f.owner.value || '유자';
+      rec.owner = normOwner(f.owner.value);
       rec.name = name;
       rec.relation = relation;
       rec.kind = kind;
@@ -1309,7 +1330,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       toast('수정했어요');
     } else {
       appData.records.push({
-        id: uid(), dir: f.dir.value === 'in' ? 'in' : 'out', owner: f.owner.value || '유자',
+        id: uid(), dir: f.dir.value === 'in' ? 'in' : 'out', owner: normOwner(f.owner.value),
         name: name, relation: relation, kind: kind, date: date, amount: amount,
         method: f.method.value || '', thanks: f.thanks.value || 'none',
         memo: String(f.memo.value || '').trim(), createdAt: now, updatedAt: now
@@ -2104,6 +2125,30 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       case 'ocr-clear':
         if (ocrState) { ocrState.rows = []; renderOcrResult(); }
         break;
+      case 'ocr-rot-ccw':
+        ocrRotate(-90); break;
+      case 'ocr-rot-cw':
+        ocrRotate(90); break;
+      case 'ocr-photo-clear':
+        ocrClearPhoto(); break;
+      case 'ocr-row-del':
+        if (ocrState && ocrState.rows[+id]) {
+          ocrState.rows.splice(+id, 1);
+          renderOcrResult();
+        }
+        break;
+      case 'ocr-selall':
+        if (ocrState) {
+          ocrState.rows.forEach(function (r) { r.on = true; });
+          renderOcrResult();
+        }
+        break;
+      case 'ocr-selnone':
+        if (ocrState) {
+          ocrState.rows.forEach(function (r) { r.on = false; });
+          renderOcrResult();
+        }
+        break;
       case 'ocr-reparse':
         var oraw = $('#ocr-raw');
         if (ocrState && oraw) {
@@ -2242,6 +2287,11 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       updateOcrActions();
       return;
     }
+    if (t.getAttribute('data-ocr-memo') != null) {
+      var mi = +t.getAttribute('data-ocr-memo');
+      if (ocrState && ocrState.rows[mi]) ocrState.rows[mi].memo = String(t.value || '').trim();
+      return;
+    }
     if (t.id === 'ocr-raw' && ocrState) ocrState.text = t.value;
   });
   document.addEventListener('change', function (e) {
@@ -2310,8 +2360,10 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   }
 
   /* ============================ 방명록 사진 OCR ============================
-     방명록 사진 → 이 기기 안에서만 글자 인식(Tesseract.js kor+eng, living과 같은 방식)
-     → 이름·금액 후보를 표로 보여주고, 확인·수정한 줄만 한 번에 등록한다.
+     방명록 사진 → 이 기기 안에서만 글자 인식(Tesseract.js kor+eng)
+     · 촬영 사진은 EXIF 방향을 반영해 바로 세워 그리고, 흑백 이진화(배경 얼룩 제거 + 대비 강조) 후 인식한다.
+     · 사진이 옆으로 누워 있으면 ↺ / ↻ 버튼으로 90°씩 돌려 바로 다시 인식한다.
+     · 글자 위치(단어 상자)를 이용해 표의 줄을 다시 세우므로 이름과 금액이 한 줄에서 섞이지 않는다.
      사진과 글자는 어디로도 보내지 않고, 저장 키·동기화 구조는 건드리지 않는다. */
   var OCR_CDN = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
   var OCR_LANG = 'https://tessdata.projectnaptha.com/4.0.0_fast';
@@ -2340,6 +2392,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     }).catch(function (e) { ocrLoading = null; throw e; });
     return ocrLoading;
   }
+  /* 한국어 + 영어 사전을 함께 올린다(숫자·영문 금액 표기까지 읽도록) */
   function ocrWorkerFor(job) {
     return ocrLoadTess().then(function (T) {
       if (ocrWorker) return ocrWorker;
@@ -2347,36 +2400,46 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       var logger = function (m) {
         if (!ocrState || ocrState.job !== job) return;
         var st = (m && m.status) || '', pr = (m && typeof m.progress === 'number') ? m.progress : 0;
-        if (st.indexOf('language') >= 0) ocrStat('한국어·영어 글자 사전을 내려받는 중… (처음 한 번만)', 4 + pr * 46);
-        else if (st.indexOf('initializ') >= 0) ocrStat('글자 읽기 준비 중…', 52 + pr * 8);
-        else if (st.indexOf('recognizing') >= 0) ocrStat('글자를 읽는 중…', 62 + pr * 36);
+        if (st.indexOf('language') >= 0) ocrStat('한국어·영어 글자 사전을 내려받는 중… (처음 한 번만)', 4 + pr * 40);
+        else if (st.indexOf('initializ') >= 0) ocrStat('글자 읽기 준비 중…', 46 + pr * 8);
+        else if (st.indexOf('recognizing') >= 0) ocrStat('글자를 읽는 중…', 56 + pr * 38);
       };
       return T.createWorker('kor+eng', 1, { logger: logger, langPath: OCR_LANG }).catch(function () {
         ocrStat('글자 사전을 다시 받아보는 중…', 4);
         return T.createWorker('kor+eng', 1, { logger: logger });
       });
     }).then(function (w) {
-      if (w && !w.__tuned) { w.__tuned = true; try { w.setParameters({ preserve_interword_spaces: '1' }); } catch (e) {} }
+      if (w && !w.__tuned) {
+        w.__tuned = true;
+        try { w.setParameters({ preserve_interword_spaces: '1', tessedit_pageseg_mode: '6' }); } catch (e) {}
+      }
       ocrWorker = w;
       clearTimeout(ocrIdle);
       return w;
     });
   }
-  /* 사진 → 캔버스 (긴 변 2000px: 손글씨가 작아 1800보다 조금 크게) */
-  function ocrImageCanvas(file) {
+
+  /* ---------- 사진 준비: EXIF 방향 반영 · 90° 회전 · 흑백 이진화 ---------- */
+  function ocrSizedCanvas(src, w0, h0) {
+    var long = Math.max(w0, h0), k = 1;
+    if (long > 2200) k = 2200 / long;
+    var cap = Math.sqrt(4200000 / (w0 * h0));
+    if (cap < k) k = cap;
+    if (long < 1200 && k === 1) k = Math.min(2, 1200 / long);
+    var c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(w0 * k));
+    c.height = Math.max(1, Math.round(h0 * k));
+    var ctx = c.getContext('2d');
+    try { ctx.imageSmoothingQuality = 'high'; } catch (e) {}
+    ctx.drawImage(src, 0, 0, c.width, c.height);
+    return c;
+  }
+  function ocrImgCanvas(file) {
     return new Promise(function (res, rej) {
       var url = URL.createObjectURL(file), img = new Image();
       img.onload = function () {
         try {
-          var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
-          if (!w || !h) throw new Error('image');
-          var long = Math.max(w, h), k = 1;
-          if (long > 2000) k = 2000 / long; else if (long < 1000) k = Math.min(2, 1000 / long);
-          var c = document.createElement('canvas');
-          c.width = Math.round(w * k); c.height = Math.round(h * k);
-          var ctx = c.getContext('2d');
-          try { ctx.imageSmoothingQuality = 'high'; } catch (e) {}
-          ctx.drawImage(img, 0, 0, c.width, c.height);
+          var c = ocrSizedCanvas(img, img.naturalWidth || img.width, img.naturalHeight || img.height);
           URL.revokeObjectURL(url);
           res(c);
         } catch (e) { URL.revokeObjectURL(url); rej(e); }
@@ -2385,7 +2448,117 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       img.src = url;
     });
   }
-
+  /* 세로로 찍은 사진이 눕지 않게: 브라우저가 EXIF 방향을 적용해 그린다(createImageBitmap 우선) */
+  function ocrBaseCanvas(file) {
+    if (window.createImageBitmap) {
+      return createImageBitmap(file, { imageOrientation: 'from-image' })
+        .then(function (bmp) {
+          var c = ocrSizedCanvas(bmp, bmp.width || 1, bmp.height || 1);
+          try { bmp.close(); } catch (e) {}
+          return c;
+        })
+        .catch(function () { return ocrImgCanvas(file); });
+    }
+    return ocrImgCanvas(file);
+  }
+  function ocrRotCanvas(src, deg) {
+    deg = ((deg % 360) + 360) % 360;
+    if (!deg) return src;
+    var swap = (deg === 90 || deg === 270);
+    var c = document.createElement('canvas');
+    c.width = swap ? src.height : src.width;
+    c.height = swap ? src.width : src.height;
+    var ctx = c.getContext('2d');
+    ctx.translate(c.width / 2, c.height / 2);
+    ctx.rotate(deg * Math.PI / 180);   /* +90 = 시계 방향(오른쪽) */
+    ctx.drawImage(src, -src.width / 2, -src.height / 2);
+    return c;
+  }
+  function ocrPreviewUrl(base, deg) {
+    var r = ocrRotCanvas(base, deg);
+    var long = Math.max(r.width, r.height), k = long > 900 ? 900 / long : 1;
+    var c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(r.width * k));
+    c.height = Math.max(1, Math.round(r.height * k));
+    c.getContext('2d').drawImage(r, 0, 0, c.width, c.height);
+    var url = '';
+    try { url = c.toDataURL('image/jpeg', 0.82); } catch (e) {}
+    c.width = c.height = 0;
+    return url;
+  }
+  /* 3x3 중간값(점 노이즈 제거) · 배경 조명 지도(박스 블러 두 번 ≈ 가우시안) · 이진화 */
+  function ocrMedian3(g, w, h) {
+    var out = new Uint8Array(g.length), x, y, i;
+    var v = new Array(9);
+    for (y = 0; y < h; y++) {
+      for (x = 0; x < w; x++) {
+        i = y * w + x;
+        if (!x || !y || x === w - 1 || y === h - 1) { out[i] = g[i]; continue; }
+        v[0] = g[i - w - 1]; v[1] = g[i - w]; v[2] = g[i - w + 1];
+        v[3] = g[i - 1];     v[4] = g[i];     v[5] = g[i + 1];
+        v[6] = g[i + w - 1]; v[7] = g[i + w]; v[8] = g[i + w + 1];
+        for (var a = 1; a < 9; a++) {
+          var t = v[a], b = a - 1;
+          while (b >= 0 && v[b] > t) { v[b + 1] = v[b]; b--; }
+          v[b + 1] = t;
+        }
+        out[i] = v[4];
+      }
+    }
+    return out;
+  }
+  function ocrBoxBlur(g, w, h, r) {
+    var tmp = new Uint8Array(g.length), out = new Uint8Array(g.length);
+    var x, y, sum, i;
+    for (y = 0; y < h; y++) {
+      var row = y * w;
+      sum = 0;
+      for (x = 0; x <= r && x < w; x++) sum += g[row + x];
+      for (x = 0; x < w; x++) {
+        var lo = x - r, hi = x + r;
+        if (x > 0) { if (hi < w) sum += g[row + hi]; if (lo - 1 >= 0) sum -= g[row + lo - 1]; }
+        var n1 = Math.min(w - 1, hi) - Math.max(0, lo) + 1;
+        tmp[row + x] = sum / n1;
+      }
+    }
+    for (x = 0; x < w; x++) {
+      sum = 0;
+      for (y = 0; y <= r && y < h; y++) sum += tmp[y * w + x];
+      for (y = 0; y < h; y++) {
+        var lo2 = y - r, hi2 = y + r;
+        if (y > 0) { if (hi2 < h) sum += tmp[hi2 * w + x]; if (lo2 - 1 >= 0) sum -= tmp[(lo2 - 1) * w + x]; }
+        var n2 = Math.min(h - 1, hi2) - Math.max(0, lo2) + 1;
+        out[y * w + x] = sum / n2;
+      }
+    }
+    return out;
+  }
+  function ocrPrep(src) {
+    var w = src.width, h = src.height, n = w * h;
+    var c = document.createElement('canvas'); c.width = w; c.height = h;
+    var ctx = c.getContext('2d');
+    ctx.drawImage(src, 0, 0);
+    var img = ctx.getImageData(0, 0, w, h), d = img.data;
+    var g = new Uint8Array(n), i, p;
+    for (i = 0, p = 0; i < n; i++, p += 4) g[i] = (d[p] * 0.299 + d[p + 1] * 0.587 + d[p + 2] * 0.114);
+    var med = ocrMedian3(g, w, h);
+    var r = Math.max(6, Math.round(Math.min(w, h) / 66));
+    var bg = ocrBoxBlur(ocrBoxBlur(med, w, h, r), w, h, r);
+    /* 획은 배경보다 어둡다 → 그 차이가 임계값을 넘으면 글자(검정) */
+    var thr = 33, inkCount = 0, k;
+    for (i = 0; i < n; i++) if (bg[i] - med[i] > thr) inkCount++;
+    if (inkCount < n * 0.006) thr = 20;
+    inkCount = 0;
+    for (i = 0; i < n; i++) if (bg[i] - med[i] > thr) inkCount++;
+    if (inkCount < n * 0.004) thr = 12;
+    var out = ctx.createImageData(w, h), od = out.data;
+    for (i = 0, p = 0; i < n; i++, p += 4) {
+      var on = (bg[i] - med[i] > thr) ? 0 : 255;
+      od[p] = od[p + 1] = od[p + 2] = on; od[p + 3] = 255;
+    }
+    ctx.putImageData(out, 0, 0);
+    return c;
+  }
   /* ---------- 읽은 글자 해석 ---------- */
   function ocrNorm(t) {
     return String(t || '')
@@ -2397,102 +2570,155 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       .replace(/[ \t]+/g, ' ')
       .replace(/\n{3,}/g, '\n\n');
   }
-  var OCR_STOP = /^(성함|이름|금액|축의금|조의금|축의|조의|방명록|축결혼|축하|결혼|결혼식|참석|서명|번호|비고|일시|날짜|장소|주소|계좌|신랑|신부|혼주|부모|관계|메모|합계|총액|축|결혼합니다|감사합니다)$/;
-  function ocrCleanName(s) {
-    var t = String(s || '').replace(/[^가-힣a-zA-Z·\s]/g, ' ').replace(/\s+/g, ' ').trim();
+  var OCR_STOP = /^(성함|성명|이름|금액|축의금|조의금|축의|조의|방명록|축결혼|축하|결혼|결혼식|참석|서명|번호|비고|일시|날짜|장소|주소|계좌|신랑|신부|혼주|부모|관계|메모|합계|총계|소계|계|선물|및|축|결혼합니다|감사합니다)$/;
+  function ocrNameJoin(s) {
+    var t = String(s || '').replace(/[^가-힣·\s]/g, ' ').replace(/\s+/g, ' ').trim();
     if (!t) return '';
-    var ws = t.split(' ');
-    if (ws.every(function (x) { return OCR_STOP.test(x); })) return '';
-    t = t.replace(/(님|씨|군|양)$/, '').trim();
+    var ws = t.split(' ').filter(function (x) { return x && !OCR_STOP.test(x); });
+    if (!ws.length) return '';
+    t = ws.join(' ').replace(/(님|씨|군|양)$/, '').trim();
+    if (!t) return '';
     var parts = t.split(' ');
     if (parts.length > 1 && parts.every(function (x) { return /^[가-힣]{1,4}$/.test(x); })) {
       var joined = parts.join('');
-      if (joined.length <= 6) t = joined;
+      if (joined.length <= 8) t = joined;
     }
-    if (!t || t.length < 2) return '';
+    t = t.replace(/\s+/g, '');
+    if (!t || t.length < 1) return '';
     return t.slice(0, 20);
+  }
+  function ocrCleanName(s) {   /* 글자 줄만 있을 때(위치 정보 없음) 쓰는 옛 방식 */
+    var t = ocrNameJoin(s);
+    if (t.length < 2) return '';
+    return t;
+  }
+  /* 금액처럼 생긴 토막인지 (50,000 · 50,- · sO, ooo · $0, 000 같은 표기) */
+  function ocrAmtLike(tok) {
+    var raw = String(tok || '').trim();
+    if (!raw || raw.length > 14) return false;
+    var ok = raw.replace(/[^0-9oOlIsSBZgQ$°ㅇ,.\-–—'"~^:%!/]/g, '');
+    var digitish = ok.replace(/[^0-9]/g, '').length;
+    var numish = ok.replace(/[^0-9oOlIsS$°ㅇ]/g, '').length;
+    if (!digitish && numish < 2) return false;   /* 'S'·'o' 한 글자는 금액으로 보지 않는다 */
+    var bare = raw.replace(/\s/g, '');
+    if (!bare.length) return false;
+    return (ok.length / bare.length) >= 0.7;
+  }
+  function ocrToAmount(tok) {
+    var s = String(tok || '')
+      .replace(/[oO°ㅇQ]/g, '0').replace(/[lI|!]/g, '1').replace(/[sS$]/g, '5')
+      .replace(/[%/]/g, '');
+    /* 금액 자리에 글자가 섞여 있으면 숫자를 지어내지 않고 비워 둔다 */
+    if (/[A-Za-zㄱ-ㅎㅏ-ㅣ]/.test(s.replace(/[0-9,.\-–—'"~^:%/]/g, ''))) return 0;
+    s = s.replace(/[^0-9,.\-–—'"~^:]/g, '');
+    var m = s.match(/\d{1,3}(?:,\d{3})+/);
+    if (m) {
+      var full = parseInt(m[0].replace(/,/g, ''), 10);
+      if (full >= 1000) return full;
+    }
+    var d = (s.match(/\d{1,9}/) || [''])[0];
+    if (!d) return 0;
+    var v = parseInt(d, 10);
+    if (!v) return 0;
+    if (v < 1000) return v * 1000;        /* 50 · 100 · 150 · 300 → 5만·10만·15만·30만 */
+    return v;
   }
   function ocrSkipLine(line) {
     var t = String(line || '').replace(/\s/g, '');
     if (!t) return true;
     if (/^[-=~_*·.()\[\]{}]+$/.test(t)) return true;
     if (/^[\d.\-\/년월일\s]{4,}$/.test(String(line).trim())) return true;
+    if (/^(합계|총계|소계|계)[\d,.\-]*$/.test(t)) return true;
     var toks = String(line).split(/\s+/).filter(Boolean);
     if (toks.length && toks.every(function (x) { return OCR_STOP.test(x); })) return true;
-    if (/^(합계|총액|소계|계)\s*[\d,]/.test(String(line).trim())) return true;
-    if (!/\d/.test(t) && OCR_STOP.test(t)) return true;
     return false;
   }
-  /* 금액 후보: 100,000 / 5만원 / 50000 / 10(→10만원) */
-  function ocrAmountScan(line) {
-    var out = [], m, re = /(\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?\s*만\s*원?|\d{4,8}\s*원?|\d{1,3}\s*원|\d{1,3})/g;
-    while ((m = re.exec(line))) {
-      var raw = m[0], idx = m.index, len = raw.length;
-      var before = idx === 0 ? ' ' : line.charAt(idx - 1);
-      var after = (idx + len >= line.length) ? ' ' : line.charAt(idx + len);
-      var v = 0;
-      if (/만/.test(raw)) v = Math.round(parseFloat(raw.replace(/[^\d.]/g, '')) * 10000);
-      else if (/,/.test(raw)) v = parseInt(raw.replace(/[^\d]/g, ''), 10);
-      else {
-        var d = raw.replace(/[^\d]/g, '');
-        v = parseInt(d, 10);
-        if (d.length <= 3) v = v * 10000;   /* 방명록은 만원 단위로 적는 경우가 많다 */
-      }
-      var bare = !/[,만원]/.test(raw);
-      if (bare && (!/[\s(\[{.:·,~-]/.test(before) || !/[\s)\]}.·,~-]/.test(after))) continue;
-      if (!v || v < 1000 || v > 100000000) continue;
-      out.push({ at: idx, len: len, val: v });
-    }
-    return out;
-  }
-  function ocrPairsFromLine(line) {
-    var amts = ocrAmountScan(line);
-    if (!amts.length) {
-      var only = ocrCleanName(line);
-      return only ? [{ name: only, amount: 0, loose: true }] : [];
-    }
-    var pairs = [], last = 0;
-    amts.forEach(function (a) {
-      var seg = line.slice(last, a.at);
-      last = a.at + a.len;
-      pairs.push({ name: ocrCleanName(seg), amount: a.val });
+  /* 줄 번호·이름표 상자로 표의 줄을 다시 세운다 */
+  function ocrRowsFromWords(words) {
+    if (!words || !words.length) return [];
+    var groups = [], byKey = {};
+    words.forEach(function (w) {
+      var k = w.l || ('y' + Math.round(w.y / 40));
+      if (!byKey[k]) { byKey[k] = []; groups.push(byKey[k]); }
+      byKey[k].push(w);
     });
-    var tail = ocrCleanName(line.slice(last));
-    if (tail) {
-      if (pairs.length && !pairs[pairs.length - 1].name) pairs[pairs.length - 1].name = tail;
-      else pairs.push({ name: tail, amount: 0, loose: true });
-    }
-    return pairs;
+    var rows = [];
+    groups.forEach(function (ws) {
+      ws.sort(function (a, b) { return a.x - b.x; });
+      var rawText = ws.map(function (w) { return w.t; }).join(' ');
+      if (/합계|총계|소계/.test(rawText.replace(/\s/g, ''))) return;
+      var toks = ws.filter(function (w) { return !/^[|│┃┆¦:;·.,'"“”‘’()\[\]{}~\-–—_\/\\+*<>^…\s]+$/.test(w.t); });
+      if (!toks.length) return;
+      var start = 0;
+      if (/^[0-9OolISs]{1,3}[.)]?$/.test(toks[0].t)) start = 1;
+      var i0 = -1, i;
+      for (i = start; i < toks.length; i++) { if (ocrAmtLike(toks[i].t)) { i0 = i; break; } }
+      var nameToks, amtToks = [], memoToks = [], ditto = false;
+      if (i0 < 0) {
+        nameToks = toks.slice(start);
+      } else {
+        nameToks = toks.slice(start, i0);
+        var j = i0;
+        while (j < toks.length && ocrAmtLike(toks[j].t)) { amtToks.push(toks[j].t); j++; }
+        memoToks = toks.slice(j);
+        var tail = ws.slice(ws.indexOf(toks[j] || toks[toks.length - 1])).map(function (w) { return w.t; }).join(' ');
+        ditto = /["“”″〃]/.test(tail) && !/[가-힣]/.test(tail);
+      }
+      var name = ocrNameJoin(nameToks.map(function (t) { return t.t; }).join(' '));
+      var amount = amtToks.length ? ocrToAmount(amtToks.join('')) : 0;
+      var memo = ocrNameJoin(memoToks.map(function (t) { return t.t; }).join(' '));
+      if (/^["“”″〃']+$/.test(String(memo).trim())) memo = '';
+      if (!name && !amount) return;
+      /* 이름도 번호도 없는 큰 숫자만 있는 줄 = 합계로 본다 */
+      if (!name && !/^[0-9OolISs]{1,3}[.)]?$/.test(ws[0].t) && amount >= 500000) return;
+      /* 금액 없이 한 글자만 남은 줄은 잘못 읽은 조각으로 본다 */
+      if (!amount && name.length < 2) return;
+      rows.push({ y: ws[0].y, x: ws[0].x, name: name, amount: amount, memo: memo, ditto: ditto, raw: rawText });
+    });
+    rows.sort(function (a, b) { return (a.y - b.y) || (a.x - b.x); });
+    var prevMemo = '';
+    rows.forEach(function (r) {
+      if (r.ditto && !r.memo) r.memo = prevMemo;
+      if (r.memo) prevMemo = r.memo;
+    });
+    return rows;
   }
-  function ocrNewRow(name, amount) {
-    return { on: true, name: name || '', amount: amount || 0, dir: ocrCommon.dir, owner: ocrCommon.owner };
-  }
+  /* 위치 정보가 없을 때: 글자만으로 이름·금액 짝짓기 */
   function ocrParseText(text) {
     var lines = ocrNorm(text).split('\n');
-    var rows = [], waiting = '';
-    function flushWaiting() { if (waiting) { rows.push(ocrNewRow(waiting, 0)); waiting = ''; } }
+    var out = [];
     lines.forEach(function (line0) {
-      /* 이름과 숫자가 붙어 있으면 떼어 놓는다 (예: 홍길동100,000) */
       var line = line0.replace(/([가-힣a-zA-Z])(\d)/g, '$1 $2').trim();
       if (!line || ocrSkipLine(line)) return;
-      ocrPairsFromLine(line).forEach(function (pr) {
-        if (pr.loose) { flushWaiting(); waiting = pr.name; return; }
-        if (!pr.name && waiting) { rows.push(ocrNewRow(waiting, pr.amount)); waiting = ''; return; }
-        flushWaiting();
-        rows.push(ocrNewRow(pr.name, pr.amount));
-      });
+      var toks = line.split(/\s+/).filter(Boolean);
+      var start = 0;
+      if (toks.length && /^[0-9OolISs]{1,3}[.)]?$/.test(toks[0])) start = 1;
+      var amtParts = [], nameToks = [], i0 = -1, i;
+      for (i = start; i < toks.length; i++) { if (ocrAmtLike(toks[i])) { i0 = i; break; } }
+      if (i0 < 0) { nameToks = toks.slice(start); }
+      else {
+        nameToks = toks.slice(start, i0);
+        var j = i0;
+        while (j < toks.length && ocrAmtLike(toks[j])) { amtParts.push(toks[j]); j++; }
+      }
+      var name = ocrNameJoin(nameToks.join(' '));
+      var amount = amtParts.length ? ocrToAmount(amtParts.join('')) : 0;
+      if (!name && !amount) return;
+      out.push(ocrNewRow(name, amount, ''));
     });
-    flushWaiting();
-    rows.forEach(function (r) {
+    out.forEach(function (r) {
       r.dup = !!(r.name && r.amount && appData.records.some(function (x) {
         return x.name === r.name && Number(x.amount) === Number(r.amount);
       }));
       if (r.dup) r.on = false;
     });
-    return rows;
+    return out;
   }
 
   /* ---------- 화면 ---------- */
+  function ocrNewRow(name, amount, memo) {
+    return { on: true, name: name || '', amount: amount || 0, memo: memo || '', dir: ocrCommon.dir, owner: ocrCommon.owner };
+  }
   function ocrSel(id, opts, cur) {
     return '<select class="input" id="' + id + '">' + opts.map(function (o) {
       return '<option value="' + esc(o.v) + '"' + (o.v === cur ? ' selected' : '') + '>' + esc(o.t) + '</option>';
@@ -2527,6 +2753,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       '<input class="ck" type="checkbox" data-ocr-ck="' + i + '"' + (r.on ? ' checked' : '') + ' aria-label="이 줄 등록">' +
       '<input class="nm" type="text" data-ocr-name="' + i + '" value="' + esc(r.name) + '" placeholder="이름" aria-label="이름" maxlength="20" autocomplete="off">' +
       '<input class="am" type="text" inputmode="numeric" data-ocr-amt="' + i + '" value="' + (r.amount ? r.amount.toLocaleString('ko-KR') : '') + '" placeholder="금액" aria-label="금액">' +
+      '<button class="ocr-del" type="button" data-act="ocr-row-del" data-id="' + i + '" aria-label="이 줄 지우기" title="이 줄 지우기">✕</button>' +
       '<div class="ocr-sub">' +
         '<select class="sel" data-ocr-dir="' + i + '" aria-label="구분">' +
           '<option value="in"' + (r.dir === 'in' ? ' selected' : '') + '>💌 받은 돈</option>' +
@@ -2536,6 +2763,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
           OWNERS.map(function (o) { return '<option value="' + esc(o) + '"' + (r.owner === o ? ' selected' : '') + '>' + esc(ownerLabel(o)) + '</option>'; }).join('') +
         '</select>' +
       '</div>' +
+      '<input class="mm" type="text" data-ocr-memo="' + i + '" value="' + esc(r.memo || '') + '" placeholder="비고 (선물·관계 메모, 선택)" aria-label="비고" maxlength="40" autocomplete="off">' +
       (r.dup ? '<span class="dup">이미 수첩에 있는 이름·금액이에요 (기본 선택 해제)</span>' : '') +
       (miss.length ? '<span class="miss">' + miss.join(' · ') + ' — 고쳐 주세요</span>' : '') +
     '</div>';
@@ -2562,98 +2790,174 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     }
     host.innerHTML = ocrCommonHtml() +
       '<div class="ocr-count"><span>찾은 기록 <b>' + st.rows.length + '</b>건</span><span>선택 <b id="ocr-sel">' + st.rows.filter(function (r) { return r.on; }).length + '</b>건</span></div>' +
+      '<div class="ocr-tools"><button class="btn ghost sm" type="button" data-act="ocr-selall">전체 선택</button><button class="btn ghost sm" type="button" data-act="ocr-selnone">전체 해제</button></div>' +
       st.rows.map(ocrRowHtml).join('') +
       '<div class="ocr-addrow"><button class="btn ghost sm" type="button" data-act="ocr-addrow">＋ 빈 줄 추가</button><button class="btn ghost sm" type="button" data-act="ocr-clear">표 비우기</button></div>' +
       '<details class="ocr-raw"><summary>읽은 글자 보기 · 직접 고쳐서 다시 분석</summary>' +
         '<textarea id="ocr-raw" spellcheck="false" aria-label="읽은 글자">' + esc(st.text || '') + '</textarea>' +
         '<button class="btn ghost sm" type="button" data-act="ocr-reparse">이 글자로 다시 분석</button></details>' +
-      '<p class="ocr-tip">금액이 <b>10</b>처럼 적혀 있으면 만원 단위로 읽어요(10 → 100,000원). 이름 칸이 비어 있는 줄은 등록되지 않아요.</p>';
+      '<p class="ocr-tip">금액이 <b>50</b>처럼 적혀 있으면 천원 단위로 읽어요(50 → 50,000원). 이름 칸이 비어 있는 줄은 등록되지 않아요.</p>';
     updateOcrActions();
   }
   function renderOcr() {
     var body = $('#ocr-body');
     if (!body) return;
     var st = ocrState;
+    var has = !!(st && st.preview);
     var html = '<p class="ocr-help">방명록 사진을 고르면 <b>이 기기 안에서만</b> 글자를 읽어 이름과 금액을 뽑아요. 손글씨는 잘못 읽을 수 있으니 표에서 바로 고쳐 주세요.</p>' +
       '<div class="ocr-src">' +
         '<button class="btn ghost sm" type="button" data-act="ocr-camera">📷 사진 찍기</button>' +
         '<button class="btn ghost sm" type="button" data-act="ocr-album">🖼 앨범에서 고르기</button>' +
       '</div>' +
-      '<div class="ocr-prev" id="ocr-prev"' + (st && st.preview ? '' : ' hidden') + '><img id="ocr-img" alt="방명록 사진" src="' + (st && st.preview ? esc(st.preview) : '') + '"></div>' +
+      '<div class="ocr-prev" id="ocr-prev"' + (has ? '' : ' hidden') + '><img id="ocr-img" alt="방명록 사진" src="' + (has ? esc(st.preview) : '') + '"></div>' +
+      '<div class="ocr-rot" id="ocr-rot"' + (has ? '' : ' hidden') + '>' +
+        '<button class="btn ghost sm" type="button" data-act="ocr-rot-ccw" title="시계 반대 방향으로 90도">↺ 왼쪽 90°</button>' +
+        '<button class="btn ghost sm" type="button" data-act="ocr-rot-cw" title="시계 방향으로 90도">↻ 오른쪽 90°</button>' +
+        '<button class="btn ghost sm" type="button" data-act="ocr-photo-clear" title="사진 지우기">🗑 사진 지우기</button>' +
+      '</div>' +
       '<p class="ocr-stat" id="ocr-stat"></p><div class="ocr-bar" id="ocr-bar" hidden><i></i></div><p class="ocr-msg" id="ocr-msg" hidden></p>' +
       '<div id="ocr-result"></div>';
     body.innerHTML = html;
     renderOcrResult();
-    if (st) ocrStat(st.stat, st.pct);
+    if (st && st.stat) ocrStat(st.stat, st.pct);
+    if (st && st.msg) ocrMsg(st.msg);
   }
   function ocrOpen() {
     ocrCommon = { dir: 'in', owner: husbandView ? '남편' : '공동', date: todayStr(), kind: '결혼식', relation: '기타', thanks: 'none' };
-    ocrState = { rows: [], busy: false, job: 0, text: '', preview: '', stat: '', pct: null };
+    ocrState = { rows: [], busy: false, job: 0, text: '', preview: '', stat: '', pct: null, msg: '', bases: [], rot: 0 };
     renderOcr();
     openSheet('modal-ocr');
   }
   function ocrClose() {
     closeSheet('modal-ocr');
-    if (ocrState && ocrState.preview) { try { URL.revokeObjectURL(ocrState.preview); } catch (e) {} }
     ocrState = null;
     clearTimeout(ocrIdle);
     ocrIdle = setTimeout(function () {
       if (ocrWorker) { try { ocrWorker.terminate(); } catch (e) {} ocrWorker = null; }
     }, 120000);
   }
-  function ocrFiles(fileList) {
-    var list = Array.prototype.slice.call(fileList || []).filter(function (f) { return /^image\//i.test(f.type || ''); });
-    if (!list.length) { ocrMsg('사진 파일만 고를 수 있어요 (JPG · PNG · HEIC)'); return; }
-    if (!ocrState) return;
-    var st = ocrState, job = ++ocrJobSeq;
-    st.job = job; st.busy = true;
-    ocrMsg('');
+  function ocrClearPhoto() {
+    var st = ocrState;
+    if (!st) return;
+    st.job = ++ocrJobSeq;         /* 진행 중이던 인식 결과는 버린다 */
+    st.bases.forEach(function (c) { try { c.width = c.height = 0; } catch (e) {} });
+    st.bases = []; st.rot = 0; st.preview = ''; st.text = ''; st.rows = [];
+    st.busy = false; st.stat = ''; st.pct = null; st.msg = '';
+    renderOcr();
+    toast('사진을 지웠어요 · 새 사진을 고르면 다시 읽어요');
+  }
+  /* 사진에서 읽은 결과를 표로 */
+  function ocrApplyRows(st, wordRows, text) {
+    if (wordRows && wordRows.length) {
+      st.rows = wordRows.map(function (r) { return ocrNewRow(r.name, r.amount, r.memo || ''); });
+    } else {
+      st.rows = ocrParseText(text);
+    }
+    st.rows.forEach(function (r) {
+      r.dup = !!(r.name && r.amount && appData.records.some(function (x) {
+        return x.name === r.name && Number(x.amount) === Number(r.amount);
+      }));
+      if (r.dup) r.on = false;
+    });
+  }
+  function ocrRun(job) {
+    var st = ocrState;
+    if (!st || !st.bases.length) return;
+    st.busy = true; st.msg = ''; st.text = '';
+    var wordRows = [], failed = 0;
     updateOcrActions();
-    var failed = 0;
     var chain = Promise.resolve();
-    list.forEach(function (file, idx) {
+    st.bases.forEach(function (base, idx) {
       chain = chain.then(function () {
         if (!ocrState || ocrState !== st || st.job !== job) return;
-        st.stat = '사진 ' + (idx + 1) + '/' + list.length + ' 준비 중…'; st.pct = 1;
+        st.stat = '사진 ' + (idx + 1) + '/' + st.bases.length + ' 준비 중…'; st.pct = 3;
         ocrStat(st.stat, st.pct);
-        return ocrImageCanvas(file).then(function (canvas) {
-          if (!ocrState || ocrState !== st || st.job !== job) return;
-          if (st.preview) { try { URL.revokeObjectURL(st.preview); } catch (e) {} }
-          st.preview = URL.createObjectURL(file);
-          var img = $('#ocr-img'), pv = $('#ocr-prev');
-          if (img) img.src = st.preview;
-          if (pv) pv.hidden = false;
-          st.stat = '사진 ' + (idx + 1) + '/' + list.length + ' · 글자를 읽는 중…'; st.pct = 5;
-          ocrStat(st.stat, st.pct);
-          return ocrWorkerFor(job).then(function (w) {
-            if (!ocrState || ocrState !== st || st.job !== job) return null;
-            return w.recognize(canvas, {}, { text: true, blocks: false, hocr: false, tsv: false });
-          }).then(function (res) {
-            if (!res) return;
-            var txt = ocrNorm((res.data && res.data.text) || '');
-            st.text = (st.text ? st.text + '\n' : '') + txt;
-          });
-        }).catch(function () { failed++; });
-      });
+        var rotC = ocrRotCanvas(base, st.rot);
+        var bin = ocrPrep(rotC);
+        if (rotC !== base) { try { rotC.width = rotC.height = 0; } catch (e) {} }
+        st.stat = '사진 ' + (idx + 1) + '/' + st.bases.length + ' · 글자를 읽는 중…'; st.pct = 8;
+        ocrStat(st.stat, st.pct);
+        return ocrWorkerFor(job).then(function (w) {
+          if (!ocrState || ocrState !== st || st.job !== job) return null;
+          return w.recognize(bin, {}, { text: true, tsv: true, blocks: false, hocr: false });
+        }).then(function (res) {
+          try { bin.width = bin.height = 0; } catch (e) {}
+          if (!res) return;
+          var txt = ocrNorm((res.data && res.data.text) || '');
+          st.text = (st.text ? st.text + '\n' : '') + txt;
+          wordRows = wordRows.concat(ocrRowsFromWords(ocrWordsFromTsv(res.data && res.data.tsv)));
+        });
+      }).catch(function () { failed++; });
     });
     chain.then(function () {
       if (!ocrState || ocrState !== st || st.job !== job) return;
       st.busy = false;
-      if (!String(st.text || '').replace(/\s/g, '')) {
+      if (!String(st.text || '').replace(/\s/g, '') && !wordRows.length) {
         st.stat = failed ? '사진을 읽지 못했어요 · 다른 사진으로 다시 시도해 주세요' : '사진에서 글자를 찾지 못했어요';
-        st.pct = null;
-        ocrStat(st.stat, null);
-        ocrMsg('글자를 못 찾았어요. 방명록을 더 밝게, 정면에서 다시 찍거나 아래 표에 직접 적어 주세요.');
-        updateOcrActions();
+        st.pct = null; st.msg = '글자를 못 찾았어요. 방명록을 더 밝게, 정면에서 다시 찍거나 아래 표에 직접 적어 주세요.';
+        renderOcr();
         return;
       }
-      st.rows = ocrParseText(st.text);
+      ocrApplyRows(st, wordRows, st.text);
+      var withName = st.rows.filter(function (r) { return r.name; }).length;
       var withAmt = st.rows.filter(function (r) { return r.amount > 0; }).length;
-      st.stat = '다 읽었어요 · ' + st.rows.length + '명 찾음 (금액 ' + withAmt + '건)' + (failed ? ' · 사진 ' + failed + '장 실패' : '');
+      st.stat = '다 읽었어요 · ' + st.rows.length + '줄 (이름 ' + withName + ' · 금액 ' + withAmt + ')' + (failed ? ' · 사진 ' + failed + '장 실패' : '');
       st.pct = null;
-      renderOcrResult();
-      ocrStat(st.stat, null);
-      updateOcrActions();
+      /* 한글이 거의 안 나오고 영문 자모만 잔뜩이면 사진이 누워 있을 가능성이 크다 */
+      var hangul = (st.text.match(/[가-힣]/g) || []).length;
+      var latin = (st.text.match(/[A-Za-z]/g) || []).length;
+      if (hangul < 4 && latin > 10) st.msg = '한글이 거의 읽히지 않았어요. 사진이 누워 있다면 ↺ 왼쪽 90° 또는 ↻ 오른쪽 90°를 눌러 다시 읽어 보세요.';
+      renderOcr();
+    });
+  }
+  function ocrRotate(delta) {
+    var st = ocrState;
+    if (!st || !st.bases.length || st.busy) return;
+    st.rot = ((st.rot + delta) % 360 + 360) % 360;
+    st.preview = ocrPreviewUrl(st.bases[0], st.rot) || st.preview;
+    st.rows = []; st.text = ''; st.stat = ''; st.pct = null; st.msg = '';
+    renderOcr();
+    st.job = ++ocrJobSeq;
+    ocrRun(st.job);
+  }
+  function ocrFiles(fileList) {
+    var list = Array.prototype.slice.call(fileList || []).filter(function (f) { return /^image\//i.test(f.type || ''); });
+    if (!list.length) { if (ocrState) { ocrState.msg = '사진 파일만 고를 수 있어요 (JPG · PNG · HEIC)'; renderOcr(); } return; }
+    if (!ocrState) return;
+    var st = ocrState;
+    var job = ++ocrJobSeq;
+    st.job = job; st.busy = true; st.msg = ''; st.text = ''; st.rows = []; st.stat = ''; st.pct = 1;
+    renderOcr();
+    updateOcrActions();
+    var chain = Promise.resolve();
+    list.forEach(function (file, idx) {
+      chain = chain.then(function () {
+        if (!ocrState || ocrState !== st || st.job !== job) return;
+        st.stat = '사진 ' + (idx + 1) + '/' + list.length + ' 불러오는 중…'; st.pct = 1;
+        ocrStat(st.stat, st.pct);
+        return ocrBaseCanvas(file).then(function (base) {
+          if (!ocrState || ocrState !== st || st.job !== job) { try { base.width = base.height = 0; } catch (e) {} return; }
+          st.bases.push(base);
+          if (!st.preview) {
+            st.preview = ocrPreviewUrl(base, st.rot);
+            var img = $('#ocr-img'), pv = $('#ocr-prev'), rb = $('#ocr-rot');
+            if (img) img.src = st.preview;
+            if (pv) pv.hidden = false;
+            if (rb) rb.hidden = false;
+          }
+        }).catch(function () {});
+      });
+    });
+    chain.then(function () {
+      if (!ocrState || ocrState !== st || st.job !== job) return;
+      if (!st.bases.length) {
+        st.busy = false;
+        st.stat = '사진을 불러오지 못했어요';
+        st.msg = 'HEIC 사진은 아이폰 사진 앱에서 JPG로 저장한 뒤 다시 골라 주세요.';
+        renderOcr();
+        return;
+      }
+      ocrRun(st.job);
     });
   }
   function ocrCommit() {
@@ -2667,10 +2971,10 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       if (!name || amount <= 0) { skipped++; return; }
       appData.records.push({
         id: uid(), dir: r.dir === 'in' ? 'in' : 'out',
-        owner: (r.owner === '남편' || r.owner === '공동') ? r.owner : '유자',
+        owner: normOwner(r.owner),
         name: name, relation: ocrCommon.relation || '기타', kind: ocrCommon.kind || '결혼식',
         date: date, amount: amount, method: '직접 참석', thanks: ocrCommon.thanks || 'none',
-        memo: '방명록 사진에서 등록', createdAt: now, updatedAt: now
+        memo: String(r.memo || '').trim() || '방명록 사진에서 등록', createdAt: now, updatedAt: now
       });
       added++;
     });
@@ -2679,6 +2983,18 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     render();
     ocrClose();
     toast(added + '건 등록했어요' + (skipped ? ' · ' + skipped + '건은 이름·금액이 비어 건너뜀' : ''));
+  }
+  /* Tesseract 단어 상자(TSV) 파싱 */
+  function ocrWordsFromTsv(tsv) {
+    var out = [];
+    String(tsv || '').split('\n').forEach(function (line) {
+      var f = line.split('\t');
+      if (f.length < 12 || f[0] !== '5') return;
+      var t = String(f[11] || '').replace(/\s+/g, ' ').trim();
+      if (!t) return;
+      out.push({ x: +f[6] || 0, y: +f[7] || 0, w: +f[8] || 0, h: +f[9] || 0, c: +f[10] || 0, t: t, l: f[2] + '-' + f[3] + '-' + f[4] });
+    });
+    return out;
   }
 
   /* ============================ 시작 ============================ */
