@@ -286,6 +286,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 .date-row{display:flex;gap:7px;align-items:center}
 .date-row .input{flex:1 1 auto}
 .date-row .btn{flex:0 0 auto;height:44px}
+.dateinput.bad{border-color:#eccfc9;background:var(--bad-soft)}
 .chipset{display:flex;flex-wrap:wrap;gap:6px}
 .chipset .chip{padding:8px 12px;font-size:13px}
 .amt-row{display:flex;gap:7px;align-items:center}
@@ -557,6 +558,50 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     return base;
   }
   function yearOf(s) { return String(s || '').slice(0, 4); }
+  /* 날짜는 숫자로 입력한다: 261128(6자리) · 20261128(8자리) · 2026-11-28 모두 YYYY-MM-DD로 */
+  function normDate(v) {
+    var s = String(v == null ? '' : v).trim();
+    if (!s) return '';
+    var dg = s.replace(/[^0-9]/g, '');
+    if (dg.length === 6) s = '20' + dg.slice(0, 2) + '-' + dg.slice(2, 4) + '-' + dg.slice(4, 6);
+    else if (dg.length === 8) s = dg.slice(0, 4) + '-' + dg.slice(4, 6) + '-' + dg.slice(6, 8);
+    else s = s.replace(/[.\/]/g, '-');
+    var m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})\.?$/);
+    if (!m) return '';
+    var y = Number(m[1]), mo = Number(m[2]), d = Number(m[3]);
+    if (y < 2000 || y > 2100 || mo < 1 || mo > 12 || d < 1 || d > 31) return '';
+    var dt = new Date(y, mo - 1, d);
+    if (dt.getFullYear() !== y || dt.getMonth() !== mo - 1 || dt.getDate() !== d) return '';
+    return y + '-' + pad(mo) + '-' + pad(d);
+  }
+  function quickDate(raw) {   /* 타이핑 도중 6·8자리가 되면 바로 YYYY-MM-DD로 바꿔 보여준다 */
+    var s = String(raw == null ? '' : raw).replace(/\s/g, '');
+    if (/^\d{6}$/.test(s)) return normDate('20' + s);
+    if (/^\d{8}$/.test(s)) return normDate(s);
+    return '';
+  }
+  function bindDateInputs() {
+    document.addEventListener('input', function (e) {
+      var el = e.target;
+      if (!el || !el.classList || !el.classList.contains('dateinput')) return;
+      var conv = quickDate(el.value);
+      if (conv && conv !== el.value) { el.value = conv; el.classList.remove('bad'); }
+      if (el.classList.contains('dateinput')) el.classList.remove('bad');
+    });
+    document.addEventListener('blur', function (e) {
+      var el = e.target;
+      if (!el || !el.classList || !el.classList.contains('dateinput')) return;
+      var v = normDate(el.value);
+      if (v) { el.value = v; el.classList.remove('bad'); }
+      else if (String(el.value).trim()) el.classList.add('bad');
+      else el.classList.remove('bad');
+    }, true);
+    document.addEventListener('focus', function (e) {
+      var el = e.target;
+      if (el && el.classList && el.classList.contains('dateinput')) { try { el.select(); } catch (er) {} }
+    }, true);
+  }
+  bindDateInputs();
   function monthOf(s) { return String(s || '').slice(5, 7); }
   /* 예전 기록의 '유자'/'yuzu'를 '아내'로 옮겨 읽어 기존 내역이 사라지지 않게 한다 */
   function normOwner(o) {
@@ -1248,7 +1293,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
           '</div>' +
 
           '<div class="field"><span>날짜</span>' +
-            '<div class="date-row"><input class="input" name="date" type="date" value="' + esc(d.date) + '" max="2100-12-31">' +
+            '<div class="date-row"><input class="input dateinput" name="date" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" enterkeyhint="done" maxlength="10" placeholder="예: 261128" value="' + esc(normDate(d.date) || d.date) + '">' +
             '<button class="btn ghost" type="button" data-act="today">오늘</button></div>' +
           '</div>' +
 
@@ -1329,7 +1374,9 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     if (!f) return;
     var name = String(f.name.value || '').trim();
     var amount = num(String(f.amount.value || '').replace(/[^0-9]/g, ''));
-    var date = f.date.value || todayStr();
+    var dateRaw = String(f.date.value || '').trim();
+    var date = dateRaw ? normDate(dateRaw) : todayStr();
+    if (!date) { toast('날짜를 숫자로 입력해 주세요 (예: 261128)'); try { f.date.focus(); } catch (er) {} return; }
     if (!name) { toast('이름을 입력해 주세요'); try { f.name.focus(); } catch (er) {} return; }
     if (!amount) { toast('금액을 입력해 주세요'); try { f.amount.focus(); } catch (er) {} return; }
 
@@ -2359,7 +2406,12 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       if (ocrState && ocrState.rows[ai]) ocrState.rows[ai].attend = normAttend(t.value);
       return;
     }
-    if (t.id === 'ocr-date') { ocrCommon.date = t.value || todayStr(); return; }
+    if (t.id === 'ocr-date') {
+      var dv = normDate(t.value);
+      ocrCommon.date = dv || todayStr();
+      if (dv) t.value = dv;
+      return;
+    }
     if (t.id === 'ocr-kind') { ocrCommon.kind = t.value; return; }
     if (t.id === 'ocr-rel') { ocrCommon.relation = t.value; return; }
     if (t.id === 'ocr-thanks') { ocrCommon.thanks = t.value; return; }
@@ -2805,7 +2857,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     var thankOpts = [{ v: 'none', t: '해당 없음' }, { v: 'need', t: '갚아야 함 / 받을 예정' }, { v: 'done', t: '완료' }];
     return '<div class="ocr-common">' +
       '<div class="row">' +
-        '<label><span>날짜 (모두 같은 날)</span><input class="input" type="date" id="ocr-date" value="' + esc(ocrCommon.date) + '" max="2100-12-31"></label>' +
+        '<label><span>날짜 (모두 같은 날)</span><input class="input dateinput" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" enterkeyhint="done" maxlength="10" placeholder="예: 261128" id="ocr-date" value="' + esc(ocrCommon.date) + '"></label>' +
         '<label><span>경조사</span>' + ocrSel('ocr-kind', kindOpts, ocrCommon.kind) + '</label>' +
       '</div>' +
       '<div class="row">' +
