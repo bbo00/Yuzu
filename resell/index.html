@@ -2964,6 +2964,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         syncCfg.lastPushTs = manifest.ts;
         syncCfg.lastCount = manifest.counts;
         syncCfg.lastError = '';
+        syncCfg.needRecover = false;
         syncCfg.dirty = false;
         syncSave();
         renderSyncDot();
@@ -3024,22 +3025,29 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     if (!syncOn()) return Promise.resolve(null);
     return syncGet(syncCfg.ns + '/v1/manifest').then(function (m) {
       if (!m || !m.parts || !m.parts.length) return null;
-      var chain = Promise.resolve(''), buf = '';
+      var chain = Promise.resolve(''), buf = '', expired = false;
       m.parts.forEach(function (p) {
         chain = chain.then(function () {
           return syncGet(p.ns + '/' + p.k).then(function (part) {
-            if (!part || typeof part.c !== 'string') throw new Error('원격 조각이 만료되었습니다');
+            /* v1.11: 조각 하나가 만료돼도 던지지 않고 표시만 한다(로컬 데이터로 복구하려고) */
+            if (!part || typeof part.c !== 'string') { expired = true; return; }
             buf += part.c;
           });
         });
       });
       return chain.then(function () {
+        if (expired) return { manifest: m, doc: null, expired: true };
         var doc = null;
         try { doc = JSON.parse(buf); } catch (e) { doc = null; }
-        if (!doc || !doc.data) throw new Error('원격 데이터 형식이 올바르지 않습니다');
-        return { manifest: m, doc: doc };
+        if (!doc || !doc.data) return { manifest: m, doc: null, expired: true, broken: true };
+        return { manifest: m, doc: doc, expired: false };
       });
     });
+  }
+
+  /* 이 기기에 살아 있는 기록이 있는지 (만료된 클라우드를 빈 데이터로 덮지 않기 위한 판단) */
+  function localHasData() {
+    try { return !!((state && state.items && state.items.length) || (state && state.txns && state.txns.length)); } catch (e) { return false; }
   }
 
   /* 원격이 더 최신이어도 '비어 있는 칸'으로 이 기기에 쓴 내용을 지우지 않는다 */
@@ -3104,9 +3112,22 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     syncBusy = true;
     renderSyncDot();
     return syncPull().then(function (res) {
-      var needPush = false;
-      if (!res) {
-        // 원격이 비었거나 만료 → 기기 데이터를 올린다
+      var needPush = false, recovered = false;
+      if (!res || res.expired) {
+        /* 원격이 비었거나 조각이 만료 → 이 기기 데이터를 올려 복구한다 */
+        if (res && res.expired) {
+          syncCfg.lastRemoteRev = Number(res.manifest && res.manifest.rev) || 0;
+          var rc = (res.manifest && res.manifest.counts) || null;
+          var remoteHad = !!(rc && ((Number(rc.items) || 0) + (Number(rc.txns) || 0) > 0));
+          if (remoteHad && !localHasData()) {
+            /* 이 기기에 기록이 없으면 만료된 클라우드를 빈 데이터로 덮지 않는다 */
+            syncCfg.lastError = '원격 조각이 만료되었습니다 · 이 기기 기록이 비어 있어 덮지 않았어요';
+            syncCfg.needRecover = true;
+            syncSave(); renderSyncDot();
+            return null;
+          }
+          recovered = true;
+        }
         needPush = true;
         syncCfg.rev = 0;
       } else {
@@ -3134,6 +3155,13 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       }
       if (!needPush) return null;
       return syncPush().then(function () {
+        if (recovered) {
+          syncCfg.needRecover = false;
+          syncCfg.recoveredAt = Date.now();
+          syncSave();
+          toast('클라우드 조각이 만료돼 이 기기 데이터로 다시 올렸어요 · 재고 ' + state.items.length + '종');
+          return;
+        }
         var st = syncCfg.remoteStats || null;
         if (!silent) {
           var c = syncCfg.lastCount || {};
@@ -3153,6 +3181,76 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       if (!silent) toast('동기화 실패 · ' + esc(syncCfg.lastError));
       return null;
     });
+  }
+
+  /* v1.11: 사용자가 직접 누르는 '클라우드 다시 올리기(복구)' — 읽지 않고 이 기기 데이터를 새 조각으로 올린다 */
+  function syncRecoverPush(opt) {
+    var silent = opt && opt.silent;
+    if (!syncOn()) { if (!silent) openSyncSheet(); return Promise.resolve(null); }
+    if (syncBusy) return Promise.resolve(null);
+    syncBusy = true;
+    renderSyncDot();
+    syncCfg.dirty = true;
+    syncCfg.rev = 0;
+    return syncPush().then(function (m) {
+      syncCfg.lastError = '';
+      syncCfg.needRecover = false;
+      syncCfg.dirty = false;
+      syncCfg.recoveredAt = Date.now();
+      syncSave();
+      renderSyncDot();
+      if (!silent) toast('클라우드에 다시 올렸어요 · 재고 ' + state.items.length + '종 · 거래 ' + state.txns.length + '건');
+      return m;
+    }).catch(function (e) {
+      syncCfg.lastError = String((e && e.message) || e);
+      syncCfg.needRecover = true;
+      syncSave();
+      renderSyncDot();
+      if (!silent) toast('다시 올리지 못했어요 · ' + esc(syncCfg.lastError));
+      return null;
+    }).then(function (v) { syncBusy = false; renderSyncDot(); return v; });
+  }
+
+  /* 조각 만료 배너: 이 기기 기록이 살아 있는데 클라우드를 다시 올려야 할 때 상단에 뜨린다 */
+  function ensureRecoverBar() {
+    var bar = document.getElementById('sync-recover-bar');
+    if (bar) return bar;
+    bar = document.createElement('div');
+    bar.id = 'sync-recover-bar';
+    bar.style.cssText = 'display:none;position:sticky;top:0;z-index:2147482999;width:100%;box-sizing:border-box;' +
+      'background:#B42318;color:#fff;font:700 12.5px/1.4 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;' +
+      'padding:calc(8px + env(safe-area-inset-top)) 12px 9px;text-align:center;letter-spacing:-.2px;' +
+      'box-shadow:0 2px 8px rgba(0,0,0,.18);';
+    var msg = document.createElement('div');
+    msg.className = 'rc-msg';
+    msg.style.cssText = 'margin:0 0 7px';
+    msg.textContent = '⚠️ 클라우드 조각이 만료되었습니다 · 이 기기 기록은 그대로예요';
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'rc-btn';
+    btn.textContent = '☁️ 클라우드 다시 올리기(복구)';
+    btn.style.cssText = 'font:800 12.5px/1 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;' +
+      'background:#fff;color:#B42318;border:0;border-radius:999px;padding:9px 15px;cursor:pointer;letter-spacing:-.2px';
+    btn.addEventListener('click', function () { syncRecoverPush({}); });
+    bar.appendChild(msg);
+    bar.appendChild(btn);
+    var host = document.body;
+    if (host) host.insertBefore(bar, host.firstChild);
+    return bar;
+  }
+  function updateRecoverBar() {
+    try {
+      var show = !!(syncCfg && syncCfg.ns && (syncCfg.needRecover || /만료/.test(String(syncCfg.lastError || ''))));
+      var bar = ensureRecoverBar();
+      if (!bar) return;
+      bar.style.display = show ? 'block' : 'none';
+      var msg = bar.querySelector('.rc-msg');
+      if (msg) {
+        msg.textContent = localHasData()
+          ? '⚠️ 클라우드 조각이 만료되었습니다 · 이 기기 기록은 그대로예요'
+          : '⚠️ 클라우드 조각이 만료되었습니다 · 이 기기 기록이 비어 있어 자동으로 덮지 않았어요';
+      }
+    } catch (e) { }
   }
 
   function scheduleSync() {
@@ -3206,6 +3304,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         bar.style.display = on ? 'none' : 'block';
         document.body.classList.toggle('sync-off-mode', !on);
       } catch (e) {}
+      try { updateRecoverBar(); } catch (e) {}
     }
     try { window.__syncOffBar = updateSyncOffBar; } catch (e) {}
   function renderSyncDot() {
@@ -3213,6 +3312,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     if (!dot) return;
     dot.className = 'dot' + (!syncOn() ? '' : (syncBusy ? ' wait' : (syncCfg.lastError ? ' err' : ' on')));
     updateSyncOffBar();
+    try { updateRecoverBar(); } catch (e) {}
   }
 
   /* ============================================================
@@ -3231,6 +3331,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       body += '<div class="syncacts"><button class="btn" data-s="now">지금 동기화</button>' +
         '<button class="btn" data-s="link">기기 연결 링크 복사</button>' +
         '<button class="btn" data-s="new">새 코드 만들기</button></div>';
+      body += '<div class="syncacts"><button class="btn" data-s="recover" style="flex:1">☁️ 클라우드 다시 올리기(복구)</button></div>';
+      body += '<p class="desc" style="margin:-2px 0 6px">클라우드 조각이 만료되어 빨간 배너가 뜨거나 동기화가 실패하면, 이 기기에 있는 재고·거래를 그대로 새 조각으로 다시 올립니다. 이 기기 기록은 지우지 않아요.</p>';
       body += '<div class="syncacts"><button class="btn ghost" data-s="switch">다른 코드로 연결</button>' +
         '<button class="btn ghost" data-s="off">연결 해제</button></div>';
       body += '<div class="codebox hidden" id="switch-box"><input placeholder="받은 코드 붙여넣기 (resellbook-…)" id="ns-input" /><button class="btn small" data-s="join">연결</button></div>';
@@ -3264,6 +3366,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
             copyText(link).then(function (ok) { toast(ok ? '연결 링크를 복사했어요 · 다른 기기에서 열면 바로 연결됩니다' : '복사하지 못했어요'); });
           } else if (a === 'now') {
             syncNow({}).then(function () { closeSheet(); });
+          } else if (a === 'recover') {
+            syncRecoverPush({}).then(function (r) { if (r) closeSheet(); });
           } else if (a === 'new') {
             confirmSheet({
               title: '새 동기화 코드',
@@ -3705,7 +3809,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   /* expose a tiny hook for self-checks */
   window.__resellbook = {
     get state() { return state; },
-    version: '1.10'
+    version: '1.11'
   };
 })();
 

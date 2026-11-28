@@ -1,0 +1,17 @@
+{
+  "name": "유자 앱 모음",
+  "short_name": "유자 앱",
+  "description": "내 웹앱 9종의 링크와 동기화 코드를 한 곳에서 관리하는 개인용 허브",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FBFBFD",
+  "theme_color": "#FBFBFD",
+  "icons": [
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "./apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ]
+}
