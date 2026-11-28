@@ -293,6 +293,11 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 .amt-row .input{flex:1 1 auto;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;padding-right:12px}
 .amt-row .unit{flex:0 0 auto;font-size:13px;color:var(--ink-2);font-weight:600}
 .quick-amt{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.quick-amt .chip.quick{font-variant-numeric:tabular-nums}
+.quick-amt .chip.reset{background:transparent;border-style:dashed;color:var(--ink-3)}
+.quick-amt .chip.reset:active{background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
+.amt-row .input.bump{animation:amtbump .22s ease}
+@keyframes amtbump{0%{transform:scale(1)}45%{transform:scale(1.03)}100%{transform:scale(1)}}
 .name-wrap{position:relative}
 .sugg{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
 .sugg button{font-size:12px;color:var(--accent);background:var(--accent-soft);border:1px solid var(--in-line);padding:4px 9px;border-radius:999px}
@@ -505,7 +510,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     { v: '2', t: '2인 참석', s: '2인' },
     { v: '0', t: '불참(봉투만)', s: '봉투만' }
   ];
-  var QUICK_AMTS = [30000, 50000, 100000, 150000, 200000, 300000];
+  var QUICK_AMTS = [50000, 100000, 150000, 200000, 300000, 500000, 1000000];   /* 누를 때마다 더해진다 */
   var DATA_KEY = 'events_v1';
   var SYNC_CFG_KEY = 'events_sync_v1';
   var UI_KEY = 'events_ui_v1';
@@ -1301,8 +1306,9 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
             '<div class="amt-row"><input class="input" id="f-amount" name="amount" type="text" inputmode="numeric" value="' + (d.amount ? Number(d.amount).toLocaleString('ko-KR') : '') + '" placeholder="0">' +
             '<span class="unit">원</span></div>' +
             '<div class="quick-amt" id="quick-amt">' + QUICK_AMTS.map(function (a) {
-              return '<button type="button" class="chip quick" data-act="amt" data-val="' + a + '">' + (a / 10000) + '만</button>';
-            }).join('') + '</div>' +
+              return '<button type="button" class="chip quick" data-act="amt" data-val="' + a + '">+' + (a >= 10000 && a % 10000 === 0 ? (a / 10000) + '만' : a.toLocaleString('ko-KR')) + '</button>';
+            }).join('') +
+            '<button type="button" class="chip quick reset" data-act="amt-clear" aria-label="금액 지우기">초기화</button></div>' +
             '<span class="hint" id="amt-hint">빠른 버튼을 누르거나 직접 입력하세요.</span>' +
           '</div>' +
 
@@ -2287,11 +2293,27 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
         if (f2) f2.date.value = todayStr();
         break;
       case 'amt':
+        /* 누를 때마다 지금 금액에 더한다 (20만 두 번 → 40만) */
         var amt = $('#f-amount');
         if (amt) {
-          amt.value = num(val).toLocaleString('ko-KR');
+          var curAmt = num(String(amt.value || '').replace(/[^0-9]/g, ''));
+          var nextAmt = curAmt + num(val);
+          if (nextAmt > 999999999999) nextAmt = 999999999999;
+          amt.value = nextAmt ? nextAmt.toLocaleString('ko-KR') : '';
           updateAmtHint();
-          $$('#quick-amt .chip').forEach(function (b) { b.classList.toggle('on', b === t); });
+          $$('#quick-amt .chip').forEach(function (b) { b.classList.remove('on'); });
+          amt.classList.remove('bump');
+          void amt.offsetWidth;
+          amt.classList.add('bump');
+        }
+        break;
+      case 'amt-clear':
+        var amt0 = $('#f-amount');
+        if (amt0) {
+          amt0.value = '';
+          updateAmtHint();
+          $$('#quick-amt .chip').forEach(function (b) { b.classList.remove('on'); });
+          try { amt0.focus(); } catch (e) {}
         }
         break;
       case 'fill-name':
@@ -2320,9 +2342,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       var digits = String(el.value || '').replace(/[^0-9]/g, '').slice(0, 12);
       el.value = digits ? num(digits).toLocaleString('ko-KR') : '';
       updateAmtHint();
-      $$('#quick-amt .chip').forEach(function (b) {
-        b.classList.toggle('on', num(b.getAttribute('data-val')) === num(digits));
-      });
+      $$('#quick-amt .chip').forEach(function (b) { b.classList.remove('on'); });
       return;
     }
     if (el.id === 'q') {
