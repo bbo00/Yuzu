@@ -162,6 +162,45 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   background-size:5px 5px,5px 5px;background-repeat:no-repeat
 }
 
+/* ---------- 상단 세그먼트: 📦 새상품 / 🥕 중고·처분 (v1.12) ---------- */
+.subtabs{margin:0 0 10px}
+.subtabs button{font-size:13px;padding:9px 0;font-weight:650;letter-spacing:-.3px;white-space:nowrap}
+
+/* ---------- 중고·처분 목록 ---------- */
+.ulist{display:flex;flex-direction:column;gap:6px}
+.ucard{display:flex;gap:9px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 9px;position:relative}
+.ucard:active{background:#FCFCFD}
+.ucard.done{opacity:.66}
+.uthumb{width:44px;height:44px;flex:0 0 44px;border-radius:10px;background:var(--accentSoft);border:0;padding:0;display:grid;place-items:center;font-size:19px;overflow:hidden;color:#C98A3A}
+.uthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.umain{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.utop{display:flex;align-items:center;gap:6px;min-width:0}
+.uname{flex:1;min-width:0;font-size:13.5px;font-weight:650;letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--fg)}
+.ubadge{flex:0 0 auto;border:1px solid var(--line2);background:var(--card2);color:#4B5563;font-size:10.5px;font-weight:800;letter-spacing:-.2px;line-height:1.5;padding:2px 7px;border-radius:999px}
+.ubadge.on{background:var(--okSoft);border-color:#C7EBDD;color:#0B7A56}
+.ubadge.res{background:var(--accentSoft);border-color:#F7C48A;color:#A85A00}
+.ubadge.done{background:var(--card3);border-color:var(--line2);color:#6B7280}
+.urow{display:flex;align-items:baseline;gap:6px;min-width:0;white-space:nowrap;overflow:hidden}
+.uprice{font-size:14px;font-weight:750;letter-spacing:-.4px;color:var(--fg);flex:0 0 auto}
+.uprice.none{font-size:11.5px;font-weight:600;color:var(--muted2)}
+.ubuy{font-size:11px;color:var(--muted2);letter-spacing:-.2px;overflow:hidden;text-overflow:ellipsis}
+.uplat{display:flex;gap:4px;min-width:0;overflow:hidden;min-height:15px}
+.uptag{flex:0 0 auto;font-size:9.5px;font-weight:700;line-height:1.5;padding:0 5px;border-radius:5px;background:var(--card3);border:1px solid var(--line2);color:#4B5563;letter-spacing:-.1px}
+.uptag.dang{background:#EDF8F1;border-color:#CDEBDA;color:#177A46}
+.uptag.kream{background:#141414;border-color:#141414;color:#fff}
+.uptag.bungae{background:var(--accentSoft);border-color:#F7C48A;color:#A85A00}
+.uptag.etc{background:var(--infoSoft);border-color:#C7D8F7;color:#1F4FA8}
+.chips.tight{padding-bottom:0}
+
+/* ---------- 손익·정산: 중고 처분 블록 ---------- */
+.ublock{grid-column:1/-1;background:#fff;border:1px solid var(--line);border-radius:16px;padding:11px 12px}
+.ublock .uh{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.ublock .uh b{font-size:13px;font-weight:750;letter-spacing:-.3px;color:var(--fg)}
+.ublock .uh span{font-size:11px;color:var(--muted2);letter-spacing:-.2px}
+.ublock .plgrid{margin:8px 0 0;gap:6px}
+.ublock .plgrid .cell{padding:8px 10px;border-radius:11px}
+.ublock .plgrid .cell .v{font-size:14px}
+
 /* ---------- item cards (v1.5 · 콤팩트) ---------- */
 .plist{display:flex;flex-direction:column;gap:6px}
 .pcard{
@@ -543,18 +582,18 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 <div class="wrap">
   <section id="view-inv" class="view">
     <div id="connectbar"></div>
+    <div class="seg subtabs" id="subtabs" role="group" aria-label="구분">
+      <button type="button" class="on" data-act="sub" data-sub="new">📦 새상품</button>
+      <button type="button" data-act="sub" data-sub="used">🥕 중고·처분</button>
+    </div>
+    <div id="pane-new">
     <div class="searchrow">
       <span class="mag">🔍</span>
       <input id="q" type="search" placeholder="상품명 · 구매처 검색" autocomplete="off" enterkeyhint="search" />
     </div>
     <div class="chips" id="statuschips"></div>
-    <div class="filterrow" style="grid-template-columns:1fr 1fr 1fr">
+    <div class="filterrow" style="grid-template-columns:1fr 1fr">
       <select id="brandsel" aria-label="브랜드"><option value="all">브랜드</option></select>
-      <select id="kinds" aria-label="구분">
-        <option value="all">구분</option>
-        <option value="resell">리셀</option>
-        <option value="used">개인 중고</option>
-      </select>
       <select id="catsel" aria-label="카테고리">
         <option value="all">카테고리</option>
         <option>의류</option><option>신발</option><option>잡화</option>
@@ -575,6 +614,12 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       </div>
     </div>
     <div class="plist" id="invgrid"></div>
+    </div>
+    <div id="pane-used" class="hidden">
+      <div class="chips" id="uplatchips"></div>
+      <div class="chips" id="ustatuschips" style="padding-bottom:4px"></div>
+      <div class="ulist" id="usedgrid"></div>
+    </div>
   </section>
 
   <section id="view-tx" class="view hidden">
@@ -591,7 +636,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 </div>
 
 <nav class="tabbar" id="tabbar">
-  <button class="tab on" data-view="inv"><span class="ti">📦</span>재고 목록</button>
+  <button class="tab on" data-view="inv"><span class="ti">📦</span>재고</button>
   <button class="tab" data-view="tx"><span class="ti">📜</span>거래 내역</button>
   <button class="tab" data-view="pl"><span class="ti">📊</span>손익 · 정산</button>
 </nav>
@@ -709,6 +754,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   var SOURCES = ['공홈', '직접입력'];
   /* 판매처는 크림을 기본(첫 번째 추천)으로 둔다 — 사용자가 판매를 주로 크림에서 한다 */
   var SALE_VENUES = ['크림', '당근', '번개장터', '직접입력'];
+  var PLATFORMS = ['당근', '크림', '번개', '기타'];
+  var USTATUS = ['판매중', '예약중', '판매완료'];
   var SIZE_ORDER = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'FREE', '프리'];
 
   /* ============================================================
@@ -801,6 +848,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         }
         vars.push({ size: sz, qty: vq, cost: vc });
       });
+      var kind = r.kind === 'used' ? 'used' : 'resell';
+      var rawSt = r.status === '예약중' ? '예약중' : (r.status === '판매완료' ? '판매완료' : '판매중');
       var row = {
         id: id,
         name: String(r.name || '이름 없는 상품').slice(0, 80),
@@ -810,16 +859,27 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         memo: String(r.memo || '').slice(0, 500),
         avgCost: Math.max(0, Number(r.avgCost != null ? r.avgCost : r.price) || 0),
         qty: q,
-        status: r.status === '예약중' ? '예약중' : '판매중',
+        status: kind === 'used' ? rawSt : (rawSt === '예약중' ? '예약중' : '판매중'),
         photo: typeof r.photo === 'string' ? r.photo : '',
         brand: String(r.brand == null ? '' : r.brand).trim().slice(0, 24),
         kreamListed: !!r.kreamListed,
-        kind: r.kind === 'used' ? 'used' : 'resell',
+        kind: kind,
         totalInQty: Math.max(q, Math.round(Number(r.totalInQty) || q)),
         createdAt: Number(r.createdAt) || Date.now(),
         updatedAt: Number(r.updatedAt) || 0
       };
       if (vars.length) { row.variants = vars; syncVarTotals(row); }
+      if (kind === 'used') {
+        /* 중고·처분 전용 칸 — 예전 '개인 중고' 기록은 원가를 구매가 참고값으로 옮겨온다 */
+        row.buyPrice = Math.max(0, Math.round(Number(r.buyPrice != null ? r.buyPrice : (r.avgCost != null ? r.avgCost : r.price)) || 0));
+        row.wantPrice = Math.max(0, Math.round(Number(r.wantPrice) || 0));
+        row.platforms = (Array.isArray(r.platforms) ? r.platforms : []).map(function (p) { return String(p); })
+          .filter(function (p) { return PLATFORMS.indexOf(p) >= 0; });
+        row.soldPrice = Math.max(0, Math.round(Number(r.soldPrice) || 0));
+        row.soldDate = normDate(r.soldDate);
+        /* 예전 개인 중고는 재고 0개면 판매된 것으로 본다(금액은 지어내지 않는다) */
+        if (row.status !== '판매완료' && row.qty <= 0) row.status = '판매완료';
+      }
       out.items.push(row);
     });
     var seenT = {};
@@ -993,6 +1053,38 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 
   /* 구분 — 리셀(새상품) / 개인 중고. 예전 기록은 리셀 */
   function isUsed(it) { return !!(it && it.kind === 'used'); }
+  function usedStatus(it) {
+    var s = it && it.status;
+    if (s === '판매완료' || s === '예약중') return s;
+    return '판매중';
+  }
+  function platformClass(p) {
+    return p === '당근' ? 'dang' : (p === '크림' ? 'kream' : (p === '번개' ? 'bungae' : 'etc'));
+  }
+  function usedItems() { return state.items.filter(isUsed); }
+  function newItems() { return state.items.filter(function (it) { return !isUsed(it); }); }
+  function usedStats() {
+    var st = { total: 0, onSale: 0, reserved: 0, sold: 0, priced: 0, noPrice: 0, income: 0, buySold: 0, net: 0 };
+    usedItems().forEach(function (it) {
+      st.total++;
+      var s = usedStatus(it);
+      if (s === '판매완료') {
+        st.sold++;
+        var sp = Math.max(0, Number(it.soldPrice) || 0);
+        /* 판매가가 기록된 건만 수입·구매가·순수입에 넣는다 (안 적힌 건은 세지 않는다) */
+        if (sp > 0) { st.priced++; st.income += sp; st.buySold += Math.max(0, Number(it.buyPrice) || 0); }
+        else st.noPrice++;
+      } else if (s === '예약중') st.reserved++;
+      else st.onSale++;
+    });
+    st.net = st.income - st.buySold;
+    return st;
+  }
+  function itemsSummary() {
+    var n = 0, u = 0;
+    state.items.forEach(function (it) { if (isUsed(it)) u++; else n++; });
+    return '재고 ' + n + '종' + (u ? ' · 중고 ' + u : '');
+  }
 
   /* 브랜드 — 직접 적어 둔 값이 있으면 그 값, 없으면 상품명 첫 단어(지어내지 않는다) */
   function brandOf(it) {
@@ -1004,6 +1096,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   function brandList() {
     var cnt = {};
     state.items.forEach(function (it) {
+      if (isUsed(it)) return; /* 중고·처분 이름이 브랜드 목록에 섞이지 않게 */
       var b = brandOf(it);
       if (!b) return;
       cnt[b] = (cnt[b] || 0) + 1;
@@ -1026,13 +1119,11 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   function invStats() {
     var value = 0, qty = 0, kinds = 0, onSale = 0, reserved = 0, soldOut = 0;
     var unknownQ = 0, unknownItems = 0, lowStock = 0, sizeCount = 0;
-    var resellKinds = 0, usedKinds = 0, resellValue = 0, usedValue = 0;
     state.items.forEach(function (it) {
+      if (isUsed(it)) return; /* 중고·처분은 새상품 재고 집계에서 뺀다 */
       var q = itemQty(it);
       if (q > 0) {
         kinds++; qty += q; value += itemValue(it);
-        if (isUsed(it)) { usedKinds++; usedValue += itemValue(it); }
-        else { resellKinds++; resellValue += itemValue(it); }
         if (unknownQty(it) > 0) { unknownQ += unknownQty(it); unknownItems++; }
         if (q <= 2) lowStock++;
         if (hasVar(it)) sizeCount += heldSizes(it).length;
@@ -1042,8 +1133,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     });
     return {
       value: value, qty: qty, kinds: kinds, onSale: onSale, reserved: reserved, soldOut: soldOut,
-      unknownQ: unknownQ, unknownItems: unknownItems, lowStock: lowStock, sizeCount: sizeCount,
-      resellKinds: resellKinds, usedKinds: usedKinds, resellValue: resellValue, usedValue: usedValue
+      unknownQ: unknownQ, unknownItems: unknownItems, lowStock: lowStock, sizeCount: sizeCount
     };
   }
 
@@ -1072,12 +1162,14 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
      ============================================================ */
   var view = {
     tab: 'inv',
+    sub: 'new',
     q: '',
     status: 'all',
     cat: 'all',
     brand: 'all',
-    kind: 'all',
     kream: 'all',
+    uplat: 'all',
+    ustatus: 'all',
     sort: 'recent',
     density: 'open',
     month: 'all',
@@ -1100,9 +1192,10 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
      ============================================================ */
   function renderHead() {
     var s = invStats();
+    var us = usedItems().length;
     var sub = $('#head-sub');
     if (!state.items.length) { sub.textContent = '재고와 손익을 한 곳에'; return; }
-    sub.textContent = '재고 ' + s.kinds + '종 · 잔여 ' + s.qty + '개';
+    sub.textContent = '재고 ' + s.kinds + '종 · 잔여 ' + s.qty + '개' + (us ? ' · 중고 ' + us : '');
   }
 
   /* ============================================================
@@ -1124,17 +1217,17 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       '<div class="s">' + st.count + '건 · ' + st.qty + '개 판매</div>' +
       '</div>';
     html += '<div class="kpi">' +
-      '<div class="k">📈 순수익 <span style="color:var(--muted2)">·누적</span></div>' +
+      '<div class="k">📈 리셀 순수익 <span style="color:var(--muted2)">·누적</span></div>' +
       '<div class="v ' + profitClass(st.profit) + '">' + (st.revenue ? (st.profit < 0 ? '-' : '') + wonShort(Math.abs(st.profit)) : won(0)) + '</div>' +
       '<div class="s">' + esc(marginTxt) + '</div>' +
       '</div>';
     html += '<div class="kpi">' +
       '<div class="k">🏷️ 판매 중</div>' +
       '<div class="v">' + inv.onSale + '<small>종</small></div>' +
-      '<div class="s">' + (inv.reserved ? '예약중 ' + inv.reserved + '종 · ' : '') + '완판 ' + inv.soldOut + '종' +
-        (inv.usedKinds ? ' · 개인 중고 ' + inv.usedKinds + '종' : '') + '</div>' +
+      '<div class="s">' + (inv.reserved ? '예약중 ' + inv.reserved + '종 · ' : '') + '완판 ' + inv.soldOut + '종</div>' +
       '</div>';
     html += marginCardHtml();
+    html += usedBlockHtml();
     if (inv.unknownQ > 0) {
       html += '<div class="dnote" style="grid-column:1/-1">원가 미입력 ' + inv.unknownQ + '개 · ' + inv.unknownItems + '종은 재고 가치·손익 계산에서 빠져 있어요. 단가를 넣으면 바로 반영됩니다.</div>';
     }
@@ -1146,8 +1239,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     var presets = [10, 20, 30, 40].map(function (m) {
       return '<button type="button" data-act="margin" data-set="' + m + '"' + (m === p.margin ? ' class="on"' : '') + '>' + m + '%</button>';
     }).join('');
-    var note = '원가 × ' + p.margin + '% = 손익 · 수수료·배송비 제외' +
-      (p.usedKinds ? ' · <b>개인 중고 ' + p.usedKinds + '종(' + p.usedQty + '개)</b>은 리셀 손익률 계산에서 뺐어요' : '');
+    var note = '원가 × ' + p.margin + '% = 손익 · 수수료·배송비 제외';
     return '<div class="mcard">' +
       '<div class="mc-head"><b>🎯 목표 손익률 · 예상 손익</b><span>원가 입력 ' + p.qty + '개 기준</span></div>' +
       '<div class="mc-ctl">' +
@@ -1164,6 +1256,21 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       '</div>' +
       '<div class="mc-note">' + note + '</div>' +
       '</div>';
+  }
+
+  /* 손익·정산 탭: 중고 처분 수입은 리셀 순수익과 섮이지 않게 별도 블록으로 */
+  function usedBlockHtml() {
+    var us = usedStats();
+    if (!us.total) return '';
+    var sign = us.net > 0 ? '+' : '';
+    return '<div class="ublock">' +
+      '<div class="uh"><b>🥕 중고 처분</b><span>판매 완료 ' + us.sold + '건' + (us.noPrice ? ' · 미기록 ' + us.noPrice : '') + '</span></div>' +
+      '<div class="plgrid">' +
+        cell('판매 수입', won(us.income), '') +
+        cell('구매가', won(us.buySold), '') +
+        cell('순수입', sign + won(us.net), '') +
+        cell('판매중', (us.onSale + us.reserved) + '건', '') +
+      '</div></div>';
   }
 
   function monthChartHtml() {
@@ -1206,6 +1313,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   function filteredItems() {
     var q = view.q.trim().toLowerCase();
     var list = state.items.filter(function (it) {
+      if (isUsed(it)) return false; /* 중고는 🥕 중고·처분 탭에서 */
       if (q) {
         var hay = (it.name + ' ' + it.source + ' ' + it.cat + ' ' + it.memo + ' ' +
           (hasVar(it) ? it.variants.map(function (v) { return v.size; }).join(' ') : '')).toLowerCase();
@@ -1220,8 +1328,6 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       if (view.status !== 'all' && view.status !== '완판' && st !== view.status) return false;
       if (view.cat !== 'all' && it.cat !== view.cat) return false;
       if (view.brand !== 'all' && brandOf(it) !== view.brand) return false;
-      if (view.kind === 'resell' && isUsed(it)) return false;
-      if (view.kind === 'used' && !isUsed(it)) return false;
       if (view.kream === 'yes' && !it.kreamListed) return false;
       if (view.kream === 'no' && it.kreamListed) return false;
       return true;
@@ -1241,6 +1347,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   function renderStatusChips() {
     var counts = { all: 0, '판매중': 0, '예약중': 0, '완판': 0 };
     state.items.forEach(function (it) {
+      if (isUsed(it)) return;
       var st = effStatus(it), q = itemQty(it);
       if (q > 0) { counts.all++; counts[st]++; }
       else counts['완판']++;
@@ -1266,8 +1373,6 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       bs.value = view.brand;
       if (bs.value !== view.brand) { view.brand = 'all'; bs.value = 'all'; }
     }
-    var ks = $('#kinds');
-    if (ks) ks.value = view.kind;
     var tc = $('#tagchips');
     if (tc) {
       tc.innerHTML = [['all', '크림 전체'], ['yes', '크림 등록'], ['no', '미등록']].map(function (d) {
@@ -1349,7 +1454,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   function renderDensity() {
     var box = $('#denseg');
     if (box) {
-      box.classList.toggle('hidden', !state.items.length);
+      box.classList.toggle('hidden', !newItems().length);
       $$('button', box).forEach(function (b) {
         b.classList.toggle('on', b.getAttribute('data-mode') === view.density);
       });
@@ -1360,7 +1465,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 
   function renderInv() {
     var grid = $('#invgrid');
-    if (!state.items.length) { grid.innerHTML = emptyInventory(); renderDensity(); return; }
+    if (!newItems().length) { grid.innerHTML = emptyInventory(); renderDensity(); return; }
     var list = filteredItems();
     renderDensity();
     if (!list.length) {
@@ -1370,6 +1475,85 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       return;
     }
     grid.innerHTML = list.map(view.density === 'compact' ? itemRow : itemCard).join('');
+  }
+
+  /* ============================================================
+     render: 🥕 중고·처분
+     ============================================================ */
+  function usedFiltered() {
+    return usedItems().filter(function (it) {
+      var ps = Array.isArray(it.platforms) ? it.platforms : [];
+      if (view.uplat === 'none') { if (ps.length) return false; }
+      else if (view.uplat !== 'all' && ps.indexOf(view.uplat) < 0) return false;
+      if (view.ustatus !== 'all' && usedStatus(it) !== view.ustatus) return false;
+      return true;
+    }).sort(function (a, b) {
+      var za = usedStatus(a) === '판매완료' ? 1 : 0, zb = usedStatus(b) === '판매완료' ? 1 : 0;
+      if (za !== zb) return za - zb;
+      return (Number(b.updatedAt) || Number(b.createdAt) || 0) - (Number(a.updatedAt) || Number(a.createdAt) || 0);
+    });
+  }
+
+  function renderUsedChips() {
+    var all = usedItems();
+    var pc = { all: all.length, '당근': 0, '크림': 0, '번개': 0, none: 0 };
+    var sc = { all: all.length, '판매중': 0, '예약중': 0, '판매완료': 0 };
+    all.forEach(function (it) {
+      var ps = Array.isArray(it.platforms) ? it.platforms : [];
+      if (!ps.length) pc.none++;
+      ps.forEach(function (p) { if (pc[p] != null) pc[p]++; });
+      sc[usedStatus(it)]++;
+    });
+    var box = $('#uplatchips');
+    if (box) box.innerHTML = [['all', '전체'], ['당근', '당근'], ['크림', '크림'], ['번개', '번개'], ['none', '미등록']].map(function (d) {
+      return '<button class="chip' + (view.uplat === d[0] ? ' on' : '') + '" data-act="uplat" data-p="' + d[0] + '">' + d[1] +
+        '<span class="n">' + (pc[d[0]] || 0) + '</span></button>';
+    }).join('');
+    var sb = $('#ustatuschips');
+    if (sb) sb.innerHTML = [['all', '전체'], ['판매중', '판매중'], ['예약중', '예약중'], ['판매완료', '판매완료']].map(function (d) {
+      return '<button class="chip' + (view.ustatus === d[0] ? ' on' : '') + '" data-act="ustatchip" data-s="' + d[0] + '">' + d[1] +
+        '<span class="n">' + (sc[d[0]] || 0) + '</span></button>';
+    }).join('');
+  }
+
+  function usedCard(it) {
+    var st = usedStatus(it);
+    var sold = st === '판매완료';
+    var price = sold ? (Number(it.soldPrice) || 0) : (Number(it.wantPrice) || 0);
+    var buy = Number(it.buyPrice) || 0;
+    var ps = Array.isArray(it.platforms) ? it.platforms : [];
+    var thumb = it.photo
+      ? '<button type="button" class="uthumb" data-act="uphoto" data-id="' + esc(it.id) + '" aria-label="사진 크게 보기"><img src="' + it.photo + '" alt="" loading="lazy" /></button>'
+      : '<div class="uthumb">🥕</div>';
+    return '<div class="ucard' + (sold ? ' done' : '') + '" data-act="uedit" data-id="' + esc(it.id) + '">' +
+      thumb +
+      '<div class="umain">' +
+        '<div class="utop"><div class="uname">' + esc(it.name) + '</div>' +
+          '<button type="button" class="ubadge ' + (st === '판매중' ? 'on' : (st === '예약중' ? 'res' : 'done')) + '" data-act="ustat" data-id="' + esc(it.id) + '">' + st + '</button></div>' +
+        '<div class="urow">' +
+          (price > 0 ? '<span class="uprice">' + won(price) + '</span>' : '<span class="uprice none">' + (sold ? '판매가 미기록' : '희망가 미입력') + '</span>') +
+          (buy > 0 ? '<span class="ubuy">산 ' + won(buy) + '</span>' : '') +
+        '</div>' +
+        (ps.length ? '<div class="uplat">' + ps.map(function (p) { return '<span class="uptag ' + platformClass(p) + '">' + esc(p) + '</span>'; }).join('') + '</div>' : '') +
+      '</div></div>';
+  }
+
+  function renderUsed() {
+    renderUsedChips();
+    var grid = $('#usedgrid');
+    if (!grid) return;
+    if (!usedItems().length) {
+      grid.innerHTML = '<div class="empty"><div class="big">🥕</div><h3>중고로 올린 물건이 없어요</h3>' +
+        '<button class="btn-primary" data-act="uadd">＋ 중고 등록</button></div>';
+      return;
+    }
+    var list = usedFiltered();
+    if (!list.length) {
+      grid.innerHTML = '<div class="empty"><div class="big">🔍</div><h3>조건에 맞는 물건이 없어요</h3>' +
+        '<button class="btn-primary" data-act="ureset">필터 초기화</button></div>';
+      return;
+    }
+    grid.innerHTML = list.map(usedCard).join('');
   }
 
   function txTag(t, kind, emoji) {
@@ -1519,7 +1703,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
      ============================================================ */
   function renderAll() {
     renderHead();
-    if (view.tab === 'inv') { renderConnect(); renderStatusChips(); renderInv(); }
+    if (view.tab === 'inv') { renderConnect(); renderStatusChips(); renderInv(); renderUsed(); }
     if (view.tab === 'tx') renderTx();
     if (view.tab === 'pl') renderPL();
     renderSyncDot();
@@ -1542,6 +1726,15 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     if (view.tab === 'inv') { fab.classList.remove('hidden'); }
     else if (view.tab === 'tx') { fab.classList.add('hidden'); }
     else { fab.classList.add('hidden'); }
+  }
+
+  /* 📦 새상품 / 🥕 중고·처분 — 재고 화면 안의 세그먼트 */
+  function setSub(sub) {
+    view.sub = sub === 'used' ? 'used' : 'new';
+    $$('#subtabs button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-sub') === view.sub); });
+    $('#pane-new').classList.toggle('hidden', view.sub !== 'new');
+    $('#pane-used').classList.toggle('hidden', view.sub !== 'used');
+    renderAll();
   }
 
   function setTab(tab) {
@@ -1857,13 +2050,6 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     body += '<div class="field"><label>상품명<span class="req">*</span></label>' +
       '<input id="f-name" type="text" maxlength="80" placeholder="예: 나이키 에어맥스 90 블랙 270" value="' + esc(draft.name) + '" /></div>';
 
-    body += '<div class="field"><label>구분</label>' +
-      '<div class="seg" id="f-kind">' +
-      '<button type="button" data-kind="resell"' + (draft.kind === 'used' ? '' : ' class="on"') + '>리셀 (새상품)</button>' +
-      '<button type="button" data-kind="used"' + (draft.kind === 'used' ? ' class="on"' : '') + '>개인 중고</button>' +
-      '</div>' +
-      '<div class="note" style="margin-top:6px">개인 중고는 리셀 손익률(원가×%) 계산·통계에서 빼고 따로 봅니다.</div></div>';
-
     body += '<div class="field"><label>브랜드</label>' +
       '<input id="f-brand" type="text" maxlength="24" list="f-brand-list" placeholder="예: 폴로 (비우면 상품명 첫 단어)" value="' + esc(draft.brand || '') + '" />' +
       '<datalist id="f-brand-list">' + brandList().map(function (b) { return '<option value="' + esc(b) + '"></option>'; }).join('') + '</datalist></div>';
@@ -2010,14 +2196,6 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
           delBtn.classList.add('hidden');
           input.value = '';
         };
-        var kindVal = draft.kind === 'used' ? 'used' : 'resell';
-        var kindBox = root.querySelector('#f-kind');
-        kindBox.addEventListener('click', function (e) {
-          var b = e.target.closest('button[data-kind]');
-          if (!b) return;
-          kindVal = b.getAttribute('data-kind');
-          $$('button', kindBox).forEach(function (x) { x.classList.toggle('on', x === b); });
-        });
         var srcSel = root.querySelector('#f-source');
         var etcWrap = root.querySelector('#custom-src-wrap');
         srcSel.onchange = function () {
@@ -2054,7 +2232,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
             memo: root.querySelector('#f-memo').value.trim(), photo: photo,
             brand: root.querySelector('#f-brand').value.trim().slice(0, 24),
             kreamListed: !!root.querySelector('#f-kream').checked,
-            kind: kindVal,
+            kind: it ? it.kind : 'resell',
             updatedAt: Date.now()
           };
           if (useVar) {
@@ -2084,6 +2262,194 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       var n = sheet.querySelector('#f-name');
       if (n && !it) n.focus();
     }, 260);
+  }
+
+  /* ============================================================
+     중고·처분 등록/수정
+     ============================================================ */
+  function openUsedForm(id) {
+    var it = id ? itemById(id) : null;
+    if (it && !isUsed(it)) it = null;
+    var d = it || { name: '', buyPrice: 0, wantPrice: 0, platforms: [], status: '판매중', photo: '', memo: '', soldPrice: 0, soldDate: '' };
+    var plats = (Array.isArray(d.platforms) ? d.platforms : []).slice();
+    var st = usedStatus(d);
+    var body = '';
+    body += '<div class="field"><label>사진 <span style="color:var(--muted2)">(선택)</span></label>' +
+      '<div class="photopick"><div class="pv" id="upv">' + (d.photo ? '<img src="' + d.photo + '" alt="" />' : '📷') + '</div>' +
+      '<div class="ptxt"><div class="row"><button class="btn small" type="button" data-upick="1">사진 선택</button>' +
+      '<button class="btn small ghost' + (d.photo ? '' : ' hidden') + '" type="button" data-uphotodel="1">빼기</button></div></div></div>' +
+      '<input type="file" accept="image/*" id="uphoto-input" hidden /></div>';
+
+    body += '<div class="field"><label>물건명<span class="req">*</span></label>' +
+      '<input id="u-name" type="text" maxlength="80" placeholder="예: 나이키 에어맥스 90 270" value="' + esc(d.name) + '" /></div>';
+
+    body += '<div class="row2">' +
+      '<div class="field"><label>구매가 <span style="color:var(--muted2)">(참고)</span></label>' +
+      '<input id="u-buy" type="text" inputmode="numeric" autocomplete="off" placeholder="비워도 됨" value="' + (Number(d.buyPrice) > 0 ? fmtMoney(d.buyPrice) : '') + '" /></div>' +
+      '<div class="field"><label>희망 판매가</label>' +
+      '<input id="u-want" type="text" inputmode="numeric" autocomplete="off" placeholder="0" value="' + (Number(d.wantPrice) > 0 ? fmtMoney(d.wantPrice) : '') + '" /></div>' +
+      '</div>';
+
+    body += '<div class="field"><label>올린 플랫폼</label><div class="chips tight" id="u-plats">' +
+      PLATFORMS.map(function (p) { return '<button type="button" class="chip' + (plats.indexOf(p) >= 0 ? ' on' : '') + '" data-plat="' + p + '">' + p + '</button>'; }).join('') +
+      '</div></div>';
+
+    body += '<div class="field"><label>상태</label><div class="seg" id="u-st">' +
+      USTATUS.map(function (s) { return '<button type="button" data-st="' + s + '"' + (st === s ? ' class="on"' : '') + '>' + s + '</button>'; }).join('') +
+      '</div></div>';
+
+    body += '<div id="u-soldwrap" class="' + (st === '판매완료' ? '' : 'hidden') + '"><div class="row2">' +
+      '<div class="field"><label>실제 판매가</label><input id="u-sold" type="text" inputmode="numeric" autocomplete="off" placeholder="0" value="' + (Number(d.soldPrice) > 0 ? fmtMoney(d.soldPrice) : '') + '" /></div>' +
+      '<div class="field"><label>판매일</label>' + dateFieldHtml('u-date', d.soldDate || today()) + '</div>' +
+      '</div></div>';
+
+    body += '<div class="field"><label>메모 <span style="color:var(--muted2)">(선택)</span></label>' +
+      '<textarea id="u-memo" maxlength="500">' + esc(d.memo || '') + '</textarea></div>';
+
+    var foot = (it ? '<button class="btn ghost" data-udel="1" style="flex:0 0 auto">삭제</button>' : '') +
+      '<button class="btn ghost" data-ucancel="1">취소</button>' +
+      '<button class="btn primary" id="save-used">' + (it ? '저장' : '등록') + '</button>';
+
+    var sheet = openSheet({
+      title: it ? '중고 수정' : '중고 등록',
+      body: body, foot: foot,
+      onMount: function (root) {
+        var photo = d.photo || '';
+        var pv = root.querySelector('#upv');
+        var input = root.querySelector('#uphoto-input');
+        var delBtn = root.querySelector('[data-uphotodel]');
+        bindMoney(root.querySelector('#u-buy'));
+        bindMoney(root.querySelector('#u-want'));
+        bindMoney(root.querySelector('#u-sold'));
+        pv.addEventListener('click', function () { if (photo) openPhotoSrc(photo, (root.querySelector('#u-name') || {}).value || ''); });
+        root.querySelector('[data-upick]').onclick = function () { input.click(); };
+        input.onchange = function () {
+          var f = input.files && input.files[0];
+          if (!f) return;
+          if (!/^image\//.test(f.type)) { toast('이미지 파일만 넣을 수 있어요'); return; }
+          compressImage(f, function (data) {
+            if (!data) { toast('사진을 읽지 못했어요'); return; }
+            photo = data;
+            pv.innerHTML = '<img src="' + data + '" alt="" />';
+            if (delBtn) delBtn.classList.remove('hidden');
+          });
+        };
+        if (delBtn) delBtn.onclick = function () { photo = ''; pv.innerHTML = '📷'; delBtn.classList.add('hidden'); input.value = ''; };
+
+        var platBox = root.querySelector('#u-plats');
+        platBox.addEventListener('click', function (e) {
+          var b = e.target.closest('button[data-plat]');
+          if (!b) return;
+          var p = b.getAttribute('data-plat');
+          var i = plats.indexOf(p);
+          if (i >= 0) plats.splice(i, 1); else plats.push(p);
+          b.classList.toggle('on', plats.indexOf(p) >= 0);
+        });
+
+        var stBox = root.querySelector('#u-st');
+        var soldWrap = root.querySelector('#u-soldwrap');
+        var statusVal = st;
+        stBox.addEventListener('click', function (e) {
+          var b = e.target.closest('button[data-st]');
+          if (!b) return;
+          statusVal = b.getAttribute('data-st');
+          $$('button', stBox).forEach(function (x) { x.classList.toggle('on', x === b); });
+          soldWrap.classList.toggle('hidden', statusVal !== '판매완료');
+        });
+
+        if (it) root.querySelector('[data-udel]').onclick = function () { closeSheet(); deleteItem(it.id); };
+        root.querySelector('[data-ucancel]').onclick = closeSheet;
+        root.querySelector('#save-used').onclick = function () {
+          var name = root.querySelector('#u-name').value.trim();
+          if (!name) { toast('물건명을 넣어주세요'); root.querySelector('#u-name').focus(); return; }
+          var soldPrice = Math.max(0, Math.round(num(root.querySelector('#u-sold').value)));
+          var soldDate = '';
+          if (statusVal === '판매완료') {
+            soldDate = readDate(root, 'u-date', today());
+            if (soldDate === null) return;
+          }
+          var p = {
+            name: name,
+            buyPrice: Math.max(0, Math.round(num(root.querySelector('#u-buy').value))),
+            wantPrice: Math.max(0, Math.round(num(root.querySelector('#u-want').value))),
+            platforms: plats.slice(),
+            status: statusVal,
+            soldPrice: statusVal === '판매완료' ? soldPrice : (it ? (Number(it.soldPrice) || 0) : 0),
+            soldDate: statusVal === '판매완료' ? soldDate : (it ? (it.soldDate || '') : ''),
+            photo: photo,
+            memo: root.querySelector('#u-memo').value.trim(),
+            updatedAt: Date.now()
+          };
+          if (it) {
+            Object.assign(it, p);
+            toast('수정했어요 · ' + esc(name));
+          } else {
+            p.id = uid('u'); p.kind = 'used'; p.qty = 1; p.createdAt = Date.now();
+            state.items.push(p);
+            toast('등록 완료 · ' + esc(name));
+          }
+          save(); closeSheet(); renderAll();
+        };
+      }
+    });
+    setTimeout(function () {
+      var n = sheet.querySelector('#u-name');
+      if (n && !it) n.focus();
+    }, 260);
+  }
+
+  /* 상태 배지 → 원탭 변경 (판매중·예약중) / 판매완료는 판매가 입력 */
+  function openUsedStatus(id) {
+    var it = itemById(id);
+    if (!it || !isUsed(it)) return;
+    var st = usedStatus(it);
+    var body = '<div class="field"><div class="seg" id="us-st">' +
+      USTATUS.map(function (s) { return '<button type="button" data-st="' + s + '"' + (st === s ? ' class="on"' : '') + '>' + s + '</button>'; }).join('') +
+      '</div></div>' +
+      '<div id="us-soldwrap" class="' + (st === '판매완료' ? '' : 'hidden') + '"><div class="row2">' +
+      '<div class="field"><label>실제 판매가</label><input id="us-sold" type="text" inputmode="numeric" autocomplete="off" placeholder="0" value="' + (Number(it.soldPrice) > 0 ? fmtMoney(it.soldPrice) : '') + '" /></div>' +
+      '<div class="field"><label>판매일</label>' + dateFieldHtml('us-date', it.soldDate || today()) + '</div>' +
+      '</div></div>';
+    var sheet = openSheet({
+      title: st === '판매완료' ? '판매 완료' : '상태 변경', sub: it.name,
+      body: body,
+      foot: '<button class="btn ghost" data-usclose="1">닫기</button><button class="btn primary" id="us-save">저장</button>',
+      onMount: function (root) {
+        bindMoney(root.querySelector('#us-sold'));
+        var wrap = root.querySelector('#us-soldwrap');
+        var saveBtn = root.querySelector('#us-save');
+        saveBtn.disabled = st !== '판매완료';
+        root.querySelector('#us-st').addEventListener('click', function (e) {
+          var b = e.target.closest('button[data-st]');
+          if (!b) return;
+          var next = b.getAttribute('data-st');
+          $$('button', root.querySelector('#us-st')).forEach(function (x) { x.classList.toggle('on', x === b); });
+          if (next === '판매완료') {
+            wrap.classList.remove('hidden');
+            saveBtn.disabled = false;
+            var f = root.querySelector('#us-sold');
+            if (f) f.focus();
+            return;
+          }
+          /* 판매중·예약중은 원탭으로 바로 저장 */
+          it.status = next;
+          save(); closeSheet(); renderAll();
+          toast(esc(it.name) + ' · ' + next);
+        });
+        root.querySelector('[data-usclose]').onclick = closeSheet;
+        saveBtn.onclick = function () {
+          var sold = Math.max(0, Math.round(num(root.querySelector('#us-sold').value)));
+          var dt = readDate(root, 'us-date', it.soldDate || today());
+          if (dt === null) return;
+          it.status = '판매완료';
+          it.soldPrice = sold;
+          it.soldDate = dt;
+          save(); closeSheet(); renderAll();
+          toast('판매 완료 · ' + won(sold));
+        };
+      }
+    });
+    return sheet;
   }
 
   function soldQtyOf(pid) {
@@ -3159,7 +3525,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
           syncCfg.needRecover = false;
           syncCfg.recoveredAt = Date.now();
           syncSave();
-          toast('클라우드 조각이 만료돼 이 기기 데이터로 다시 올렸어요 · 재고 ' + state.items.length + '종');
+          toast('클라우드 조각이 만료돼 이 기기 데이터로 다시 올렸어요 · ' + itemsSummary());
           return;
         }
         var st = syncCfg.remoteStats || null;
@@ -3199,7 +3565,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       syncCfg.recoveredAt = Date.now();
       syncSave();
       renderSyncDot();
-      if (!silent) toast('클라우드에 다시 올렸어요 · 재고 ' + state.items.length + '종 · 거래 ' + state.txns.length + '건');
+      if (!silent) toast('클라우드에 다시 올렸어요 · ' + itemsSummary() + ' · 거래 ' + state.txns.length + '건');
       return m;
     }).catch(function (e) {
       syncCfg.lastError = String((e && e.message) || e);
@@ -3326,7 +3692,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     if (syncOn()) {
       var last = syncCfg.lastSync ? new Date(syncCfg.lastSync) : null;
       body += '<p class="desc">마지막 동기화 ' + (last ? (pad2(last.getMonth() + 1) + '.' + pad2(last.getDate()) + ' ' + pad2(last.getHours()) + ':' + pad2(last.getMinutes())) : '없음') +
-        ' · 재고 ' + state.items.length + '종 · 거래 ' + state.txns.length + '건</p>';
+        ' · ' + itemsSummary() + ' · 거래 ' + state.txns.length + '건</p>';
       body += '<div class="codebox"><input readonly value="' + esc(syncCfg.ns) + '" id="ns-code" /><button class="btn small" data-s="copycode">복사</button></div>';
       body += '<div class="syncacts"><button class="btn" data-s="now">지금 동기화</button>' +
         '<button class="btn" data-s="link">기기 연결 링크 복사</button>' +
@@ -3452,7 +3818,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     document.body.appendChild(a);
     a.click();
     setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
-    toast('백업 파일을 내려받았어요 · 재고 ' + state.items.length + '종');
+    toast('백업 파일을 내려받았어요 · ' + itemsSummary());
   }
 
   function importJson(file) {
@@ -3550,6 +3916,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   function exportInventoryCsv() {
     var rows = [['상품명', '카테고리', '사이즈', '수량', '개당단가', '재고원가', '추천판매가', '구매처', '구매일', '상태', '메모']];
     state.items.forEach(function (it) {
+      if (isUsed(it)) return; /* 중고·처분은 재고 CSV에 섮지 않는다 */
       var st = effStatus(it);
       if (hasVar(it)) {
         it.variants.slice().sort(bySizeOrder).forEach(function (v) {
@@ -3591,8 +3958,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     var inv = invStats();
     var sizeTxt = '—';
     try { sizeTxt = (JSON.stringify(state).length / 1024).toFixed(0) + 'KB'; } catch (e) { }
-    var body = '<div class="syncbox"><div class="ownername">📒 리셀북 <span style="color:var(--muted2)">v1.10</span></div>' +
-      '<p class="desc">재고 ' + state.items.length + '종 · 거래 ' + state.txns.length + '건 · 저장 ' + sizeTxt + '</p>' +
+    var body = '<div class="syncbox"><div class="ownername">📒 리셀북 <span style="color:var(--muted2)">v1.12</span></div>' +
+      '<p class="desc">' + itemsSummary() + ' · 거래 ' + state.txns.length + '건 · 저장 ' + sizeTxt + '</p>' +
       '<div class="syncacts">' +
       '<button class="btn" data-mm="sync">🔄 동기화</button>' +
       '<button class="btn" data-mm="margin">🎯 목표 손익률 ' + targetMargin() + '%</button>' +
@@ -3631,6 +3998,14 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     var act = t.getAttribute('data-act');
     var id = t.getAttribute('data-id');
     if (act === 'add') openItemForm();
+    else if (act === 'sub') setSub(t.getAttribute('data-sub'));
+    else if (act === 'uadd') openUsedForm();
+    else if (act === 'uedit') openUsedForm(id);
+    else if (act === 'ustat') openUsedStatus(id);
+    else if (act === 'uphoto') openPhoto(id);
+    else if (act === 'uplat') { view.uplat = t.getAttribute('data-p'); renderUsed(); }
+    else if (act === 'ustatchip') { view.ustatus = t.getAttribute('data-s'); renderUsed(); }
+    else if (act === 'ureset') { view.uplat = 'all'; view.ustatus = 'all'; renderUsed(); }
     else if (act === 'status') {
       view.status = t.getAttribute('data-status');
       if (view.tab !== 'inv') setTab('inv');
@@ -3667,8 +4042,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     }
     else if (act === 'reset-filter') {
       view.q = ''; view.status = 'all'; view.cat = 'all'; view.sort = 'recent';
-      view.brand = 'all'; view.kind = 'all'; view.kream = 'all';
-      $('#q').value = ''; $('#catsel').value = 'all'; $('#sortsel').value = 'recent'; $('#kinds').value = 'all';
+      view.brand = 'all'; view.kream = 'all';
+      $('#q').value = ''; $('#catsel').value = 'all'; $('#sortsel').value = 'recent';
       renderStatusChips(); renderInv();
     }
   });
@@ -3677,7 +4052,10 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     var b = e.target.closest('.tab');
     if (b) setTab(b.getAttribute('data-view'));
   });
-  $('#fab').addEventListener('click', function () { openItemForm(); });
+  $('#fab').addEventListener('click', function () {
+    if (view.tab === 'inv' && view.sub === 'used') openUsedForm();
+    else openItemForm();
+  });
   $('#btn-menu').addEventListener('click', function () {
     if (Date.now() < tapGuardUntil) return;
     openMenu();
@@ -3695,7 +4073,6 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   });
   $('#catsel').addEventListener('change', function (e) { view.cat = e.target.value; renderInv(); });
   $('#brandsel').addEventListener('change', function (e) { view.brand = e.target.value; renderInv(); });
-  $('#kinds').addEventListener('change', function (e) { view.kind = e.target.value; renderInv(); });
   $('#sortsel').addEventListener('change', function (e) { view.sort = e.target.value; renderInv(); });
   $('#import-file').addEventListener('change', function (e) {
     var f = e.target.files && e.target.files[0];
@@ -3809,7 +4186,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   /* expose a tiny hook for self-checks */
   window.__resellbook = {
     get state() { return state; },
-    version: '1.11'
+    version: '1.12'
   };
 })();
 
