@@ -2532,6 +2532,32 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     }
     return out;
   }
+  /* 표의 격자선(가로·세로 긴 직선)을 지운다 — 선이 있으면 글자를 엉뚱하게 읽는다 */
+  function ocrDropLines(ink, w, h, frac) {
+    var x, y, s0, i;
+    for (y = 0; y < h; y++) {
+      var row = y * w;
+      x = 0;
+      while (x < w) {
+        if (ink[row + x]) {
+          s0 = x;
+          while (x < w && ink[row + x]) x++;
+          if (x - s0 > w * frac) for (i = s0; i < x; i++) ink[row + i] = 0;
+        } else x++;
+      }
+    }
+    for (x = 0; x < w; x++) {
+      y = 0;
+      while (y < h) {
+        if (ink[y * w + x]) {
+          s0 = y;
+          while (y < h && ink[y * w + x]) y++;
+          if (y - s0 > h * frac) for (i = s0; i < y; i++) ink[i * w + x] = 0;
+        } else y++;
+      }
+    }
+    return ink;
+  }
   function ocrPrep(src) {
     var w = src.width, h = src.height, n = w * h;
     var c = document.createElement('canvas'); c.width = w; c.height = h;
@@ -2544,15 +2570,18 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     var r = Math.max(6, Math.round(Math.min(w, h) / 66));
     var bg = ocrBoxBlur(ocrBoxBlur(med, w, h, r), w, h, r);
     /* 획은 배경보다 어둡다 → 그 차이가 임계값을 넘으면 글자(검정) */
-    var thr = 33, inkCount = 0, k;
+    var thr = 33, inkCount = 0;
     for (i = 0; i < n; i++) if (bg[i] - med[i] > thr) inkCount++;
     if (inkCount < n * 0.006) thr = 20;
     inkCount = 0;
     for (i = 0; i < n; i++) if (bg[i] - med[i] > thr) inkCount++;
     if (inkCount < n * 0.004) thr = 12;
+    var ink = new Uint8Array(n);
+    for (i = 0; i < n; i++) ink[i] = (bg[i] - med[i] > thr) ? 1 : 0;
+    ocrDropLines(ink, w, h, 0.45);
     var out = ctx.createImageData(w, h), od = out.data;
     for (i = 0, p = 0; i < n; i++, p += 4) {
-      var on = (bg[i] - med[i] > thr) ? 0 : 255;
+      var on = ink[i] ? 0 : 255;
       od[p] = od[p + 1] = od[p + 2] = on; od[p + 3] = 255;
     }
     ctx.putImageData(out, 0, 0);
