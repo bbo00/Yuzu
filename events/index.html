@@ -2691,7 +2691,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     var n = bulkState ? bulkState.rows.filter(function (r) {
       return String(r.name || '').trim() && num(r.amount) > 0;
     }).length : 0;
-    btn.disabled = !n;
+    btn.disabled = !n || !!(bulkState && bulkState.delMode);   /* 지우는 중에는 등록하지 않는다 */
     btn.textContent = n ? (n + '건 등록') : '등록';
   }
   function bulkUpdateTools() {
