@@ -199,6 +199,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 .tag.need{background:var(--warn-soft);border-color:var(--warn-line);color:var(--warn);font-weight:700}
 .tag.done{background:#eff4f2;border-color:#dde8e4;color:#3f6d5f}
 .tag.attend{background:var(--in-soft);border-color:var(--in-line);color:var(--in);font-weight:700}
+.tag.hide{background:#f3f1f8;border-color:#e6e1f0;color:#6b628a;font-weight:700}
 .tag.tap{font-family:inherit;line-height:1.45;cursor:pointer}
 .tag.tap:active{opacity:.65}
 .rec-memo{margin:7px 0 0;font-size:12.5px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
@@ -807,6 +808,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       r.attend = normAttend(r.attend);
       r.memo = String(r.memo || '');
       r.thanks = (r.thanks === 'need' || r.thanks === 'done') ? r.thanks : 'none';
+      r.hideInShare = !!r.hideInShare;   /* 🙈 공유 링크에서 숨기기 */
       r.createdAt = Number(r.createdAt) || 0;
       r.updatedAt = Number(r.updatedAt) || r.createdAt;
       return true;
@@ -883,10 +885,15 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   /* ============================ 남편 전용 보기 ============================ */
   function scopeRecords() {
     if (!husbandView) return appData.records;
-    return appData.records.filter(function (r) { return r.owner === '남편'; });
+    /* 공유 보기: 남편 주체만, 🙈 숨긴 기록은 목록·통계·검색·내보내기 어디에도 나오지 않는다 */
+    return appData.records.filter(function (r) { return r.owner === '남편' && !r.hideInShare; });
   }
   function husbandRecords() {
-    return appData.records.filter(function (r) { return r.owner === '남편'; });
+    /* 남편에게 보이는 내역 (공유 링크·남편 내역 파일) — 숨긴 기록은 빠진다 */
+    return appData.records.filter(function (r) { return r.owner === '남편' && !r.hideInShare; });
+  }
+  function husbandHiddenCount() {
+    return appData.records.filter(function (r) { return r.owner === '남편' && r.hideInShare; }).length;
   }
   function husbandLink() {
     if (!syncConnected()) return '';
@@ -1030,6 +1037,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     var ti = thanksInfo(r);
     var dirTxt = r.dir === 'in' ? '💌 받은' : '💸 보낸';
     var tags = '<span class="tag">' + esc(ownerLabel(r.owner)) + '</span>';
+    if (r.hideInShare && !husbandView) tags += '<span class="tag hide">🙈 숨김</span>';
     if (r.dir === 'in') {
       tags += '<button type="button" class="tag attend tap" data-act="card-attend" data-id="' + esc(r.id) + '" data-val="' + attendNext(r.attend) + '" title="누르면 참석 상태가 바뀌어요 · 다음: ' + esc(attendLabelUI(attendNext(r.attend))) + '">' + esc(attendLabelUI(r.attend) || '🙋 참석?') + '</button>';
     } else if (attendLabel(r.attend)) {
@@ -1369,6 +1377,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
             ? '<div><dt>방문·참석</dt><dd>' + (attendLabel(r.attend) ? esc(attendLabelUI(r.attend)) : '<span style="color:var(--ink-3)">아직 체크 안 함</span>') + '</dd></div>'
             : (attendLabel(r.attend) ? '<div><dt>참석 인원</dt><dd>' + esc(attendLabelUI(r.attend)) + '</dd></div>' : '')) +
           '<div><dt>답례 상태</dt><dd>' + esc(ti.t) + '</dd></div>' +
+          (husbandView ? '' : '<div><dt>공유 링크</dt><dd><button type="button" class="tag tap' + (r.hideInShare ? ' need' : '') + '" data-act="toggle-hide" data-id="' + esc(r.id) + '">' + (r.hideInShare ? '🙈 숨김 · 눌러서 보이기' : '👁 보임 · 눌러서 숨기기') + '</button></dd></div>') +
           '<div><dt>메모</dt><dd>' + (r.memo ? esc(r.memo).replace(/\n/g, '<br>') : '-') + '</dd></div>' +
         '</dl>' +
         '<button class="btn ghost block sm" type="button" data-act="person" data-name="' + esc(r.name) + '" data-rel="' + esc(personRel(r)) + '" style="margin-top:14px">👤 ' + esc(personLabel(r.name, personRel(r))) + ' 주고받은 내역 보기</button>' +
@@ -1524,6 +1533,8 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
             '<div class="seg" id="thanks-seg">' + thanksSeg + '</div>' +
           '</div>' +
 
+          (husbandView ? '' : '<label class="switch"><input type="checkbox" name="hideInShare"' + (d.hideInShare ? ' checked' : '') + '>🙈 공유 링크에서 숨기기</label>') +
+
           '<label class="field"><span>메모</span>' +
             '<textarea class="input" name="memo" rows="3" maxlength="500" placeholder="예: 식사함 · 답례품 받음 · 연락처 010-0000-0000 · 특이사항">' + esc(d.memo) + '</textarea>' +
           '</label>' +
@@ -1606,6 +1617,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       rec.attend = normAttend(f.attend ? f.attend.value : '');
       rec.thanks = f.thanks.value || 'none';
       rec.memo = String(f.memo.value || '').trim();
+      rec.hideInShare = !!(f.hideInShare && f.hideInShare.checked);
       rec.updatedAt = now;
       saveData();
       closeSheet('modal-record');
@@ -1615,7 +1627,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
         id: uid(), dir: f.dir.value === 'in' ? 'in' : 'out', owner: normOwner(f.owner.value),
         name: name, relation: relation, kind: kind, date: date, amount: amount,
         attend: normAttend(f.attend ? f.attend.value : ''), thanks: f.thanks.value || 'none',
-        memo: String(f.memo.value || '').trim(), createdAt: now, updatedAt: now
+        memo: String(f.memo.value || '').trim(), hideInShare: !!(f.hideInShare && f.hideInShare.checked), createdAt: now, updatedAt: now
       });
       saveData();
       closeSheet('modal-record');
@@ -1623,6 +1635,18 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     }
     editingId = '';
     render();
+  }
+
+  function toggleHide(id) {
+    var r = findRec(id);
+    if (!r) return;
+    r.hideInShare = !r.hideInShare;
+    r.updatedAt = Date.now();
+    saveData();
+    render();
+    var md = document.getElementById('modal-detail');
+    if (md && md.classList.contains('open')) openDetail(id);
+    toast(r.hideInShare ? '🙈 공유 링크에서 숨겼어요' : '👁 공유 링크에도 보여요');
   }
 
   function deleteRecord(id) {
@@ -1701,9 +1725,10 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     return '\ufeff' + rows.join('\r\n') + '\r\n';
   }
   function exportCsv() {
-    if (!appData.records.length) { toast('내보낼 기록이 없어요'); return; }
-    if (download('경조사비_' + stamp() + '.csv', 'text/csv', csvText(appData.records))) {
-      toast('CSV 파일을 저장했어요 (' + appData.records.length + '건)');
+    var list = scopeRecords();   /* 공유 보기에서는 숨긴 기록·남의 내역을 담지 않는다 */
+    if (!list.length) { toast('내보낼 기록이 없어요'); return; }
+    if (download('경조사비_' + stamp() + '.csv', 'text/csv', csvText(list))) {
+      toast('CSV 파일을 저장했어요 (' + list.length + '건)');
     }
   }
   function exportHusbandCsv() {
@@ -1732,7 +1757,8 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     var list = husbandRecords();
     var s = sumOf(list);
     var link = husbandLink();
-    var html = '<div class="sync-counts">👨 남편 주체 기록 <b>' + list.length + '</b>건<br>보낸 <b>' + won(s.out) + '</b> · 받은 <b>' + won(s.in) + '</b></div>';
+    var hiddenN = husbandHiddenCount();
+    var html = '<div class="sync-counts">👨 남편 주체 기록 <b>' + list.length + '</b>건' + (hiddenN ? ' · 🙈 숨김 <b>' + hiddenN + '</b>건 제외' : '') + '<br>보낸 <b>' + won(s.out) + '</b> · 받은 <b>' + won(s.in) + '</b></div>';
     if (link) {
       html += '<label class="field" style="margin-bottom:8px"><span>남편 전용 보기 링크</span></label>' +
         '<div class="copy-row"><input class="input" id="husband-link-view" type="text" readonly value="' + esc(link) + '">' +
@@ -1761,8 +1787,14 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     }
   }
   function exportJson() {
-    if (!appData.records.length) { toast('백업할 기록이 없어요'); return; }
-    var doc = { app: 'events-book', v: 1, exportedAt: new Date().toISOString(), counts: syncDocCounts(), data: appData };
+    var list = scopeRecords();
+    if (!list.length) { toast('백업할 기록이 없어요'); return; }
+    var s = sumOf(list);
+    var doc = {
+      app: 'events-book', v: 1, exportedAt: new Date().toISOString(),
+      counts: husbandView ? { records: list.length, out: s.out, in: s.in } : syncDocCounts(),
+      data: husbandView ? { v: 1, records: list, deletedRecordIds: [] } : appData
+    };
     var ok = download('경조사비_백업_' + stamp() + '.json', 'application/json', JSON.stringify(doc, null, 2));
     if (ok) toast('백업 파일을 저장했어요');
   }
@@ -2052,9 +2084,10 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       renderSyncUI();
       if (!silent) {
         var c = syncCfg.lastCount || {};
-        var detail = merged && (merged.stats.added || merged.stats.updated)
+        var detail = (!husbandView && merged && (merged.stats.added || merged.stats.updated))
           ? ' (클라우드에서 ' + merged.stats.added + '건 추가 · ' + merged.stats.updated + '건 갱신)' : '';
-        toast('동기화 완료' + detail + ' · 기록 ' + (c.records || 0) + '건');
+        var doneN = husbandView ? husbandRecords().length : (c.records || 0);
+        toast('동기화 완료' + detail + ' · 기록 ' + doneN + '건');
       }
       return merged;
     }).catch(function (err) {
@@ -2176,6 +2209,14 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       return;
     }
     var cnt = syncCfg.lastCount || {};
+    var countsHtml;
+    if (husbandView) {
+      var hs = sumOf(husbandRecords());
+      countsHtml = '<div class="sync-counts">👨 남편 내역 · 기록 <b>' + hs.n + '</b>건 (보낸 ' + won(hs.out) + ' · 받은 ' + won(hs.in) + ')</div>';
+    } else {
+      countsHtml = '<div class="sync-counts">📱 이 기기 · 기록 <b>' + c.records + '</b>건 (보낸 ' + won(c.out) + ' · 받은 ' + won(c.in) + ')<br>' +
+        '☁️ 클라우드 · 기록 <b>' + (cnt.records != null ? cnt.records : '-') + '</b>건' + (cnt.out != null ? ' (보낸 ' + won(cnt.out) + ' · 받은 ' + won(cnt.in) + ')' : '') + '</div>';
+    }
     box.innerHTML =
       '<div class="sync-state on">✅ 연결됨 · 마지막 동기화 ' + esc(syncTimeText(syncCfg.lastSync)) + '</div>' +
       '<label class="field" style="margin-bottom:8px"><span>동기화 코드</span></label>' +
@@ -2184,8 +2225,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       '<label class="field" style="margin-bottom:8px"><span>전용 링크</span></label>' +
       '<div class="copy-row"><input class="input" id="sync-link-view" type="text" readonly value="' + esc(syncLink()) + '">' +
       '<button class="btn ghost" type="button" data-act="copy-link">복사</button></div>' +
-      '<div class="sync-counts">📱 이 기기 · 기록 <b>' + c.records + '</b>건 (보낸 ' + won(c.out) + ' · 받은 ' + won(c.in) + ')<br>' +
-      '☁️ 클라우드 · 기록 <b>' + (cnt.records != null ? cnt.records : '-') + '</b>건' + (cnt.out != null ? ' (보낸 ' + won(cnt.out) + ' · 받은 ' + won(cnt.in) + ')' : '') + '</div>' +
+      countsHtml +
       '<label class="switch"><input type="checkbox" id="sync-auto"' + (syncCfg.auto ? ' checked' : '') + '> 자동 동기화 (기록을 고치면 몇 초 뒤 올리고, 열 때 내려받기)</label>' +
       '<div class="sheet-actions" style="padding:0;border-top:0;margin:0 0 10px;gap:8px"><button class="btn ghost sm" type="button" data-act="sync-now"' + (syncBusy ? ' disabled' : '') + '>지금 동기화</button>' +
       '<button class="btn ghost sm" type="button" data-act="sync-new">새 코드 만들기</button></div>' +
@@ -2391,6 +2431,9 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       case 'thanks-done':
         markThanksDone(id);
         break;
+      case 'toggle-hide':
+        toggleHide(id);
+        break;
       case 'close':
         closeSheet(t.getAttribute('data-target')); break;
       case 'open-share':
@@ -2424,6 +2467,40 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
         var blf = $('#bulk-file'); if (blf) { blf.value = ''; blf.click(); } break;
       case 'bulk-pin-toggle':
         bulkTogglePin(); break;
+      case 'open-sync':
+        renderSyncUI(); openSheet('modal-sync'); renderSyncUI(); break;
+      case 'sync-now':
+        syncNow({ silent: false }).then(function () { render(); }); break;
+      case 'sync-new':
+        createSyncCode(); break;
+      case 'sync-join':
+        joinSyncCode(); break;
+      case 'sync-off':
+        disconnectSync(); break;
+      case 'copy-code':
+        if (syncConnected()) copyText(syncCfg.ns, '동기화 코드를 복사했어요', 'sync-code-view'); break;
+      case 'copy-link':
+        if (syncConnected()) copyText(syncLink(), '전용 링크를 복사했어요', 'sync-link-view'); break;
+      case 'export-csv':
+        exportCsv(); break;
+      case 'export-json':
+        exportJson(); break;
+      case 'import-json':
+        var fi = $('#import-file'); if (fi) { fi.value = ''; fi.click(); }
+        break;
+      case 'wipe':
+        wipeAll(); break;
+      case 'card-attend':
+        var caRec = findRec(id);
+        if (!caRec) return;
+        var caVal = normAttend(val);
+        caRec.attend = caVal;
+        caRec.updatedAt = Date.now();
+        saveData();
+        render();
+        if (personView && document.getElementById('modal-person').classList.contains('open')) openPerson(personView.name, personView.rel);
+        toast(caRec.name + ' · ' + (attendLabelUI(caVal) || '체크 안 함') + '으로 표시했어요');
+        break;
       case 'pick':
         pickChip(t); break;
       case 'dir-pick':
