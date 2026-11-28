@@ -189,6 +189,9 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 .ocr-row .ocr-del{flex:0 0 28px;width:28px;height:40px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);color:var(--ink-3);font-size:13px;line-height:1;padding:0}
 .ocr-row .ocr-del:active{background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
 .ocr-row .mm{flex:0 0 100%;height:38px;font-size:16px;border:1px dashed var(--line);border-radius:9px;padding:0 9px;background:var(--surface-2);color:var(--ink-2)}
+.ocr-row .ocr-memo{flex:0 0 100%;display:flex;gap:6px;align-items:center}
+.ocr-row .ocr-memo .sel{flex:0 0 112px;width:112px;padding:0 6px}
+.ocr-row .ocr-memo .mm{flex:1 1 auto;min-width:0;width:auto}
 .ocr-row .ocr-sub{flex:0 0 100%;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
 .ocr-row .sel{width:100%;min-width:0;height:38px;font-size:16px;border:1px solid var(--line);border-radius:9px;padding:0 8px;background:var(--surface-2);color:var(--ink-2)}
 .ocr-row .dup{flex:0 0 100%;font-size:11px;color:var(--warn);line-height:1.4}
@@ -625,6 +628,35 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   function todayStr() { var d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
   function num(n) { return Math.round(Number(n) || 0); }
+  /* 금액 입력: 1~999(소수 포함)를 넣으면 만원 단위로 읽는다 (5 → 50,000, 3.5 → 35,000) */
+  function amtParse(raw) {
+    var s = String(raw == null ? '' : raw).replace(/[^0-9.]/g, '');
+    if (!s) return 0;
+    var v = parseFloat(s);
+    if (!isFinite(v) || v <= 0) return 0;
+    if (v < 1000) v = v * 10000;
+    return Math.round(v);
+  }
+  /* 금액칸에 치는 동안: 소수점은 살려 두고, 정수는 천 단위 쉼표만 붙인다 */
+  function amtTypeFormat(el) {
+    var raw = String(el.value || '');
+    if (raw.indexOf('.') >= 0) {
+      var p = raw.split('.');
+      var ip = p[0].replace(/[^0-9]/g, '').slice(0, 9);
+      var fp = p.slice(1).join('').replace(/[^0-9]/g, '').slice(0, 4);
+      el.value = (ip || '0') + '.' + fp;
+    } else {
+      var digits = raw.replace(/[^0-9]/g, '').slice(0, 12);
+      el.value = digits ? num(digits).toLocaleString('ko-KR') : '';
+    }
+    return amtParse(el.value);
+  }
+  /* 칸에서 손을 뗄 때: 5 → 50,000 으로 바꿔 보여 준다 */
+  function amtBlurFormat(el) {
+    var v = amtParse(el.value);
+    el.value = v ? v.toLocaleString('ko-KR') : '';
+    return v;
+  }
   function won(n) { return num(n).toLocaleString('ko-KR') + '원'; }
   function wonShort(n) {
     n = num(n);
@@ -1513,7 +1545,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
           '</div>' +
 
           '<div class="field"><span>금액</span>' +
-            '<div class="amt-row"><input class="input" id="f-amount" name="amount" type="text" inputmode="numeric" value="' + (d.amount ? Number(d.amount).toLocaleString('ko-KR') : '') + '" placeholder="0">' +
+            '<div class="amt-row"><input class="input" id="f-amount" name="amount" type="text" inputmode="decimal" value="' + (d.amount ? Number(d.amount).toLocaleString('ko-KR') : '') + '" placeholder="0">' +
             '<span class="unit">원</span></div>' +
             '<div class="quick-amt" id="quick-amt">' + QUICK_AMTS.map(function (a) {
               return '<button type="button" class="chip quick" data-act="amt" data-val="' + a + '">' + (a >= 10000 && a % 10000 === 0 ? (a / 10000) + '만' : a.toLocaleString('ko-KR')) + '</button>';
@@ -1580,7 +1612,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     var f = formEl();
     if (!f) return;
     var name = String(f.name.value || '').trim();
-    var amount = num(String(f.amount.value || '').replace(/[^0-9]/g, ''));
+    var amount = amtParse(f.amount.value);
     var dateRaw = String(f.date.value || '').trim();
     var date = dateRaw ? normDate(dateRaw) : todayStr();
     if (!date) { toast('날짜를 숫자로 입력해 주세요 (예: 261128)'); try { f.date.focus(); } catch (er) {} return; }
@@ -2566,8 +2598,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     var el = e.target;
     if (!el || !el.id) return;
     if (el.id === 'f-amount') {
-      var digits = String(el.value || '').replace(/[^0-9]/g, '').slice(0, 12);
-      el.value = digits ? num(digits).toLocaleString('ko-KR') : '';
+      amtTypeFormat(el);
       $$('#quick-amt .chip').forEach(function (b) { b.classList.remove('on'); });
       return;
     }
@@ -2578,8 +2609,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   });
   document.addEventListener('blur', function (e) {
     if (e.target && e.target.id === 'f-amount') {
-      var v = num(String(e.target.value || '').replace(/[^0-9]/g, ''));
-      e.target.value = v ? v.toLocaleString('ko-KR') : '';
+      amtBlurFormat(e.target);
     }
   }, true);
 
@@ -2610,8 +2640,8 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     }
     if (t.getAttribute('data-ocr-amt') != null) {
       var j = +t.getAttribute('data-ocr-amt');
-      var digits = String(t.value || '').replace(/[^0-9]/g, '').slice(0, 12);
-      if (ocrState && ocrState.rows[j]) ocrState.rows[j].amount = digits ? num(digits) : 0;
+      var typed = amtTypeFormat(t);
+      if (ocrState && ocrState.rows[j]) ocrState.rows[j].amount = typed;
       updateOcrActions();
       refreshOcrRowHint(j);
       return;
@@ -2673,6 +2703,11 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       if (ocrState && ocrState.rows[ai]) ocrState.rows[ai].attend = normAttend(t.value);
       return;
     }
+    if (t.getAttribute('data-ocr-rel') != null) {
+      var ri = +t.getAttribute('data-ocr-rel');
+      if (ocrState && ocrState.rows[ri]) ocrState.rows[ri].relation = t.value;
+      return;
+    }
     if (t.id === 'ocr-date') {
       var dv = normDate(t.value);
       ocrCommon.date = dv || todayStr();
@@ -2680,7 +2715,12 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       return;
     }
     if (t.id === 'ocr-kind') { ocrCommon.kind = t.value; return; }
-    if (t.id === 'ocr-rel') { ocrCommon.relation = t.value; return; }
+    if (t.id === 'ocr-rel') {
+      ocrCommon.relation = t.value;
+      if (ocrState) ocrState.rows.forEach(function (r) { r.relation = t.value; });
+      $$('#ocr-result [data-ocr-rel]').forEach(function (sel) { sel.value = t.value; });
+      return;
+    }
     if (t.id === 'ocr-thanks') { ocrCommon.thanks = t.value; return; }
     if (t.id === 'ocr-all-dir' || t.id === 'ocr-all-owner' || t.id === 'ocr-all-attend') {
       var field = t.id === 'ocr-all-dir' ? 'dir' : (t.id === 'ocr-all-owner' ? 'owner' : 'attend');
@@ -2710,8 +2750,13 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   document.addEventListener('blur', function (e) {
     var t = e.target;
     if (t && t.getAttribute && t.getAttribute('data-ocr-amt') != null) {
-      var v = num(String(t.value || '').replace(/[^0-9]/g, ''));
-      t.value = v ? v.toLocaleString('ko-KR') : '';
+      var v = amtBlurFormat(t);
+      var bi = +t.getAttribute('data-ocr-amt');
+      if (ocrState && ocrState.rows[bi]) {
+        ocrState.rows[bi].amount = v;
+        updateOcrActions();
+        refreshOcrRowHint(bi);
+      }
     }
   }, true);
 
@@ -3120,12 +3165,18 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 
   /* ---------- 화면 ---------- */
   function ocrNewRow(name, amount, memo) {
-    return { on: true, name: name || '', amount: amount || 0, memo: memo || '', dir: ocrCommon.dir, owner: ocrCommon.owner, attend: ocrCommon.attend };
+    return { on: true, name: name || '', amount: amount || 0, memo: memo || '', dir: ocrCommon.dir, owner: ocrCommon.owner, attend: ocrCommon.attend, relation: ocrCommon.relation || '기타' };
   }
   function ocrSel(id, opts, cur) {
     return '<select class="input" id="' + id + '">' + opts.map(function (o) {
       return '<option value="' + esc(o.v) + '"' + (o.v === cur ? ' selected' : '') + '>' + esc(o.t) + '</option>';
     }).join('') + '</select>';
+  }
+  /* 방명록 표 줄의 관계 선택지: 앱의 관계 목록 + 기타 (+ 이미 정해진 값) */
+  function relOptsFor(cur) {
+    var list = RELS.concat(['기타']);
+    if (cur && list.indexOf(cur) < 0) list.push(cur);
+    return list;
   }
   function ocrCommonHtml() {
     var kindOpts = KINDS.map(function (k) { return { v: k, t: k }; });
@@ -3141,7 +3192,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
         '<label><span>경조사</span>' + ocrSel('ocr-kind', kindOpts, ocrCommon.kind) + '</label>' +
       '</div>' +
       '<div class="row">' +
-        '<label><span>관계</span>' + ocrSel('ocr-rel', relOpts, ocrCommon.relation) + '</label>' +
+        '<label><span>관계 (아래 모두 적용)</span>' + ocrSel('ocr-rel', relOpts, ocrCommon.relation) + '</label>' +
         '<label><span>답례 상태</span>' + ocrSel('ocr-thanks', thankOpts, ocrCommon.thanks) + '</label>' +
       '</div>' +
       '<div class="row">' +
@@ -3164,7 +3215,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
         ? '<input class="ck del" type="checkbox" data-ocr-delck="' + i + '"' + (delSel ? ' checked' : '') + ' aria-label="이 줄 지우기로 선택">'
         : '<input class="ck" type="checkbox" data-ocr-ck="' + i + '"' + (r.on ? ' checked' : '') + ' aria-label="이 줄 등록">') +
       '<input class="nm" type="text" data-ocr-name="' + i + '" value="' + esc(r.name) + '" placeholder="이름" aria-label="이름" maxlength="20" autocomplete="off">' +
-      '<input class="am" type="text" inputmode="numeric" data-ocr-amt="' + i + '" value="' + (r.amount ? r.amount.toLocaleString('ko-KR') : '') + '" placeholder="금액" aria-label="금액">' +
+      '<input class="am" type="text" inputmode="decimal" data-ocr-amt="' + i + '" value="' + (r.amount ? r.amount.toLocaleString('ko-KR') : '') + '" placeholder="금액" aria-label="금액">' +
       '<button class="ocr-del" type="button" data-act="ocr-row-del" data-id="' + i + '" aria-label="이 줄 지우기" title="이 줄 지우기">✕</button>' +
       '<div class="ocr-sub">' +
         '<select class="sel" data-ocr-dir="' + i + '" aria-label="구분">' +
@@ -3179,7 +3230,12 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
           attendOpts(r.dir).map(function (a) { return '<option value="' + a.v + '"' + (normAttend(r.attend) === a.v ? ' selected' : '') + '>' + esc(attendShort(a.v, r.dir)) + '</option>'; }).join('') +
         '</select>' +
       '</div>' +
-      '<input class="mm" type="text" data-ocr-memo="' + i + '" value="' + esc(r.memo || '') + '" placeholder="비고 (선물·관계 메모, 선택)" aria-label="비고" maxlength="40" autocomplete="off">' +
+      '<div class="ocr-memo">' +
+        '<select class="sel" data-ocr-rel="' + i + '" aria-label="관계">' +
+          relOptsFor(r.relation).map(function (o) { return '<option value="' + esc(o) + '"' + (o === (r.relation || '기타') ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') +
+        '</select>' +
+        '<input class="mm" type="text" data-ocr-memo="' + i + '" value="' + esc(r.memo || '') + '" placeholder="비고 (선물·관계 메모, 선택)" aria-label="비고" maxlength="40" autocomplete="off">' +
+      '</div>' +
       (r.dup ? '<span class="dup">이미 수첩에 있는 이름·금액이에요 (기본 선택 해제)</span>' : '') +
       (miss.length ? '<span class="miss">' + miss.join(' · ') + ' — 고쳐 주세요</span>' : '') +
     '</div>';
@@ -3478,12 +3534,12 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     ocrState.rows.forEach(function (r) {
       if (!r.on) return;
       var name = String(r.name || '').trim();
-      var amount = num(r.amount);
+      var amount = num(r.amount) > 0 && num(r.amount) < 1000 ? num(r.amount) * 10000 : num(r.amount);
       if (!name || amount <= 0) { skipped++; return; }
       appData.records.push({
         id: uid(), dir: r.dir === 'in' ? 'in' : 'out',
         owner: normOwner(r.owner), attend: normAttend(r.attend),
-        name: name, relation: ocrCommon.relation || '기타', kind: ocrCommon.kind || '결혼식',
+        name: name, relation: r.relation || ocrCommon.relation || '기타', kind: ocrCommon.kind || '결혼식',
         date: date, amount: amount, thanks: ocrCommon.thanks || 'none',
         memo: String(r.memo || '').trim() || '방명록 사진에서 등록', createdAt: now, updatedAt: now
       });
