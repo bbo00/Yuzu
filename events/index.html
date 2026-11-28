@@ -139,7 +139,10 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 .ocr-help b{color:var(--ink)}
 .ocr-src{display:flex;gap:7px;margin:0 0 10px}
 .ocr-src .btn{flex:1 1 0}
-.ocr-pin{position:sticky;top:0;z-index:6;margin:0 -16px 10px;padding:6px 16px 8px;background:var(--surface);border-bottom:1px solid transparent;transition:box-shadow .16s ease,border-color .16s ease}
+/* 사진 고정 영역: 모달 안에서 스크롤되지 않는 상단 칸 */
+.ocr-fixed{flex:0 0 auto;padding:0 16px;background:var(--surface);z-index:6}
+.ocr-fixed:empty{display:none}
+.ocr-pin{position:relative;z-index:6;margin:0 0 8px;padding:2px 0 6px;background:var(--surface);border-bottom:1px solid transparent;transition:box-shadow .16s ease,border-color .16s ease}
 .ocr-pin[hidden]{display:none}
 .ocr-pin.stuck{box-shadow:0 8px 18px rgba(25,30,35,.12);border-bottom-color:var(--line-2)}
 .ocr-pin-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 6px}
@@ -147,9 +150,16 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 .ocr-pin-head .pt b{color:var(--in);font-weight:800}
 .ocr-pin-head .btn{height:28px;font-size:11.5px;padding:0 10px;border-radius:8px}
 .ocr-prev{margin:0 0 6px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);overflow:hidden;cursor:zoom-in}
-.ocr-prev img{display:block;width:100%;max-height:min(32vh,280px);object-fit:contain}
+.ocr-prev img{display:block;width:100%;max-height:min(28vh,220px);object-fit:contain}
 .ocr-pin.min .ocr-prev{cursor:zoom-out}
 .ocr-pin.min .ocr-prev img{max-height:54px}
+/* 아이폰 키보드가 올라온 상태: 사진은 140px로 줄이고 회전 버튼은 잠시 접어 표 칸을 넓힌다 */
+#modal-ocr .panel{overflow:hidden}
+#modal-ocr.kb .sheet-head{padding-bottom:6px}
+#modal-ocr .panel.kb .ocr-pin{margin-bottom:4px}
+#modal-ocr .panel.kb .ocr-pin-head{display:none}
+#modal-ocr .panel.kb .ocr-rot{display:none}
+#modal-ocr .panel.kb .ocr-pin:not(.min) .ocr-prev img{max-height:min(140px,24vh)}
 .ocr-rot{display:flex;gap:6px;margin:0}
 .ocr-rot .btn{flex:1 1 0;padding:0 6px;font-size:12px;white-space:nowrap}
 .ocr-rot .btn:last-child{flex:0 0 auto}
@@ -163,7 +173,6 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 .ocr-common label{display:block;min-width:0}
 .ocr-common label > span{display:block;font-size:11px;font-weight:700;color:var(--ink-2);margin:0 0 3px}
 .ocr-common .input{height:40px;font-size:16px}
-.ocr-attend-tip{display:block;font-size:11px;color:var(--ink-3);line-height:1.4;padding-top:18px}
 .ocr-count{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;font-size:12.5px;color:var(--ink-2)}
 .ocr-count b{color:var(--ink)}
 .ocr-tools{display:flex;gap:6px;margin:0 0 8px;flex-wrap:wrap}
@@ -212,12 +221,11 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 .tag.need{background:var(--warn-soft);border-color:var(--warn-line);color:var(--warn);font-weight:700}
 .tag.done{background:#eff4f2;border-color:#dde8e4;color:#3f6d5f}
 .tag.attend{background:var(--in-soft);border-color:var(--in-line);color:var(--in);font-weight:700}
-.rec-attend{display:flex;align-items:center;gap:5px;margin-top:9px;flex-wrap:wrap}
-.rec-attend .ra-q{font-size:11.5px;font-weight:800;color:#23604e;letter-spacing:-.2px}
-.rec-attend .ra{font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px;border:1px solid var(--in-line);background:#f2f8f5;color:#3c7663;letter-spacing:-.2px;line-height:1.3}
+.rec-attend{display:flex;align-items:center;gap:4px;margin-top:9px;flex-wrap:nowrap;min-width:0}
+.rec-attend .ra-q{flex:0 0 auto;font-size:11.5px;font-weight:800;color:#23604e;letter-spacing:-.2px;white-space:nowrap}
+.rec-attend .ra{flex:0 0 auto;font-size:11.5px;font-weight:700;padding:5px 9px;border-radius:999px;border:1px solid var(--in-line);background:#f2f8f5;color:#3c7663;letter-spacing:-.2px;line-height:1.3;white-space:nowrap}
 .rec-attend .ra.on{background:var(--in);border-color:var(--in);color:#fff}
 .rec-attend .ra.on[data-val="0"]{background:#7c858c;border-color:#7c858c;color:#fff}
-.rec-attend .ra-ask{font-size:11px;color:#7ba493}
 .rec-memo{margin:7px 0 0;font-size:12.5px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
 .rec-act{display:flex;justify-content:flex-end;margin-top:8px}
 .rec-act-del{margin-top:4px}
@@ -340,12 +348,11 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 /* 받은 돈: 방문·참석 체크 강조 박스 */
 .field.attend-box{background:var(--in-soft);border:1px solid var(--in-line);border-radius:13px;padding:11px 12px;margin:0 0 14px}
 .field.attend-box > span{color:#23604e;font-size:12.5px;margin:0 0 8px;letter-spacing:-.2px}
-.field.attend-box > span small{font-weight:600;color:#5b8b79;font-size:11.5px}
-.field.attend-box .hint{color:#557f70;margin:7px 0 0}
+/* 참석 칩 3개는 어떤 화면 폭에서도 한 줄: 3열 고정 */
+.field.attend-box .chipset[data-group="attend"]{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-flow:column;gap:6px;flex-wrap:nowrap}
+.field.attend-box .chipset[data-group="attend"] .chip{width:100%;padding:8px 2px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .field.attend-box.is-out{background:var(--surface-2);border-color:var(--line-2)}
 .field.attend-box.is-out > span{color:var(--ink-2)}
-.field.attend-box.is-out > span small{color:var(--ink-3)}
-.field.attend-box.is-out .hint{color:var(--ink-3)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .date-row{display:flex;gap:7px;align-items:center}
 .date-row .input{flex:1 1 auto}
@@ -549,6 +556,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 
 <div class="sheet" id="modal-ocr"><div class="veil" data-act="ocr-close"></div><div class="panel">
   <div class="sheet-head"><h2>📷 방명록 사진으로 일괄 등록</h2><button class="x" type="button" data-act="ocr-close" aria-label="닫기">✕</button></div>
+  <div class="ocr-fixed" id="ocr-fixed"></div>
   <div class="sheet-body" id="ocr-body"></div>
   <div class="sheet-actions" id="ocr-actions">
     <button class="btn ghost" type="button" data-act="ocr-close">닫기</button>
@@ -567,12 +575,12 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   var RELS = ['직장·동료', '친구·지인', '친척·가족', '거래처·기타'];
   var KINDS = ['결혼식', '장례식', '돌잔치', '출산·백일', '개업·승진', '생신·칠순', '기타'];
   var OWNERS = ['아내', '남편', '공동'];   /* 주체: 아내 · 남편 · 공동 (예전에 저장된 '유자'·'아내(나)'는 '아내'로 읽는다) */
-  /* 참석 여부: 1 = 1인 참석, 2 = 2인 참석, 0 = 불참(봉투만), '' = 정하지 않음
+  /* 참석 여부: 1 = 1인 참석, 2 = 2인 참석, 0 = 불참, '' = 정하지 않음
      지난 버전의 'h'(남편)·'w'(아내)는 1인, 'b'는 2인으로 읽는다 */
   var ATTENDS = [
-    { v: '1', t: '👤 1인 참석', s: '👤 1인' },
-    { v: '2', t: '👥 2인 참석', s: '👥 2인' },
-    { v: '0', t: '✉️ 불참(봉투만)', s: '✉️ 봉투만' }
+    { v: '1', t: '👤 1인', s: '👤 1인' },
+    { v: '2', t: '👥 2인', s: '👥 2인' },
+    { v: '0', t: '✉️ 불참', s: '✉️ 불참' }
   ];
   var QUICK_AMTS = [50000, 100000, 150000, 200000, 300000, 500000];
 
@@ -584,29 +592,21 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     var a = normAttend(v);
     if (a === '1') return '👤 1인';
     if (a === '2') return '👥 2인';
-    if (a === '0') return dir === 'in' ? '✉️ 봉투만' : '✉️ 불참';
+    if (a === '0') return '✉️ 불참';
     return '';
   }
   function attendTitleHtml(dir) {
-    return dir === 'in'
-      ? '🙋 방문·참석 체크 <small>(왔는지 / 안 왔는지)</small>'
-      : '🙋 참석 체크 <small>(내가 갔는지)</small>';
+    return dir === 'in' ? '🙋 방문·참석 체크' : '🙋 참석 체크';
   }
   /* 방명록 OCR 공통 줄처럼 좁은 곳에 쓰는 짧은 제목 */
   function attendTitleShort(dir) {
-    return dir === 'in' ? '🙋 방문·참석 체크' : '🙋 참석 체크';
-  }
-  function attendHintText(dir) {
-    return dir === 'in'
-      ? '한 사람이 왔으면 👤 1인, 부부가 함께 오셨으면 👥 2인, 봉투만 보내고 오지 않으셨으면 ✉️ 불참이에요.'
-      : '내가 직접 갔으면 👤 1인, 같이 갔으면 👥 2인, 봉투만 전했으면 ✉️ 불참이에요.';
+    return attendTitleHtml(dir);
   }
   function attendChipsHtml(dir, cur) {
     var c = normAttend(cur);
-    return '<button type="button" class="chip' + (!c ? ' on' : '') + '" data-act="pick" data-group="attend" data-val="">선택 안 함</button>' +
-      attendOpts(dir).map(function (a) {
-        return '<button type="button" class="chip' + (c === a.v ? ' on' : '') + '" data-act="pick" data-group="attend" data-val="' + a.v + '">' + esc(a.t) + '</button>';
-      }).join('');
+    return attendOpts(dir).map(function (a) {
+      return '<button type="button" class="chip' + (c === a.v ? ' on' : '') + '" data-act="pick" data-group="attend" data-val="' + a.v + '">' + esc(a.t) + '</button>';
+    }).join('');
   }
   var DATA_KEY = 'events_v1';
   var SYNC_CFG_KEY = 'events_sync_v1';
@@ -743,15 +743,15 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     var a = normAttend(v);
     if (a === '1') return '1인 참석';
     if (a === '2') return '2인 참석';
-    if (a === '0') return '불참(봉투만)';
+    if (a === '0') return '불참';
     return '';
   }
-  /* 화면 표시용 이모지: 1인 👤 · 2인 👥 · 봉투만 ✉️ */
+  /* 화면 표시용 이모지: 1인 👤 · 2인 👥 · 불참 ✉️ */
   function attendLabelUI(v) {
     var a = normAttend(v);
     if (a === '1') return '👤 1인 참석';
     if (a === '2') return '👥 2인 참석';
-    if (a === '0') return '✉️ 불참(봉투만)';
+    if (a === '0') return '✉️ 불참';
     return '';
   }
   /* 방문 인원(사람 수): 1인 1명, 2인 2명 */
@@ -1026,7 +1026,6 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       opts.map(function (o) {
         return '<button type="button" class="ra' + (cur === o.v ? ' on' : '') + '" data-act="card-attend" data-id="' + esc(r.id) + '" data-val="' + o.v + '" title="' + esc(o.t) + '">' + o.s + '</button>';
       }).join('') +
-      (cur ? '' : '<span class="ra-ask">눌러서 체크</span>') +
       '</div>';
   }
   /* 사람은 '이름 + 분류(관계)'로 구분한다 (김철수 · 직장동료 vs 김철수 · 친구) */
@@ -1495,7 +1494,6 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
               return '<button type="button" class="chip' + (d.owner === o ? ' on' : '') + '" data-act="pick" data-group="owner" data-val="' + esc(o) + '">' + esc(ownerLabel(o)) + '</button>';
             }).join('') + '</div>' +
             '<input type="hidden" name="owner" value="' + esc(d.owner) + '">' +
-            '<span class="hint">부부가 함께 쓰면 ‘공동’으로 남겨도 돼요.</span>' +
           '</div>' +
 
           '<div class="field"><span>관계</span>' +
@@ -1520,19 +1518,16 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
             '<div class="quick-amt" id="quick-amt">' + QUICK_AMTS.map(function (a) {
               return '<button type="button" class="chip quick" data-act="amt" data-val="' + a + '">' + (a >= 10000 && a % 10000 === 0 ? (a / 10000) + '만' : a.toLocaleString('ko-KR')) + '</button>';
             }).join('') + '</div>' +
-            '<span class="hint" id="amt-hint">빠른 버튼을 누르거나 직접 입력하세요.</span>' +
           '</div>' +
 
           '<div class="field attend-box' + (d.dir === 'out' ? ' is-out' : '') + '" id="attend-box">' +
             '<span id="attend-title">' + attendTitleHtml(d.dir === 'in' ? 'in' : 'out') + '</span>' +
             '<div class="chipset" data-group="attend">' + attendChipsHtml(d.dir === 'in' ? 'in' : 'out', d.attend) + '</div>' +
             '<input type="hidden" name="attend" value="' + esc(normAttend(d.attend)) + '">' +
-            '<span class="hint" id="attend-hint">' + esc(attendHintText(d.dir === 'in' ? 'in' : 'out')) + '</span>' +
           '</div>' +
 
           '<div class="field"><span>답례 상태</span>' +
             '<div class="seg" id="thanks-seg">' + thanksSeg + '</div>' +
-            '<span class="hint" id="thanks-hint">' + thanksHint(d.dir) + '</span>' +
           '</div>' +
 
           '<label class="field"><span>메모</span>' +
@@ -1549,11 +1544,6 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     if (nameEl && !r && !(preset && preset.name)) setTimeout(function () { try { nameEl.focus(); } catch (e) {} }, 120);
   }
 
-  function thanksHint(dir) {
-    return dir === 'in'
-      ? '받은 돈은 보통 ‘갚아야 함’으로 두면 미답례 탭에 쌓여요.'
-      : '보낸 돈이 나중에 돌아올 예정이면 ‘받을 예정’을 골라두세요.';
-  }
   function thanksSegHtml(dir, cur) {
     var labels = dir === 'in'
       ? [{ v: 'need', t: '갚아야 함' }, { v: 'done', t: '답례 완료' }, { v: 'none', t: '해당 없음' }]
@@ -1573,8 +1563,6 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     box.classList.toggle('is-out', dir === 'out');
     var t = $('#attend-title');
     if (t) t.innerHTML = attendTitleHtml(dir);
-    var h = $('#attend-hint');
-    if (h) h.textContent = attendHintText(dir);
     var set = box.querySelector('.chipset');
     if (set) set.innerHTML = attendChipsHtml(dir, f.attend ? f.attend.value : '');
   }
@@ -1585,8 +1573,6 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     var cur = f.thanks.value;
     var seg = $('#thanks-seg');
     if (seg) seg.innerHTML = thanksSegHtml(dir, cur);
-    var hint = $('#thanks-hint');
-    if (hint) hint.textContent = thanksHint(dir);
   }
 
   function submitForm(e) {
@@ -2564,7 +2550,6 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
           var nextAmt = num(val);
           amt.value = nextAmt ? nextAmt.toLocaleString('ko-KR') : '';
           $$('#quick-amt .chip').forEach(function (b) { b.classList.toggle('on', b === t); });
-          updateAmtHint();
           amt.classList.remove('bump');
           void amt.offsetWidth;
           amt.classList.add('bump');
@@ -2572,14 +2557,6 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
         break;
     }
   });
-
-  function updateAmtHint() {
-    var amt = $('#f-amount');
-    var hint = $('#amt-hint');
-    if (!amt || !hint) return;
-    var v = num(String(amt.value || '').replace(/[^0-9]/g, ''));
-    hint.innerHTML = v > 0 ? '<b>' + won(v) + '</b>' : '빠른 버튼을 누르거나 직접 입력하세요.';
-  }
 
   document.addEventListener('submit', function (e) {
     if (e.target && e.target.id === 'rec-form') submitForm(e);
@@ -2591,7 +2568,6 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     if (el.id === 'f-amount') {
       var digits = String(el.value || '').replace(/[^0-9]/g, '').slice(0, 12);
       el.value = digits ? num(digits).toLocaleString('ko-KR') : '';
-      updateAmtHint();
       $$('#quick-amt .chip').forEach(function (b) { b.classList.remove('on'); });
       return;
     }
@@ -2604,7 +2580,6 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     if (e.target && e.target.id === 'f-amount') {
       var v = num(String(e.target.value || '').replace(/[^0-9]/g, ''));
       e.target.value = v ? v.toLocaleString('ko-KR') : '';
-      updateAmtHint();
     }
   }, true);
 
@@ -2716,8 +2691,6 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       if (field === 'dir') {
         var lal = $('#ocr-all-attend-label');
         if (lal) lal.innerHTML = attendTitleShort(val2) + ' (아래 모두 적용)';
-        var lat = $('#ocr-all-attend-tip');
-        if (lat) lat.textContent = val2 === 'in' ? '봉투만 보내고 안 오셨으면 ‘불참(봉투만)’ · 행마다 따로 바꿀 수 있어요' : '행마다 따로 바꿀 수 있어요';
         var aAll = $('#ocr-all-attend');
         if (aAll) {
           var keepAll = ocrCommon.attend;
@@ -3176,8 +3149,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
         '<label><span>주체 (아래 모두 적용)</span>' + ocrSel('ocr-all-owner', ownOpts, ocrCommon.owner) + '</label>' +
       '</div>' +
       '<div class="row">' +
-        '<label><span id="ocr-all-attend-label">' + attendTitleShort(attDir) + ' (아래 모두 적용)</span>' + ocrSel('ocr-all-attend', attOpts, ocrCommon.attend) + '</label>' +
-        '<label><span>&nbsp;</span><span class="ocr-attend-tip" id="ocr-all-attend-tip">' + (attDir === 'in' ? '봉투만 보내고 안 오셨으면 ‘불참(봉투만)’ · 행마다 따로 바꿀 수 있어요' : '행마다 따로 바꿀 수 있어요') + '</span></label>' +
+        '<label style="grid-column:1 / -1"><span id="ocr-all-attend-label">' + attendTitleShort(attDir) + ' (아래 모두 적용)</span>' + ocrSel('ocr-all-attend', attOpts, ocrCommon.attend) + '</label>' +
       '</div>' +
     '</div>';
   }
@@ -3273,7 +3245,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       '<details class="ocr-raw"><summary>읽은 글자 보기 · 직접 고쳐서 다시 분석</summary>' +
         '<textarea id="ocr-raw" spellcheck="false" aria-label="읽은 글자">' + esc(st.text || '') + '</textarea>' +
         '<button class="btn ghost sm" type="button" data-act="ocr-reparse">이 글자로 다시 분석</button></details>' +
-      '<p class="ocr-tip">금액이 <b>50</b>처럼 적혀 있으면 천원 단위로 읽어요(50 → 50,000원). 이름 칸이 비어 있는 줄은 등록되지 않아요.</p>';
+      '<p class="ocr-tip">금액 <b>50</b>은 5만원으로 읽어요 · 이름이 빈 줄은 등록되지 않아요.</p>';
     updateOcrActions();
   }
   function renderOcr() {
@@ -3281,12 +3253,8 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     if (!body) return;
     var st = ocrState;
     var has = !!(st && st.preview);
-    var html = '<p class="ocr-help">방명록 사진을 고르면 <b>이 기기 안에서만</b> 글자를 읽어 이름과 금액을 뽑아요. 손글씨는 잘못 읽을 수 있으니 표에서 바로 고쳐 주세요. <b>사진은 위에 고정</b>돼 있어서 표를 내려도 계속 보여요.</p>' +
-      '<div class="ocr-src">' +
-        '<button class="btn ghost sm" type="button" data-act="ocr-camera">📷 사진 찍기</button>' +
-        '<button class="btn ghost sm" type="button" data-act="ocr-album">🖼 앨범에서 고르기</button>' +
-      '</div>' +
-      '<div class="ocr-pin' + (st && st.pinMin ? ' min' : '') + '" id="ocr-pin"' + (has ? '' : ' hidden') + '>' +
+    /* 사진은 스크롤되지 않는 상단 칸(#ocr-fixed)에, 표·입력칸만 아래 칸에서 스크롤한다 */
+    var pinHtml = '<div class="ocr-pin' + (st && st.pinMin ? ' min' : '') + '" id="ocr-pin"' + (has ? '' : ' hidden') + '>' +
         '<div class="ocr-pin-head"><span class="pt">📷 방명록 사진 <b>위에 고정</b></span>' +
           '<button class="btn ghost" type="button" data-act="ocr-pin-toggle" aria-expanded="' + (st && st.pinMin ? 'false' : 'true') + '">' + (st && st.pinMin ? '사진 크게 보기 ▾' : '사진 접기 ▴') + '</button>' +
         '</div>' +
@@ -3296,9 +3264,16 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
           '<button class="btn ghost sm" type="button" data-act="ocr-rot-cw" title="시계 방향으로 90도">↻ 오른쪽 90°</button>' +
           '<button class="btn ghost sm" type="button" data-act="ocr-photo-clear" title="사진 지우기">🗑 사진 지우기</button>' +
         '</div>' +
+      '</div>';
+    var html = '<p class="ocr-help">사진은 <b>이 기기 안에서만</b> 읽어요 · 손글씨는 표에서 바로 고쳐 주세요.</p>' +
+      '<div class="ocr-src">' +
+        '<button class="btn ghost sm" type="button" data-act="ocr-camera">📷 사진 찍기</button>' +
+        '<button class="btn ghost sm" type="button" data-act="ocr-album">🖼 앨범에서 고르기</button>' +
       '</div>' +
       '<p class="ocr-stat" id="ocr-stat"></p><div class="ocr-bar" id="ocr-bar" hidden><i></i></div><p class="ocr-msg" id="ocr-msg" hidden></p>' +
       '<div id="ocr-result"></div>';
+    var fixed = $('#ocr-fixed');
+    if (fixed) fixed.innerHTML = pinHtml;
     body.innerHTML = html;
     renderOcrResult();
     if (st && st.stat) ocrStat(st.stat, st.pct);
@@ -3312,14 +3287,59 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     if (!body || !pin) return;
     pin.classList.toggle('stuck', body.scrollTop > 4);
   }
+  /* 아이폰 키보드가 올라와도 사진이 화면 밖으로 밀리지 않게 모달을 보이는 화면에 맞춘다 */
+  var ocrVPBound = false;
+  function ocrFitViewport() {
+    var sheet = document.getElementById('modal-ocr');
+    if (!sheet || !sheet.classList.contains('open')) return;
+    var vv = window.visualViewport;
+    var mobile = window.matchMedia('(max-width: 739px)').matches;
+    var vh = vv ? vv.height : window.innerHeight;
+    var kb = !!vv && (window.innerHeight - vv.height) > 120;
+    var compact = kb || vh < 620;   /* 키보드가 올라왔거나 화면이 짧으면 사진·버튼을 접어 표 칸을 넓힌다 */
+    if (!mobile && !compact) { ocrResetViewport(); return; }
+    sheet.style.top = Math.max(0, Math.round(vv ? vv.offsetTop : 0)) + 'px';
+    sheet.style.bottom = 'auto';
+    sheet.style.height = Math.round(vh) + 'px';
+    var panel = sheet.querySelector('.panel');
+    if (panel) {
+      panel.style.height = Math.round(vh * 0.97) + 'px';
+      panel.classList.toggle('kb', compact);
+    }
+    sheet.classList.toggle('kb', compact);
+  }
+  function ocrResetViewport() {
+    var sheet = document.getElementById('modal-ocr');
+    if (!sheet) return;
+    sheet.style.top = ''; sheet.style.bottom = ''; sheet.style.height = '';
+    sheet.classList.remove('kb');
+    var panel = sheet.querySelector('.panel');
+    if (panel) { panel.style.height = ''; panel.classList.remove('kb'); }
+  }
+  function ocrBindViewport() {
+    if (ocrVPBound) return;
+    ocrVPBound = true;
+    var vv = window.visualViewport;
+    if (vv) {
+      vv.addEventListener('resize', ocrFitViewport);
+      vv.addEventListener('scroll', ocrFitViewport);
+    }
+    window.addEventListener('resize', ocrFitViewport);
+    window.addEventListener('orientationchange', function () { setTimeout(ocrFitViewport, 150); });
+  }
   function ocrOpen() {
     ocrCommon = { dir: 'in', owner: husbandView ? '남편' : '공동', attend: '', date: todayStr(), kind: '결혼식', relation: '기타', thanks: 'none' };
     ocrState = { rows: [], busy: false, job: 0, text: '', preview: '', stat: '', pct: null, msg: '', bases: [], rot: 0, pinMin: false, delMode: false, delSel: {} };
     renderOcr();
     openSheet('modal-ocr');
+    ocrBindViewport();
+    ocrFitViewport();
   }
   function ocrClose() {
     closeSheet('modal-ocr');
+    ocrResetViewport();
+    var fixed = $('#ocr-fixed');
+    if (fixed) fixed.innerHTML = '';
     ocrState = null;
     clearTimeout(ocrIdle);
     ocrIdle = setTimeout(function () {
