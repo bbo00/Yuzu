@@ -1519,7 +1519,10 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   function usedCard(it) {
     var st = usedStatus(it);
     var sold = st === '판매완료';
-    var price = sold ? (Number(it.soldPrice) || 0) : (Number(it.wantPrice) || 0);
+    var soldPrice = Number(it.soldPrice) || 0;
+    var want = Number(it.wantPrice) || 0;
+    /* 판매완료: 실제 판매가 → 없으면 희망가. 구매가는 작게 참고로만 */
+    var price = sold && soldPrice ? soldPrice : want;
     var buy = Number(it.buyPrice) || 0;
     var ps = Array.isArray(it.platforms) ? it.platforms : [];
     var thumb = it.photo
@@ -1532,7 +1535,11 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
           '<button type="button" class="ubadge ' + (st === '판매중' ? 'on' : (st === '예약중' ? 'res' : 'done')) + '" data-act="ustat" data-id="' + esc(it.id) + '">' + st + '</button></div>' +
         '<div class="urow">' +
           (price > 0 ? '<span class="uprice">' + won(price) + '</span>' : '<span class="uprice none">' + (sold ? '판매가 미기록' : '희망가 미입력') + '</span>') +
-          (buy > 0 ? '<span class="ubuy">산 ' + won(buy) + '</span>' : '') +
+          ((sold && !soldPrice && want > 0) || buy > 0
+            ? '<span class="ubuy">' + (sold && !soldPrice && want > 0 ? '희망가' : '') +
+              (sold && !soldPrice && want > 0 && buy > 0 ? ' · ' : '') +
+              (buy > 0 ? '산 ' + won(buy) : '') + '</span>'
+            : '') +
         '</div>' +
         (ps.length ? '<div class="uplat">' + ps.map(function (p) { return '<span class="uptag ' + platformClass(p) + '">' + esc(p) + '</span>'; }).join('') + '</div>' : '') +
       '</div></div>';
@@ -2306,7 +2313,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     body += '<div class="field"><label>메모 <span style="color:var(--muted2)">(선택)</span></label>' +
       '<textarea id="u-memo" maxlength="500">' + esc(d.memo || '') + '</textarea></div>';
 
-    var foot = (it ? '<button class="btn ghost" data-udel="1" style="flex:0 0 auto">삭제</button>' : '') +
+    var foot = (it ? '<button class="btn ghost" data-udel="1" style="flex:0 0 auto;color:#B4272B">삭제</button>' : '') +
       '<button class="btn ghost" data-ucancel="1">취소</button>' +
       '<button class="btn primary" id="save-used">' + (it ? '저장' : '등록') + '</button>';
 
