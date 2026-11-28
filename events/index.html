@@ -554,15 +554,14 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   var RELS = ['직장·동료', '친구·지인', '친척·가족', '거래처·기타'];
   var KINDS = ['결혼식', '장례식', '돌잔치', '출산·백일', '개업·승진', '생신·칠순', '기타'];
   var OWNERS = ['아내', '남편', '공동'];   /* 주체: 아내 · 남편 · 공동 (예전에 저장된 '유자'·'아내(나)'는 '아내'로 읽는다) */
-  /* 참석 여부: h = 남편, w = 아내, b = 2인 참석(부부 함께), 0 = 불참(봉투만), '' = 정하지 않음
-     예전에 저장된 '1'(1인 참석)은 그대로 두고, '2'(2인 참석)는 'b'(둘 다)로 읽는다 */
+  /* 참석 여부: 1 = 1인 참석, 2 = 2인 참석, 0 = 불참(봉투만), '' = 정하지 않음
+     지난 버전의 'h'(남편)·'w'(아내)는 1인, 'b'는 2인으로 읽는다 */
   var ATTENDS = [
-    { v: 'h', t: '🤵 남편 참석', s: '🤵 남편' },
-    { v: 'w', t: '👰 아내 참석', s: '👰 아내' },
-    { v: 'b', t: '👥 2인 참석', s: '👥 2인' },
+    { v: '1', t: '👤 1인 참석', s: '👤 1인' },
+    { v: '2', t: '👥 2인 참석', s: '👥 2인' },
     { v: '0', t: '✉️ 불참(봉투만)', s: '✉️ 봉투만' }
   ];
-  var QUICK_AMTS = [50000, 100000, 150000, 200000, 300000, 500000, 1000000];
+  var QUICK_AMTS = [50000, 100000, 150000, 200000, 300000, 500000];
 
   /* 받은 돈은 '왔는지/안 왔는지', 보낸 돈은 '누가 갔는지'로 말이 달라진다 */
   function attendOpts(dir) {
@@ -570,17 +569,15 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   }
   function attendShort(v, dir) {
     var a = normAttend(v);
-    if (a === 'h') return '🤵 남편';
-    if (a === 'w') return '👰 아내';
-    if (a === 'b') return '👥 2인';
+    if (a === '1') return '👤 1인';
+    if (a === '2') return '👥 2인';
     if (a === '0') return dir === 'in' ? '✉️ 봉투만' : '✉️ 불참';
-    if (a === '1') return '👤 1인(예전)';
     return '';
   }
   function attendTitleHtml(dir) {
     return dir === 'in'
-      ? '🙋 방문·참석 체크 <small>(누가 왔는지 / 안 왔는지)</small>'
-      : '🙋 참석 체크 <small>(누가 갔는지)</small>';
+      ? '🙋 방문·참석 체크 <small>(왔는지 / 안 왔는지)</small>'
+      : '🙋 참석 체크 <small>(내가 갔는지)</small>';
   }
   /* 방명록 OCR 공통 줄처럼 좁은 곳에 쓰는 짧은 제목 */
   function attendTitleShort(dir) {
@@ -588,16 +585,15 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   }
   function attendHintText(dir) {
     return dir === 'in'
-      ? '남편만 오셨으면 🤵 남편, 나만 갔으면 👰 아내, 부부가 함께 오셨으면 👥 2인, 봉투만 보내고 안 오셨으면 ✉️ 불참이에요.'
-      : '내가 갔으면 👰 아내, 남편이 갔으면 🤵 남편, 같이 갔으면 👥 2인, 봉투만 전했으면 ✉️ 불참이에요.';
+      ? '한 사람이 왔으면 👤 1인, 부부가 함께 오셨으면 👥 2인, 봉투만 보내고 오지 않으셨으면 ✉️ 불참이에요.'
+      : '내가 직접 갔으면 👤 1인, 같이 갔으면 👥 2인, 봉투만 전했으면 ✉️ 불참이에요.';
   }
   function attendChipsHtml(dir, cur) {
     var c = normAttend(cur);
     return '<button type="button" class="chip' + (!c ? ' on' : '') + '" data-act="pick" data-group="attend" data-val="">선택 안 함</button>' +
       attendOpts(dir).map(function (a) {
         return '<button type="button" class="chip' + (c === a.v ? ' on' : '') + '" data-act="pick" data-group="attend" data-val="' + a.v + '">' + esc(a.t) + '</button>';
-      }).join('') +
-      (c === '1' ? '<button type="button" class="chip on" data-act="pick" data-group="attend" data-val="1">👤 1인 참석(예전)</button>' : '');
+      }).join('');
   }
   var DATA_KEY = 'events_v1';
   var SYNC_CFG_KEY = 'events_sync_v1';
@@ -709,34 +705,31 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   function dirLabel(d) { return d === 'in' ? '💌 받은 돈' : '💸 보낸 돈'; }
   function normAttend(v) {
     var s2 = String(v == null ? '' : v).trim();
-    if (s2 === '2') return 'b';        /* 예전 '2인 참석' = 부부 둘 다 */
-    return (s2 === '1' || s2 === '0' || s2 === 'h' || s2 === 'w' || s2 === 'b') ? s2 : '';
+    if (s2 === 'h' || s2 === 'w') return '1';   /* 지난 버전의 남편·아내 참석 = 1인 */
+    if (s2 === 'b') return '2';                  /* 지난 버전의 둘 다 참석 = 2인 */
+    return (s2 === '1' || s2 === '2' || s2 === '0') ? s2 : '';
   }
   /* CSV·백업용 글자 */
   function attendLabel(v) {
     var a = normAttend(v);
-    if (a === 'h') return '남편 참석';
-    if (a === 'w') return '아내 참석';
-    if (a === 'b') return '2인 참석';
-    if (a === '0') return '불참(봉투만)';
     if (a === '1') return '1인 참석';
+    if (a === '2') return '2인 참석';
+    if (a === '0') return '불참(봉투만)';
     return '';
   }
-  /* 화면 표시용 이모지: 남편 🤵 · 아내 👰 · 2인 👥 · 봉투만 ✉️ */
+  /* 화면 표시용 이모지: 1인 👤 · 2인 👥 · 봉투만 ✉️ */
   function attendLabelUI(v) {
     var a = normAttend(v);
-    if (a === 'h') return '🤵 남편 참석';
-    if (a === 'w') return '👰 아내 참석';
-    if (a === 'b') return '👥 2인 참석';
+    if (a === '1') return '👤 1인 참석';
+    if (a === '2') return '👥 2인 참석';
     if (a === '0') return '✉️ 불참(봉투만)';
-    if (a === '1') return '👤 1인 참석(예전)';
     return '';
   }
-  /* 방문 인원(사람 수): 남편·아내 1명, 2인 2명 */
+  /* 방문 인원(사람 수): 1인 1명, 2인 2명 */
   function attendHeads(v) {
     var a = normAttend(v);
-    if (a === 'h' || a === 'w' || a === '1') return 1;
-    if (a === 'b') return 2;
+    if (a === '1') return 1;
+    if (a === '2') return 2;
     return 0;
   }
   function thanksInfo(rec) {
@@ -995,14 +988,12 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
   function recAttendRow(r) {
     var cur = normAttend(r.attend);
     var opts = [
-      { v: 'h', s: '🤵 남편', t: '🤵 남편 참석' },
-      { v: 'w', s: '👰 아내', t: '👰 아내 참석' },
-      { v: 'b', s: '👥 2인', t: '👥 2인 참석' },
+      { v: '1', s: '👤 1인', t: '👤 1인 참석' },
+      { v: '2', s: '👥 2인', t: '👥 2인 참석' },
       { v: '0', s: '✉️ 불참', t: '✉️ 봉투만 보내고 안 옴' }
     ];
     return '<div class="rec-attend" role="group" aria-label="방문·참석 체크 (왔는지 / 안 왔는지)">' +
       '<span class="ra-q">🙋 왔나요?</span>' +
-      (cur === '1' ? '<button type="button" class="ra on" data-act="card-attend" data-id="' + esc(r.id) + '" data-val="1" title="예전 1인 참석 — 눌러서 누가 갔는지 골라 주세요">👤 1인</button>' : '') +
       opts.map(function (o) {
         return '<button type="button" class="ra' + (cur === o.v ? ' on' : '') + '" data-act="card-attend" data-id="' + esc(r.id) + '" data-val="' + o.v + '" title="' + esc(o.t) + '">' + o.s + '</button>';
       }).join('') +
@@ -1082,7 +1073,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
         '<ul class="tips">' +
           '<li>이름을 누르면 그 사람과 주고받은 내역이 한 화면에 떠요</li>' +
           '<li>받은 돈은 ‘갚아야 함’으로 남겨두면 미답례 탭에 모여요</li>' +
-          '<li>빠른 금액 버튼(5·10·15·20·30·50·100만)으로 3초 만에 입력</li>' +
+          '<li>빠른 금액 버튼(5·10·15·20·30·50만)으로 3초 만에 입력</li>' +
           '<li>기기 간 자동 동기화 · 백업 · 엑셀 CSV</li>' +
         '</ul>' +
       '</div>';
@@ -1156,23 +1147,19 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 
     /* 방문·참석 (받은 돈) */
     var inList = list.filter(function (r) { return r.dir === 'in'; });
-    var aH = 0, aW = 0, aB = 0, a0 = 0, a1 = 0, aNone = 0;
+    var a1 = 0, a2 = 0, a0 = 0, aNone = 0;
     inList.forEach(function (r) {
       var a = normAttend(r.attend);
-      if (a === 'h') aH++; else if (a === 'w') aW++; else if (a === 'b') aB++;
-      else if (a === '0') a0++; else if (a === '1') a1++; else aNone++;
+      if (a === '1') a1++; else if (a === '2') a2++; else if (a === '0') a0++; else aNone++;
     });
-    var heads = aH + aW + aB * 2 + a1;
+    var heads = a1 + a2 * 2;
     body += '<div class="card"><h2 class="card-title">🙋 방문·참석 (' + label + ' · 받은 돈)</h2>' +
       '<div class="kpi-grid">' +
-        '<div class="kpi"><span class="kpi-label">총 방문 인원</span><span class="kpi-value in">' + heads + '명</span><span class="kpi-sub">남편·아내 1명 · 2인은 2명</span></div>' +
-        '<div class="kpi"><span class="kpi-label">🤵 남편 참석</span><span class="kpi-value">' + aH + '건</span><span class="kpi-sub">👰 아내 참석 ' + aW + '건</span></div>' +
-        '<div class="kpi"><span class="kpi-label">👥 2인 참석</span><span class="kpi-value">' + aB + '건</span><span class="kpi-sub">✉️ 불참 ' + a0 + '건</span></div>' +
+        '<div class="kpi"><span class="kpi-label">총 방문 인원</span><span class="kpi-value in">' + heads + '명</span><span class="kpi-sub">1인 1명 · 2인 2명</span></div>' +
+        '<div class="kpi"><span class="kpi-label">👤 1인 참석</span><span class="kpi-value">' + a1 + '건</span><span class="kpi-sub">✉️ 불참 ' + a0 + '건</span></div>' +
+        '<div class="kpi"><span class="kpi-label">👥 2인 참석</span><span class="kpi-value">' + a2 + '건</span><span class="kpi-sub">' + (aNone ? '체크 안 함 ' + aNone + '건' : '모두 체크됨') + '</span></div>' +
       '</div>' +
-      '<p class="card-foot">받은 돈 ' + inList.length + '건 기준' +
-        (a1 ? ' · 1인(예전) ' + a1 + '건' : '') +
-        (aNone ? ' · 체크 안 함 ' + aNone + '건' : ' · 모두 체크됨') +
-        ' · 식대·답례 규모를 가늠할 때 써 보세요.</p></div>';
+      '<p class="card-foot">받은 돈 ' + inList.length + '건 기준 · 식대·답례 규모를 가늠할 때 써 보세요.</p></div>';
 
     /* 경조사 종류별 */
     var kinds = groupSum(list, function (r) { return r.kind; });
@@ -1422,11 +1409,6 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
     var relCustomVal = isCustomRel ? (r ? r.relation : '') : '';
     var kindCustomVal = isCustomKind ? (r ? r.kind : '') : '';
 
-    /* 이름 후보 */
-    var knownNames = {};
-    scopeRecords().forEach(function (x) { if (x.name) knownNames[x.name] = 1; });
-    knownNames = Object.keys(knownNames).slice(0, 8);
-
     var dirSeg = '<div class="seg big" id="dir-seg">' +
       '<button type="button" class="' + (d.dir === 'out' ? 'on d-out' : '') + '" data-act="dir-pick" data-val="out">💸 보낸 돈</button>' +
       '<button type="button" class="' + (d.dir === 'in' ? 'on d-in' : '') + '" data-act="dir-pick" data-val="in">💌 받은 돈</button>' +
@@ -1445,7 +1427,6 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 
           '<label class="field"><span>이름 (상대방)</span>' +
             '<input class="input" name="name" type="text" value="' + esc(d.name) + '" placeholder="예: 김민수" maxlength="30" required>' +
-            (knownNames.length ? '<span class="hint">최근 기록한 사람: ' + knownNames.map(function (n) { return '<button type="button" class="link-btn" data-act="fill-name" data-val="' + esc(n) + '">' + esc(n) + '</button>'; }).join(' ') + '</span>' : '') +
           '</label>' +
 
           '<div class="field"><span>주체</span>' +
@@ -1469,8 +1450,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
           '</div>' +
 
           '<div class="field"><span>날짜</span>' +
-            '<div class="date-row"><input class="input dateinput" name="date" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" enterkeyhint="done" maxlength="10" placeholder="예: 261128" value="' + esc(normDate(d.date) || d.date) + '">' +
-            '<button class="btn ghost" type="button" data-act="today">오늘</button></div>' +
+            '<div class="date-row"><input class="input dateinput" name="date" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" enterkeyhint="done" maxlength="10" placeholder="예: 261128" value="' + esc(normDate(d.date) || d.date) + '"></div>' +
           '</div>' +
 
           '<div class="field"><span>금액</span>' +
@@ -2506,10 +2486,6 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
         f1.thanks.value = val;
         $$('#thanks-seg button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-val') === val); });
         break;
-      case 'today':
-        var f2 = formEl();
-        if (f2) f2.date.value = todayStr();
-        break;
       case 'amt':
         /* 누르면 그 금액이 바로 들어간다 (이미 다른 금액이 있어도 대체) */
         var amt = $('#f-amount');
@@ -2522,10 +2498,6 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
           void amt.offsetWidth;
           amt.classList.add('bump');
         }
-        break;
-      case 'fill-name':
-        var nm = formEl() ? formEl().name : null;
-        if (nm) { nm.value = val; nm.focus(); }
         break;
     }
   });
