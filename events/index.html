@@ -2561,7 +2561,7 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
       return;
     }
     host.innerHTML = ocrCommonHtml() +
-      '<div class="ocr-count"><span>찾은 기록 <b>' + st.rows.length + '</b>건</span><span>등록할 <b id="ocr-sel">' + st.rows.filter(function (r) { return r.on; }).length + '</b>건</span></div>' +
+      '<div class="ocr-count"><span>찾은 기록 <b>' + st.rows.length + '</b>건</span><span>선택 <b id="ocr-sel">' + st.rows.filter(function (r) { return r.on; }).length + '</b>건</span></div>' +
       st.rows.map(ocrRowHtml).join('') +
       '<div class="ocr-addrow"><button class="btn ghost sm" type="button" data-act="ocr-addrow">＋ 빈 줄 추가</button><button class="btn ghost sm" type="button" data-act="ocr-clear">표 비우기</button></div>' +
       '<details class="ocr-raw"><summary>읽은 글자 보기 · 직접 고쳐서 다시 분석</summary>' +
