@@ -2639,7 +2639,18 @@ body.sync-off-mode .sticky{top:34px}
     var ed = row.querySelector('.ed');
     fillSelects(ed);
     var inp = ed.querySelector('.e-items');
-    if (inp) inp.focus({preventScroll:true});
+    if (inp){
+      try{ inp.focus({preventScroll:true}); }catch(e){ inp.focus(); }
+      /* 아이폰 키보드가 올라오면 입력창이 가려질 수 있어, 편집기를 화면 가운데로 올려 준다 */
+      setTimeout(function(){
+        try{
+          var cur = document.getElementById(fid + '-z' + zi);
+          if (!cur || !cur.classList.contains('editing')) return;
+          if (document.activeElement !== inp) return;
+          inp.scrollIntoView({block:'center', behavior:'smooth'});
+        }catch(e){}
+      }, 280);
+    }
   }
 
   function closeEditor(fid, zi){
@@ -2834,7 +2845,10 @@ body.sync-off-mode .sticky{top:34px}
     if (!box) return;
     box.hidden = false;
     var inp = box.querySelector('.af-name');
-    if (inp) inp.focus({preventScroll:true});
+    if (inp){
+      try{ inp.focus({preventScroll:true}); }catch(e){ inp.focus(); }
+      setTimeout(function(){ try{ if (box.hidden) return; inp.scrollIntoView({block:'center', behavior:'smooth'}); }catch(e){} }, 280);
+    }
   }
   function closeAddFurn(){
     var box = $('#addFurnBox');
