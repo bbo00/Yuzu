@@ -1,0 +1,17 @@
+{
+  "name": "블로그 임시저장 가이드",
+  "short_name": "블로그 가이드",
+  "description": "클로드로 네이버 블로그 글을 쓰고 임시저장까지만 걸어 두는 12단계 가이드 · 스킬 4개 · 프롬프트 5종",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fbfaf6",
+  "theme_color": "#fbfaf6",
+  "icons": [
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "./apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ]
+}
