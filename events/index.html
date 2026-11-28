@@ -2421,11 +2421,10 @@ select.input{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3)
 
   /* ---------- 사진 준비: EXIF 방향 반영 · 90° 회전 · 흑백 이진화 ---------- */
   function ocrSizedCanvas(src, w0, h0) {
-    var long = Math.max(w0, h0), k = 1;
-    if (long > 2200) k = 2200 / long;
-    var cap = Math.sqrt(4200000 / (w0 * h0));
-    if (cap < k) k = cap;
-    if (long < 1200 && k === 1) k = Math.min(2, 1200 / long);
+    var long = Math.max(w0, h0);
+    var k = Math.min(2, 2200 / long);        /* 작은 사진은 2배까지 키워 글자를 또렷하게 */
+    var cap = Math.sqrt(4500000 / (w0 * h0));
+    if (cap < k) k = cap;                     /* 너무 커지면 메모리를 위해 제한 */
     var c = document.createElement('canvas');
     c.width = Math.max(1, Math.round(w0 * k));
     c.height = Math.max(1, Math.round(h0 * k));
